@@ -1,6 +1,13 @@
 import CoreGraphics
 import Foundation
 
+/// Which image variant to load — the scan (flat + mask composite) or the
+/// AI-generated poster.
+nonisolated enum ThumbnailVariant: Hashable, Sendable {
+    case scan
+    case poster
+}
+
 /// Memory cache in front of the thumbnail files on disk. Nothing on the scroll
 /// path is ever allowed to decode a full resolution scan, and this is what
 /// enforces that.
@@ -27,40 +34,49 @@ nonisolated final class ThumbnailCache: @unchecked Sendable {
         return buckets.first { CGFloat($0) >= needed } ?? buckets[buckets.count - 1]
     }
 
-    func cached(_ id: UUID, bucket: Int) -> CGImage? {
-        cache.object(forKey: key(id, bucket))?.image
+    func cached(_ id: UUID, bucket: Int, variant: ThumbnailVariant = .scan) -> CGImage? {
+        cache.object(forKey: key(id, bucket, variant))?.image
     }
 
     /// Loads from memory, then disk, then renders. Rendering and decoding always
     /// happen off the calling actor.
-    func image(for card: CoffeeCard, bucket: Int) async -> CGImage? {
-        if let hit = cached(card.id, bucket: bucket) { return hit }
+    func image(for card: CoffeeCard, bucket: Int, variant: ThumbnailVariant = .scan) async -> CGImage? {
+        if let hit = cached(card.id, bucket: bucket, variant: variant) { return hit }
 
-        let image = await renderer.image(id: card.id, hasMask: card.hasMask, bucket: bucket)
-        if let image { store(image, id: card.id, bucket: bucket) }
+        let image: CGImage?
+        switch variant {
+        case .scan:
+            image = await renderer.image(id: card.id, hasMask: card.hasMask, bucket: bucket)
+        case .poster:
+            image = await renderer.posterImage(id: card.id, bucket: bucket)
+        }
+        if let image { store(image, id: card.id, bucket: bucket, variant: variant) }
         return image
     }
 
     /// Renders thumbnails without returning them, so a freshly scanned card, or
     /// the bucket a pinch is about to need, is ready before the grid asks.
     func warm(_ card: CoffeeCard, buckets: [Int] = ThumbnailCache.buckets) {
-        for bucket in buckets where cached(card.id, bucket: bucket) == nil {
-            Task(priority: .utility) { _ = await image(for: card, bucket: bucket) }
+        for bucket in buckets {
+            if cached(card.id, bucket: bucket, variant: .scan) == nil {
+                Task(priority: .utility) { _ = await image(for: card, bucket: bucket, variant: .scan) }
+            }
+            if card.poster == .ready, cached(card.id, bucket: bucket, variant: .poster) == nil {
+                Task(priority: .utility) { _ = await image(for: card, bucket: bucket, variant: .poster) }
+            }
         }
     }
 
     func invalidate(_ id: UUID) {
         for bucket in Self.buckets {
-            cache.removeObject(forKey: key(id, bucket))
+            cache.removeObject(forKey: key(id, bucket, .scan))
+            cache.removeObject(forKey: key(id, bucket, .poster))
         }
     }
 
     fileprivate static func load(id: UUID, hasMask: Bool, bucket: Int) -> CGImage? {
         let store = ImageStore.shared
         let thumbURL = store.url(for: id, kind: .thumbnail(bucket))
-        // A thumbnail file is already at its bucket size, so decode it as-is.
-        // Asking Image I/O to re-thumbnail it costs work and logs an error when
-        // the file's longest edge is a pixel or two under the bucket.
         if store.exists(id, kind: .thumbnail(bucket)),
            let image = ImageCodec.decode(thumbURL) {
             return image
@@ -68,19 +84,31 @@ nonisolated final class ThumbnailCache: @unchecked Sendable {
         return ImagePipeline.makeThumbnail(id: id, hasMask: hasMask, bucket: bucket)
     }
 
-    private func store(_ image: CGImage, id: UUID, bucket: Int) {
+    fileprivate static func loadPoster(id: UUID, bucket: Int) -> CGImage? {
+        let store = ImageStore.shared
+        let thumbURL = store.url(for: id, kind: .posterThumbnail(bucket))
+        if store.exists(id, kind: .posterThumbnail(bucket)),
+           let image = ImageCodec.decode(thumbURL) {
+            return image
+        }
+        return ImagePipeline.makePosterThumbnail(id: id, bucket: bucket)
+    }
+
+    private func store(_ image: CGImage, id: UUID, bucket: Int, variant: ThumbnailVariant) {
         cache.setObject(
             CacheEntry(image: image),
-            forKey: key(id, bucket),
+            forKey: key(id, bucket, variant),
             cost: image.bytesPerRow * image.height
         )
     }
 
-    private func key(_ id: UUID, _ bucket: Int) -> NSString {
-        "\(id.uuidString)-\(bucket)" as NSString
+    private func key(_ id: UUID, _ bucket: Int, _ variant: ThumbnailVariant) -> NSString {
+        switch variant {
+        case .scan: "\(id.uuidString)-\(bucket)" as NSString
+        case .poster: "\(id.uuidString)-poster-\(bucket)" as NSString
+        }
     }
 
-    /// NSCache needs a class; CGImage cannot be used as the value type directly.
     private final class CacheEntry {
         let image: CGImage
         init(image: CGImage) { self.image = image }
@@ -97,15 +125,24 @@ nonisolated final class ThumbnailCache: @unchecked Sendable {
 /// during a pinch decode it once.
 private actor ThumbnailRenderer {
     private var inFlight: [Key: Task<CGImage?, Never>] = [:]
-    private let queue = DispatchQueue(label: "studio.jbk.Kohi.thumbnails", qos: .userInitiated)
+    private let queue = DispatchQueue(label: "studio.jbk.kohiapp.thumbnails", qos: .userInitiated)
 
     func image(id: UUID, hasMask: Bool, bucket: Int) async -> CGImage? {
-        let key = Key(id: id, bucket: bucket)
+        let key = Key(id: id, bucket: bucket, variant: .scan)
         if let existing = inFlight[key] { return await existing.value }
 
-        // Unstructured on purpose: one view scrolling away must not cancel a
-        // render another view is waiting on.
         let task = Task { await self.render(id: id, hasMask: hasMask, bucket: bucket) }
+        inFlight[key] = task
+        let image = await task.value
+        if inFlight[key] == task { inFlight[key] = nil }
+        return image
+    }
+
+    func posterImage(id: UUID, bucket: Int) async -> CGImage? {
+        let key = Key(id: id, bucket: bucket, variant: .poster)
+        if let existing = inFlight[key] { return await existing.value }
+
+        let task = Task { await self.renderPoster(id: id, bucket: bucket) }
         inFlight[key] = task
         let image = await task.value
         if inFlight[key] == task { inFlight[key] = nil }
@@ -120,8 +157,17 @@ private actor ThumbnailRenderer {
         }
     }
 
+    private func renderPoster(id: UUID, bucket: Int) async -> CGImage? {
+        await withCheckedContinuation { continuation in
+            queue.async {
+                continuation.resume(returning: ThumbnailCache.loadPoster(id: id, bucket: bucket))
+            }
+        }
+    }
+
     private struct Key: Hashable {
         let id: UUID
         let bucket: Int
+        let variant: ThumbnailVariant
     }
 }

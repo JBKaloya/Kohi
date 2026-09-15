@@ -104,20 +104,17 @@ enum Motion {
         static let sheenTravel: CGFloat = 1.1
     }
 
-    // MARK: - Turning the card over
+    // MARK: - Taste radar
 
-    enum Flip {
-        /// Fraction of a full turn a drag must cover to complete the flip.
-        static let threshold: Double = 0.25
-        /// Drag distance, in points, that maps to a full 180 degree turn.
-        static let dragDistance: CGFloat = 220
-        /// Perspective during the turn. Stronger than the parallax so the card
-        /// visibly has a near and a far edge.
-        static let perspective: CGFloat = 0.7
-        /// The turn itself. Heavier than `quick`, no overshoot past the face.
-        static let animation = Animation.spring(response: 0.45, dampingFraction: 0.86)
-        /// A drag must clear this before it counts as a flip rather than a scroll.
-        static let minimumDrag: CGFloat = 8
+    enum Radar {
+        /// Radius as a fraction of the sheet's content width.
+        static let radiusFraction: CGFloat = 0.38
+        /// Labels sit this far outside the outer ring.
+        static let labelOffset: CGFloat = 14
+        static let stroke: CGFloat = 1
+        static let fillOpacity: Double = 0.08
+        static let vertex: CGFloat = 4
+        static let rings: [Int] = [2, 4, 6, 8, 10]
     }
 
     // MARK: - The grid itself
@@ -127,7 +124,7 @@ enum Motion {
         /// gesture does not throw the layout off screen before it snaps.
         static let pinchDamping: CGFloat = 0.55
         static let pinchClamp: ClosedRange<CGFloat> = 0.72...1.5
-        static let minimumScaleDelta: CGFloat = 0.02
+        static let minimumScaleDelta: CGFloat = 0.08
         /// How many cards to render at the next density before a pinch lands.
         static let prewarmCount = 40
     }
@@ -148,6 +145,24 @@ enum Motion {
         }
     }
 
+    // MARK: - Fields
+
+    /// Focus, hint, residue and keyboard clearance for catalogue rows.
+    /// Views must not invent local springs or paddings for fields.
+    enum Field {
+        /// Hairline opacity for an empty optional row at rest.
+        static let optionalRuleOpacity: Double = 0.55
+        /// Rise of the hint line when focus arrives.
+        static let hintRise: CGFloat = 4
+        /// Extra scroll padding so a focused field can sit above the keyboard.
+        static let keyboardClearance: CGFloat = 180
+        /// `paperShade` inset around a focused value, matching `GuessHighlight`.
+        static let focusShadePad = (h: CGFloat(6), v: CGFloat(3))
+        static let focusShadeRadius: CGFloat = 5
+        /// How long a struck derived value stays visible after it is overwritten.
+        static let residueHold = Duration.milliseconds(320)
+    }
+
     // MARK: - Chrome
 
     enum Chrome {
@@ -158,5 +173,17 @@ enum Motion {
         /// The empty state fades up slightly late, so it does not race the grid.
         static let emptyStateRise: CGFloat = 14
         static let emptyStateDelay: Double = 0.12
+    }
+}
+
+/// Press-scale button style driven by `configuration.isPressed`, so the
+/// press visual never steals the tap from the `Button`'s action.
+struct PressStyle: ButtonStyle {
+    var scale: CGFloat = Motion.Chrome.buttonPressScale
+
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .scaleEffect(configuration.isPressed ? scale : 1)
+            .animation(Motion.quick, value: configuration.isPressed)
     }
 }

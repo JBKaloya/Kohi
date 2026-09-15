@@ -67,6 +67,41 @@ nonisolated enum ImagePipeline {
         )
     }
 
+    /// Lightweight ingest for an attachment: deskew + enhance, write the flat
+    /// image into the parent card's directory. No mask, no original kept.
+    static func ingestAttachment(
+        _ scan: ScanResult,
+        cardID: UUID
+    ) async throws -> CardAttachment {
+        let attachID = UUID()
+
+        let deskewed = correctPerspective(scan.image, quad: scan.quad) ?? scan.image
+        let flat = scan.enhance ? (enhance(deskewed) ?? deskewed) : deskewed
+
+        guard let data = ImageCodec.encodeHEIC(flat, quality: 0.9) else {
+            throw IngestError.encodingFailed
+        }
+        try ImageStore.shared.write(data, for: cardID, kind: .attachment(attachID))
+
+        return CardAttachment(
+            id: attachID,
+            role: .page,
+            aspectRatio: Double(flat.width) / Double(flat.height)
+        )
+    }
+
+    /// Renders and caches a thumbnail for an attachment.
+    static func makeAttachmentThumbnail(
+        cardID: UUID, attachmentID: UUID, bucket: Int
+    ) -> CGImage? {
+        let url = ImageStore.shared.url(for: cardID, kind: .attachment(attachmentID))
+        guard let image = ImageCodec.downsample(url, maxPixel: bucket) else { return nil }
+        if let data = ImageCodec.encodeHEIC(image, quality: 0.85) {
+            try? ImageStore.shared.write(data, for: cardID, kind: .attachmentThumbnail(attachmentID, bucket))
+        }
+        return image
+    }
+
     /// Scales an in-memory image down to fit `maxPixel` on its longest edge.
     /// Used to get a full still down to something the review screen can filter
     /// and redraw without stuttering.
@@ -188,11 +223,29 @@ nonisolated enum ImagePipeline {
             let mask = CIImage(contentsOf: store.url(for: id, kind: .mask))
         else { return ImageCodec.decode(flatURL) }
 
+        let scaledMask = mask.transformed(
+            by: scaleTransform(from: mask.extent.size, to: flat.extent.size)
+        )
+
+        // Smooth the mask boundary then feather it. A morphological close
+        // (dilate → erode) fills small gaps from wrinkled packaging, then
+        // an extra erode pulls in fringe pixels and a blur softens the edge.
+        let longest = max(flat.extent.width, flat.extent.height)
+        let closeRadius = max(1, longest * 0.003)
+        let closed = scaledMask
+            .applyingFilter("CIMorphologyMaximum", parameters: [kCIInputRadiusKey: closeRadius])
+            .applyingFilter("CIMorphologyMinimum", parameters: [kCIInputRadiusKey: closeRadius])
+        let eroded = closed.applyingFilter("CIMorphologyMinimum", parameters: [
+            kCIInputRadiusKey: max(1, longest * 0.003),
+        ])
+        let softMask = eroded
+            .clampedToExtent()
+            .applyingGaussianBlur(sigma: max(1, longest * 0.006))
+            .cropped(to: scaledMask.extent)
+
         let cutout = flat.applyingFilter("CIBlendWithMask", parameters: [
             kCIInputBackgroundImageKey: CIImage.empty(),
-            kCIInputMaskImageKey: mask.transformed(
-                by: scaleTransform(from: mask.extent.size, to: flat.extent.size)
-            ),
+            kCIInputMaskImageKey: softMask,
         ])
 
         let scaled: CIImage
@@ -221,5 +274,32 @@ nonisolated enum ImagePipeline {
             try? ImageStore.shared.write(data, for: id, kind: .thumbnail(bucket))
         }
         return image
+    }
+
+    /// Renders and caches a poster thumbnail for one bucket. The poster has no
+    /// mask, so this is a straight downsample.
+    static func makePosterThumbnail(id: UUID, bucket: Int) -> CGImage? {
+        let url = ImageStore.shared.url(for: id, kind: .poster)
+        guard let image = ImageCodec.downsample(url, maxPixel: bucket) else { return nil }
+        if let data = ImageCodec.encodeHEIC(image, quality: 0.85) {
+            try? ImageStore.shared.write(data, for: id, kind: .posterThumbnail(bucket))
+        }
+        return image
+    }
+
+    /// Accepts a PNG or HEIC payload from generation or a cloud pull and writes
+    /// the local `poster.heic` archive file.
+    @discardableResult
+    static func installPoster(id: UUID, data: Data) -> Bool {
+        guard let image = ImageCodec.decode(data),
+              let heic = ImageCodec.encodeHEIC(image, quality: 0.9)
+        else { return false }
+        do {
+            try ImageStore.shared.write(heic, for: id, kind: .poster)
+            return true
+        } catch {
+            Log.app.error("install poster failed for \(id): \(error)")
+            return false
+        }
     }
 }

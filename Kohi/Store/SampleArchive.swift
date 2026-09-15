@@ -1,11 +1,13 @@
 import CoreGraphics
+import CoreImage
+import CoreImage.CIFilterBuiltins
 import Foundation
 import os
 
-/// Seeds the archive with the bundled sample cards the first time a debug build
-/// runs on an empty device. The seed writes through the real storage layout, so
-/// the grid, the thumbnail pipeline and the detail view all exercise exactly the
-/// code path a genuine scan uses. There is no mock branch anywhere in the views.
+/// Bundled sample cards used on first launch and as a demo scan. The seed writes
+/// through the real storage layout, so the grid, the thumbnail pipeline and the
+/// detail view all exercise exactly the code path a genuine scan uses. There is
+/// no mock branch anywhere in the views.
 nonisolated enum SampleArchive {
     private struct Sample {
         let file: String
@@ -77,6 +79,52 @@ nonisolated enum SampleArchive {
     /// True when there is no archive on disk yet.
     static var shouldSeed: Bool {
         !CardFileStore().exists
+    }
+
+    /// A bundled sample warped onto a surface, as though it had just been
+    /// photographed at an angle. The quad is known exactly, so this exercises
+    /// perspective correction, the cut-out, and OCR without a camera.
+    static func sampleCapture() -> CapturedCard? {
+        guard
+            let name = samples.randomElement()?.file,
+            let url = Bundle.main.url(forResource: name, withExtension: "png"),
+            let card = ImageCodec.decode(url)
+        else { return nil }
+
+        let canvas = CGSize(width: 2400, height: 3200)
+        let quad = Quad(
+            topLeft: CGPoint(x: 470, y: 690),
+            topRight: CGPoint(x: 1930, y: 540),
+            bottomRight: CGPoint(x: 2040, y: 2560),
+            bottomLeft: CGPoint(x: 380, y: 2430)
+        )
+
+        func flip(_ point: CGPoint) -> CGPoint {
+            CGPoint(x: point.x, y: canvas.height - point.y)
+        }
+
+        let warp = CIFilter.perspectiveTransform()
+        warp.inputImage = CIImage(cgImage: card)
+        warp.topLeft = flip(quad.topLeft)
+        warp.topRight = flip(quad.topRight)
+        warp.bottomRight = flip(quad.bottomRight)
+        warp.bottomLeft = flip(quad.bottomLeft)
+
+        let surface = CIImage(color: CIColor(red: 0.28, green: 0.22, blue: 0.17))
+            .cropped(to: CGRect(origin: .zero, size: canvas))
+
+        let composite = CIFilter.sourceOverCompositing()
+        composite.inputImage = warp.outputImage
+        composite.backgroundImage = surface
+
+        guard
+            let composited = composite.outputImage,
+            let image = ImagePipeline.context.createCGImage(
+                composited, from: CGRect(origin: .zero, size: canvas)
+            )
+        else { return nil }
+
+        return CapturedCard(image: image, quad: quad)
     }
 
     static func seed() -> [CoffeeCard] {

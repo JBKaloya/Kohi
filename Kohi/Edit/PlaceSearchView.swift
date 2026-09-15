@@ -65,7 +65,12 @@ final class PlaceSearch: NSObject, MKLocalSearchCompleterDelegate {
             let item = response.mapItems.first
         else { return nil }
 
-        let coordinate = item.location.coordinate
+        let coordinate: CLLocationCoordinate2D
+        if #available(iOS 26, *) {
+            coordinate = item.location.coordinate
+        } else {
+            coordinate = item.placemark.coordinate
+        }
         return Place(
             name: item.name ?? completion.title,
             address: completion.subtitle,

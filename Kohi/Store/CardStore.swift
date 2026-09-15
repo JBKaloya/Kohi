@@ -12,12 +12,31 @@ final class CardStore {
     /// hold its landing animation until the transition is over.
     var landingCardID: UUID?
 
+    @ObservationIgnored weak var sink: (any ArchiveChangeSink)?
     @ObservationIgnored private let files: CardFileStore
     @ObservationIgnored private var saveTask: Task<Void, Never>?
+    /// Card id → wheel ids declared on the bag plus tasted on brews.
+    /// Invalidated on write so search never runs `FlavorMatcher` per keystroke.
+    @ObservationIgnored private var flavorIndex: [UUID: Set<String>] = [:]
+    /// Card id → shelf title. Depends on neighbours, so the whole index is
+    /// rebuilt rather than patched one key at a time.
+    @ObservationIgnored private var titleIndex: [UUID: String] = [:]
+    @ObservationIgnored private var titlesAreValid = false
 
     init(files: CardFileStore = CardFileStore()) {
         self.files = files
-        cards = Self.sorted(files.load())
+        let loaded = files.load()
+        let relinked = loaded.map { card -> CoffeeCard in
+            var card = card
+            for index in card.brews.indices {
+                card.brews[index].dropOrphanRecipeLink()
+            }
+            return card
+        }
+        cards = Self.sorted(relinked)
+        if relinked != loaded {
+            try? files.save(relinked)
+        }
     }
 
     func card(id: UUID) -> CoffeeCard? {
@@ -26,7 +45,10 @@ final class CardStore {
 
     func add(_ card: CoffeeCard) {
         cards = Self.sorted(cards + [card])
+        flavorIndex.removeValue(forKey: card.id)
+        invalidateTitles()
         ThumbnailCache.shared.warm(card)
+        sink?.cardChanged(card.id)
         scheduleSave()
     }
 
@@ -34,6 +56,11 @@ final class CardStore {
     /// is what the grid is for.
     func insert(_ newCards: [CoffeeCard]) {
         cards = Self.sorted(cards + newCards)
+        invalidateTitles()
+        for card in newCards {
+            flavorIndex.removeValue(forKey: card.id)
+            sink?.cardChanged(card.id)
+        }
         scheduleSave()
     }
 
@@ -52,12 +79,18 @@ final class CardStore {
         var updated = card
         updated.updatedAt = .now
         cards[index] = updated
+        flavorIndex.removeValue(forKey: card.id)
+        invalidateTitles()
+        sink?.cardChanged(card.id)
         scheduleSave()
     }
 
     func delete(_ card: CoffeeCard) {
         cards.removeAll { $0.id == card.id }
+        flavorIndex.removeValue(forKey: card.id)
+        invalidateTitles()
         ThumbnailCache.shared.invalidate(card.id)
+        sink?.cardDeleted(card.id)
         let id = card.id
         Task.detached(priority: .utility) { ImageStore.shared.removeAll(for: id) }
         scheduleSave()
@@ -84,10 +117,101 @@ final class CardStore {
         }
     }
 
+    /// Declared tasting notes plus flavours logged on brews, as wheel ids.
+    func flavorIDs(for card: CoffeeCard) -> Set<String> {
+        if let cached = flavorIndex[card.id] { return cached }
+        var ids = Set(card.declaredFlavors.map(\.id))
+        for brew in card.brews {
+            ids.formUnion(brew.flavors.map(\.id))
+        }
+        flavorIndex[card.id] = ids
+        return ids
+    }
+
+    /// The name on the shelf, with a suffix only when two cards would otherwise
+    /// read the same. Unique titles stay bare.
+    func title(for card: CoffeeCard) -> String {
+        if !titlesAreValid { rebuildTitles() }
+        return titleIndex[card.id] ?? card.displayName
+    }
+
+    private func invalidateTitles() {
+        titlesAreValid = false
+        titleIndex.removeAll()
+    }
+
+    private func rebuildTitles() {
+        titleIndex = CardTitles.index(for: cards)
+        titlesAreValid = true
+    }
+
     /// Writes immediately, for backgrounding.
     func flush() {
         saveTask?.cancel()
         let snapshot = cards
         try? files.save(snapshot)
+    }
+}
+
+extension CardStore: SyncableStore {
+    var syncKinds: [EntityKind] { [.card] }
+
+    func syncableIDs(_ kind: EntityKind) -> [UUID] {
+        kind == .card ? cards.map(\.id) : []
+    }
+}
+
+/// Shelf titles that stay unique without inventing names.
+///
+/// `displayName` is pure and does not know its neighbours. This looks across
+/// the archive and only adds a suffix when two cards would otherwise read the
+/// same, using the first field that actually differs: roaster, roast date,
+/// lot, then the scan date.
+nonisolated enum CardTitles {
+    static func index(for cards: [CoffeeCard]) -> [UUID: String] {
+        var groups: [String: [CoffeeCard]] = [:]
+        for card in cards {
+            groups[card.displayName, default: []].append(card)
+        }
+        var titles: [UUID: String] = [:]
+        for (base, group) in groups {
+            if group.count == 1 {
+                titles[group[0].id] = base
+                continue
+            }
+            for card in group {
+                titles[card.id] = disambiguated(card, among: group, base: base)
+            }
+        }
+        return titles
+    }
+
+    static func title(for card: CoffeeCard, among cards: [CoffeeCard]) -> String {
+        index(for: cards)[card.id] ?? card.displayName
+    }
+
+    private static func disambiguated(
+        _ card: CoffeeCard,
+        among group: [CoffeeCard],
+        base: String
+    ) -> String {
+        let keys: [(CoffeeCard) -> String] = [
+            { $0.roaster.trimmingCharacters(in: .whitespaces) },
+            { $0.roastedOn.map(dateLabel) ?? "" },
+            { ($0.lot ?? "").trimmingCharacters(in: .whitespaces) },
+            { dateLabel($0.createdAt) },
+        ]
+        for key in keys {
+            let values = group.map(key)
+            let distinct = Set(values)
+            guard distinct.count > 1 else { continue }
+            let value = key(card)
+            if !value.isEmpty { return "\(base) · \(value)" }
+        }
+        return base
+    }
+
+    private static func dateLabel(_ date: Date) -> String {
+        date.formatted(.dateTime.day().month(.abbreviated).year())
     }
 }

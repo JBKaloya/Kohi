@@ -13,13 +13,25 @@ nonisolated enum CardImageKind: Hashable, Sendable {
     case mask
     /// Downsampled render for the grid, at one of `ThumbnailCache.buckets`.
     case thumbnail(Int)
+    /// AI-generated stamp flyer, always 4:5 portrait.
+    case poster
+    /// Downsampled poster for the grid, at one of `ThumbnailCache.buckets`.
+    case posterThumbnail(Int)
+    /// Flat image for an attachment linked to this card.
+    case attachment(UUID)
+    /// Downsampled thumbnail of an attachment.
+    case attachmentThumbnail(UUID, Int)
 
     var filename: String {
         switch self {
         case .original: "original.heic"
         case .flat: "flat.heic"
         case .mask: "mask.png"
-        case .thumbnail(let size): "thumb-\(size).heic"
+        case .thumbnail(let size): "thumb-\(size)-v2.heic"
+        case .poster: "poster.heic"
+        case .posterThumbnail(let size): "poster-thumb-\(size)-v2.heic"
+        case .attachment(let id): "attach-\(id.uuidString).heic"
+        case .attachmentThumbnail(let id, let size): "attach-\(id.uuidString)-\(size).heic"
         }
     }
 }
@@ -65,6 +77,23 @@ nonisolated struct ImageStore: Sendable {
         try? FileManager.default.removeItem(at: directory(for: id))
     }
 
+    /// Removes stale thumbnail files left behind by a processing version bump.
+    func purgeOrphanedThumbnails() {
+        let fm = FileManager.default
+        guard let dirs = try? fm.contentsOfDirectory(
+            at: root, includingPropertiesForKeys: nil
+        ) else { return }
+        let stalePattern = /^thumb-\d+\.heic$/
+        for dir in dirs where dir.hasDirectoryPath {
+            guard let files = try? fm.contentsOfDirectory(
+                at: dir, includingPropertiesForKeys: nil
+            ) else { continue }
+            for file in files where file.lastPathComponent.wholeMatch(of: stalePattern) != nil {
+                try? fm.removeItem(at: file)
+            }
+        }
+    }
+
     /// Total bytes on disk, for the debug readout only.
     func byteCount() -> Int64 {
         guard let enumerator = FileManager.default.enumerator(
@@ -87,6 +116,12 @@ nonisolated enum ImageCodec {
 
     static func encodePNG(_ image: CGImage) -> Data? {
         encode(image, type: UTType.png, quality: 1)
+    }
+
+    /// JPEG for anything leaving the device: HEIC saves disk, but the vision
+    /// API wants the format everything understands.
+    static func encodeJPEG(_ image: CGImage, quality: CGFloat = 0.8) -> Data? {
+        encode(image, type: UTType.jpeg, quality: quality)
     }
 
     private static func encode(_ image: CGImage, type: UTType, quality: CGFloat) -> Data? {

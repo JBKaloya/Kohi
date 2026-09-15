@@ -1,0 +1,14 @@
+[
+  {
+    "id": "montcalm",
+    "name": "Montcalm",
+    "country": "FR",
+    "calcium": 3,
+    "magnesium": 0.7,
+    "sodium": 2.2,
+    "bicarbonate": 5.2,
+    "tds": 32,
+    "note": "Very soft base. Mineralise it or cut a harder water with it.",
+    "source": "montcalm.fr, label"
+  }
+]

@@ -1,0 +1,1637 @@
+{
+ "schema": "kohi.flavor-wheel/1",
+ "source": "SCA Coffee Taster's Flavor Wheel (2016), based on the WCR Sensory Lexicon — structure and English labels; French labels, synonyms, origin classes and colours are Kohi additions to verify",
+ "license_note": "Descriptor names are facts; the SCA wheel graphic itself is not reproduced. Colours are approximations for export/print only, never for in-app chrome.",
+ "origins": {
+  "enzymatic": "from the green coffee (plant enzymes): fruit, floral, green, fruit acids",
+  "sugar-browning": "from roasting (Maillard / caramelisation): sweet, nutty, cocoa, cereal",
+  "dry-distillation": "from advanced roasting: burnt, smoky, spicy, tobacco",
+  "defect": "taints and defects (papery, musty, chemical)"
+ },
+ "nodes": [
+  {
+   "id": "fruity",
+   "level": 1,
+   "parent": null,
+   "en": "Fruity",
+   "fr": "Fruité",
+   "origin": "enzymatic",
+   "synonyms": [
+    "fruity",
+    "fruité"
+   ],
+   "quick": false,
+   "color": "#DA1D23",
+   "order": 1
+  },
+  {
+   "id": "fruity-berry",
+   "level": 2,
+   "parent": "fruity",
+   "en": "Berry",
+   "fr": "Baies / fruits rouges",
+   "origin": "enzymatic",
+   "synonyms": [
+    "baies / fruits rouges",
+    "berry"
+   ],
+   "quick": false
+  },
+  {
+   "id": "fruity-berry-blackberry",
+   "level": 3,
+   "parent": "fruity-berry",
+   "en": "Blackberry",
+   "fr": "Mûre",
+   "origin": "enzymatic",
+   "synonyms": [
+    "blackberries",
+    "blackberry",
+    "mure",
+    "mûre"
+   ],
+   "quick": true
+  },
+  {
+   "id": "fruity-berry-raspberry",
+   "level": 3,
+   "parent": "fruity-berry",
+   "en": "Raspberry",
+   "fr": "Framboise",
+   "origin": "enzymatic",
+   "synonyms": [
+    "framboise",
+    "raspberry"
+   ],
+   "quick": true
+  },
+  {
+   "id": "fruity-berry-blueberry",
+   "level": 3,
+   "parent": "fruity-berry",
+   "en": "Blueberry",
+   "fr": "Myrtille",
+   "origin": "enzymatic",
+   "synonyms": [
+    "blueberries",
+    "blueberry",
+    "myrtille"
+   ],
+   "quick": true
+  },
+  {
+   "id": "fruity-berry-strawberry",
+   "level": 3,
+   "parent": "fruity-berry",
+   "en": "Strawberry",
+   "fr": "Fraise",
+   "origin": "enzymatic",
+   "synonyms": [
+    "fraise",
+    "strawberries",
+    "strawberry"
+   ],
+   "quick": true
+  },
+  {
+   "id": "fruity-dried-fruit",
+   "level": 2,
+   "parent": "fruity",
+   "en": "Dried Fruit",
+   "fr": "Fruits séchés",
+   "origin": "enzymatic",
+   "synonyms": [
+    "dried fruit",
+    "fruits séchés"
+   ],
+   "quick": false
+  },
+  {
+   "id": "fruity-dried-fruit-raisin",
+   "level": 3,
+   "parent": "fruity-dried-fruit",
+   "en": "Raisin",
+   "fr": "Raisin sec",
+   "origin": "enzymatic",
+   "synonyms": [
+    "raisin",
+    "raisin sec",
+    "raisins",
+    "sultana"
+   ],
+   "quick": true
+  },
+  {
+   "id": "fruity-dried-fruit-prune",
+   "level": 3,
+   "parent": "fruity-dried-fruit",
+   "en": "Prune",
+   "fr": "Pruneau",
+   "origin": "enzymatic",
+   "synonyms": [
+    "prune",
+    "pruneau",
+    "prunes"
+   ],
+   "quick": true
+  },
+  {
+   "id": "fruity-other-fruit",
+   "level": 2,
+   "parent": "fruity",
+   "en": "Other Fruit",
+   "fr": "Autres fruits",
+   "origin": "enzymatic",
+   "synonyms": [
+    "autres fruits",
+    "other fruit"
+   ],
+   "quick": false
+  },
+  {
+   "id": "fruity-other-fruit-coconut",
+   "level": 3,
+   "parent": "fruity-other-fruit",
+   "en": "Coconut",
+   "fr": "Noix de coco",
+   "origin": "enzymatic",
+   "synonyms": [
+    "coconut",
+    "noix de coco"
+   ],
+   "quick": true
+  },
+  {
+   "id": "fruity-other-fruit-cherry",
+   "level": 3,
+   "parent": "fruity-other-fruit",
+   "en": "Cherry",
+   "fr": "Cerise",
+   "origin": "enzymatic",
+   "synonyms": [
+    "cerise",
+    "cherries",
+    "cherry",
+    "griotte"
+   ],
+   "quick": true
+  },
+  {
+   "id": "fruity-other-fruit-pomegranate",
+   "level": 3,
+   "parent": "fruity-other-fruit",
+   "en": "Pomegranate",
+   "fr": "Grenade",
+   "origin": "enzymatic",
+   "synonyms": [
+    "grenade",
+    "pomegranate"
+   ],
+   "quick": true
+  },
+  {
+   "id": "fruity-other-fruit-pineapple",
+   "level": 3,
+   "parent": "fruity-other-fruit",
+   "en": "Pineapple",
+   "fr": "Ananas",
+   "origin": "enzymatic",
+   "synonyms": [
+    "ananas",
+    "pineapple"
+   ],
+   "quick": true
+  },
+  {
+   "id": "fruity-other-fruit-grape",
+   "level": 3,
+   "parent": "fruity-other-fruit",
+   "en": "Grape",
+   "fr": "Raisin",
+   "origin": "enzymatic",
+   "synonyms": [
+    "grape",
+    "grapes",
+    "muscat",
+    "raisin"
+   ],
+   "quick": true
+  },
+  {
+   "id": "fruity-other-fruit-apple",
+   "level": 3,
+   "parent": "fruity-other-fruit",
+   "en": "Apple",
+   "fr": "Pomme",
+   "origin": "enzymatic",
+   "synonyms": [
+    "apple",
+    "green apple",
+    "pomme",
+    "pomme verte"
+   ],
+   "quick": true
+  },
+  {
+   "id": "fruity-other-fruit-peach",
+   "level": 3,
+   "parent": "fruity-other-fruit",
+   "en": "Peach",
+   "fr": "Pêche",
+   "origin": "enzymatic",
+   "synonyms": [
+    "abricot",
+    "apricot",
+    "nectarine",
+    "peach",
+    "pêche"
+   ],
+   "quick": true
+  },
+  {
+   "id": "fruity-other-fruit-pear",
+   "level": 3,
+   "parent": "fruity-other-fruit",
+   "en": "Pear",
+   "fr": "Poire",
+   "origin": "enzymatic",
+   "synonyms": [
+    "pear",
+    "poire"
+   ],
+   "quick": false
+  },
+  {
+   "id": "fruity-citrus-fruit",
+   "level": 2,
+   "parent": "fruity",
+   "en": "Citrus Fruit",
+   "fr": "Agrumes",
+   "origin": "enzymatic",
+   "synonyms": [
+    "agrumes",
+    "citrus fruit"
+   ],
+   "quick": false
+  },
+  {
+   "id": "fruity-citrus-fruit-grapefruit",
+   "level": 3,
+   "parent": "fruity-citrus-fruit",
+   "en": "Grapefruit",
+   "fr": "Pamplemousse",
+   "origin": "enzymatic",
+   "synonyms": [
+    "grapefruit",
+    "pamplemousse"
+   ],
+   "quick": true
+  },
+  {
+   "id": "fruity-citrus-fruit-orange",
+   "level": 3,
+   "parent": "fruity-citrus-fruit",
+   "en": "Orange",
+   "fr": "Orange",
+   "origin": "enzymatic",
+   "synonyms": [
+    "clementine",
+    "clémentine",
+    "mandarin",
+    "mandarine",
+    "orange",
+    "tangerine"
+   ],
+   "quick": true
+  },
+  {
+   "id": "fruity-citrus-fruit-lemon",
+   "level": 3,
+   "parent": "fruity-citrus-fruit",
+   "en": "Lemon",
+   "fr": "Citron",
+   "origin": "enzymatic",
+   "synonyms": [
+    "citron",
+    "lemon",
+    "lemon zest",
+    "zeste"
+   ],
+   "quick": true
+  },
+  {
+   "id": "fruity-citrus-fruit-lime",
+   "level": 3,
+   "parent": "fruity-citrus-fruit",
+   "en": "Lime",
+   "fr": "Citron vert",
+   "origin": "enzymatic",
+   "synonyms": [
+    "citron vert",
+    "lime"
+   ],
+   "quick": true
+  },
+  {
+   "id": "sour-fermented",
+   "level": 1,
+   "parent": null,
+   "en": "Sour/Fermented",
+   "fr": "Acide / fermenté",
+   "origin": "enzymatic",
+   "synonyms": [
+    "acide / fermenté",
+    "sour/fermented"
+   ],
+   "quick": false,
+   "color": "#E1C315",
+   "order": 2
+  },
+  {
+   "id": "sour-fermented-sour",
+   "level": 2,
+   "parent": "sour-fermented",
+   "en": "Sour",
+   "fr": "Acide",
+   "origin": "enzymatic",
+   "synonyms": [
+    "acide",
+    "sour"
+   ],
+   "quick": false
+  },
+  {
+   "id": "sour-fermented-sour-sour-aromatics",
+   "level": 3,
+   "parent": "sour-fermented-sour",
+   "en": "Sour Aromatics",
+   "fr": "Aromatiques acides",
+   "origin": "enzymatic",
+   "synonyms": [
+    "aromatiques acides",
+    "sour aromatics"
+   ],
+   "quick": false
+  },
+  {
+   "id": "sour-fermented-sour-acetic-acid",
+   "level": 3,
+   "parent": "sour-fermented-sour",
+   "en": "Acetic Acid",
+   "fr": "Acide acétique",
+   "origin": "enzymatic",
+   "synonyms": [
+    "acetic acid",
+    "acide acétique",
+    "vinaigre",
+    "vinegar"
+   ],
+   "quick": false
+  },
+  {
+   "id": "sour-fermented-sour-butyric-acid",
+   "level": 3,
+   "parent": "sour-fermented-sour",
+   "en": "Butyric Acid",
+   "fr": "Acide butyrique",
+   "origin": "enzymatic",
+   "synonyms": [
+    "acide butyrique",
+    "butyric acid",
+    "rancid butter"
+   ],
+   "quick": false
+  },
+  {
+   "id": "sour-fermented-sour-isovaleric-acid",
+   "level": 3,
+   "parent": "sour-fermented-sour",
+   "en": "Isovaleric Acid",
+   "fr": "Acide isovalérique",
+   "origin": "enzymatic",
+   "synonyms": [
+    "acide isovalérique",
+    "cheesy",
+    "fromage",
+    "isovaleric acid"
+   ],
+   "quick": false
+  },
+  {
+   "id": "sour-fermented-sour-citric-acid",
+   "level": 3,
+   "parent": "sour-fermented-sour",
+   "en": "Citric Acid",
+   "fr": "Acide citrique",
+   "origin": "enzymatic",
+   "synonyms": [
+    "acide citrique",
+    "bright",
+    "citric",
+    "citric acid"
+   ],
+   "quick": false
+  },
+  {
+   "id": "sour-fermented-sour-malic-acid",
+   "level": 3,
+   "parent": "sour-fermented-sour",
+   "en": "Malic Acid",
+   "fr": "Acide malique",
+   "origin": "enzymatic",
+   "synonyms": [
+    "acide malique",
+    "green apple acidity",
+    "malic",
+    "malic acid"
+   ],
+   "quick": false
+  },
+  {
+   "id": "sour-fermented-alcohol-fermented",
+   "level": 2,
+   "parent": "sour-fermented",
+   "en": "Alcohol/Fermented",
+   "fr": "Alcool / fermenté",
+   "origin": "enzymatic",
+   "synonyms": [
+    "alcohol/fermented",
+    "alcool / fermenté"
+   ],
+   "quick": false
+  },
+  {
+   "id": "sour-fermented-alcohol-fermented-winey",
+   "level": 3,
+   "parent": "sour-fermented-alcohol-fermented",
+   "en": "Winey",
+   "fr": "Vineux",
+   "origin": "enzymatic",
+   "synonyms": [
+    "boozy",
+    "vin",
+    "vineux",
+    "wine",
+    "winey"
+   ],
+   "quick": true
+  },
+  {
+   "id": "sour-fermented-alcohol-fermented-whiskey",
+   "level": 3,
+   "parent": "sour-fermented-alcohol-fermented",
+   "en": "Whiskey",
+   "fr": "Whisky",
+   "origin": "enzymatic",
+   "synonyms": [
+    "brandy",
+    "rhum",
+    "rum",
+    "whiskey",
+    "whisky"
+   ],
+   "quick": false
+  },
+  {
+   "id": "sour-fermented-alcohol-fermented-fermented",
+   "level": 3,
+   "parent": "sour-fermented-alcohol-fermented",
+   "en": "Fermented",
+   "fr": "Fermenté",
+   "origin": "enzymatic",
+   "synonyms": [
+    "ferment",
+    "fermented",
+    "fermenté",
+    "funky"
+   ],
+   "quick": true
+  },
+  {
+   "id": "sour-fermented-alcohol-fermented-overripe",
+   "level": 3,
+   "parent": "sour-fermented-alcohol-fermented",
+   "en": "Overripe",
+   "fr": "Trop mûr",
+   "origin": "enzymatic",
+   "synonyms": [
+    "overripe",
+    "overripe fruit",
+    "trop mûr"
+   ],
+   "quick": false
+  },
+  {
+   "id": "green-vegetative",
+   "level": 1,
+   "parent": null,
+   "en": "Green/Vegetative",
+   "fr": "Vert / végétal",
+   "origin": "enzymatic",
+   "synonyms": [
+    "green/vegetative",
+    "vert / végétal"
+   ],
+   "quick": false,
+   "color": "#1F8A3B",
+   "order": 3
+  },
+  {
+   "id": "green-vegetative-olive-oil",
+   "level": 2,
+   "parent": "green-vegetative",
+   "en": "Olive Oil",
+   "fr": "Huile d'olive",
+   "origin": "enzymatic",
+   "synonyms": [
+    "huile d'olive",
+    "olive oil"
+   ],
+   "quick": false
+  },
+  {
+   "id": "green-vegetative-raw",
+   "level": 2,
+   "parent": "green-vegetative",
+   "en": "Raw",
+   "fr": "Cru",
+   "origin": "enzymatic",
+   "synonyms": [
+    "cru",
+    "raw"
+   ],
+   "quick": false
+  },
+  {
+   "id": "green-vegetative-green-vegetative",
+   "level": 2,
+   "parent": "green-vegetative",
+   "en": "Green/Vegetative",
+   "fr": "Vert / végétal",
+   "origin": "enzymatic",
+   "synonyms": [
+    "green/vegetative",
+    "vert / végétal"
+   ],
+   "quick": false
+  },
+  {
+   "id": "green-vegetative-green-vegetative-under-ripe",
+   "level": 3,
+   "parent": "green-vegetative-green-vegetative",
+   "en": "Under-ripe",
+   "fr": "Pas mûr",
+   "origin": "enzymatic",
+   "synonyms": [
+    "pas mûr",
+    "under-ripe",
+    "unripe"
+   ],
+   "quick": false
+  },
+  {
+   "id": "green-vegetative-green-vegetative-peapod",
+   "level": 3,
+   "parent": "green-vegetative-green-vegetative",
+   "en": "Peapod",
+   "fr": "Cosse de petit pois",
+   "origin": "enzymatic",
+   "synonyms": [
+    "cosse de petit pois",
+    "pea",
+    "peapod",
+    "petit pois"
+   ],
+   "quick": false
+  },
+  {
+   "id": "green-vegetative-green-vegetative-fresh",
+   "level": 3,
+   "parent": "green-vegetative-green-vegetative",
+   "en": "Fresh",
+   "fr": "Frais",
+   "origin": "enzymatic",
+   "synonyms": [
+    "frais",
+    "fresh"
+   ],
+   "quick": false
+  },
+  {
+   "id": "green-vegetative-green-vegetative-dark-green",
+   "level": 3,
+   "parent": "green-vegetative-green-vegetative",
+   "en": "Dark Green",
+   "fr": "Vert foncé",
+   "origin": "enzymatic",
+   "synonyms": [
+    "dark green",
+    "vert foncé"
+   ],
+   "quick": false
+  },
+  {
+   "id": "green-vegetative-green-vegetative-vegetative",
+   "level": 3,
+   "parent": "green-vegetative-green-vegetative",
+   "en": "Vegetative",
+   "fr": "Végétal",
+   "origin": "enzymatic",
+   "synonyms": [
+    "légume",
+    "vegetal",
+    "vegetative",
+    "végétal"
+   ],
+   "quick": false
+  },
+  {
+   "id": "green-vegetative-green-vegetative-hay-like",
+   "level": 3,
+   "parent": "green-vegetative-green-vegetative",
+   "en": "Hay-like",
+   "fr": "Foin",
+   "origin": "enzymatic",
+   "synonyms": [
+    "foin",
+    "hay",
+    "hay-like",
+    "paille",
+    "straw"
+   ],
+   "quick": false
+  },
+  {
+   "id": "green-vegetative-green-vegetative-herb-like",
+   "level": 3,
+   "parent": "green-vegetative-green-vegetative",
+   "en": "Herb-like",
+   "fr": "Herbacé",
+   "origin": "enzymatic",
+   "synonyms": [
+    "eucalyptus",
+    "green tea",
+    "herb-like",
+    "herbacé",
+    "herbal",
+    "herbes",
+    "herbs",
+    "menthe",
+    "mint",
+    "thé vert"
+   ],
+   "quick": true
+  },
+  {
+   "id": "green-vegetative-beany",
+   "level": 2,
+   "parent": "green-vegetative",
+   "en": "Beany",
+   "fr": "Haricot",
+   "origin": "enzymatic",
+   "synonyms": [
+    "beany",
+    "fève",
+    "haricot",
+    "legume"
+   ],
+   "quick": false
+  },
+  {
+   "id": "other",
+   "level": 1,
+   "parent": null,
+   "en": "Other",
+   "fr": "Autres",
+   "origin": "defect",
+   "synonyms": [
+    "autres",
+    "other"
+   ],
+   "quick": false,
+   "color": "#2C6FB0",
+   "order": 4
+  },
+  {
+   "id": "other-papery-musty",
+   "level": 2,
+   "parent": "other",
+   "en": "Papery/Musty",
+   "fr": "Papier / moisi",
+   "origin": "defect",
+   "synonyms": [
+    "papery/musty",
+    "papier / moisi"
+   ],
+   "quick": false
+  },
+  {
+   "id": "other-papery-musty-stale",
+   "level": 3,
+   "parent": "other-papery-musty",
+   "en": "Stale",
+   "fr": "Éventé",
+   "origin": "defect",
+   "synonyms": [
+    "stale",
+    "éventé"
+   ],
+   "quick": false
+  },
+  {
+   "id": "other-papery-musty-cardboard",
+   "level": 3,
+   "parent": "other-papery-musty",
+   "en": "Cardboard",
+   "fr": "Carton",
+   "origin": "defect",
+   "synonyms": [
+    "cardboard",
+    "carton"
+   ],
+   "quick": false
+  },
+  {
+   "id": "other-papery-musty-papery",
+   "level": 3,
+   "parent": "other-papery-musty",
+   "en": "Papery",
+   "fr": "Papier",
+   "origin": "defect",
+   "synonyms": [
+    "paper",
+    "papery",
+    "papier"
+   ],
+   "quick": false
+  },
+  {
+   "id": "other-papery-musty-woody",
+   "level": 3,
+   "parent": "other-papery-musty",
+   "en": "Woody",
+   "fr": "Boisé",
+   "origin": "defect",
+   "synonyms": [
+    "bois",
+    "boisé",
+    "cedar",
+    "chêne",
+    "cèdre",
+    "oak",
+    "wood",
+    "woody"
+   ],
+   "quick": false
+  },
+  {
+   "id": "other-papery-musty-moldy-damp",
+   "level": 3,
+   "parent": "other-papery-musty",
+   "en": "Moldy/Damp",
+   "fr": "Moisi / humide",
+   "origin": "defect",
+   "synonyms": [
+    "moisi",
+    "moisi / humide",
+    "mold",
+    "moldy/damp"
+   ],
+   "quick": false
+  },
+  {
+   "id": "other-papery-musty-musty-dusty",
+   "level": 3,
+   "parent": "other-papery-musty",
+   "en": "Musty/Dusty",
+   "fr": "Renfermé / poussiéreux",
+   "origin": "defect",
+   "synonyms": [
+    "dusty",
+    "musty/dusty",
+    "renfermé / poussiéreux"
+   ],
+   "quick": false
+  },
+  {
+   "id": "other-papery-musty-musty-earthy",
+   "level": 3,
+   "parent": "other-papery-musty",
+   "en": "Musty/Earthy",
+   "fr": "Renfermé / terreux",
+   "origin": "defect",
+   "synonyms": [
+    "earthy",
+    "musty/earthy",
+    "renfermé / terreux",
+    "terre",
+    "terreux"
+   ],
+   "quick": false
+  },
+  {
+   "id": "other-papery-musty-animalic",
+   "level": 3,
+   "parent": "other-papery-musty",
+   "en": "Animalic",
+   "fr": "Animal",
+   "origin": "defect",
+   "synonyms": [
+    "animal",
+    "animalic",
+    "cuir",
+    "leather"
+   ],
+   "quick": false
+  },
+  {
+   "id": "other-papery-musty-meaty-brothy",
+   "level": 3,
+   "parent": "other-papery-musty",
+   "en": "Meaty/Brothy",
+   "fr": "Viandé / bouillon",
+   "origin": "defect",
+   "synonyms": [
+    "brothy",
+    "meaty/brothy",
+    "umami",
+    "viandé / bouillon"
+   ],
+   "quick": false
+  },
+  {
+   "id": "other-papery-musty-phenolic",
+   "level": 3,
+   "parent": "other-papery-musty",
+   "en": "Phenolic",
+   "fr": "Phénolique",
+   "origin": "defect",
+   "synonyms": [
+    "phenol",
+    "phenolic",
+    "phénolique"
+   ],
+   "quick": false
+  },
+  {
+   "id": "other-chemical",
+   "level": 2,
+   "parent": "other",
+   "en": "Chemical",
+   "fr": "Chimique",
+   "origin": "defect",
+   "synonyms": [
+    "chemical",
+    "chimique"
+   ],
+   "quick": false
+  },
+  {
+   "id": "other-chemical-bitter",
+   "level": 3,
+   "parent": "other-chemical",
+   "en": "Bitter",
+   "fr": "Amer",
+   "origin": "defect",
+   "synonyms": [
+    "amer",
+    "bitter"
+   ],
+   "quick": false
+  },
+  {
+   "id": "other-chemical-salty",
+   "level": 3,
+   "parent": "other-chemical",
+   "en": "Salty",
+   "fr": "Salé",
+   "origin": "defect",
+   "synonyms": [
+    "salt",
+    "salty",
+    "salé",
+    "sel"
+   ],
+   "quick": false
+  },
+  {
+   "id": "other-chemical-medicinal",
+   "level": 3,
+   "parent": "other-chemical",
+   "en": "Medicinal",
+   "fr": "Médicinal",
+   "origin": "defect",
+   "synonyms": [
+    "medicinal",
+    "medicine",
+    "médicinal"
+   ],
+   "quick": false
+  },
+  {
+   "id": "other-chemical-petroleum",
+   "level": 3,
+   "parent": "other-chemical",
+   "en": "Petroleum",
+   "fr": "Pétrole",
+   "origin": "defect",
+   "synonyms": [
+    "diesel",
+    "petrol",
+    "petroleum",
+    "pétrole"
+   ],
+   "quick": false
+  },
+  {
+   "id": "other-chemical-skunky",
+   "level": 3,
+   "parent": "other-chemical",
+   "en": "Skunky",
+   "fr": "Soufré",
+   "origin": "defect",
+   "synonyms": [
+    "skunky",
+    "soufre",
+    "soufré",
+    "sulfur"
+   ],
+   "quick": false
+  },
+  {
+   "id": "other-chemical-rubber",
+   "level": 3,
+   "parent": "other-chemical",
+   "en": "Rubber",
+   "fr": "Caoutchouc",
+   "origin": "defect",
+   "synonyms": [
+    "caoutchouc",
+    "rubber",
+    "rubbery"
+   ],
+   "quick": false
+  },
+  {
+   "id": "roasted",
+   "level": 1,
+   "parent": null,
+   "en": "Roasted",
+   "fr": "Torréfié",
+   "origin": "dry-distillation",
+   "synonyms": [
+    "roasted",
+    "torréfié"
+   ],
+   "quick": false,
+   "color": "#C0392B",
+   "order": 5
+  },
+  {
+   "id": "roasted-pipe-tobacco",
+   "level": 2,
+   "parent": "roasted",
+   "en": "Pipe Tobacco",
+   "fr": "Tabac à pipe",
+   "origin": "dry-distillation",
+   "synonyms": [
+    "pipe tobacco",
+    "tabac à pipe"
+   ],
+   "quick": false
+  },
+  {
+   "id": "roasted-tobacco",
+   "level": 2,
+   "parent": "roasted",
+   "en": "Tobacco",
+   "fr": "Tabac",
+   "origin": "dry-distillation",
+   "synonyms": [
+    "tabac",
+    "tabac blond",
+    "tobacco"
+   ],
+   "quick": true
+  },
+  {
+   "id": "roasted-burnt",
+   "level": 2,
+   "parent": "roasted",
+   "en": "Burnt",
+   "fr": "Brûlé",
+   "origin": "dry-distillation",
+   "synonyms": [
+    "brûlé",
+    "burnt"
+   ],
+   "quick": false
+  },
+  {
+   "id": "roasted-burnt-acrid",
+   "level": 3,
+   "parent": "roasted-burnt",
+   "en": "Acrid",
+   "fr": "Âcre",
+   "origin": "dry-distillation",
+   "synonyms": [
+    "acrid",
+    "âcre"
+   ],
+   "quick": false
+  },
+  {
+   "id": "roasted-burnt-ashy",
+   "level": 3,
+   "parent": "roasted-burnt",
+   "en": "Ashy",
+   "fr": "Cendré",
+   "origin": "dry-distillation",
+   "synonyms": [
+    "ash",
+    "ashy",
+    "cendre",
+    "cendré"
+   ],
+   "quick": false
+  },
+  {
+   "id": "roasted-burnt-smoky",
+   "level": 3,
+   "parent": "roasted-burnt",
+   "en": "Smoky",
+   "fr": "Fumé",
+   "origin": "dry-distillation",
+   "synonyms": [
+    "fumé",
+    "fumée",
+    "peat",
+    "peaty",
+    "smoke",
+    "smoky",
+    "tourbe"
+   ],
+   "quick": true
+  },
+  {
+   "id": "roasted-burnt-brown",
+   "level": 3,
+   "parent": "roasted-burnt",
+   "en": "Brown",
+   "fr": "Brun",
+   "origin": "dry-distillation",
+   "synonyms": [
+    "brown",
+    "brun",
+    "toasty",
+    "toasté"
+   ],
+   "quick": false
+  },
+  {
+   "id": "roasted-burnt-roast",
+   "level": 3,
+   "parent": "roasted-burnt",
+   "en": "Roast",
+   "fr": "Grillé",
+   "origin": "dry-distillation",
+   "synonyms": [
+    "grillé",
+    "roast",
+    "roasty",
+    "torréfié"
+   ],
+   "quick": false
+  },
+  {
+   "id": "roasted-cereal",
+   "level": 2,
+   "parent": "roasted",
+   "en": "Cereal",
+   "fr": "Céréale",
+   "origin": "dry-distillation",
+   "synonyms": [
+    "cereal",
+    "céréale"
+   ],
+   "quick": false
+  },
+  {
+   "id": "roasted-cereal-grain",
+   "level": 3,
+   "parent": "roasted-cereal",
+   "en": "Grain",
+   "fr": "Grain",
+   "origin": "dry-distillation",
+   "synonyms": [
+    "biscuit",
+    "bread",
+    "cereal",
+    "céréales",
+    "grain",
+    "pain"
+   ],
+   "quick": true
+  },
+  {
+   "id": "roasted-cereal-malt",
+   "level": 3,
+   "parent": "roasted-cereal",
+   "en": "Malt",
+   "fr": "Malt",
+   "origin": "dry-distillation",
+   "synonyms": [
+    "malt",
+    "malty",
+    "malté"
+   ],
+   "quick": true
+  },
+  {
+   "id": "spices",
+   "level": 1,
+   "parent": null,
+   "en": "Spices",
+   "fr": "Épices",
+   "origin": "dry-distillation",
+   "synonyms": [
+    "spices",
+    "épices"
+   ],
+   "quick": false,
+   "color": "#8E2B22",
+   "order": 6
+  },
+  {
+   "id": "spices-pungent",
+   "level": 2,
+   "parent": "spices",
+   "en": "Pungent",
+   "fr": "Piquant",
+   "origin": "dry-distillation",
+   "synonyms": [
+    "piquant",
+    "pungent",
+    "spicy heat"
+   ],
+   "quick": false
+  },
+  {
+   "id": "spices-pepper",
+   "level": 2,
+   "parent": "spices",
+   "en": "Pepper",
+   "fr": "Poivre",
+   "origin": "dry-distillation",
+   "synonyms": [
+    "black pepper",
+    "pepper",
+    "poivre",
+    "poivre noir",
+    "white pepper"
+   ],
+   "quick": true
+  },
+  {
+   "id": "spices-brown-spice",
+   "level": 2,
+   "parent": "spices",
+   "en": "Brown Spice",
+   "fr": "Épices brunes",
+   "origin": "dry-distillation",
+   "synonyms": [
+    "brown spice",
+    "épices brunes"
+   ],
+   "quick": false
+  },
+  {
+   "id": "spices-brown-spice-anise",
+   "level": 3,
+   "parent": "spices-brown-spice",
+   "en": "Anise",
+   "fr": "Anis",
+   "origin": "dry-distillation",
+   "synonyms": [
+    "anis",
+    "anise",
+    "licorice",
+    "réglisse",
+    "star anise"
+   ],
+   "quick": false
+  },
+  {
+   "id": "spices-brown-spice-nutmeg",
+   "level": 3,
+   "parent": "spices-brown-spice",
+   "en": "Nutmeg",
+   "fr": "Muscade",
+   "origin": "dry-distillation",
+   "synonyms": [
+    "muscade",
+    "nutmeg"
+   ],
+   "quick": true
+  },
+  {
+   "id": "spices-brown-spice-cinnamon",
+   "level": 3,
+   "parent": "spices-brown-spice",
+   "en": "Cinnamon",
+   "fr": "Cannelle",
+   "origin": "dry-distillation",
+   "synonyms": [
+    "cannelle",
+    "cinnamon"
+   ],
+   "quick": true
+  },
+  {
+   "id": "spices-brown-spice-clove",
+   "level": 3,
+   "parent": "spices-brown-spice",
+   "en": "Clove",
+   "fr": "Clou de girofle",
+   "origin": "dry-distillation",
+   "synonyms": [
+    "clou de girofle",
+    "clove",
+    "cloves",
+    "girofle"
+   ],
+   "quick": true
+  },
+  {
+   "id": "nutty-cocoa",
+   "level": 1,
+   "parent": null,
+   "en": "Nutty/Cocoa",
+   "fr": "Noix / cacao",
+   "origin": "sugar-browning",
+   "synonyms": [
+    "noix / cacao",
+    "nutty/cocoa"
+   ],
+   "quick": false,
+   "color": "#A0674B",
+   "order": 7
+  },
+  {
+   "id": "nutty-cocoa-nutty",
+   "level": 2,
+   "parent": "nutty-cocoa",
+   "en": "Nutty",
+   "fr": "Fruits à coque",
+   "origin": "sugar-browning",
+   "synonyms": [
+    "fruits à coque",
+    "nutty"
+   ],
+   "quick": false
+  },
+  {
+   "id": "nutty-cocoa-nutty-peanuts",
+   "level": 3,
+   "parent": "nutty-cocoa-nutty",
+   "en": "Peanuts",
+   "fr": "Cacahuète",
+   "origin": "sugar-browning",
+   "synonyms": [
+    "arachide",
+    "cacahuète",
+    "peanut",
+    "peanut butter",
+    "peanuts"
+   ],
+   "quick": true
+  },
+  {
+   "id": "nutty-cocoa-nutty-hazelnut",
+   "level": 3,
+   "parent": "nutty-cocoa-nutty",
+   "en": "Hazelnut",
+   "fr": "Noisette",
+   "origin": "sugar-browning",
+   "synonyms": [
+    "hazelnut",
+    "hazelnuts",
+    "noisette",
+    "praline",
+    "praliné"
+   ],
+   "quick": true
+  },
+  {
+   "id": "nutty-cocoa-nutty-almond",
+   "level": 3,
+   "parent": "nutty-cocoa-nutty",
+   "en": "Almond",
+   "fr": "Amande",
+   "origin": "sugar-browning",
+   "synonyms": [
+    "almond",
+    "almonds",
+    "amande",
+    "cashew",
+    "marzipan",
+    "noix",
+    "noix de cajou",
+    "pecan",
+    "pâte d'amande",
+    "walnut"
+   ],
+   "quick": true
+  },
+  {
+   "id": "nutty-cocoa-cocoa",
+   "level": 2,
+   "parent": "nutty-cocoa",
+   "en": "Cocoa",
+   "fr": "Cacao",
+   "origin": "sugar-browning",
+   "synonyms": [
+    "cacao",
+    "cocoa"
+   ],
+   "quick": false
+  },
+  {
+   "id": "nutty-cocoa-cocoa-chocolate",
+   "level": 3,
+   "parent": "nutty-cocoa-cocoa",
+   "en": "Chocolate",
+   "fr": "Chocolat",
+   "origin": "sugar-browning",
+   "synonyms": [
+    "cacao",
+    "chocolat",
+    "chocolat au lait",
+    "chocolate",
+    "cocoa",
+    "cocoa nibs",
+    "fèves de cacao",
+    "milk chocolate"
+   ],
+   "quick": true
+  },
+  {
+   "id": "nutty-cocoa-cocoa-dark-chocolate",
+   "level": 3,
+   "parent": "nutty-cocoa-cocoa",
+   "en": "Dark Chocolate",
+   "fr": "Chocolat noir",
+   "origin": "sugar-browning",
+   "synonyms": [
+    "bittersweet chocolate",
+    "chocolat 70",
+    "chocolat noir",
+    "dark chocolate"
+   ],
+   "quick": true
+  },
+  {
+   "id": "sweet",
+   "level": 1,
+   "parent": null,
+   "en": "Sweet",
+   "fr": "Sucré",
+   "origin": "sugar-browning",
+   "synonyms": [
+    "sucré",
+    "sweet"
+   ],
+   "quick": false,
+   "color": "#E86A5A",
+   "order": 8
+  },
+  {
+   "id": "sweet-brown-sugar",
+   "level": 2,
+   "parent": "sweet",
+   "en": "Brown Sugar",
+   "fr": "Sucre brun",
+   "origin": "sugar-browning",
+   "synonyms": [
+    "brown sugar",
+    "sucre brun"
+   ],
+   "quick": false
+  },
+  {
+   "id": "sweet-brown-sugar-molasses",
+   "level": 3,
+   "parent": "sweet-brown-sugar",
+   "en": "Molasses",
+   "fr": "Mélasse",
+   "origin": "sugar-browning",
+   "synonyms": [
+    "molasse",
+    "molasses",
+    "mélasse"
+   ],
+   "quick": true
+  },
+  {
+   "id": "sweet-brown-sugar-maple-syrup",
+   "level": 3,
+   "parent": "sweet-brown-sugar",
+   "en": "Maple Syrup",
+   "fr": "Sirop d'érable",
+   "origin": "sugar-browning",
+   "synonyms": [
+    "maple",
+    "maple syrup",
+    "sirop d'érable",
+    "érable"
+   ],
+   "quick": true
+  },
+  {
+   "id": "sweet-brown-sugar-caramelized",
+   "level": 3,
+   "parent": "sweet-brown-sugar",
+   "en": "Caramelized",
+   "fr": "Caramélisé",
+   "origin": "sugar-browning",
+   "synonyms": [
+    "brown sugar",
+    "butterscotch",
+    "caramel",
+    "caramelized",
+    "caramélisé",
+    "cassonade",
+    "dulce de leche",
+    "toffee"
+   ],
+   "quick": true
+  },
+  {
+   "id": "sweet-brown-sugar-honey",
+   "level": 3,
+   "parent": "sweet-brown-sugar",
+   "en": "Honey",
+   "fr": "Miel",
+   "origin": "sugar-browning",
+   "synonyms": [
+    "honey",
+    "honeyed",
+    "miel"
+   ],
+   "quick": true
+  },
+  {
+   "id": "sweet-vanilla",
+   "level": 2,
+   "parent": "sweet",
+   "en": "Vanilla",
+   "fr": "Vanille",
+   "origin": "sugar-browning",
+   "synonyms": [
+    "vanilla",
+    "vanilla bean",
+    "vanille"
+   ],
+   "quick": true
+  },
+  {
+   "id": "sweet-vanillin",
+   "level": 2,
+   "parent": "sweet",
+   "en": "Vanillin",
+   "fr": "Vanilline",
+   "origin": "sugar-browning",
+   "synonyms": [
+    "vanillin",
+    "vanilline"
+   ],
+   "quick": false
+  },
+  {
+   "id": "sweet-overall-sweet",
+   "level": 2,
+   "parent": "sweet",
+   "en": "Overall Sweet",
+   "fr": "Sucré (global)",
+   "origin": "sugar-browning",
+   "synonyms": [
+    "overall sweet",
+    "sucré",
+    "sucré (global)",
+    "sweet",
+    "sweetness"
+   ],
+   "quick": false
+  },
+  {
+   "id": "sweet-sweet-aromatics",
+   "level": 2,
+   "parent": "sweet",
+   "en": "Sweet Aromatics",
+   "fr": "Aromatiques sucrés",
+   "origin": "sugar-browning",
+   "synonyms": [
+    "aromatiques sucrés",
+    "barbe à papa",
+    "bonbon",
+    "candy",
+    "cotton candy",
+    "marshmallow",
+    "sweet aromatics"
+   ],
+   "quick": false
+  },
+  {
+   "id": "floral",
+   "level": 1,
+   "parent": null,
+   "en": "Floral",
+   "fr": "Floral",
+   "origin": "enzymatic",
+   "synonyms": [
+    "floral"
+   ],
+   "quick": false,
+   "color": "#DA5C8C",
+   "order": 9
+  },
+  {
+   "id": "floral-black-tea",
+   "level": 2,
+   "parent": "floral",
+   "en": "Black Tea",
+   "fr": "Thé noir",
+   "origin": "enzymatic",
+   "synonyms": [
+    "bergamot",
+    "bergamote",
+    "black tea",
+    "earl grey",
+    "tea",
+    "thé",
+    "thé noir"
+   ],
+   "quick": true
+  },
+  {
+   "id": "floral-floral",
+   "level": 2,
+   "parent": "floral",
+   "en": "Floral",
+   "fr": "Floral",
+   "origin": "enzymatic",
+   "synonyms": [
+    "floral"
+   ],
+   "quick": false
+  },
+  {
+   "id": "floral-floral-chamomile",
+   "level": 3,
+   "parent": "floral-floral",
+   "en": "Chamomile",
+   "fr": "Camomille",
+   "origin": "enzymatic",
+   "synonyms": [
+    "camomille",
+    "chamomile",
+    "chamomille"
+   ],
+   "quick": true
+  },
+  {
+   "id": "floral-floral-rose",
+   "level": 3,
+   "parent": "floral-floral",
+   "en": "Rose",
+   "fr": "Rose",
+   "origin": "enzymatic",
+   "synonyms": [
+    "eau de rose",
+    "hibiscus",
+    "rose",
+    "rosewater"
+   ],
+   "quick": true
+  },
+  {
+   "id": "floral-floral-jasmine",
+   "level": 3,
+   "parent": "floral-floral",
+   "en": "Jasmine",
+   "fr": "Jasmin",
+   "origin": "enzymatic",
+   "synonyms": [
+    "elderflower",
+    "fleur d'oranger",
+    "jasmin",
+    "jasmine",
+    "lavande",
+    "lavender",
+    "orange blossom",
+    "sureau"
+   ],
+   "quick": true
+  }
+ ]
+}

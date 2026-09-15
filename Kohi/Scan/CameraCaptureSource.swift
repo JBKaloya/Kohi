@@ -1,6 +1,7 @@
 @preconcurrency import AVFoundation
 import CoreMedia
 import Observation
+import PhotosUI
 import SwiftUI
 
 /// Owns the capture session. Lives off the main actor because everything
@@ -8,7 +9,7 @@ import SwiftUI
 nonisolated final class CameraSession: NSObject, @unchecked Sendable {
     let session = AVCaptureSession()
 
-    private let queue = DispatchQueue(label: "studio.jbk.Kohi.camera")
+    private let queue = DispatchQueue(label: "studio.jbk.kohiapp.camera")
     private let videoOutput = AVCaptureVideoDataOutput()
     private let photoOutput = AVCapturePhotoOutput()
     private let tracker = DocumentTracker()
@@ -16,37 +17,54 @@ nonisolated final class CameraSession: NSObject, @unchecked Sendable {
     private let stateLock = NSLock()
     private var isAnalyzing = false
     private var photoContinuation: CheckedContinuation<CGImage?, Never>?
+    private var isConfigured = false
 
     /// Called from the capture queue for every analysed frame.
     var onDetection: (@Sendable (DocumentTracker.Detection?) -> Void)?
 
-    func configure() {
-        session.beginConfiguration()
-        // A 4:3 preset keeps the video frames and the still the same shape, so a
-        // quad measured on the preview scales straight onto the photo.
-        session.sessionPreset = .photo
+    /// Called on the main actor when a runtime error or interruption end occurs.
+    var onSessionRecovered: (() -> Void)?
 
-        if let device = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .back),
-           let input = try? AVCaptureDeviceInput(device: device),
-           session.canAddInput(input) {
-            session.addInput(input)
-            configureFocus(on: device)
-        }
+    /// Configures and starts the session on the camera queue, off the main thread.
+    func configureAndStart() async {
+        await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
+            queue.async { [self] in
+                if !isConfigured {
+                    session.beginConfiguration()
+                    session.sessionPreset = .photo
 
-        videoOutput.videoSettings = [
-            kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_32BGRA
-        ]
-        videoOutput.alwaysDiscardsLateVideoFrames = true
-        videoOutput.setSampleBufferDelegate(self, queue: queue)
-        if session.canAddOutput(videoOutput) { session.addOutput(videoOutput) }
-        if session.canAddOutput(photoOutput) { session.addOutput(photoOutput) }
+                    if let device = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .back),
+                       let input = try? AVCaptureDeviceInput(device: device),
+                       session.canAddInput(input) {
+                        session.addInput(input)
+                        configureFocus(on: device)
+                    }
 
-        session.commitConfiguration()
+                    videoOutput.videoSettings = [
+                        kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_32BGRA
+                    ]
+                    videoOutput.alwaysDiscardsLateVideoFrames = true
+                    videoOutput.setSampleBufferDelegate(self, queue: queue)
+                    if session.canAddOutput(videoOutput) { session.addOutput(videoOutput) }
+                    if session.canAddOutput(photoOutput) { session.addOutput(photoOutput) }
 
-        // Portrait only, so the rotation is a constant rather than a coordinator.
-        for connection in [videoOutput.connection(with: .video), photoOutput.connection(with: .video)] {
-            guard let connection, connection.isVideoRotationAngleSupported(90) else { continue }
-            connection.videoRotationAngle = 90
+                    session.commitConfiguration()
+
+                    for connection in [videoOutput.connection(with: .video), photoOutput.connection(with: .video)] {
+                        guard let connection, connection.isVideoRotationAngleSupported(90) else { continue }
+                        connection.videoRotationAngle = 90
+                    }
+
+                    isConfigured = true
+                    observeSessionNotifications()
+                }
+
+                if !session.isRunning {
+                    session.startRunning()
+                }
+
+                continuation.resume()
+            }
         }
     }
 
@@ -119,6 +137,39 @@ nonisolated final class CameraSession: NSObject, @unchecked Sendable {
         stateLock.unlock()
         continuation?.resume(returning: image)
     }
+
+    // MARK: - Session notifications
+
+    private func observeSessionNotifications() {
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(handleRuntimeError),
+            name: .AVCaptureSessionRuntimeError,
+            object: session
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(handleInterruptionEnded),
+            name: .AVCaptureSessionInterruptionEnded,
+            object: session
+        )
+    }
+
+    @objc private func handleRuntimeError(_ notification: Notification) {
+        queue.async { [self] in
+            guard !session.isRunning else { return }
+            session.startRunning()
+        }
+        Task { @MainActor [weak self] in self?.onSessionRecovered?() }
+    }
+
+    @objc private func handleInterruptionEnded(_ notification: Notification) {
+        queue.async { [self] in
+            guard !session.isRunning else { return }
+            session.startRunning()
+        }
+        Task { @MainActor [weak self] in self?.onSessionRecovered?() }
+    }
 }
 
 nonisolated extension CameraSession: AVCaptureVideoDataOutputSampleBufferDelegate {
@@ -127,8 +178,6 @@ nonisolated extension CameraSession: AVCaptureVideoDataOutputSampleBufferDelegat
         didOutput sampleBuffer: CMSampleBuffer,
         from connection: AVCaptureConnection
     ) {
-        // Detection is slower than the frame rate, so frames are dropped rather
-        // than queued. Falling behind the camera would make the overlay lag.
         guard beginAnalysis() else { return }
 
         let frame = VideoFrame(sampleBuffer: sampleBuffer)
@@ -169,23 +218,35 @@ final class ScanEngine {
 
     @ObservationIgnored private let camera = CameraSession()
     @ObservationIgnored private var wasLocking = false
+    @ObservationIgnored private var isStarted = false
 
     var session: AVCaptureSession { camera.session }
 
     func start() async {
+        guard !isStarted else { return }
+        isStarted = true
+
         guard await requestAccess() else {
             isDenied = true
+            isStarted = false
             return
         }
         camera.onDetection = { [weak self] detection in
             Task { @MainActor in self?.apply(detection) }
         }
-        camera.configure()
-        camera.start()
+        camera.onSessionRecovered = { [weak self] in
+            self?.isStarted = true
+        }
+        await camera.configureAndStart()
     }
 
     func stop() {
         camera.stop()
+        isStarted = false
+    }
+
+    func resume() {
+        camera.start()
     }
 
     private func requestAccess() async -> Bool {
@@ -225,7 +286,6 @@ final class ScanEngine {
 
         guard let image else { return }
 
-        // The quad was measured on a preview frame; scale it onto the still.
         let scaled: Quad? = {
             guard let quad, let frameSize, frameSize.width > 0 else { return nil }
             return quad.scaled(by: CGFloat(image.width) / frameSize.width)
@@ -252,6 +312,14 @@ struct CameraPreview: UIViewRepresentable {
     final class PreviewView: UIView {
         override static var layerClass: AnyClass { AVCaptureVideoPreviewLayer.self }
         var previewLayer: AVCaptureVideoPreviewLayer { layer as! AVCaptureVideoPreviewLayer }
+
+        override init(frame: CGRect) {
+            super.init(frame: frame)
+            isUserInteractionEnabled = false
+        }
+
+        @available(*, unavailable)
+        required init?(coder: NSCoder) { fatalError() }
     }
 }
 
@@ -261,7 +329,10 @@ struct CameraCaptureView: View {
     let onCapture: (CapturedCard) -> Void
     let onCancel: () -> Void
 
+    @Environment(\.scenePhase) private var scenePhase
     @State private var engine = ScanEngine()
+    @State private var photoSelection: PhotosPickerItem?
+    @State private var isLoadingPhoto = false
 
     var body: some View {
         ZStack {
@@ -281,6 +352,13 @@ struct CameraCaptureView: View {
             await engine.start()
         }
         .onDisappear { engine.stop() }
+        .onChange(of: scenePhase) { _, phase in
+            if phase == .active { engine.resume() }
+        }
+        .onChange(of: photoSelection) { _, item in
+            guard let item else { return }
+            Task { await importPhoto(item) }
+        }
         .haptic(.detectionLock, trigger: engine.lockCount)
         .haptic(.capture, trigger: engine.captureCount)
     }
@@ -298,30 +376,137 @@ struct CameraCaptureView: View {
 
             Spacer()
 
-            Button {
-                Task { await engine.capture() }
-            } label: {
-                Circle()
-                    .fill(.white)
-                    .frame(width: 68, height: 68)
-                    .overlay(Circle().stroke(.white.opacity(0.4), lineWidth: 2).padding(-6))
+            if engine.isDenied {
+                deniedActions
+            } else {
+                liveControls
             }
-            .buttonStyle(.plain)
-            .opacity(engine.isDenied ? 0 : 1)
-            .scaleEffect(engine.isCapturing ? Motion.Chrome.shutterPressScale : 1)
-            .animation(Motion.quick, value: engine.isCapturing)
-            .padding(.bottom, 40)
         }
+    }
+
+    private var liveControls: some View {
+        HStack {
+            photoPickerButton
+            Spacer()
+            shutterButton
+            Spacer()
+            sampleDemoButton
+        }
+        .padding(.horizontal, 28)
+        .padding(.bottom, 40)
+    }
+
+    private var deniedActions: some View {
+        VStack(spacing: 22) {
+            HStack(spacing: 28) {
+                photoPickerButton
+                sampleDemoButton
+            }
+        }
+        .padding(.bottom, 48)
+    }
+
+    private var photoPickerButton: some View {
+        PhotosPicker(selection: $photoSelection, matching: .images) {
+            ScanSideButton(systemImage: "photo.on.rectangle.angled", title: "Photo")
+        }
+        .buttonStyle(.plain)
+        .disabled(isLoadingPhoto)
+        .opacity(isLoadingPhoto ? 0.45 : 1)
+        .accessibilityLabel("Import from photo library")
+    }
+
+    private var sampleDemoButton: some View {
+        Button {
+            Task { await loadSampleCard() }
+        } label: {
+            ScanSideButton(
+                systemImage: "rectangle.portrait",
+                title: "Demo",
+                loading: isLoadingPhoto
+            )
+        }
+        .buttonStyle(.plain)
+        .disabled(isLoadingPhoto)
+        .accessibilityLabel("Try a sample coffee card")
+    }
+
+    private var shutterButton: some View {
+        Button {
+            Task { await engine.capture() }
+        } label: {
+            Circle()
+                .fill(.white)
+                .frame(width: 68, height: 68)
+                .overlay(Circle().stroke(.white.opacity(0.4), lineWidth: 2).padding(-6))
+        }
+        .buttonStyle(.plain)
+        .scaleEffect(engine.isCapturing ? Motion.Chrome.shutterPressScale : 1)
+        .animation(Motion.quick, value: engine.isCapturing)
+        .disabled(isLoadingPhoto)
+    }
+
+    private func importPhoto(_ item: PhotosPickerItem) async {
+        isLoadingPhoto = true
+        engine.stop()
+        defer {
+            isLoadingPhoto = false
+            photoSelection = nil
+        }
+        guard let captured = await PhotoImport.load(item) else {
+            engine.resume()
+            return
+        }
+        onCapture(captured)
+    }
+
+    private func loadSampleCard() async {
+        isLoadingPhoto = true
+        engine.stop()
+        defer { isLoadingPhoto = false }
+        guard let captured = await Task.detached(priority: .userInitiated, operation: SampleArchive.sampleCapture).value else {
+            engine.resume()
+            return
+        }
+        onCapture(captured)
     }
 
     private var deniedState: some View {
         VStack(spacing: 12) {
             Text("Camera access is off")
                 .font(Typography.coaching)
-            Text("Turn it on in Settings to scan cards")
+            Text("Turn it on in Settings, or load a photo")
                 .font(Typography.subtitle)
                 .foregroundStyle(.white.opacity(0.55))
         }
         .foregroundStyle(.white.opacity(0.85))
+    }
+}
+
+/// Chrome for the scan side actions. A standalone view so `PhotosPicker`'s
+/// `@Sendable` label can build it without hopping off the main actor.
+private struct ScanSideButton: View {
+    let systemImage: String
+    let title: String
+    var loading = false
+
+    var body: some View {
+        VStack(spacing: 5) {
+            Group {
+                if loading {
+                    ProgressView().tint(.white)
+                } else {
+                    Image(systemName: systemImage)
+                        .font(.system(size: 21, weight: .regular))
+                }
+            }
+            .frame(width: 48, height: 32)
+            Text(title)
+                .font(Typography.label)
+                .tracking(Typography.labelTracking)
+                .textCase(.uppercase)
+        }
+        .foregroundStyle(.white.opacity(0.85))
+        .frame(width: 56)
     }
 }

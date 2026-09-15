@@ -9,16 +9,13 @@ struct CardTile: View {
     let action: () -> Void
 
     @Environment(CardStore.self) private var store
-    @State private var isPressed = false
     /// 0 while the card is still in the air, 1 once it is lying on the paper.
     @State private var landing: Double = 1
     @State private var touchdown = 0
 
     var body: some View {
         Button(action: action) {
-            CardImageView(card: card, targetWidth: width)
-                // The shadow is what sells the descent: wide and soft while the
-                // card is above the paper, tight and close once it settles.
+            CardImageView(card: card, targetWidth: width, variant: .poster)
                 .shadow(
                     color: Palette.cardShadow
                         .opacity(Motion.Tile.settle(Motion.Tile.shadowOpacity, landing)),
@@ -27,10 +24,7 @@ struct CardTile: View {
                     y: width * Motion.Tile.settle(Motion.Tile.shadowDrop, landing)
                 )
         }
-        .buttonStyle(.plain)
-        .scaleEffect(isPressed ? Motion.Tile.pressScale : 1)
-        .animation(Motion.quick, value: isPressed)
-        .onLongPressGesture(minimumDuration: 0, pressing: { isPressed = $0 }, perform: {})
+        .buttonStyle(PressStyle(scale: Motion.Tile.pressScale))
         .matchedTransitionSource(id: card.id, in: namespace)
         .scaleEffect(1 + Motion.Tile.landScale * (1 - landing))
         .offset(y: -Motion.Tile.landLift * (1 - landing))

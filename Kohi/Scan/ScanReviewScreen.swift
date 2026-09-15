@@ -14,6 +14,7 @@ struct ScanReviewScreen: View {
 
     @State private var quad: Quad
     @State private var enhance = true
+    @AppStorage("scan.seenWhitenHint") private var seenWhitenHint = false
     /// Downsampled for the screen. Nothing here touches the full still.
     @State private var plain: CGImage?
     @State private var enhanced: CGImage?
@@ -71,6 +72,16 @@ struct ScanReviewScreen: View {
             .padding(.horizontal, 24)
             .padding(.top, 16)
 
+            if !seenWhitenHint {
+                Text(Copy.whitenHint)
+                    .font(Typography.tag)
+                    .foregroundStyle(.white.opacity(0.7))
+                    .frame(maxWidth: .infinity, alignment: .trailing)
+                    .padding(.horizontal, 24)
+                    .padding(.top, 6)
+                    .onAppear { seenWhitenHint = true }
+            }
+
             Spacer()
 
             Button {
@@ -93,12 +104,10 @@ struct ScanReviewScreen: View {
         Button {
             enhance.toggle()
         } label: {
-            // "Washed" is the processing method that gives a clean, bright cup,
-            // and it is exactly what the filter does to the scan.
             HStack(spacing: 7) {
                 Image(systemName: enhance ? "drop.fill" : "drop")
                     .font(.system(size: 13, weight: .medium))
-                Text("Washed")
+                Text(Copy.whiten)
                     .font(Typography.tag)
             }
             .foregroundStyle(enhance ? Palette.ink : .white.opacity(0.85))

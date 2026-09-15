@@ -75,6 +75,7 @@ struct TagChip: View {
             }
         }
         .buttonStyle(.plain)
+        .touchTarget()
         .animation(Motion.quick, value: isSelected)
     }
 }
@@ -82,7 +83,7 @@ struct TagChip: View {
 /// Free tags with an inline field to add more. Used for tasting notes.
 struct TagField: View {
     @Binding var tags: [String]
-    var placeholder: String = "Add a note"
+    var placeholder: String = Placeholders.text(.cardTastingNotes)
 
     @State private var entry = ""
 
@@ -106,6 +107,10 @@ struct TagField: View {
                 .autocorrectionDisabled()
                 .submitLabel(.done)
                 .onSubmit(commit)
+            DictationField(text: $entry)
+                .onChange(of: entry) { _, value in
+                    if value.contains("\n") { commit() }
+                }
         }
     }
 

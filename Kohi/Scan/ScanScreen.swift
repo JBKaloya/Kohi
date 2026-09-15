@@ -1,8 +1,8 @@
 import SwiftUI
 
 /// Presents whichever capture source is in use, then the review step, and hands
-/// the confirmed scan back. Swapping the whole capture experience is a one line
-/// change in `ScanSource`.
+/// the confirmed scan back. The camera stays mounted behind the review so the
+/// session is not destroyed and rebuilt on retake.
 struct ScanScreen: View {
     let onScan: (ScanResult) -> Void
     let onCancel: () -> Void
@@ -11,22 +11,17 @@ struct ScanScreen: View {
     @State private var pending: CapturedCard?
 
     var body: some View {
-        Group {
+        ZStack {
+            camera
+                .opacity(pending == nil ? 1 : 0)
+
             if let pending {
                 ScanReviewScreen(
                     capture: pending,
                     onUse: onScan,
-                    // Dropping the still unmounts the review and brings the
-                    // camera back, which also restarts the session rather than
-                    // leaving it running behind a screen you are reading.
                     onRetake: { self.pending = nil }
                 )
                 .transition(.opacity)
-            } else {
-                // No `ignoresSafeArea` here. Each source extends its own preview
-                // under the status bar; its buttons must not go with it, or
-                // Cancel ends up sitting under the clock where it cannot be hit.
-                camera
             }
         }
         .animation(Motion.snappy, value: pending == nil)
@@ -50,8 +45,7 @@ struct ScanScreen: View {
 
 #if targetEnvironment(simulator)
 /// There is no camera in the simulator, so this stands in for one: it returns a
-/// bundled sample as though it had just been scanned. It exists purely so the
-/// ingest, persistence and landing animation can be exercised without a device.
+/// bundled sample as though it had just been scanned.
 struct SimulatedCaptureView: View {
     let onCapture: (CapturedCard) -> Void
     let onCancel: () -> Void
@@ -94,14 +88,14 @@ struct SimulatedCaptureView: View {
             }
         }
         .task {
-            // Lands straight on the review step, which cannot otherwise be
-            // reached without a finger.
+            #if DEBUG
             if DebugHooks.opensReview { shoot() }
+            #endif
         }
     }
 
     private func shoot() {
-        guard let captured = DebugHooks.sampleCapture() else {
+        guard let captured = SampleArchive.sampleCapture() else {
             onCancel()
             return
         }

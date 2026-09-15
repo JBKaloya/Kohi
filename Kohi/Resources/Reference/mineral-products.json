@@ -1,0 +1,110 @@
+[
+  {
+    "id": "tww-classic",
+    "name": "Third Wave Water — Classic / Light Roast",
+    "form": "sachet",
+    "composition": "MgSO₄ + calcium citrate + NaCl",
+    "tds": 150,
+    "alkalinity": 40,
+    "dose": "1 sachet / 1 L distilled",
+    "source": "Third Wave Water support",
+    "verified": true
+  },
+  {
+    "id": "tww-medium",
+    "name": "Third Wave Water — Medium Roast",
+    "form": "sachet",
+    "composition": "MgSO₄ + calcium citrate + KHCO₃",
+    "tds": 150,
+    "alkalinity": 80,
+    "dose": "1 sachet / 1 L distilled",
+    "source": "Third Wave Water support",
+    "verified": true
+  },
+  {
+    "id": "tww-dark",
+    "name": "Third Wave Water — Dark Roast",
+    "form": "sachet",
+    "composition": "MgSO₄ + calcium citrate + NaHCO₃",
+    "tds": 180,
+    "alkalinity": 137,
+    "dose": "1 sachet / 1 L distilled",
+    "source": "Third Wave Water support",
+    "verified": true
+  },
+  {
+    "id": "tww-espresso",
+    "name": "Third Wave Water — Espresso",
+    "form": "sachet",
+    "composition": "MgSO₄ + calcium citrate + KHCO₃",
+    "tds": 150,
+    "alkalinity": 80,
+    "dose": "1 sachet / 1 L distilled",
+    "source": "Third Wave Water support",
+    "verified": true
+  },
+  {
+    "id": "lotus-water",
+    "name": "Lotus Water",
+    "form": "drops",
+    "dose": "2 ml / L",
+    "source": "Lotus Coffee Products",
+    "verified": false
+  },
+  {
+    "id": "apax-tonik",
+    "name": "Apax Lab Tonik",
+    "form": "concentrate",
+    "dose": "2 ml / L",
+    "source": "Apax Lab",
+    "verified": false
+  },
+  {
+    "id": "apax-jamm",
+    "name": "Apax Lab Jamm",
+    "form": "concentrate",
+    "dose": "2 ml / L",
+    "source": "Apax Lab",
+    "verified": false
+  },
+  {
+    "id": "apax-lylac",
+    "name": "Apax Lab Lylac",
+    "form": "concentrate",
+    "dose": "2 ml / L",
+    "source": "Apax Lab",
+    "verified": false
+  },
+  {
+    "id": "apax-tanat",
+    "name": "Apax Lab Tanat",
+    "form": "concentrate",
+    "dose": "2 ml / L",
+    "source": "Apax Lab",
+    "verified": false
+  },
+  {
+    "id": "aquacode",
+    "name": "Aquacode",
+    "form": "concentrate",
+    "dose": "1 ml / L",
+    "source": "Aquacode",
+    "verified": false
+  },
+  {
+    "id": "perfect-coffee-water",
+    "name": "Perfect Coffee Water",
+    "form": "sachet",
+    "dose": "1 sachet / 1 L distilled",
+    "source": "Perfect Coffee Water",
+    "verified": false
+  },
+  {
+    "id": "akvo-minerals",
+    "name": "AKVO Minerals",
+    "form": "sachet",
+    "dose": "1 sachet / 1 L",
+    "source": "akvowatersystems.com",
+    "verified": false
+  }
+]

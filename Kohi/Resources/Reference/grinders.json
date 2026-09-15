@@ -1,0 +1,1342 @@
+[
+  {
+    "id": "1zpresso-j-ultra",
+    "brand": "1Zpresso",
+    "model": "J-Ultra",
+    "isManual": true,
+    "burrType": "conical",
+    "burrMm": 48,
+    "adjustment": "clicks",
+    "stepsPerRotation": 100,
+    "makerMicronsPerStep": 8,
+    "source": "1zpresso.coffee"
+  },
+  {
+    "id": "1zpresso-k-ultra",
+    "brand": "1Zpresso",
+    "model": "K-Ultra",
+    "isManual": true,
+    "burrType": "conical",
+    "burrMm": 48,
+    "adjustment": "clicks",
+    "stepsPerRotation": 100,
+    "makerMicronsPerStep": 20,
+    "source": "1zpresso.coffee"
+  },
+  {
+    "id": "1zpresso-x-ultra",
+    "brand": "1Zpresso",
+    "model": "X-Ultra / X-Pro S",
+    "isManual": true,
+    "burrType": "conical",
+    "adjustment": "clicks",
+    "makerMicronsPerStep": 12.5,
+    "source": "1zpresso.coffee"
+  },
+  {
+    "id": "kingrinder-k6",
+    "brand": "KINGrinder",
+    "model": "K6",
+    "isManual": true,
+    "burrType": "conical",
+    "burrMm": 48,
+    "adjustment": "clicks",
+    "stepsPerRotation": 60,
+    "makerMicronsPerStep": 16,
+    "source": "Basic Barista"
+  },
+  {
+    "id": "baratza-encore",
+    "brand": "Baratza",
+    "model": "Encore",
+    "isManual": false,
+    "burrType": "conical",
+    "burrMm": 40,
+    "adjustment": "clicks",
+    "stepsPerRotation": 40,
+    "source": "baratza.com"
+  },
+  {
+    "id": "niche-zero",
+    "brand": "Niche",
+    "model": "Zero",
+    "isManual": false,
+    "burrType": "conical",
+    "burrMm": 63,
+    "adjustment": "stepless",
+    "source": "nichecoffee.co.uk"
+  },
+  {
+    "id": "mahlkonig-ek43",
+    "brand": "Mahlkönig",
+    "model": "EK43 / EK43S",
+    "isManual": false,
+    "burrType": "flat",
+    "burrMm": 98,
+    "adjustment": "dial",
+    "source": "mahlkoenig.de"
+  },
+  {
+    "id": "comandante-c40-mk4-nitro-blade",
+    "brand": "Comandante",
+    "model": "C40 MK4 Nitro Blade",
+    "isManual": true,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "comandante-c40-mk3-nitro-blade",
+    "brand": "Comandante",
+    "model": "C40 MK3 Nitro Blade",
+    "isManual": true,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "comandante-c60-baracuda",
+    "brand": "Comandante",
+    "model": "C60 Baracuda",
+    "isManual": true,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "1zpresso-zp6-special",
+    "brand": "1Zpresso",
+    "model": "ZP6 Special",
+    "isManual": true,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "1zpresso-k-plus",
+    "brand": "1Zpresso",
+    "model": "K-Plus",
+    "isManual": true,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "1zpresso-k-max",
+    "brand": "1Zpresso",
+    "model": "K-Max",
+    "isManual": true,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "1zpresso-k-pro",
+    "brand": "1Zpresso",
+    "model": "K-Pro",
+    "isManual": true,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "1zpresso-x-pro",
+    "brand": "1Zpresso",
+    "model": "X-Pro",
+    "isManual": true,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "1zpresso-j-max",
+    "brand": "1Zpresso",
+    "model": "J-Max",
+    "isManual": true,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "1zpresso-jx-pro",
+    "brand": "1Zpresso",
+    "model": "JX-Pro",
+    "isManual": true,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "1zpresso-jx",
+    "brand": "1Zpresso",
+    "model": "JX",
+    "isManual": true,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "1zpresso-q2",
+    "brand": "1Zpresso",
+    "model": "Q2",
+    "isManual": true,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "1zpresso-q-air",
+    "brand": "1Zpresso",
+    "model": "Q Air",
+    "isManual": true,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "kingrinder-k4",
+    "brand": "KINGrinder",
+    "model": "K4",
+    "isManual": true,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "kingrinder-k2",
+    "brand": "KINGrinder",
+    "model": "K2",
+    "isManual": true,
+    "burrType": "conical",
+    "adjustment": "clicks",
+    "makerMicronsPerStep": 18.0,
+    "source": "Timour 2026-09 + annexe B PRD"
+  },
+  {
+    "id": "kingrinder-k1",
+    "brand": "KINGrinder",
+    "model": "K1",
+    "isManual": true,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "timemore-chestnut-c2",
+    "brand": "Timemore",
+    "model": "Chestnut C2",
+    "isManual": true,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "timemore-chestnut-c2s",
+    "brand": "Timemore",
+    "model": "Chestnut C2S",
+    "isManual": true,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "timemore-chestnut-c3",
+    "brand": "Timemore",
+    "model": "Chestnut C3",
+    "isManual": true,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "timemore-c3-esp",
+    "brand": "Timemore",
+    "model": "C3 ESP",
+    "isManual": true,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "timemore-c3-esp-pro",
+    "brand": "Timemore",
+    "model": "C3 ESP Pro",
+    "isManual": true,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "timemore-s3",
+    "brand": "Timemore",
+    "model": "S3",
+    "isManual": true,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "timemore-chestnut-x",
+    "brand": "Timemore",
+    "model": "Chestnut X",
+    "isManual": true,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "timemore-chestnut-x-lite",
+    "brand": "Timemore",
+    "model": "Chestnut X Lite",
+    "isManual": true,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "kinu-m47-classic",
+    "brand": "Kinu",
+    "model": "M47 Classic",
+    "isManual": true,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "kinu-m47-simplicity",
+    "brand": "Kinu",
+    "model": "M47 Simplicity",
+    "isManual": true,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "kinu-m47-phoenix",
+    "brand": "Kinu",
+    "model": "M47 Phoenix",
+    "isManual": true,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "kinu-m47",
+    "brand": "Kinu",
+    "model": "M47",
+    "isManual": true,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "kinu-m68",
+    "brand": "Kinu",
+    "model": "M68",
+    "isManual": true,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "pietro-manual-coffee-grinder",
+    "brand": "Pietro",
+    "model": "Manual Coffee Grinder",
+    "isManual": true,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "pietro-pro-brew",
+    "brand": "Pietro",
+    "model": "Pro Brew",
+    "isManual": true,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "millab-m01",
+    "brand": "MILLAB",
+    "model": "M01",
+    "isManual": true,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "mhw-3bomber-r3-blade",
+    "brand": "MHW-3BOMBER",
+    "model": "R3 Blade",
+    "isManual": true,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "mavo-phantox-pro",
+    "brand": "MAVO",
+    "model": "Phantox Pro",
+    "isManual": true,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "weber-workshops-hg-2",
+    "brand": "Weber Workshops",
+    "model": "HG-2",
+    "isManual": true,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "weber-workshops-hg-1",
+    "brand": "Weber Workshops",
+    "model": "HG-1",
+    "isManual": true,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "made-by-knock-aergrind",
+    "brand": "Made by Knock",
+    "model": "Aergrind",
+    "isManual": true,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "made-by-knock-feld47",
+    "brand": "Made by Knock",
+    "model": "Feld47",
+    "isManual": true,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "made-by-knock-feldgrind",
+    "brand": "Made by Knock",
+    "model": "Feldgrind",
+    "isManual": true,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "orphan-espresso-lido-3",
+    "brand": "Orphan Espresso",
+    "model": "Lido 3",
+    "isManual": true,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "orphan-espresso-lido-e-t",
+    "brand": "Orphan Espresso",
+    "model": "Lido E-T",
+    "isManual": true,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "orphan-espresso-lido-et",
+    "brand": "Orphan Espresso",
+    "model": "Lido ET",
+    "isManual": true,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "helor-101",
+    "brand": "Helor",
+    "model": "101",
+    "isManual": true,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "helor-106",
+    "brand": "Helor",
+    "model": "106",
+    "isManual": true,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "bplus-apollo",
+    "brand": "BPlus",
+    "model": "Apollo",
+    "isManual": true,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "porlex-mini-ii",
+    "brand": "Porlex",
+    "model": "Mini II",
+    "isManual": true,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "porlex-tall-ii",
+    "brand": "Porlex",
+    "model": "Tall II",
+    "isManual": true,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "hario-skerton-pro",
+    "brand": "Hario",
+    "model": "Skerton Pro",
+    "isManual": true,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "hario-mini-mill-plus",
+    "brand": "Hario",
+    "model": "Mini Mill Plus",
+    "isManual": true,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "d-kanta-mg07",
+    "brand": "D-Kanta",
+    "model": "MG07",
+    "isManual": true,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "cafec-flower-mill",
+    "brand": "Cafec",
+    "model": "Flower Mill",
+    "isManual": true,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "cafec-glass-mill",
+    "brand": "Cafec",
+    "model": "Glass Mill",
+    "isManual": true,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "comandante-c40-with-red-clix",
+    "brand": "Comandante",
+    "model": "C40 with Red Clix",
+    "isManual": true,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "1zpresso-q",
+    "brand": "1Zpresso",
+    "model": "Q",
+    "isManual": true,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "1zpresso-q-pro",
+    "brand": "1Zpresso",
+    "model": "Q-Pro",
+    "isManual": true,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "1zpresso-q2-s",
+    "brand": "1Zpresso",
+    "model": "Q2 S",
+    "isManual": true,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "timemore-chestnut-c5",
+    "brand": "Timemore",
+    "model": "Chestnut C5",
+    "isManual": true,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "timemore-chestnut-c5-esp",
+    "brand": "Timemore",
+    "model": "Chestnut C5 ESP",
+    "isManual": true,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "timemore-chestnut-c5-pro",
+    "brand": "Timemore",
+    "model": "Chestnut C5 Pro",
+    "isManual": true,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "timemore-chestnut-s5",
+    "brand": "Timemore",
+    "model": "Chestnut S5",
+    "isManual": true,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "millab-c64-erm",
+    "brand": "MILLAB",
+    "model": "C64 ERM",
+    "isManual": true,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "momentem-dual-burr",
+    "brand": "MOMENTEM",
+    "model": "Dual Burr",
+    "isManual": true,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "rok-coffee-grinder",
+    "brand": "ROK",
+    "model": "Coffee Grinder",
+    "isManual": true,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "comandante-c40-lab-series",
+    "brand": "Comandante",
+    "model": "C40 Lab Series",
+    "isManual": true,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "weber-workshops-eg-1",
+    "brand": "Weber Workshops",
+    "model": "EG-1",
+    "isManual": false,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "weber-workshops-eg-1-v3",
+    "brand": "Weber Workshops",
+    "model": "EG-1 V3",
+    "isManual": false,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "option-o-lagom-01",
+    "brand": "Option-O",
+    "model": "Lagom 01",
+    "isManual": false,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "option-o-lagom-p100",
+    "brand": "Option-O",
+    "model": "Lagom P100",
+    "isManual": false,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "option-o-lagom-p64",
+    "brand": "Option-O",
+    "model": "Lagom P64",
+    "isManual": false,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "option-o-lagom-casa",
+    "brand": "Option-O",
+    "model": "Lagom Casa",
+    "isManual": false,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "option-o-lagom-mini",
+    "brand": "Option-O",
+    "model": "Lagom Mini",
+    "isManual": false,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "kafatek-monolith-flat",
+    "brand": "Kafatek",
+    "model": "Monolith Flat",
+    "isManual": false,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "kafatek-monolith-flat-max",
+    "brand": "Kafatek",
+    "model": "Monolith Flat MAX",
+    "isManual": false,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "kafatek-monolith-conical",
+    "brand": "Kafatek",
+    "model": "Monolith Conical",
+    "isManual": false,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "zerno-z1",
+    "brand": "Zerno",
+    "model": "Z1",
+    "isManual": false,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "zerno-z2",
+    "brand": "Zerno",
+    "model": "Z2",
+    "isManual": false,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "mazzer-philos",
+    "brand": "Mazzer",
+    "model": "Philos",
+    "isManual": false,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "mazzer-zm",
+    "brand": "Mazzer",
+    "model": "ZM",
+    "isManual": false,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "mazzer-zm-filter",
+    "brand": "Mazzer",
+    "model": "ZM Filter",
+    "isManual": false,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "mazzer-major-v",
+    "brand": "Mazzer",
+    "model": "Major V",
+    "isManual": false,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "mazzer-major-v-electronic",
+    "brand": "Mazzer",
+    "model": "Major V Electronic",
+    "isManual": false,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "mazzer-super-jolly-v-pro",
+    "brand": "Mazzer",
+    "model": "Super Jolly V Pro",
+    "isManual": false,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "mazzer-mini-electronic",
+    "brand": "Mazzer",
+    "model": "Mini Electronic",
+    "isManual": false,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "mahlkonig-ek43-s",
+    "brand": "Mahlkönig",
+    "model": "EK43 S",
+    "isManual": false,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "mahlkonig-ek-omnia",
+    "brand": "Mahlkönig",
+    "model": "EK Omnia",
+    "isManual": false,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "mahlkonig-e80s",
+    "brand": "Mahlkönig",
+    "model": "E80S",
+    "isManual": false,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "mahlkonig-e80s-gbw",
+    "brand": "Mahlkönig",
+    "model": "E80S GBW",
+    "isManual": false,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "mahlkonig-e65s",
+    "brand": "Mahlkönig",
+    "model": "E65S",
+    "isManual": false,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "mahlkonig-e65-gbw",
+    "brand": "Mahlkönig",
+    "model": "E65 GBW",
+    "isManual": false,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "mahlkonig-k30-vario",
+    "brand": "Mahlkönig",
+    "model": "K30 Vario",
+    "isManual": false,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "mahlkonig-k30-air",
+    "brand": "Mahlkönig",
+    "model": "K30 Air",
+    "isManual": false,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "mahlkonig-k30-twin",
+    "brand": "Mahlkönig",
+    "model": "K30 Twin",
+    "isManual": false,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "mahlkonig-x54",
+    "brand": "Mahlkönig",
+    "model": "X54",
+    "isManual": false,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "mahlkonig-guatemala",
+    "brand": "Mahlkönig",
+    "model": "Guatemala",
+    "isManual": false,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "ditting-807-lab-sweet",
+    "brand": "Ditting",
+    "model": "807 Lab Sweet",
+    "isManual": false,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "ditting-807",
+    "brand": "Ditting",
+    "model": "807",
+    "isManual": false,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "ditting-804-lab-sweet",
+    "brand": "Ditting",
+    "model": "804 Lab Sweet",
+    "isManual": false,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "ditting-804",
+    "brand": "Ditting",
+    "model": "804",
+    "isManual": false,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "ditting-kr804",
+    "brand": "Ditting",
+    "model": "KR804",
+    "isManual": false,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "ditting-kr805",
+    "brand": "Ditting",
+    "model": "KR805",
+    "isManual": false,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "ditting-kr1203",
+    "brand": "Ditting",
+    "model": "KR1203",
+    "isManual": false,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "anfim-sp-ii",
+    "brand": "Anfim",
+    "model": "SP II",
+    "isManual": false,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "anfim-luna",
+    "brand": "Anfim",
+    "model": "Luna",
+    "isManual": false,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "victoria-arduino-mythos-1",
+    "brand": "Victoria Arduino",
+    "model": "Mythos 1",
+    "isManual": false,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "victoria-arduino-mythos-2",
+    "brand": "Victoria Arduino",
+    "model": "Mythos 2",
+    "isManual": false,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "victoria-arduino-mythos-my75",
+    "brand": "Victoria Arduino",
+    "model": "Mythos MY75",
+    "isManual": false,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "victoria-arduino-mythos-myg75",
+    "brand": "Victoria Arduino",
+    "model": "Mythos MYG75",
+    "isManual": false,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "nuova-simonelli-mdj",
+    "brand": "Nuova Simonelli",
+    "model": "MDJ",
+    "isManual": false,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "la-marzocco-swan",
+    "brand": "La Marzocco",
+    "model": "Swan",
+    "isManual": false,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "fiorenzato-f64-evo",
+    "brand": "Fiorenzato",
+    "model": "F64 EVO",
+    "isManual": false,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "fiorenzato-f64-evo-pro",
+    "brand": "Fiorenzato",
+    "model": "F64 EVO Pro",
+    "isManual": false,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "fiorenzato-f83-e",
+    "brand": "Fiorenzato",
+    "model": "F83 E",
+    "isManual": false,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "fiorenzato-f83-e-pro",
+    "brand": "Fiorenzato",
+    "model": "F83 E Pro",
+    "isManual": false,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "fiorenzato-allground",
+    "brand": "Fiorenzato",
+    "model": "AllGround",
+    "isManual": false,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "fiorenzato-allground-sense",
+    "brand": "Fiorenzato",
+    "model": "AllGround Sense",
+    "isManual": false,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "fiorenzato-allground-probrew",
+    "brand": "Fiorenzato",
+    "model": "AllGround Probrew",
+    "isManual": false,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "eureka-mignon-zero",
+    "brand": "Eureka",
+    "model": "Mignon Zero",
+    "isManual": false,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "eureka-mignon-specialita",
+    "brand": "Eureka",
+    "model": "Mignon Specialità",
+    "isManual": false,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "eureka-mignon-silenzio",
+    "brand": "Eureka",
+    "model": "Mignon Silenzio",
+    "isManual": false,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "eureka-mignon-crono",
+    "brand": "Eureka",
+    "model": "Mignon Crono",
+    "isManual": false,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "eureka-mignon-filtro",
+    "brand": "Eureka",
+    "model": "Mignon Filtro",
+    "isManual": false,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "eureka-oro-mignon-single-dose",
+    "brand": "Eureka",
+    "model": "Oro Mignon Single Dose",
+    "isManual": false,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "eureka-oro-xl",
+    "brand": "Eureka",
+    "model": "Oro XL",
+    "isManual": false,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "eureka-mignon-libra",
+    "brand": "Eureka",
+    "model": "Mignon Libra",
+    "isManual": false,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "eureka-mignon-libra-single-dose",
+    "brand": "Eureka",
+    "model": "Mignon Libra Single Dose",
+    "isManual": false,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "eureka-xl",
+    "brand": "Eureka",
+    "model": "XL",
+    "isManual": false,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "eureka-atom-75",
+    "brand": "Eureka",
+    "model": "Atom 75",
+    "isManual": false,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "eureka-atom-excellence-75",
+    "brand": "Eureka",
+    "model": "Atom Excellence 75",
+    "isManual": false,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "timemore-sculptor-064",
+    "brand": "Timemore",
+    "model": "Sculptor 064",
+    "isManual": false,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "timemore-sculptor-064s",
+    "brand": "Timemore",
+    "model": "Sculptor 064S",
+    "isManual": false,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "timemore-sculptor-078",
+    "brand": "Timemore",
+    "model": "Sculptor 078",
+    "isManual": false,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "timemore-sculptor-078s",
+    "brand": "Timemore",
+    "model": "Sculptor 078S",
+    "isManual": false,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "fellow-ode-gen-1",
+    "brand": "Fellow",
+    "model": "Ode Gen 1",
+    "isManual": false,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "fellow-ode-gen-2",
+    "brand": "Fellow",
+    "model": "Ode Gen 2",
+    "isManual": false,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "fellow-opus",
+    "brand": "Fellow",
+    "model": "Opus",
+    "isManual": false,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "baratza-encore-esp",
+    "brand": "Baratza",
+    "model": "Encore ESP",
+    "isManual": false,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "baratza-virtuoso",
+    "brand": "Baratza",
+    "model": "Virtuoso+",
+    "isManual": false,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "baratza-vario",
+    "brand": "Baratza",
+    "model": "Vario",
+    "isManual": false,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "baratza-vario-2",
+    "brand": "Baratza",
+    "model": "Vario+",
+    "isManual": false,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "baratza-forte-bg",
+    "brand": "Baratza",
+    "model": "Forte BG",
+    "isManual": false,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "baratza-forte-ap",
+    "brand": "Baratza",
+    "model": "Forte AP",
+    "isManual": false,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "niche-duo",
+    "brand": "Niche",
+    "model": "Duo",
+    "isManual": false,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "varia-vs3",
+    "brand": "Varia",
+    "model": "VS3",
+    "isManual": false,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "varia-vs4",
+    "brand": "Varia",
+    "model": "VS4",
+    "isManual": false,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "varia-vs6",
+    "brand": "Varia",
+    "model": "VS6",
+    "isManual": false,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "df-turin-df54",
+    "brand": "DF (Turin)",
+    "model": "DF54",
+    "isManual": false,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "df-turin-df64",
+    "brand": "DF (Turin)",
+    "model": "DF64",
+    "isManual": false,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "df-turin-df64-gen-2",
+    "brand": "DF (Turin)",
+    "model": "DF64 Gen 2",
+    "isManual": false,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "df-turin-df64v",
+    "brand": "DF (Turin)",
+    "model": "DF64V",
+    "isManual": false,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "df-turin-df64p",
+    "brand": "DF (Turin)",
+    "model": "DF64P",
+    "isManual": false,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "df-turin-df64e",
+    "brand": "DF (Turin)",
+    "model": "DF64E",
+    "isManual": false,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "df-turin-df83",
+    "brand": "DF (Turin)",
+    "model": "DF83",
+    "isManual": false,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "df-turin-df83v",
+    "brand": "DF (Turin)",
+    "model": "DF83V",
+    "isManual": false,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "df-turin-df80",
+    "brand": "DF (Turin)",
+    "model": "DF80",
+    "isManual": false,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "df-turin-df80p",
+    "brand": "DF (Turin)",
+    "model": "DF80P",
+    "isManual": false,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "df-turin-df98",
+    "brand": "DF (Turin)",
+    "model": "DF98",
+    "isManual": false,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "wilfa-svart",
+    "brand": "Wilfa",
+    "model": "Svart",
+    "isManual": false,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "wilfa-uniform",
+    "brand": "Wilfa",
+    "model": "Uniform",
+    "isManual": false,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "wilfa-uniform-2",
+    "brand": "Wilfa",
+    "model": "Uniform+",
+    "isManual": false,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "ceado-e5p",
+    "brand": "Ceado",
+    "model": "E5P",
+    "isManual": false,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "ceado-e6p",
+    "brand": "Ceado",
+    "model": "E6P",
+    "isManual": false,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "ceado-e37j",
+    "brand": "Ceado",
+    "model": "E37J",
+    "isManual": false,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "ceado-e37s",
+    "brand": "Ceado",
+    "model": "E37S",
+    "isManual": false,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "ceado-e37sd",
+    "brand": "Ceado",
+    "model": "E37SD",
+    "isManual": false,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "ceado-e37z-hero",
+    "brand": "Ceado",
+    "model": "E37Z-Hero",
+    "isManual": false,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "compak-e5",
+    "brand": "Compak",
+    "model": "E5",
+    "isManual": false,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "compak-e8",
+    "brand": "Compak",
+    "model": "E8",
+    "isManual": false,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "compak-pk100",
+    "brand": "Compak",
+    "model": "PK100",
+    "isManual": false,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "compak-pk100-lab",
+    "brand": "Compak",
+    "model": "PK100 Lab",
+    "isManual": false,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "mahlkonig-e80-supreme",
+    "brand": "Mahlkönig",
+    "model": "E80 Supreme",
+    "isManual": false,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "mahlkonig-e65-supreme",
+    "brand": "Mahlkönig",
+    "model": "E65 Supreme",
+    "isManual": false,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "mahlkonig-e80w-gbs",
+    "brand": "Mahlkönig",
+    "model": "E80W GbS",
+    "isManual": false,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "fiorenzato-f64-evo-xgi",
+    "brand": "Fiorenzato",
+    "model": "F64 EVO XGi",
+    "isManual": false,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "fiorenzato-f83-e-xgi",
+    "brand": "Fiorenzato",
+    "model": "F83 E XGi",
+    "isManual": false,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "eureka-atom-w-75",
+    "brand": "Eureka",
+    "model": "Atom W 75",
+    "isManual": false,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "eureka-atom-pro",
+    "brand": "Eureka",
+    "model": "Atom Pro",
+    "isManual": false,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "eureka-atom-specialty-75",
+    "brand": "Eureka",
+    "model": "Atom Specialty 75",
+    "isManual": false,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "baratza-sette-270",
+    "brand": "Baratza",
+    "model": "Sette 270",
+    "isManual": false,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "baratza-sette-270wi",
+    "brand": "Baratza",
+    "model": "Sette 270Wi",
+    "isManual": false,
+    "source": "Timour 2026-09"
+  },
+  {
+    "id": "baratza-vario-w",
+    "brand": "Baratza",
+    "model": "Vario W+",
+    "isManual": false,
+    "source": "Timour 2026-09"
+  }
+]

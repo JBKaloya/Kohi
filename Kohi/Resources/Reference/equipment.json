@@ -1,0 +1,293 @@
+[
+  {
+    "id": "hario-v60-01",
+    "kind": "brewer",
+    "brand": "Hario",
+    "model": "V60",
+    "variant": "01",
+    "family": "v60",
+    "filters": [{ "brand": "Hario", "shape": "V60 01" }],
+    "source": "hario.co.jp"
+  },
+  {
+    "id": "hario-v60-02",
+    "kind": "brewer",
+    "brand": "Hario",
+    "model": "V60",
+    "variant": "02",
+    "family": "v60",
+    "filters": [{ "brand": "Hario", "shape": "V60 02" }],
+    "source": "hario.co.jp"
+  },
+  {
+    "id": "hario-v60-03",
+    "kind": "brewer",
+    "brand": "Hario",
+    "model": "V60",
+    "variant": "03",
+    "family": "v60",
+    "filters": [{ "brand": "Hario", "shape": "V60 03" }],
+    "source": "hario.co.jp"
+  },
+  {
+    "id": "kalita-wave-155",
+    "kind": "brewer",
+    "brand": "Kalita",
+    "model": "Wave",
+    "variant": "155",
+    "family": "flat",
+    "filters": [{ "brand": "Kalita", "shape": "Wave 155" }],
+    "source": "kalita.co.jp"
+  },
+  {
+    "id": "kalita-wave-185",
+    "kind": "brewer",
+    "brand": "Kalita",
+    "model": "Wave",
+    "variant": "185",
+    "family": "flat",
+    "filters": [{ "brand": "Kalita", "shape": "Wave 185" }],
+    "source": "kalita.co.jp"
+  },
+  {
+    "id": "chemex-3-cup",
+    "kind": "brewer",
+    "brand": "Chemex",
+    "model": "Chemex",
+    "variant": "3 cup",
+    "family": "chemex",
+    "filters": [{ "brand": "Chemex", "shape": "Bonded 3 cup" }],
+    "source": "chemexcoffeemaker.com"
+  },
+  {
+    "id": "chemex-6-cup",
+    "kind": "brewer",
+    "brand": "Chemex",
+    "model": "Chemex",
+    "variant": "6 cup",
+    "family": "chemex",
+    "filters": [{ "brand": "Chemex", "shape": "Bonded 6 cup" }],
+    "source": "chemexcoffeemaker.com"
+  },
+  {
+    "id": "chemex-8-cup",
+    "kind": "brewer",
+    "brand": "Chemex",
+    "model": "Chemex",
+    "variant": "8 cup",
+    "family": "chemex",
+    "filters": [{ "brand": "Chemex", "shape": "Bonded 8 cup" }],
+    "source": "chemexcoffeemaker.com"
+  },
+  {
+    "id": "aeropress-original",
+    "kind": "brewer",
+    "brand": "AeroPress",
+    "model": "Original",
+    "family": "aeropress",
+    "filters": [{ "brand": "AeroPress", "shape": "Paper" }],
+    "source": "aeropress.com"
+  },
+  {
+    "id": "aeropress-clear",
+    "kind": "brewer",
+    "brand": "AeroPress",
+    "model": "Clear",
+    "family": "aeropress",
+    "filters": [{ "brand": "AeroPress", "shape": "Paper" }],
+    "source": "aeropress.com"
+  },
+  {
+    "id": "aeropress-xl",
+    "kind": "brewer",
+    "brand": "AeroPress",
+    "model": "XL",
+    "family": "aeropress",
+    "filters": [{ "brand": "AeroPress", "shape": "XL paper" }],
+    "source": "aeropress.com"
+  },
+  {
+    "id": "origami-dripper-s",
+    "kind": "brewer",
+    "brand": "Origami",
+    "model": "Dripper",
+    "variant": "S",
+    "family": "flat",
+    "filters": [{ "brand": "Origami", "shape": "S" }],
+    "source": "origamidripper.com"
+  },
+  {
+    "id": "orea-v4",
+    "kind": "brewer",
+    "brand": "Orea",
+    "model": "V4",
+    "family": "flat",
+    "filters": [{ "brand": "Orea", "shape": "V4" }],
+    "source": "orea.uk"
+  },
+  {
+    "id": "clever-dripper",
+    "kind": "brewer",
+    "brand": "Clever",
+    "model": "Dripper",
+    "family": "immersionSwitch",
+    "filters": [{ "brand": "Clever", "shape": "Cone" }],
+    "source": "clevercoffeedripper.com"
+  },
+  {
+    "id": "hario-switch",
+    "kind": "brewer",
+    "brand": "Hario",
+    "model": "Switch",
+    "family": "immersionSwitch",
+    "filters": [{ "brand": "Hario", "shape": "V60 02" }],
+    "source": "hario.co.jp"
+  },
+  {
+    "id": "bodum-chambord",
+    "kind": "brewer",
+    "brand": "Bodum",
+    "model": "Chambord",
+    "family": "frenchPress",
+    "source": "bodum.com"
+  },
+  {
+    "id": "bialetti-moka-express-1",
+    "kind": "brewer",
+    "brand": "Bialetti",
+    "model": "Moka Express",
+    "variant": "1 cup",
+    "family": "moka",
+    "source": "bialetti.com"
+  },
+  {
+    "id": "bialetti-moka-express-3",
+    "kind": "brewer",
+    "brand": "Bialetti",
+    "model": "Moka Express",
+    "variant": "3 cup",
+    "family": "moka",
+    "source": "bialetti.com"
+  },
+  {
+    "id": "bialetti-moka-express-6",
+    "kind": "brewer",
+    "brand": "Bialetti",
+    "model": "Moka Express",
+    "variant": "6 cup",
+    "family": "moka",
+    "source": "bialetti.com"
+  },
+  {
+    "id": "fellow-stagg-ekg",
+    "kind": "kettle",
+    "brand": "Fellow",
+    "model": "Stagg EKG",
+    "isGooseneck": true,
+    "hasTemperatureControl": true,
+    "source": "fellowproducts.com"
+  },
+  {
+    "id": "hario-buono",
+    "kind": "kettle",
+    "brand": "Hario",
+    "model": "Buono",
+    "isGooseneck": true,
+    "hasTemperatureControl": false,
+    "source": "hario.co.jp"
+  },
+  {
+    "id": "brewista-artisan",
+    "kind": "kettle",
+    "brand": "Brewista",
+    "model": "Artisan",
+    "isGooseneck": true,
+    "hasTemperatureControl": true,
+    "source": "brewista.co"
+  },
+  {
+    "id": "acaia-pearl",
+    "kind": "scale",
+    "brand": "Acaia",
+    "model": "Pearl",
+    "resolutionG": 0.1,
+    "hasTimer": true,
+    "source": "acaia.co"
+  },
+  {
+    "id": "acaia-lunar",
+    "kind": "scale",
+    "brand": "Acaia",
+    "model": "Lunar",
+    "resolutionG": 0.1,
+    "hasTimer": true,
+    "source": "acaia.co"
+  },
+  {
+    "id": "timemore-black-mirror",
+    "kind": "scale",
+    "brand": "Timemore",
+    "model": "Black Mirror",
+    "resolutionG": 0.1,
+    "hasTimer": true,
+    "source": "timemore.com"
+  },
+  {
+    "id": "hario-drip-scale",
+    "kind": "scale",
+    "brand": "Hario",
+    "model": "Drip Scale",
+    "resolutionG": 0.1,
+    "hasTimer": true,
+    "source": "hario.co.jp"
+  },
+  {
+    "id": "sage-barista-express",
+    "kind": "espressoMachine",
+    "brand": "Sage",
+    "model": "Barista Express",
+    "family": "espresso",
+    "basketG": 18,
+    "pressureBar": 9,
+    "source": "sageappliances.com"
+  },
+  {
+    "id": "gaggia-classic",
+    "kind": "espressoMachine",
+    "brand": "Gaggia",
+    "model": "Classic",
+    "family": "espresso",
+    "basketG": 18,
+    "pressureBar": 9,
+    "source": "gaggia.com"
+  },
+  {
+    "id": "rancilio-silvia",
+    "kind": "espressoMachine",
+    "brand": "Rancilio",
+    "model": "Silvia",
+    "family": "espresso",
+    "basketG": 18,
+    "pressureBar": 9,
+    "source": "rancilio.com"
+  },
+  {
+    "id": "flair-58",
+    "kind": "espressoMachine",
+    "brand": "Flair",
+    "model": "58",
+    "family": "espresso",
+    "basketG": 18,
+    "pressureBar": 9,
+    "source": "flairespresso.com"
+  },
+  {
+    "id": "cafelat-robot",
+    "kind": "espressoMachine",
+    "brand": "Cafelat",
+    "model": "Robot",
+    "family": "espresso",
+    "basketG": 18,
+    "source": "cafelat.com"
+  }
+]

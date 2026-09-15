@@ -1,0 +1,81 @@
+id,brand,model,name,family,bypass,filter,note,source,status
+dripper-001,Hario,V60 01,Hario V60 01,cone,high,V60 01,Classique,Timour 2026-09,à vérifier
+dripper-002,Hario,V60 02,Hario V60 02,cone,high,V60 02,Référence du pour-over,Timour 2026-09,à vérifier
+dripper-003,Hario,V60 03,Hario V60 03,cone,high,V60 03,Gros volumes,Timour 2026-09,à vérifier
+dripper-004,Hario,Mugen,Hario Mugen,cone,low,V60,Extraction plus douce,Timour 2026-09,à vérifier
+dripper-005,Hario,Switch,Hario Switch,hybrid,variable,V60,Immersion + percolation,Timour 2026-09,à vérifier
+dripper-006,Hario,Suiren,Hario Suiren,cone,high,V60,Géométrie ajourée,Timour 2026-09,à vérifier
+dripper-007,Hario,Pegasus,Hario Pegasus,flat-cone,medium,Pegasus,Alternative au V60,Timour 2026-09,à vérifier
+dripper-008,Hario,Zebrang,Hario Zebrang,cone,high,V60,Voyage,Timour 2026-09,à vérifier
+dripper-009,Hario,V60 Air,Hario V60 Air,cone,high,V60,Très léger,Timour 2026-09,à vérifier
+dripper-010,Hario,Drip Decanter,Hario Drip Decanter,cone,high,V60,Dripper + carafe,Timour 2026-09,à vérifier
+dripper-011,Kono,Meimon,Kono Meimon,cone,medium,Kono,Tradition japonaise,Timour 2026-09,à vérifier
+dripper-012,Origami,Dripper,Origami Dripper,cone,high,Origami/V60,Très polyvalent,Timour 2026-09,à vérifier
+dripper-013,Origami,Air,Origami Air,cone,high,Origami/V60,Plastique,Timour 2026-09,à vérifier
+dripper-014,Origami,Air S,Origami Air S,cone,high,Origami/V60,Petit format,Timour 2026-09,à vérifier
+dripper-015,Kalita,Wave 155,Kalita Wave 155,flat,medium,Wave 155,Petit volume,Timour 2026-09,à vérifier
+dripper-016,Kalita,Wave 185,Kalita Wave 185,flat,medium,Wave 185,Très populaire,Timour 2026-09,à vérifier
+dripper-017,Kalita,101,Kalita 101,flat,medium,Kalita,Traditionnel,Timour 2026-09,à vérifier
+dripper-018,Kalita,102,Kalita 102,flat,medium,Kalita,Classique,Timour 2026-09,à vérifier
+dripper-019,Kalita,103,Kalita 103,flat,medium,Kalita,Gros volume,Timour 2026-09,à vérifier
+dripper-020,Cafec,Flower,Cafec Flower,cone,high,V60/Cafec,Géométrie rapide,Timour 2026-09,à vérifier
+dripper-021,Cafec,Deep27,Cafec Deep27,cone-deep,high,Deep27,Très petit lit de café,Timour 2026-09,à vérifier
+dripper-022,Cafec,TH-1,Cafec TH-1,cone,medium,Cafec,Design specialty,Timour 2026-09,à vérifier
+dripper-023,Timemore,Crystal Eye,Timemore Crystal Eye,cone,high,V60,Parois striées,Timour 2026-09,à vérifier
+dripper-024,Timemore,B75,Timemore B75,flat,medium,B75,Gros débit,Timour 2026-09,à vérifier
+dripper-025,Timemore,B75 Pro,Timemore B75 Pro,flat,low-medium,B75,Version améliorée,Timour 2026-09,à vérifier
+dripper-026,Fellow,Stagg X,Fellow Stagg X,flat,low,Stagg X,Tasse concentrée,Timour 2026-09,à vérifier
+dripper-027,Fellow,Stagg XF,Fellow Stagg XF,flat,low,Stagg XF,Gros volume,Timour 2026-09,à vérifier
+dripper-028,Orea,V1,Orea V1,flat,low,Orea,Fast-flow,Timour 2026-09,à vérifier
+dripper-029,Orea,V2,Orea V2,flat,low,Orea,Très rapide,Timour 2026-09,à vérifier
+dripper-030,Orea,V3,Orea V3,flat,low,Orea,Specialty,Timour 2026-09,à vérifier
+dripper-031,Orea,V3.1,Orea V3.1,flat,low,Orea,Géométrie optimisée,Timour 2026-09,à vérifier
+dripper-032,Orea,V4,Orea V4,flat,variable,Orea,Modularité,Timour 2026-09,à vérifier
+dripper-033,April,Brewer,April Brewer,flat,medium,April,Extraction homogène,Timour 2026-09,à vérifier
+dripper-034,Tricolate,Tricolate,Tricolate,no-bypass,very-low,Tricolate,Haute extraction,Timour 2026-09,à vérifier
+dripper-035,NextLevel,Pulsar,NextLevel Pulsar,no-bypass,very-low,Pulsar,Immersion contrôlée,Timour 2026-09,à vérifier
+dripper-036,NextLevel,LVL-10,NextLevel LVL-10,no-bypass,very-low,LVL-10,Multi-perforation,Timour 2026-09,à vérifier
+dripper-037,Sworksdesign,W40,Sworksdesign W40,flat-nobypass,low,W40,Débit très rapide,Timour 2026-09,à vérifier
+dripper-038,Sworksdesign,W60,Sworksdesign W60,flat-nobypass,low,W60,Grande surface,Timour 2026-09,à vérifier
+dripper-039,Sibarist,B3,Sibarist B3,no-bypass,very-low,B3,Filtres FAST,Timour 2026-09,à vérifier
+dripper-040,Pure Over,Pure Over,Pure Over,no-bypass,very-low,Papier spécifique,Zéro bypass,Timour 2026-09,à vérifier
+dripper-041,Graycano,Graycano,Graycano,cone,medium,V60,Parois métalliques,Timour 2026-09,à vérifier
+dripper-042,Gabi,Master A,Gabi Master A,cone,controlled,Gabi,Diffusion de l'eau,Timour 2026-09,à vérifier
+dripper-043,Gabi,B,Gabi B,cone,controlled,Gabi,Travel/specialty,Timour 2026-09,à vérifier
+dripper-044,Torch,Mountain,Torch Mountain,cone,medium,V60,Design japonais,Timour 2026-09,à vérifier
+dripper-045,Torch,Donut,Torch Donut,flat,medium,Wave,Géométrie annulaire,Timour 2026-09,à vérifier
+dripper-046,Torch,Coffee Dripper,Torch Coffee Dripper,cone,medium,V60,Japonais,Timour 2026-09,à vérifier
+dripper-047,Clever,Dripper,Clever Dripper,immersion,very-low,Melitta,Immersion,Timour 2026-09,à vérifier
+dripper-048,Brewista,Smart Dripper,Brewista Smart Dripper,immersion,very-low,Wave/flat,Contrôle immersion,Timour 2026-09,à vérifier
+dripper-049,Kinto,OCT,Kinto OCT,flat-cone,medium,Papier,Design japonais,Timour 2026-09,à vérifier
+dripper-050,Kinto,SCS,Kinto SCS,cone,medium,Kinto,Céramique,Timour 2026-09,à vérifier
+dripper-051,Beasty,Coffee Dripper,Beasty Coffee Dripper,cone,medium,Beasty,Parois particulières,Timour 2026-09,à vérifier
+dripper-052,LilyDrip,LilyDrip,LilyDrip,accessory,variable,V60,Modifie le débit,Timour 2026-09,à vérifier
+dripper-053,Osmotic,Flow Dripper,Osmotic Flow Dripper,cone,low,Papier,Flux osmotique,Timour 2026-09,à vérifier
+dripper-054,UFO,Dripper,UFO Dripper,flat-cone,variable,Papier compatible,Design UFO / specialty,Timour 2026-09,à vérifier
+dripper-055,UFO,Dripper 2.0,UFO Dripper 2.0,flat-cone,variable,Papier dédié,Évolution UFO,Timour 2026-09,à vérifier
+dripper-056,UFO,Coffee Brewer,UFO Coffee Brewer,other,variable,Papier,Géométrie expérimentale,Timour 2026-09,à vérifier
+dripper-057,Trinity,Zero,Trinity Zero,no-bypass,very-low,Dédié,Haute extraction,Timour 2026-09,à vérifier
+dripper-058,Trinity,One,Trinity One,hybrid,variable,Dédié,Plusieurs modes,Timour 2026-09,à vérifier
+dripper-059,Luca,Luca,Luca,hybrid,variable,Papier,Immersion/percolation,Timour 2026-09,à vérifier
+dripper-060,Simplify,Brewer,Simplify Brewer,flat,low,Papier dédié,Très simple,Timour 2026-09,à vérifier
+dripper-061,Brewista,Tornado,Brewista Tornado,cone,high,V60,Géométrie spiralée,Timour 2026-09,à vérifier
+dripper-062,Melitta,Original,Melitta Original,flat-cone,medium,Melitta,Ancêtre du pour-over,Timour 2026-09,à vérifier
+dripper-063,Melitta,1x2,Melitta 1x2,flat-cone,medium,1x2,Classique,Timour 2026-09,à vérifier
+dripper-064,Melitta,1x4,Melitta 1x4,flat-cone,medium,1x4,Gros volume,Timour 2026-09,à vérifier
+dripper-065,Chemex,3 cups,Chemex 3 cups,cone,low,Chemex,Filtre épais,Timour 2026-09,à vérifier
+dripper-066,Chemex,6 cups,Chemex 6 cups,cone,low,Chemex,Classique,Timour 2026-09,à vérifier
+dripper-067,Chemex,8 cups,Chemex 8 cups,cone,low,Chemex,Gros volume,Timour 2026-09,à vérifier
+dripper-068,Chemex,10 cups,Chemex 10 cups,cone,low,Chemex,Très gros volume,Timour 2026-09,à vérifier
+dripper-069,Nel,Drip,Nel Drip,cloth,very-low,Tissu,Filtre permanent,Timour 2026-09,à vérifier
+dripper-070,Vietnamese,Phin,Vietnamese Phin,immersion,low,Métal,Café vietnamien,Timour 2026-09,à vérifier
+dripper-071,GSI,Ultralight Java Drip,GSI Ultralight Java Drip,cone,high,Papier,Outdoor,Timour 2026-09,à vérifier
+dripper-072,Sea to Summit,X-Brew,Sea to Summit X-Brew,flat,medium,Papier,Pliable,Timour 2026-09,à vérifier
+dripper-073,Miir,Pourigami,Miir Pourigami,cone,high,Papier,Ultra-compact,Timour 2026-09,à vérifier
+dripper-074,Wacaco,Cuppamoka,Wacaco Cuppamoka,cone,medium,Papier,Voyage,Timour 2026-09,à vérifier
+dripper-075,Snow Peak,Dripper,Snow Peak Dripper,cone,high,Papier,Outdoor,Timour 2026-09,à vérifier
+dripper-076,Cafflano,Cafflano,Cafflano,hybrid,variable,Dédié,Tout-en-un,Timour 2026-09,à vérifier
+dripper-077,Kuju,Coffee Brewer,Kuju Coffee Brewer,cone,high,Sachet,Nomade,Timour 2026-09,à vérifier
+dripper-078,Yama,Glass Dripper,Yama Glass Dripper,cone,medium,Papier,Verre,Timour 2026-09,à vérifier
+dripper-079,Tsubame,Dripper,Tsubame Dripper,cone,medium,Papier,Japon,Timour 2026-09,à vérifier
+dripper-080,Miyazaki,Dripper,Miyazaki Dripper,cone,variable,Papier,Artisan/japonais,Timour 2026-09,à vérifier

@@ -12,12 +12,18 @@ enum Haptic: Sendable {
     case saved
     /// A card touched down in the grid.
     case landing
-    /// A card was removed.
+    /// A card was removed, or a save was refused (name too short).
     case deleted
     /// Grid density snapped to a new column count.
     case densityChange
-    /// A card turned past its edge and showed its other face.
-    case flip
+    /// A discrete button press in the brew sheet (chips, rating, axes, More, timer start/stop).
+    case tap
+    /// One second elapsed on the running brew timer.
+    case tick
+    /// The guided timer moved to the next step of a recipe.
+    case stepAdvance
+    /// Dictation started or stopped listening.
+    case listening
 
     var feedback: SensoryFeedback {
         switch self {
@@ -27,8 +33,10 @@ enum Haptic: Sendable {
         case .landing: .impact(flexibility: .soft)
         case .deleted: .warning
         case .densityChange: .selection
-        // Rigid: card stock is stiff, and the tap is the edge going past you.
-        case .flip: .impact(flexibility: .rigid, intensity: 0.7)
+        case .tap: .impact(weight: .medium)
+        case .tick: .impact(weight: .light)
+        case .stepAdvance: .impact(weight: .light)
+        case .listening: .selection
         }
     }
 }
