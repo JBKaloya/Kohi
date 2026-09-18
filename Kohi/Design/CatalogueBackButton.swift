@@ -13,8 +13,11 @@ struct CatalogueBackButton: View {
                     .font(.system(size: 10, weight: .semibold))
                 Text(title)
                     .catalogueLabel()
+                    .lineLimit(1)
+                    .fixedSize(horizontal: true, vertical: false)
             }
             .foregroundStyle(Palette.inkMuted)
+            .fixedSize(horizontal: true, vertical: false)
             .frame(minWidth: 44, minHeight: 44, alignment: .leading)
             .contentShape(Rectangle())
         }

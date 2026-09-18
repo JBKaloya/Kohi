@@ -151,7 +151,6 @@ struct VocabTests {
             "Recipes/RecipeTabs.swift",
             "Setup/ProfileSheet.swift",
             "Recipes/RecipeDetailSheet.swift",
-            "Edit/BrewSheet.swift",
             "Detail/CaptionBlock.swift",
             "Grid/GridScreen.swift",
         ]
@@ -175,9 +174,10 @@ struct DictationFieldInventoryTests {
     @Test func theListedFreeTextFilesCallDictationField() throws {
         let files = [
             "Edit/CardEditSheet.swift",
-            "Edit/BrewSheet.swift",
             "AI/AskSheet.swift",
             "Recipes/AfterBrewSheet.swift",
+            "Recipes/BrewScopeView.swift",
+            "Recipes/GuidedBrewView.swift",
             "Recipes/RecipeEditSheet.swift",
             "Edit/RoasterSheet.swift",
             "Edit/TagField.swift",
@@ -212,9 +212,93 @@ struct RecipeFlowScreenTests {
         #expect(recipe?.authorGrinder == "Comandante C40")
     }
 
-    @Test func theThreeScreensExistAsTypes() {
+    @Test func theFourTimesExistAsTypes() {
         #expect(String(describing: RecipeDetailSheet.self).isEmpty == false)
+        #expect(String(describing: BrewFlowHost.self).isEmpty == false)
+        #expect(String(describing: BrewScopeView.self).isEmpty == false)
+        #expect(String(describing: BrewKitView.self).isEmpty == false)
         #expect(String(describing: GuidedBrewView.self).isEmpty == false)
         #expect(String(describing: AfterBrewSheet.self).isEmpty == false)
+    }
+
+    @Test func aDisabledPageCtaIsOmittedNotGhosted() throws {
+        let text = try String(contentsOf: VocabTests.kohiRoot.appending(path: "Recipes/RecipeDetailSheet.swift"))
+        #expect(text.contains("if canBrew"))
+        #expect(!text.contains("canBrew ? Palette.ink : Palette.hairline"))
+        #expect(text.contains("toolbar(.hidden, for: .navigationBar)"))
+    }
+
+    @Test func theCardObjectZoomsOnThePageNotInASheet() throws {
+        let detail = try String(contentsOf: VocabTests.kohiRoot.appending(path: "Detail/CardDetailView.swift"))
+        let object = try String(contentsOf: VocabTests.kohiRoot.appending(path: "Detail/CardObject.swift"))
+        #expect(!detail.contains("CardZoomSheet"))
+        #expect(!detail.contains("fullScreenCover(isPresented: $isZooming)"))
+        #expect(!detail.contains("scrollDisabled(isZooming)"))
+        #expect(!detail.contains("scrollClipDisabled()"))
+        #expect(object.contains("MagnifyGesture()"))
+        #expect(object.contains(".mask(plate)"))
+        #expect(object.contains("Motion.Object.zoomTap"))
+        #expect(object.contains("if !zoomed, tilt.isAvailable"))
+        #expect(object.contains("zoomed ? 0 : tilt.roll"))
+        #expect(!object.contains("isZoomed"))
+    }
+
+    @Test func grindIsARailAndTheKeyboardHidesTheFooter() throws {
+        let kit = try String(contentsOf: VocabTests.kohiRoot.appending(path: "Recipes/BrewKitView.swift"))
+        #expect(kit.contains("GrindRail"))
+        #expect(!kit.contains("keyboardType(.decimalPad)"))
+        #expect(kit.contains("if !fieldFocused"))
+        let list = try String(contentsOf: VocabTests.kohiRoot.appending(path: "Detail/BrewList.swift"))
+        #expect(list.contains("CatalogueDate.happened"))
+        #expect(list.contains("recipesBlock"))
+        #expect(list.contains("brewsBlock"))
+        let flow = try String(contentsOf: VocabTests.kohiRoot.appending(path: "Design/StepFlow.swift"))
+        #expect(flow.contains("if !fieldFocused"))
+        #expect(flow.contains("scrollDismissesKeyboard"))
+    }
+}
+
+struct DictationQueueTests {
+    @Test func permissionIsAskedOffTheMainActor() throws {
+        let dictation = try String(contentsOf: VocabTests.kohiRoot.appending(path: "Scan/Dictation.swift"))
+        #expect(dictation.contains("nonisolated enum DictationAuth"))
+        #expect(dictation.contains("@concurrent"))
+        #expect(dictation.contains("DictationAuth.request()"))
+        #expect(!dictation.contains("assumeIsolated"))
+        #expect(!dictation.contains("SpeechAnalyzerSession"))
+        #expect(!dictation.contains("startAnalyzer"))
+        #expect(!dictation.contains("task?.finish()"))
+        #expect(dictation.contains("Task { @MainActor [weak self] in"))
+        // `prepare()` before `inputNode` is the CoreAudio abort:
+        // `required condition is false: inputNode != nil || outputNode != nil`
+        #expect(!dictation.contains("preparedInputFormat"))
+        #expect(!dictation.contains("engine.prepare()"))
+        #expect(dictation.contains("let input = engine.inputNode"))
+    }
+
+    @Test func everyDictateSurfaceSharesDictation() throws {
+        let files = [
+            "Design/DictationField.swift",
+            "Recipes/BrewScopeView.swift",
+            "Edit/CardEditSheet.swift",
+            "Edit/RoasterSheet.swift",
+            "Edit/TagField.swift",
+            "Recipes/AfterBrewSheet.swift",
+            "Recipes/RecipeEditSheet.swift",
+            "Setup/GrindConverterSheet.swift",
+            "Setup/EquipmentSheet.swift",
+            "Setup/WaterSheet.swift",
+            "AI/AskSheet.swift",
+            "AI/AIFeedbackScale.swift",
+        ]
+        for file in files {
+            let text = try String(contentsOf: VocabTests.kohiRoot.appending(path: file))
+            #expect(
+                text.contains("DictationField") || text.contains("Dictation()"),
+                "\(file) has no dictation"
+            )
+            #expect(!text.contains("SFSpeechRecognizer("), "\(file) talks to Speech itself")
+            #expect(!text.contains("SpeechAnalyzer"), "\(file) talks to SpeechAnalyzer")
+        }
     }
 }

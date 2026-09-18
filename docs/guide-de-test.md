@@ -131,26 +131,30 @@ Deux rangées sont grisées avec la mention « soon » : *Import from another ap
 
 1. Ouvre un café depuis **Coffees**.
 2. Descends jusqu'à **Log a brew**. Tape dessus.
-3. **Avant de remplir quoi que ce soit, regarde ce qui est déjà là.**
+3. Tu es sur **Scope** : format, dose, eau, puis les recettes. **Avant de remplir quoi que ce soit, regarde ce qui est déjà là.**
 4. Tape **Dictate** en haut et dis, à voix normale, quelque chose comme :
    > « 18 in, 250 of water, two forty-five, four stars »
 5. Regarde les champs se remplir et se surligner. Tape sur un champ surligné pour annuler ce qu'il a compris.
-6. Complète ce qui manque : **Coffee dose**, **Water weight**, **Time**, **Grind**, **Temp**.
-7. Donne une note de 1 à 5 dans **Rating**.
-8. Déplie **Taste** et bouge deux ou trois des sept curseurs (Acidity, Bitterness, Sweetness, Aroma, Aftertaste, Body, Clarity).
-9. Dans **Correction**, dis si l'acidité, l'amertume et le corps étaient *trop peu* (−), *bien* (·) ou *trop* (+).
-10. Regarde ce qui apparaît sous **Suggested correction**. Choisis un des trois mouvements, ou le seul s'il n'y a pas de réseau.
-11. Tape **Save**.
+6. Choisis une taille (**1 cup** / **2 cups**). Les recettes hors-dose restent visibles, scalées, avec une ligne `scaled from … g`. Ultimate n'apparaît qu'une fois.
+7. Tape **Kit**. Vérifie méthode, bouilloire, eau, moulin, filtre.
+8. Tape **Already brewed** (ou **Brew now** si tu brasses pour de vrai — le timer guidé, puis After).
+9. Sur **After** : donne une note de 1 à 5 dans **Rating**.
+10. Déplie **Taste** et bouge deux ou trois des sept curseurs (Acidity, Bitterness, Sweetness, Aroma, Aftertaste, Body, Clarity). Le tracé plus clair est le brew précédent, pas un pré-remplissage.
+11. Dans **Correction**, dis si l'acidité, l'amertume et le corps étaient *trop peu* (−), *bien* (·) ou *trop* (+).
+12. Regarde ce qui apparaît sous **Suggested correction**. Choisis un des trois mouvements, ou le seul s'il n'y a pas de réseau.
+13. Le champ **Comment** doit rester au-dessus de **Save**, pas dessous. Tape **Save**.
 
 ### Ce que tu devrais voir
 
-La feuille arrive déjà remplie : la méthode, ton matériel sous **With**, ton eau sous **Water**, une température proposée selon le niveau de torréfaction. L'idée est que pour un café habituel, **Save** suffise presque tout de suite.
+La feuille arrive déjà remplie : la méthode, ton matériel, ton eau, une mouture dans l'unité de ton moulin, une température proposée selon le niveau de torréfaction. L'idée est que pour un café habituel, **Save** suffise presque tout de suite.
 
 Le ratio se calcule pendant que tu tapes (`1:16` s'il tombe rond, `1:14.3` sinon).
 
 **Suggested correction** propose jusqu'à **trois** choses à changer, une variable chacune, du plus doux au plus fort. Hors ligne, une seule. Pas une liste de conseils libres.
 
 De retour sur la fiche du café, ton extraction apparaît dans une section **Brews** : nom de recette + rating, puis dose · ratio · temp.
+
+Éditer un brew de l'historique rouvre **le même parcours** (After, Kit et Scope éditables, pas de timer).
 
 ### Questions
 
@@ -166,16 +170,17 @@ De retour sur la fiche du café, ton extraction apparaît dans une section **Bre
 
 ### À faire
 
-1. Va sur l'onglet **Recipes**.
+1. Va sur l’onglet **Recipes**.
 2. Tape **From the pros**. Ouvre une recette (par exemple V60 « Ultimate »).
 3. Sous **Brew this**, tape un café récent (checkmark) ou **Another coffee…**.
-4. Tape **Brew**. L'écran guidé s'ouvre : un seul bloc, la masse cible, le chrono.
-5. Tape le bloc pour **Next**. Laisse une étape avancer toute seule si elle le peut.
-6. À la fin, lis **Total brew time** (réel vs cible), puis note et **Save** sur la feuille Après.
+4. Tape **Brew**. Tu n’es **pas** dans le bloom : d’abord **Scope**, puis **Kit** (Stagg, eau, moulin).
+5. Tape **Brew now**. L’écran guidé s’ouvre : un seul bloc, la masse cible, le chrono.
+6. Tape le bloc pour **Next**. Laisse une étape avancer toute seule si elle le peut.
+7. À la fin, lis **Total brew time** (réel vs cible), puis note et **Save** sur After.
 
 ### Ce que tu devrais voir
 
-Trois écrans, pas six : la recette, le brew guidé, l'après. Pas de « Which coffee ? / Which recipe ? ».
+Le même parcours que **Log a brew**, pas une feuille différente. Un brew loggé depuis From the pros a les **mêmes** champs remplis (eau, mouture, filtre, débit à l’enregistrement) qu’un brew loggé depuis la carte.
 
 La fiche recette montre Parameters (dont **For your grinder**), les étapes avec drainage, **Total brew time**, puis Brew this.
 
@@ -183,8 +188,8 @@ Pendant le brew, tu vois `to 300 g` et `now 168 g` — où la balance devrait en
 
 ### Questions
 
-1. **Clair ?** Avec le téléphone posé, la bouilloire à la main, est-ce que tu arrives à suivre ? Est-ce que tu vois ce qu'il faut faire *maintenant* ?
-2. **À modifier ?** L'avance automatique après 3 s — trop tôt, trop tard, ou pile ?
+1. **Clair ?** Avec le téléphone posé, la bouilloire à la main, est-ce que tu arrives à suivre ? Est-ce que tu vois ce qu’il faut faire *maintenant* ?
+2. **À modifier ?** L’avance automatique après 3 s — trop tôt, trop tard, ou pile ?
 3. **Incorrect ?** Les masses et les temps de la recette te paraissent-ils justes par rapport à ce que tu connais de son auteur ?
 
 ---
@@ -196,7 +201,7 @@ Pendant le brew, tu vois `to 300 g` et `now 168 g` — où la balance devrait en
 ### À faire
 
 1. Ouvre le même café que la dernière fois.
-2. En haut de la feuille, tape **Brew again** (l'appui long reste un raccourci).
+2. Tape **Brew again**. Tu atterris au **Kit**, pas sur une autre feuille.
 3. Constate ce qui est déjà rempli — et notamment si la *Suggested correction* a été appliquée.
 4. Fais le café, note-le, **Save**.
 5. Ouvre un brew, tape **Compare**.

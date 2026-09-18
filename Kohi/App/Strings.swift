@@ -25,6 +25,7 @@ nonisolated enum Copy {
     static let newRecipe = "New recipe"
     static let totalBrewTime = "Total brew time"
     static let dictationUnavailable = "Dictation unavailable"
+    static let whatYoureDoing = "What you're doing"
     static let suggestedEmpty = "Every coffee has a brew. Scan a new one and it will show up here."
     static let addGrinder = "Add your grinder to see this in clicks"
     static let noClickRange = "No click range on file for this grinder yet"

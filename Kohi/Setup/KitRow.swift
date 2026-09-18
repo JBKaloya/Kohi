@@ -43,6 +43,7 @@ struct KitRow: View {
             row
         }
         .buttonStyle(.plain)
+        .accessibilityAddTraits(isSelected ? .isSelected : [])
         .offset(x: reveal ? -72 : 0)
     }
 
@@ -80,17 +81,10 @@ struct KitRow: View {
 
                 Spacer(minLength: 8)
 
-                if isSelected {
-                    Image(systemName: "checkmark")
-                        .font(.system(size: 10, weight: .semibold))
-                        .foregroundStyle(Palette.ink)
-                }
-
-                Text(item.kind.label)
-                    .catalogueLabel()
+                CatalogueMark(text: item.kind.label, isSelected: isSelected)
                     .multilineTextAlignment(.trailing)
             }
-            Rectangle().fill(Palette.hairline).frame(height: 1)
+            Rectangle().fill(CatalogueChoice.rule(isSelected)).frame(height: 1)
         }
         .padding(.vertical, 2)
     }
@@ -138,11 +132,10 @@ struct WaterKitRow: View {
                     }
                     Spacer(minLength: 8)
                     if profile.isDefault {
-                        Text("Default")
-                            .catalogueLabel()
+                        CatalogueMark(text: "Default", isSelected: true)
                     }
                 }
-                Rectangle().fill(Palette.hairline).frame(height: 1)
+                Rectangle().fill(CatalogueChoice.rule(profile.isDefault)).frame(height: 1)
             }
             .padding(.vertical, 2)
         }

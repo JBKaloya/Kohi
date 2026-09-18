@@ -60,6 +60,7 @@ struct TagChip: View {
             HStack(spacing: 5) {
                 Text(text)
                     .font(Typography.tag)
+                    .lineLimit(1)
                 if showsRemove {
                     Image(systemName: "xmark")
                         .font(.system(size: 8, weight: .semibold))

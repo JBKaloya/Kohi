@@ -90,6 +90,8 @@ struct FormField<Value: View>: View {
                 Text(label)
                     .catalogueLabel()
                     .foregroundStyle(chromeLabel.color)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.85)
                     .frame(width: labelWidth, alignment: .leading)
                 value
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -294,6 +296,8 @@ struct NumberRow: View {
                 .foregroundStyle(
                     FieldChrome.label(presence: presence, isEmpty: isEmpty, isFocused: isFocused).color
                 )
+                .lineLimit(1)
+                .fixedSize(horizontal: true, vertical: false)
             HStack(spacing: 4) {
                 field
                     .frame(width: width - 20)

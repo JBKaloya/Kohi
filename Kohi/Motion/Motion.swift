@@ -74,6 +74,10 @@ enum Motion {
         /// Resting shadow radius and drop, as fractions of card width.
         static let shadowRadius: CGFloat = 0.06
         static let shadowDrop: CGFloat = 0.03
+        /// Pinch range on the object itself. 1 is the object at rest.
+        static let zoomRange: ClosedRange<CGFloat> = 1...5
+        /// Double-tap zooms *into* the plate, still clipped to the silhouette.
+        static let zoomTap: CGFloat = 2.5
     }
 
     // MARK: - Tilting the card with the phone

@@ -326,7 +326,7 @@ nonisolated struct Recipe: Identifiable, Codable, Hashable, Sendable {
     func seededBrew(date: Date = .now, size: RecipeSize? = nil) -> Brew {
         let scaled = size.map { RecipeScaling.scaled(self, to: $0) }
         let source = scaled?.recipe ?? self
-        let link = brewLink()
+        let link = source.brewLink()
         return Brew(
             date: date,
             method: source.method,

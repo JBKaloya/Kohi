@@ -6,9 +6,14 @@ import os
 
 /// Speech to text, on device, for the length of a sentence.
 ///
-/// Two engines behind one surface: `SpeechAnalyzer` on iOS 26, which is
-/// faster and needs no server, and `SFSpeechRecognizer` before that. Both are
-/// forced on device — a brew note is not worth sending to Apple either.
+/// `SFSpeechRecognizer` only. Two live crashes that look like Speech:
+/// 1. `requestPermission()`: Speech and AVAudio call back off the main actor,
+///    and resuming a main-actor continuation from that callback is a Swift 6
+///    isolation trap (`_swift_task_checkIsolatedSwift` → libdispatch).
+/// 2. `AVAudioEngine.prepare()` before `inputNode` exists. CoreAudio aborts
+///    with `inputNode != nil || outputNode != nil` — an `NSException`, not a
+///    Swift Error, so `do/catch` cannot save it. Touch `inputNode` first;
+///    `start()` prepares the graph itself.
 @Observable
 @MainActor
 final class Dictation {
@@ -23,16 +28,12 @@ final class Dictation {
     /// What has been heard so far, updated as you speak.
     private(set) var transcript = ""
 
-    private let engine = AVAudioEngine()
-
-    // The pre-26 path.
+    /// Fresh each listen. Reusing a stopped engine and calling `prepare()` on
+    /// an empty graph is the CoreAudio abort above.
+    private var engine: AVAudioEngine?
     private var recognizer: SFSpeechRecognizer?
     private var request: SFSpeechAudioBufferRecognitionRequest?
     private var task: SFSpeechRecognitionTask?
-
-    // The iOS 26 path, kept opaque so the type does not leak into the build
-    // on older SDK paths.
-    private var analyzerSession: (any AnalyzerSession)?
     /// `removeTap` throws if nothing is installed. The engine does not tell
     /// us, so we have to.
     private var hasTap = false
@@ -51,105 +52,64 @@ final class Dictation {
 
     func start() async {
         guard state != .listening, !isStarting else { return }
+        guard DictationMic.acquire() else { return }
         isStarting = true
         defer { isStarting = false }
         transcript = ""
 
-        guard await requestPermission() else {
+        guard await DictationAuth.request() else {
+            DictationMic.release()
             state = .denied
             return
         }
 
         do {
             try configureSession()
-            if #available(iOS 26.0, *) {
-                try await startAnalyzer()
-            } else {
-                try startRecognizer()
-            }
+            try await startRecognizer()
             state = .listening
         } catch {
             Log.app.error("dictation could not start: \(error)")
-            cancel()
+            tearDown()
             state = .unavailable
         }
     }
 
     /// Ends the recording and returns the final transcript. Returning it
     /// rather than only publishing it means the caller cannot act on a stale
-    /// value by mistake — which is also why this waits for the engine to hand
-    /// over its last words instead of reading whatever had arrived so far.
+    /// value by mistake.
     @discardableResult
     func stop() async -> String {
-        let session = releaseAudio()
-        await session?.finish()
-        endSession()
+        tearDown()
         return transcript
     }
 
     /// Ends the recording without waiting for a last result, for when the
     /// screen is going away and nobody is left to read the text.
     func cancel() {
-        let session = releaseAudio()
-        if let session { Task { await session.finish() } }
-        endSession()
+        tearDown()
     }
 
-    /// Stops the microphone and hands back the analyzer session still owing a
-    /// final result, if there is one.
-    private func releaseAudio() -> (any AnalyzerSession)? {
-        stopCapture(finishTask: true)
-        defer { analyzerSession = nil }
-        return analyzerSession
-    }
+    // MARK: - Audio graph
 
-    /// Tear down the tap without finishing the recognition task — the
-    /// callback already owns that, and `finish()` from inside it is the
-    /// libdispatch assertion.
-    private func finishListening() {
-        stopCapture(finishTask: false)
-        endSession()
-    }
-
-    private func failListening() {
-        stopCapture(finishTask: false)
-        endSession()
-        state = .unavailable
-    }
-
-    private func stopCapture(finishTask: Bool) {
-        if engine.isRunning { engine.stop() }
-        removeTapIfNeeded()
-        engine.reset()
+    private func tearDown() {
+        if let engine {
+            if engine.isRunning { engine.stop() }
+            if hasTap {
+                engine.inputNode.removeTap(onBus: 0)
+                hasTap = false
+            }
+            engine.reset()
+        }
+        engine = nil
         request?.endAudio()
-        if finishTask { task?.finish() }
         request = nil
         task = nil
         recognizer = nil
-    }
-
-    private func removeTapIfNeeded() {
-        guard hasTap else { return }
-        engine.inputNode.removeTap(onBus: 0)
-        hasTap = false
-    }
-
-    private func endSession() {
         try? AVAudioSession.sharedInstance().setActive(
             false, options: .notifyOthersOnDeactivation
         )
         if state == .listening { state = .idle }
-    }
-
-    private func requestPermission() async -> Bool {
-        let speech = await withCheckedContinuation { continuation in
-            SFSpeechRecognizer.requestAuthorization { continuation.resume(returning: $0) }
-        }
-        guard speech == .authorized else { return false }
-
-        return await withCheckedContinuation { continuation in
-            AVAudioApplication.requestRecordPermission { continuation.resume(returning: $0) }
-        }
+        DictationMic.release()
     }
 
     private func configureSession() throws {
@@ -158,21 +118,18 @@ final class Dictation {
         try session.setActive(true, options: .notifyOthersOnDeactivation)
     }
 
-    // MARK: - SFSpeechRecognizer, iOS 18 to 25
-
-    private func startRecognizer() throws {
+    private func startRecognizer() async throws {
         let recognizer = SFSpeechRecognizer(locale: .current)
             ?? SFSpeechRecognizer(locale: Locale(identifier: "en-US"))
         guard let recognizer, recognizer.isAvailable else {
             throw DictationError.unavailable
         }
+        recognizer.defaultTaskHint = .dictation
         self.recognizer = recognizer
 
         let request = SFSpeechAudioBufferRecognitionRequest()
         request.shouldReportPartialResults = true
         request.addsPunctuation = true
-        // On-device FR is often missing; requiring it crashes the recogniser
-        // instead of failing cleanly. We only force it when the locale can.
         if recognizer.supportsOnDeviceRecognition {
             request.requiresOnDeviceRecognition = true
         } else {
@@ -182,84 +139,96 @@ final class Dictation {
         self.request = request
 
         task = recognizer.recognitionTask(with: request) { [weak self] result, error in
-            Task { @MainActor in
+            let text = result?.bestTranscription.formattedString
+            let isFinal = result?.isFinal == true
+            let err = error
+            Task { @MainActor [weak self] in
                 guard let self else { return }
-                if let result {
-                    self.transcript = result.bestTranscription.formattedString
-                }
-                if let error {
-                    Log.app.notice("dictation: \(error)")
-                    self.failListening()
+                if let text { self.transcript = text }
+                if let err {
+                    Log.app.notice("dictation: \(err)")
+                    self.tearDown()
+                    self.state = .unavailable
                     return
                 }
-                if result?.isFinal == true {
-                    self.finishListening()
+                if isFinal, self.state == .listening {
+                    self.tearDown()
                 }
             }
         }
 
-        let format = try preparedInputFormat()
-        removeTapIfNeeded()
-        engine.inputNode.installTap(onBus: 0, bufferSize: 1024, format: format) { buffer, _ in
+        let engine = AVAudioEngine()
+        self.engine = engine
+        // Accessing `inputNode` is what creates it. `prepare()` before that
+        // aborts in CoreAudio and is not a Swift error.
+        let input = engine.inputNode
+        let format = try await hardwareFormat(on: input)
+        input.installTap(onBus: 0, bufferSize: 1024, format: format) { buffer, _ in
             request.append(buffer)
         }
         hasTap = true
-        engine.prepare()
         try engine.start()
     }
 
-    /// After the first mic grant the input node can still report 0 Hz until
-    /// the session is active and the graph is prepared.
-    private func preparedInputFormat() throws -> AVAudioFormat {
-        engine.prepare()
-        var format = engine.inputNode.outputFormat(forBus: 0)
-        if format.sampleRate <= 0 || format.channelCount <= 0 {
-            try AVAudioSession.sharedInstance().setActive(true)
-            engine.prepare()
-            format = engine.inputNode.outputFormat(forBus: 0)
+    /// After the first mic grant the node can still report 0 Hz for a beat.
+    /// Wait; do not `prepare()` an empty graph to force a format.
+    private func hardwareFormat(on input: AVAudioInputNode) async throws -> AVAudioFormat {
+        for attempt in 0..<8 {
+            let format = input.outputFormat(forBus: 0)
+            if format.sampleRate > 0, format.channelCount > 0 {
+                return format
+            }
+            if attempt == 0 {
+                try AVAudioSession.sharedInstance().setActive(true)
+            }
+            try await Task.sleep(for: .milliseconds(50))
         }
-        guard format.sampleRate > 0, format.channelCount > 0 else {
-            throw DictationError.unavailable
+        throw DictationError.unavailable
+    }
+}
+
+/// Speech / mic permission callbacks are not on the main actor.
+///
+/// Approachable concurrency (`NonisolatedNonsendingByDefault`) keeps a
+/// `nonisolated async` function on the caller's actor. `start()` is on
+/// the main actor, so a continuation created there is main-actor isolated —
+/// and Speech resumes it on `com.apple.root.default-qos`, which is the
+/// libdispatch breakpoint. `@concurrent` hops off before the wait.
+nonisolated enum DictationAuth {
+    @concurrent
+    static func request() async -> Bool {
+        let speech: SFSpeechRecognizerAuthorizationStatus = await withCheckedContinuation { continuation in
+            SFSpeechRecognizer.requestAuthorization { status in
+                continuation.resume(returning: status)
+            }
         }
-        return format
+        guard speech == .authorized else { return false }
+
+        return await withCheckedContinuation { continuation in
+            AVAudioApplication.requestRecordPermission { allowed in
+                continuation.resume(returning: allowed)
+            }
+        }
+    }
+}
+
+/// One microphone. Brew has a page-level Dictate and a notes field; both
+/// would otherwise install a tap on the same input node.
+@MainActor
+private enum DictationMic {
+    static var busy = false
+
+    static func acquire() -> Bool {
+        if busy { return false }
+        busy = true
+        return true
     }
 
-    // MARK: - SpeechAnalyzer, iOS 26
-
-    @available(iOS 26.0, *)
-    private func startAnalyzer() async throws {
-        do {
-            let session = try await SpeechAnalyzerSession(locale: .current) { [weak self] text in
-                Task { @MainActor in self?.transcript = text }
-            }
-            analyzerSession = session
-            _ = try preparedInputFormat()
-            removeTapIfNeeded()
-            try session.attach(to: engine)
-            hasTap = true
-            engine.prepare()
-            try engine.start()
-        } catch {
-            // No model for this locale, or the analyzer refused: the older
-            // recogniser is still there. Never removeTap here unless we
-            // installed one — that exception is the Dictate crash.
-            Log.app.notice("speech analyzer unavailable, using the recogniser (\(error))")
-            if let session = analyzerSession {
-                analyzerSession = nil
-                Task { await session.finish() }
-            }
-            try startRecognizer()
-        }
+    static func release() {
+        busy = false
     }
 }
 
 enum DictationError: Error {
     case unavailable
-}
-
-/// The shape both engines are used through, so `Dictation` holds one thing.
-protocol AnalyzerSession: AnyObject {
-    func attach(to engine: AVAudioEngine) throws
-    /// Ends the feed and returns once the last result has been delivered.
-    func finish() async
 }

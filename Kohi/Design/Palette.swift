@@ -23,4 +23,12 @@ enum Palette {
 
     /// Scan flow runs dark so the camera image carries the screen.
     static let scanBackdrop = Color(red: 0.055, green: 0.051, blue: 0.047)
+
+    /// Comparison identity for brew A. Not chrome — buttons, tabs, and
+    /// selection stay ink. `#824E34`.
+    static let primary = Color(red: 130 / 255, green: 78 / 255, blue: 52 / 255)
+
+    /// Comparison identity for brew B. Cooler than primary so the two
+    /// overlays read apart on paper. `#3D5C56`.
+    static let secondary = Color(red: 61 / 255, green: 92 / 255, blue: 86 / 255)
 }

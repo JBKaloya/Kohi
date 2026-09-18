@@ -1,4 +1,4 @@
-import SwiftUI
+import Foundation
 
 /// The candidates a brew starts from, newest first.
 nonisolated enum BrewFlow {

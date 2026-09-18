@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		AB579001304572E3005DD5D9 /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = 0100000000000000000000C2 /* Supabase */; };
 		AB579002304572E3005DD5DA /* SnapshotTesting in Frameworks */ = {isa = PBXBuildFile; productRef = 0100000000000000000000C4 /* SnapshotTesting */; };
+		0100000000000000000000F6 /* KohiBrewWidget.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 0100000000000000000000F0 /* KohiBrewWidget.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -19,11 +20,19 @@
 			remoteGlobalIDString = 0100000000000000000000A2;
 			remoteInfo = Kohi;
 		};
+		0100000000000000000000FD /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0100000000000000000000A1 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 0100000000000000000000F3;
+			remoteInfo = KohiBrewWidget;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		0100000000000000000000A5 /* Kohi.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Kohi.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0100000000000000000000D2 /* KohiTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = KohiTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		0100000000000000000000F0 /* KohiBrewWidget.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = KohiBrewWidget.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -33,6 +42,13 @@
 				Info.plist,
 			);
 			target = 0100000000000000000000A2 /* Kohi */;
+		};
+		0100000000000000000000F4 /* Exceptions for "KohiBrewWidget" folder in "KohiBrewWidget" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 0100000000000000000000F3 /* KohiBrewWidget */;
 		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
@@ -48,6 +64,19 @@
 		0100000000000000000000D1 /* KohiTests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = KohiTests;
+			sourceTree = "<group>";
+		};
+		0100000000000000000000F1 /* KohiBrewShared */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = KohiBrewShared;
+			sourceTree = "<group>";
+		};
+		0100000000000000000000F2 /* KohiBrewWidget */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				0100000000000000000000F4 /* Exceptions for "KohiBrewWidget" folder in "KohiBrewWidget" target */,
+			);
+			path = KohiBrewWidget;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -69,6 +98,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		0100000000000000000000F9 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -77,6 +113,8 @@
 			children = (
 				0100000000000000000000A6 /* Kohi */,
 				0100000000000000000000D1 /* KohiTests */,
+				0100000000000000000000F1 /* KohiBrewShared */,
+				0100000000000000000000F2 /* KohiBrewWidget */,
 				0100000000000000000000A4 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -86,6 +124,7 @@
 			children = (
 				0100000000000000000000A5 /* Kohi.app */,
 				0100000000000000000000D2 /* KohiTests.xctest */,
+				0100000000000000000000F0 /* KohiBrewWidget.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -100,13 +139,16 @@
 				0100000000000000000000A7 /* Sources */,
 				0100000000000000000000A8 /* Frameworks */,
 				0100000000000000000000A9 /* Resources */,
+				0100000000000000000000F5 /* Embed App Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				0100000000000000000000FE /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				0100000000000000000000A6 /* Kohi */,
+				0100000000000000000000F1 /* KohiBrewShared */,
 			);
 			name = Kohi;
 			packageProductDependencies = (
@@ -139,6 +181,29 @@
 			productReference = 0100000000000000000000D2 /* KohiTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
+		0100000000000000000000F3 /* KohiBrewWidget */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 0100000000000000000000FC /* Build configuration list for PBXNativeTarget "KohiBrewWidget" */;
+			buildPhases = (
+				0100000000000000000000F7 /* Sources */,
+				0100000000000000000000F9 /* Frameworks */,
+				0100000000000000000000F8 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				0100000000000000000000F2 /* KohiBrewWidget */,
+				0100000000000000000000F1 /* KohiBrewShared */,
+			);
+			name = KohiBrewWidget;
+			packageProductDependencies = (
+			);
+			productName = KohiBrewWidget;
+			productReference = 0100000000000000000000F0 /* KohiBrewWidget.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -155,6 +220,9 @@
 					0100000000000000000000D3 = {
 						CreatedOnToolsVersion = 26.3;
 						TestTargetID = 0100000000000000000000A2;
+					};
+					0100000000000000000000F3 = {
+						CreatedOnToolsVersion = 26.3;
 					};
 				};
 			};
@@ -178,6 +246,7 @@
 			targets = (
 				0100000000000000000000A2 /* Kohi */,
 				0100000000000000000000D3 /* KohiTests */,
+				0100000000000000000000F3 /* KohiBrewWidget */,
 			);
 		};
 /* End PBXProject section */
@@ -188,6 +257,24 @@
 			buildActionMask = 2147483647;
 			files = (
 			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		0100000000000000000000F8 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		0100000000000000000000F5 /* Embed App Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				0100000000000000000000F6 /* KohiBrewWidget.appex in Embed App Extensions */,
+			);
+			name = "Embed App Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
@@ -207,6 +294,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		0100000000000000000000F7 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -214,6 +308,11 @@
 			isa = PBXTargetDependency;
 			target = 0100000000000000000000A2 /* Kohi */;
 			targetProxy = 0100000000000000000000D7 /* PBXContainerItemProxy */;
+		};
+		0100000000000000000000FE /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 0100000000000000000000F3 /* KohiBrewWidget */;
+			targetProxy = 0100000000000000000000FD /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -307,7 +406,7 @@
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_ENTITLEMENTS = Kohi/Kohi.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 5;
+				CURRENT_PROJECT_VERSION = 6;
 				DEVELOPMENT_TEAM = 49PK3NA5D2;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -317,6 +416,7 @@
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Kohi uses your location to put nearby coffee shops and roasters at the top of the place search.";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "So you can say what you brewed instead of typing it. Recording stops the moment you tap again.";
 				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "Speech is turned into text on this phone. Nothing you say is sent anywhere.";
+				INFOPLIST_KEY_NSSupportsLiveActivities = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UIStatusBarStyle = UIStatusBarStyleDarkContent;
@@ -342,7 +442,7 @@
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_ENTITLEMENTS = Kohi/Kohi.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 5;
+				CURRENT_PROJECT_VERSION = 6;
 				DEVELOPMENT_TEAM = 49PK3NA5D2;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -352,6 +452,7 @@
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Kohi uses your location to put nearby coffee shops and roasters at the top of the place search.";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "So you can say what you brewed instead of typing it. Recording stops the moment you tap again.";
 				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "Speech is turned into text on this phone. Nothing you say is sent anywhere.";
+				INFOPLIST_KEY_NSSupportsLiveActivities = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UIStatusBarStyle = UIStatusBarStyleDarkContent;
@@ -405,6 +506,59 @@
 			};
 			name = Release;
 		};
+		0100000000000000000000FA /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 6;
+				DEVELOPMENT_TEAM = 49PK3NA5D2;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = KohiBrewWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Kohi;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = studio.jbk.kohiapp.BrewWidget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		0100000000000000000000FB /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 6;
+				DEVELOPMENT_TEAM = 49PK3NA5D2;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = KohiBrewWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Kohi;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = studio.jbk.kohiapp.BrewWidget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = 1;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -431,6 +585,15 @@
 			buildConfigurations = (
 				0100000000000000000000D8 /* Debug */,
 				0100000000000000000000D9 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		0100000000000000000000FC /* Build configuration list for PBXNativeTarget "KohiBrewWidget" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0100000000000000000000FA /* Debug */,
+				0100000000000000000000FB /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

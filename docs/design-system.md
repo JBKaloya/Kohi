@@ -32,6 +32,8 @@ Ce document décrit le système tel qu’il est implémenté. Les valeurs font f
 | Inclinaison relative du téléphone | `Kohi/Motion/DeviceTilt.swift` |
 | Densité de grille | `Kohi/Grid/GridDensity.swift` |
 | Chips / flow | `Kohi/Edit/TagField.swift` |
+| Rails | `Kohi/Design/AxisRail.swift`, `Kohi/Design/GrindRail.swift` |
+| Dates relatives | `Kohi/Design/CatalogueDate.swift` |
 | Style de press | `PressStyle` dans `Motion.swift` |
 | Police bundle | `Kohi/Resources/AngustaTest-DemiBold.otf` + `UIAppFonts` dans `Info.plist` |
 
@@ -54,6 +56,8 @@ Toutes les couleurs d’archive viennent de `Palette`. Rien n’est « presque p
 | `hairline` | 0.886, 0.867, 0.827 | `#E2DDD3` | Filets de catalogue, contours de chips, empty-state |
 | `cardShadow` | 0.30, 0.26, 0.20 @ 22 % | — | Ombre portée des cartes sur le papier |
 | `scanBackdrop` | 0.055, 0.051, 0.047 | `#0E0D0C` | Fond du flux caméra / review |
+| `primary` | 130/255, 78/255, 52/255 | `#824E34` | Identité du café A sur un radar de comparaison |
+| `secondary` | 61/255, 92/255, 86/255 | `#3D5C56` | Identité du café B sur un radar de comparaison |
 
 ### Usage
 
@@ -61,10 +65,12 @@ Toutes les couleurs d’archive viennent de `Palette`. Rien n’est « presque p
 - **Texte :** `ink` pour le contenu, `inkMuted` pour les métadonnées. Jamais de noir système (`.black` / `.primary`) sur le papier.
 - **Tint des `NavigationStack` d’archive :** `.tint(Palette.ink)`.
 - **Progress / activité :** `.tint(Palette.inkMuted)` sur papier, `.tint(.white)` sur le scan.
-- **Sélection (chip, rating, axe) :** fill `ink`, texte `paper`. Repos : stroke `hairline`, texte `ink`.
+- **Sélection compacte (chip, rating, axe, cercle StepFlow) :** fill `ink`, texte `paper`. Repos : stroke `hairline`, texte `ink`.
+- **Sélection linéaire (rangée, rail) :** le choisi porte un filet `ink` et une méta inversée (`CatalogueMark`, même capsule qu’un chip). Le reste reste `hairline` / `inkMuted`. Pas de checkmark. `TabRail` : label `ink` vs `inkMuted`, filet sous l’actif.
 - **Scan :** le papier disparaît. Blanc, blanc à ~40–85 % d’opacité, capsules noires translucides. Le bouton primaire « Use » est une capsule blanche, texte `ink`.
+- **Comparaison A/B :** `primary` et `secondary` uniquement sur le radar, sa légende, et les colonnes A/B. Pas sur les boutons, les tabs, ni la sélection.
 
-Ne pas introduire d’accent (bleu système, terracotta, etc.). L’encre et le papier suffisent. La couleur vive appartient aux cartes scannées, pas au chrome.
+Le chrome reste encre et papier. `primary` / `secondary` ne sont pas des accents d’interface : ils identifient deux séries sur un même graphique. La couleur vive des cartes scannées n’entre toujours pas dans le chrome.
 
 ---
 
@@ -102,16 +108,17 @@ textCase(.uppercase)
 foregroundStyle(Palette.inkMuted)
 ```
 
-C’est le style des en-têtes de section (Notes, Brews, Method…), des labels de rangée (Roaster, Dose…), des actions destructives (« Remove from archive », « Discard this scan »), et du tombstone en tête de fiche.
+Sur une rangée étroite (`CatalogueRow`, `FormField`, `CatalogueBackButton`), on ajoute `lineLimit(1)` pour que `RECIPES` ou `COFFEE DOSE` ne cassent pas. Le tombstone de `CardDetailView` applique `catalogueLabel()` puis `.textCase(nil)` : même face et tracking, mais casse naturelle pour le nom / origine / altitude.
 
-Le tombstone de `CardDetailView` applique `catalogueLabel()` puis `.textCase(nil)` : même face et tracking, mais casse naturelle pour le nom / origine / altitude.
+C’est le style des en-têtes de section (Notes, Brews, Method…), des labels de rangée (Roaster, Dose…), des actions destructives (« Remove from archive », « Discard this scan »), et du tombstone en tête de fiche.
 
 Largeur fixe des labels de rangée :
 
 | Surface | Largeur |
 | --- | --- |
+| `CatalogueRow` (paramètres de recette) | **120 pt** (`CatalogueRow.labelColumn`) |
 | `CaptionBlock` (détail) | 78 pt |
-| Formulaires (`CardEditSheet`, `BrewSheet`) | 74 pt |
+| Formulaires (`CardEditSheet`, `BrewScopeView`, `BrewKitView`, `AfterBrewSheet`) | 74 pt |
 | Colonne date / « Card » dans `BrewList` | 52 pt |
 
 ---
@@ -169,6 +176,8 @@ L’inclinaison est **relative** : le premier sample de `DeviceTilt` devient l�
 
 À pleine inclinaison : 5° de rotation 3D, perspective 0.5, translation 10 pt, ombre qui recule de 6 pt (c’est ce qui *soulève* la carte). Un sheen blanc (`plusLighter`, opacity 0.16, bande 55 % de largeur) glisse en travers.
 
+Pinch 1–5× (`zoomRange`) **dans** la silhouette : tilt et sheen s’arrêtent, l’objet ne quitte pas sa place. Double-tap à `zoomTap` (2.5×), toujours masqué par la plaque.
+
 ### Overlay de scan (`Motion.Overlay`)
 
 Le contour se resserre pendant le lock. Chaque propriété est une paire open → locked, interpolée par `progress` :
@@ -216,7 +225,7 @@ Vocabulaire fermé. Chaque cas *veut dire la même chose* partout. Warmup au lau
 | `landing` | impact soft | La carte touche le papier |
 | `deleted` | warning | Une carte quitte l’archive, ou un save impossible (nom trop court) |
 | `densityChange` | selection | Le pinch a snappé un nouveau nombre de colonnes |
-| `tap` | impact medium | Chip, rating, axe, More, start/stop timer dans le brew sheet |
+| `tap` | impact medium | Chip, rating, axe, More, start/stop timer dans le parcours brew |
 | `tick` | impact light | Chaque seconde du timer de brew |
 | `stepAdvance` | impact light | Next d’une étape guidée |
 
@@ -258,7 +267,8 @@ Caméra, overlay, review. Fond `scanBackdrop`. Le chrome est blanc / translucide
 
 | Composant | Fichier | Rôle |
 | --- | --- | --- |
-| `StepFlow` | `Kohi/Design/StepFlow.swift` | Chrome d’une question : segments 24×1, question 22 pt, Skip, Next 52 pt plein. Onboarding et questions. |
+| `BrewFlowHost` | `Kohi/Recipes/BrewFlowHost.swift` | Seul présentateur du parcours brew (Scope, Kit, Pour, After). |
+| `StepFlow` | `Kohi/Design/StepFlow.swift` | Chrome d’une question : segments 24×1, question 22 pt, Skip, Next 52 pt plein. Onboarding, Scope. |
 | `InsightBlock` | `Kohi/Design/InsightBlock.swift` | Toute sortie déduite ou modèle : titre, phrase, **provenance obligatoire** (`DERIVED FROM…` / `SOURCE:…`). Sparkles si modèle. |
 | `FieldGroup` | `Kohi/Design/FieldGroup.swift` | Groupes d’édition seulement (jamais en lecture). Filet, pas de fond. |
 | `DictationField` | `Kohi/Design/DictationField.swift` | Mic + Dictate sur tout texte libre. |
@@ -343,7 +353,11 @@ Objet nu. `CardImageView` + ombre interpolée. `PressStyle` 0.965. Pas de coin f
 
 ### `CardObject`
 
-La même image, traitée comme une chose : tilt, sheen, double ombre. Le sheen est maské par l’image (pas de halo hors carte). Stoppe le motion quand la scène n’est plus active.
+La même image, traitée comme une chose : tilt, sheen, double ombre. Le sheen est maské par l’image (pas de halo hors carte). Stoppe le motion quand la scène n’est plus active, et dès qu’un pinch commence. Pinch 1–5× et double-tap zooment **dans** la silhouette (`mask` de la plaque au repos) — pas d’objet flottant, le scroll de la fiche reste. Le picker Flyer / Scan sous l’objet change la variante ; il ne commute plus au tap.
+
+### `CatalogueBackButton`
+
+Chevron 10 pt + label catalogue, 44 pt de cible, `fixedSize` horizontal. À poser en `safeAreaInset` (comme **COFFEES** / **RECIPES**), pas en `ToolbarItem(placement: .cancellationAction)` — iOS 26 glasserait le contrôle en pastille et casserait le mot.
 
 ### `CardImageView`
 
@@ -357,17 +371,31 @@ La rangée de formulaire. `FieldChrome` décide le ton ; la vue n’invente pas 
 
 « Tombstone » : labels `catalogueLabel`, valeurs `value` + `ink`, filet `hairline` 1 pt entre les rangées, padding V **11**. Pas de container. Place tappable → chevron `arrow.up.right` 9 pt semibold, `inkMuted`.
 
+### `CatalogueChoice` / `CatalogueMark`
+
+Une seule voix de sélection. Compact = inversion (`TagChip`). Linéaire = filet `ink` + `CatalogueMark` (capsule ink / paper) sur la méta de rangée (provenance, kind). `RecipeRowView.isSelected`, `KitRow.isSelected`, listes de café / brew à choisir. Pas de `checkmark`.
+
 ### `BrewList`
 
-Même grammaire, plus dense (padding V **10**, `Typography.tag`). Mouture après le ratio. Rating = 5 dots de 5 pt (`ink` / `hairline`). Recette imprimée en tête, label « Card » / action « Use ». CTA « Log a brew ». Long press : Brew again / Compare with….
+Même grammaire, plus dense (padding V **10**, `Typography.tag`). **Suggested** (et la recette imprimée *Card*) au-dessus du log, pas dedans. Les brews : première ligne = `CatalogueDate` (`just now` / `yesterday` / `3 days` / date) + dots ; deuxième = nom ou méthode · dose · ratio · temp. CTA « Log a brew ». Long press : Brew again / Compare with….
+
+### `CatalogueDate`
+
+Quand un brew, une recette *Mine* ou un sync a eu lieu. Jour même → `just now`. Veille → `yesterday`. 2–5 jours → `3 days`. Au-delà → date (`11 Sep`, avec l’année si ce n’est pas cette année). Pas pour la fraîcheur de torréfaction (`Roasted on` garde la date + `23 d`).
 
 ### `AxisRail`
 
 Rail hairline 1 pt, 11 ticks, dot 8 pt, rangée 34 pt, slop ±10. Tap la valeur courante → `nil`. Accessibilité : `accessibilityAdjustableAction` 0–10.
 
+### `GrindRail`
+
+Même rail hairline, Fine à gauche / Coarse à droite. Pas de `Slider` système. Clics (ou cadran) quand le broyeur a une plage, des `stepsPerRotation`, ou un réglage connu ; sinon les sept grades verbaux (`medium-fine`…). Caption à droite : `22 clicks` ou le mot. Les chips de broyeur vivent au-dessus, comme l’eau.
+
+Le CTA d’un `StepFlow` / Kit / After se replie tant qu’un champ a le clavier — le bouton ne monte pas au milieu de la fiche.
+
 ### `TasteRadar`
 
-Heptagone `Canvas` / `Path`. Rayon, fill, épaisseurs dans `Motion.Radar`. Axe non noté : pas de sommet. Comparaison : stroke `inkMuted`, pas de fill. Animation `Motion.quick`. Un seul élément a11y.
+Heptagone `Canvas` / `Path`. Rayon, fill, épaisseurs dans `Motion.Radar`. Axe non noté : pas de sommet. Fill et dots suivent la couleur de série. Lecture seule : `ink`. Comparaison : A = `primary`, B = `secondary`. Animation `Motion.quick`. Un seul élément a11y.
 
 ### `FlavorPicker`
 
@@ -375,7 +403,11 @@ Recherche, Quick, All replié (9 familles). Encre / hairline / papier, jamais le
 
 ### `BrewCompareSheet`
 
-Picker B + chips Best / Previous / Any coffee same method. Radar A `ink` / B `inkMuted`. Rangées A · B · Δ. Phrase + tag `practice`.
+Picker B + chips Best / Previous / Any coffee same method. Radar A `primary` / B `secondary`, légende A · B, colonnes teintées. Rangées A · B · Δ. Phrase + tag `practice`.
+
+### CTA bas de page
+
+Capsule 52 pt, fill `ink`, texte `paper`. Si l’action n’est pas encore possible, **le bouton disparaît** — pas de fill `hairline` fantôme. `RecipeDetailSheet` : Brew n’existe que lorsqu’un café est choisi.
 
 ### `CardProfile`
 
@@ -470,7 +502,7 @@ Les labels de champs sont le vocabulaire du café (Roaster, Producer, Process…
 - Color scheme forcé light. Contraste ink / paper volontairement chaud, pas WCAG-max ; ne pas « corriger » vers du noir 100 %.
 - `ScanButton` / `CircleButton` ont un `accessibilityLabel`. Les images de cartes sont `Image(decorative:)` — le nom vit dans le catalogue, pas dans l’alt de la tuile.
 - iOS 26 : glass sur le bouton circulaire, zoom navigation. Fallbacks : material + push standard.
-- Hit targets : shutter / bouton circulaire ~62–68 pt ; chips, ratings et rangées d’action passent par `touchTarget(44)`. Le bouton **Brew** du parcours recette fait 52 pt.
+- Hit targets : shutter / bouton circulaire ~62–68 pt ; chips, ratings et rangées d’action passent par `touchTarget(44)`. Le bouton **Brew** du parcours recette fait 52 pt, et n’est dessiné que s’il est actionnable.
 
 ---
 

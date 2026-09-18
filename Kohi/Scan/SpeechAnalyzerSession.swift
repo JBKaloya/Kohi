@@ -6,22 +6,19 @@ import os
 /// The iOS 26 transcriber, wrapped so `Dictation` holds one thing whichever
 /// engine is running.
 ///
-/// `SpeechAnalyzer` consumes an async sequence of buffers rather than taking a
-/// tap callback, so the audio tap feeds a continuation and the analyzer reads
-/// from the other end.
-///
-/// Isolated to the main actor so `SpeechAnalyzer.start` is not called from
-/// the Swift concurrent pool — that is a libdispatch assertion (the dictation
-/// crash: "Block was expected to execute on queue").
+/// Parked. `Dictation` no longer starts this — on device, `SpeechAnalyzer`
+/// hits `_dispatch_assert_queue_fail` (`EXC_BREAKPOINT`) even when the
+/// session is `@MainActor`. Keep the type so the iOS 26 path can come back
+/// once Speech is safe to call from Swift concurrency.
 @available(iOS 26.0, *)
 @MainActor
-final class SpeechAnalyzerSession: AnalyzerSession {
+final class SpeechAnalyzerSession {
     private let analyzer: SpeechAnalyzer
     private let transcriber: SpeechTranscriber
     private let stream: AsyncStream<AnalyzerInput>
     private let feed: AsyncStream<AnalyzerInput>.Continuation
     private let format: AVAudioFormat
-    private let work: [Task<Void, Never>]
+    private let results: Task<Void, Never>
 
     /// Throws when the locale has no model installed and none can be
     /// installed, which is the one case where the caller must fall back.
@@ -53,12 +50,15 @@ final class SpeechAnalyzerSession: AnalyzerSession {
         ) else { throw DictationError.unavailable }
         self.format = format
 
-        (stream, feed) = AsyncStream<AnalyzerInput>.makeStream()
+        (stream, feed) = AsyncStream<AnalyzerInput>.makeStream(
+            bufferingPolicy: .bufferingNewest(12)
+        )
 
         // Volatile results are replacements for the tail, finalised ones are
         // settled prefix. Keeping them apart is what stops the text flickering
         // between two readings of the same words.
-        let results = Task { @MainActor [transcriber] in
+        let transcriber = transcriber
+        results = Task { [transcriber] in
             var settled = ""
             do {
                 for try await result in transcriber.results {
@@ -74,17 +74,12 @@ final class SpeechAnalyzerSession: AnalyzerSession {
                 Log.app.notice("transcriber ended: \(error)")
             }
         }
+    }
 
-        // Must stay on the main queue. SpeechAnalyzer.start asserts a
-        // dispatch queue; a Swift concurrent-pool Task is the other crash.
-        let analysis = Task { @MainActor [analyzer, stream] in
-            do {
-                try await analyzer.start(inputSequence: stream)
-            } catch {
-                Log.app.notice("analyzer ended: \(error)")
-            }
-        }
-        work = [results, analysis]
+    /// Arms the analyzer. Returns once it is ready to consume buffers — the
+    /// microphone tap is installed afterwards, never before.
+    func startListening() async throws {
+        try await analyzer.start(inputSequence: stream)
     }
 
     func attach(to engine: AVAudioEngine) throws {
@@ -111,17 +106,8 @@ final class SpeechAnalyzerSession: AnalyzerSession {
     func finish() async {
         feed.finish()
         try? await analyzer.finalizeAndFinishThroughEndOfInput()
-
-        // Finalising delivers the last results, but the loop reading them can
-        // still be a hop behind: let it end with the stream, and cut it short
-        // only if it does not, so a stuck module cannot hold the sheet open.
-        let pending = work
-        let deadline = Task {
-            try? await Task.sleep(for: .milliseconds(300))
-            pending.forEach { $0.cancel() }
-        }
-        for task in pending { await task.value }
-        deadline.cancel()
+        results.cancel()
+        await results.value
     }
 
     /// The microphone's format is rarely the one the model wants.

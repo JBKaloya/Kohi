@@ -116,7 +116,7 @@ struct AccountSheet: View {
 
     private var lastSyncText: String {
         guard let date = sync.lastSyncDate else { return "Never" }
-        return date.formatted(.relative(presentation: .named))
+        return CatalogueDate.happened(date)
     }
 
     @ViewBuilder

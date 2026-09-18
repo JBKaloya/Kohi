@@ -10,5 +10,7 @@
 	<string>So you can say what you brewed instead of typing it. Recording stops the moment you tap again.</string>
 	<key>NSSpeechRecognitionUsageDescription</key>
 	<string>Speech is turned into text on this phone. Nothing you say is sent anywhere.</string>
+	<key>NSSupportsLiveActivities</key>
+	<true/>
 </dict>
 </plist>

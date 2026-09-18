@@ -9,7 +9,6 @@ struct RecipesScreen: View {
     @Environment(\.appEnvironment) private var appEnvironment
 
     var onOpen: ((CoffeeCard) -> Void)?
-    var onUse: ((CoffeeCard, Recipe, RecipeSize?) -> Void)?
 
     @State private var isAsking = false
     @State private var isShowingProfile = false
@@ -231,7 +230,7 @@ struct RecipesScreen: View {
                 RecipeRowView(
                     recipe: scaled.recipe,
                     attribution: recipe.attribution.isEmpty
-                        ? recipe.createdAt.formatted(.dateTime.day().month(.abbreviated))
+                        ? CatalogueDate.happened(recipe.createdAt)
                         : recipe.attribution,
                     scaledFrom: scaled.scaledFromLabel ?? ""
                 ) {

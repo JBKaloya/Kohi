@@ -25,8 +25,7 @@ struct RecipeDetailSheet: View {
     @State private var isAskingForVariant = false
     @State private var picked: CoffeeCard?
     @State private var isPickingCoffee = false
-    @State private var session: GuidedSession?
-    @State private var after: GuidedSession?
+    @State private var flow: BrewSession?
     @State private var showProfile = false
 
     private var shown: Recipe { scaled?.recipe ?? recipe }
@@ -62,32 +61,47 @@ struct RecipeDetailSheet: View {
                 }
                 .padding(.horizontal, 26)
                 .padding(.top, 16)
-                .padding(.bottom, 80)
+                .padding(.bottom, canBrew ? 80 : 24)
             }
             .scrollIndicators(.hidden)
             .background(Palette.paper.ignoresSafeArea())
-            .navigationTitle(recipe.name)
+            .navigationTitle("")
             .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    CatalogueBackButton(title: "RECIPES") { dismiss() }
+            .toolbar(.hidden, for: .navigationBar)
+            .safeAreaInset(edge: .top, spacing: 0) {
+                ZStack {
+                    Text(recipe.name)
+                        .font(Typography.value)
+                        .foregroundStyle(Palette.ink)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.85)
+                        .padding(.horizontal, 96)
+                    HStack {
+                        CatalogueBackButton(title: Copy.recipes) { dismiss() }
+                        Spacer()
+                    }
                 }
+                .padding(.horizontal, 12)
+                .background(Palette.paper)
             }
             .safeAreaInset(edge: .bottom) {
-                Button(action: startBrew) {
-                    Text("Brew")
-                        .font(Typography.label)
-                        .tracking(Typography.labelTracking)
-                        .textCase(.uppercase)
-                        .foregroundStyle(Palette.paper)
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 52)
-                        .background(canBrew ? Palette.ink : Palette.hairline, in: Capsule())
+                if canBrew {
+                    Button {
+                        startBrew()
+                    } label: {
+                        Text("Brew")
+                            .font(Typography.label)
+                            .tracking(Typography.labelTracking)
+                            .textCase(.uppercase)
+                            .foregroundStyle(Palette.paper)
+                            .frame(maxWidth: .infinity)
+                            .frame(height: 52)
+                            .background(Palette.ink, in: Capsule())
+                    }
+                    .buttonStyle(.plain)
+                    .padding(.horizontal, 26)
+                    .padding(.bottom, 18)
                 }
-                .buttonStyle(.plain)
-                .disabled(!canBrew)
-                .padding(.horizontal, 26)
-                .padding(.bottom, 18)
             }
         }
         .tint(Palette.ink)
@@ -103,37 +117,34 @@ struct RecipeDetailSheet: View {
             ProfileSheet()
                 .appEnvironment(appEnvironment)
         }
-        .fullScreenCover(item: $session) { session in
-            GuidedBrewView(
-                card: session.card,
-                recipe: shown,
-                brew: session.brew,
-                onFinish: { brew in
-                    self.session = nil
-                    after = GuidedSession(card: session.card, recipe: shown, brew: brew)
-                },
-                onCancel: { self.session = nil }
+        .fullScreenCover(item: $flow) { session in
+            BrewFlowHost(
+                session: session,
+                onDismiss: { flow = nil },
+                onAgain: { seed in
+                    flow = BrewSession(
+                        card: session.card,
+                        existing: seed.again(),
+                        start: .kit,
+                        setup: setup
+                    )
+                }
             )
-            .appEnvironment(appEnvironment)
-        }
-        .sheet(item: $after) { session in
-            AfterBrewSheet(card: session.card, recipe: shown, draft: session.brew) { brew in
-                var updated = session.card
-                updated.brews.insert(brew, at: 0)
-                store.update(updated)
-                dismiss()
-            }
             .appEnvironment(appEnvironment)
         }
     }
 
     private var canBrew: Bool { picked != nil }
 
-    private func startBrew() {
+    private func startBrew(with recipe: Recipe? = nil) {
         guard let picked else { return }
-        var brew = shown.seededBrew(size: scaled?.isScaled == true ? scaled?.size : nil)
-        brew.equipmentIDs = setup.defaults(for: shown.method).map(\.id)
-        session = GuidedSession(card: picked, recipe: shown, brew: brew)
+        let using = recipe ?? shown
+        flow = BrewSession(
+            card: picked,
+            recipe: using,
+            size: scaled?.isScaled == true ? scaled?.size : nil,
+            setup: setup
+        )
     }
 
     // MARK: - Brew this
@@ -147,28 +158,12 @@ struct RecipeDetailSheet: View {
             Text("Brew this").catalogueLabel()
             FlowLayout {
                 ForEach(recentCoffees) { coffee in
-                    Button {
+                    TagChip(
+                        text: store.title(for: coffee),
+                        isSelected: picked?.id == coffee.id
+                    ) {
                         picked = coffee
-                    } label: {
-                        HStack(spacing: 6) {
-                            if picked?.id == coffee.id {
-                                Image(systemName: "checkmark")
-                                    .font(.system(size: 10, weight: .semibold))
-                            }
-                            Text(store.title(for: coffee))
-                                .font(Typography.tag)
-                        }
-                        .foregroundStyle(picked?.id == coffee.id ? Palette.paper : Palette.ink)
-                        .padding(.horizontal, 11)
-                        .padding(.vertical, 7)
-                        .background {
-                            Capsule()
-                                .fill(picked?.id == coffee.id ? Palette.ink : Color.clear)
-                                .overlay(Capsule().stroke(Palette.hairline, lineWidth: picked?.id == coffee.id ? 0 : 1))
-                        }
                     }
-                    .buttonStyle(.plain)
-                    .touchTarget()
                 }
             }
             Button("Another coffee…") { isPickingCoffee = true }
@@ -204,21 +199,23 @@ struct RecipeDetailSheet: View {
                 if flags.isOn(.aiFeedback) {
                     AIFeedbackScale(eventID: variant.eventID, feature: .recipeAdapt, store: feedback)
                 }
-                if let onUse {
-                    HStack(spacing: 18) {
-                        Button("Use the variant") {
-                            events.setAccepted(true, for: variant.eventID)
+                HStack(spacing: 18) {
+                    Button("Use the variant") {
+                        events.setAccepted(true, for: variant.eventID)
+                        if let onUse {
                             onUse(variant.recipe, nil)
                             dismiss()
+                        } else {
+                            startBrew(with: variant.recipe)
                         }
-                        Button("Dismiss") {
-                            events.setAccepted(false, for: variant.eventID)
-                            withAnimation(Motion.quick) { self.variant = nil }
-                        }
-                        .foregroundStyle(Palette.inkMuted)
                     }
-                    .font(Typography.tag)
+                    Button("Dismiss") {
+                        events.setAccepted(false, for: variant.eventID)
+                        withAnimation(Motion.quick) { self.variant = nil }
+                    }
+                    .foregroundStyle(Palette.inkMuted)
                 }
+                .font(Typography.tag)
             }
             .transition(.opacity)
         }
@@ -431,6 +428,7 @@ struct RecipeCoffeePicker: View {
             ScrollView {
                 VStack(spacing: 0) {
                     ForEach(store.cards.sorted { $0.createdAt > $1.createdAt }) { coffee in
+                        let on = picked?.id == coffee.id
                         Button {
                             picked = coffee
                             dismiss()
@@ -438,19 +436,15 @@ struct RecipeCoffeePicker: View {
                             HStack {
                                 Text(store.title(for: coffee))
                                     .font(Typography.value)
-                                    .foregroundStyle(Palette.ink)
+                                    .foregroundStyle(CatalogueChoice.ink(on))
                                 Spacer()
-                                if picked?.id == coffee.id {
-                                    Image(systemName: "checkmark")
-                                        .font(.system(size: 10, weight: .semibold))
-                                        .foregroundStyle(Palette.ink)
-                                }
                             }
                             .padding(.vertical, 14)
                             .frame(minHeight: 44)
                         }
                         .buttonStyle(.plain)
-                        Rectangle().fill(Palette.hairline).frame(height: 1)
+                        .accessibilityAddTraits(on ? .isSelected : [])
+                        Rectangle().fill(CatalogueChoice.rule(on)).frame(height: 1)
                     }
                 }
                 .padding(.horizontal, 26)

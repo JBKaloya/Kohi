@@ -81,26 +81,26 @@ struct BrewCompareSheet: View {
                 }
             }
             ForEach(eligible.prefix(8)) { brew in
+                let on = other?.id == brew.id
                 Button { other = brew } label: {
                     HStack {
-                        Text(brew.date.formatted(.dateTime.day().month(.abbreviated)))
+                        Text(CatalogueDate.happened(brew.date))
                             .font(Typography.tag)
-                            .foregroundStyle(Palette.inkMuted)
+                            .foregroundStyle(CatalogueChoice.ink(on))
                         Text(brew.method?.label ?? "")
                             .font(Typography.tag)
+                            .foregroundStyle(CatalogueChoice.ink(on))
                         if let ratio = brew.ratio {
-                            Text(ratio).font(Typography.tag)
+                            Text(ratio)
+                                .font(Typography.tag)
+                                .foregroundStyle(CatalogueChoice.ink(on))
                         }
                         Spacer()
-                        if other?.id == brew.id {
-                            Image(systemName: "checkmark")
-                                .font(.system(size: 10, weight: .semibold))
-                                .foregroundStyle(Palette.ink)
-                        }
                     }
                     .padding(.vertical, 8)
                 }
                 .buttonStyle(.plain)
+                .accessibilityAddTraits(on ? .isSelected : [])
             }
         }
     }
@@ -110,11 +110,35 @@ struct BrewCompareSheet: View {
         return VStack(alignment: .leading, spacing: 18) {
             HStack {
                 Spacer()
-                TasteRadar(taste: reference.taste, previous: other.taste)
+                TasteRadar(
+                    taste: reference.taste,
+                    previous: other.taste,
+                    currentColor: Palette.primary,
+                    previousColor: Palette.secondary
+                )
                 Spacer()
             }
 
+            HStack(spacing: 18) {
+                seriesKey(Palette.primary, "A")
+                seriesKey(Palette.secondary, "B")
+            }
+
             VStack(spacing: 0) {
+                HStack(alignment: .firstTextBaseline, spacing: 12) {
+                    Text("").frame(width: 74)
+                    Text("A")
+                        .catalogueLabel()
+                        .foregroundStyle(Palette.primary)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    Text("B")
+                        .catalogueLabel()
+                        .foregroundStyle(Palette.secondary)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    Text("Δ").catalogueLabel()
+                }
+                .padding(.bottom, 4)
+
                 ForEach(compared.parameterDeltas) { row in
                     HStack(alignment: .firstTextBaseline, spacing: 12) {
                         Text(row.label)
@@ -143,7 +167,11 @@ struct BrewCompareSheet: View {
 
             HStack(spacing: 18) {
                 Button("Brew again from A") { onAgain(reference); dismiss() }
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.8)
                 Button("Brew again from B") { onAgain(other); dismiss() }
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.8)
             }
             .font(Typography.label)
             .tracking(Typography.labelTracking)
@@ -169,5 +197,17 @@ struct BrewCompareSheet: View {
 
     private func chip(_ title: String, selected: Bool, action: @escaping () -> Void) -> some View {
         TagChip(text: title, isSelected: selected, action: action)
+    }
+
+    private func seriesKey(_ color: Color, _ title: String) -> some View {
+        HStack(spacing: 6) {
+            Circle()
+                .fill(color)
+                .frame(width: 8, height: 8)
+            Text(title)
+                .catalogueLabel()
+                .foregroundStyle(color)
+        }
+        .accessibilityLabel("Brew \(title)")
     }
 }

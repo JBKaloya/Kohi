@@ -5,6 +5,10 @@ struct TasteRadar: View {
     let taste: TasteProfile
     var previous: TasteProfile?
     var size: CGFloat = 168
+    /// Current series. Comparison overlays pass `Palette.primary`.
+    var currentColor: Color = Palette.ink
+    /// Previous series. Comparison overlays pass `Palette.secondary`.
+    var previousColor: Color = Palette.inkMuted
 
     private let axes = TasteAxis.allCases
 
@@ -19,9 +23,9 @@ struct TasteRadar: View {
                     in: context,
                     center: center,
                     radius: radius,
-                    stroke: Palette.inkMuted,
-                    fill: false,
-                    dots: false
+                    stroke: previousColor,
+                    fill: true,
+                    dots: true
                 )
             }
             if !taste.isEmpty {
@@ -30,7 +34,7 @@ struct TasteRadar: View {
                     in: context,
                     center: center,
                     radius: radius,
-                    stroke: Palette.ink,
+                    stroke: currentColor,
                     fill: true,
                     dots: true
                 )
@@ -104,7 +108,7 @@ struct TasteRadar: View {
         }
         path.closeSubpath()
         if fill {
-            context.fill(path, with: .color(Palette.ink.opacity(Motion.Radar.fillOpacity)))
+            context.fill(path, with: .color(stroke.opacity(Motion.Radar.fillOpacity)))
         }
         context.stroke(path, with: .color(stroke), lineWidth: Motion.Radar.stroke)
         if dots {
@@ -113,7 +117,7 @@ struct TasteRadar: View {
                 let r = Motion.Radar.vertex
                 context.fill(
                     Path(ellipseIn: CGRect(x: p.x - r / 2, y: p.y - r / 2, width: r, height: r)),
-                    with: .color(Palette.ink)
+                    with: .color(stroke)
                 )
             }
         }

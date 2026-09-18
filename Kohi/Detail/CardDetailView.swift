@@ -24,27 +24,18 @@ struct CardDetailView: View {
     @Environment(\.openURL) private var openURL
     @State private var deleteTrigger = 0
     @State private var isEditing = false
-    @State private var brewToEdit: Brew?
-    @State private var isAddingBrew = false
+    @State private var flow: BrewSession?
     @State private var isScanningAttachment = false
     @State private var isIngestingAttachment = false
     @State private var selectedAttachment: CardAttachment?
-    /// Whether the next brew sheet opens pre-filled from the card's recipe.
-    @State private var seedFromRecipe = false
-    /// The recipe the next brew sheet starts from, when it is not the card's own.
-    @State private var seedFromSuggestion: Recipe?
-    @State private var seedFromSize: RecipeSize?
     @State private var openedRecipe: Recipe?
     @State private var showOriginal = false
     @State private var showMapPicker = false
     @State private var showingScan = false
     @State private var posterError: String?
     @State private var brewToCompare: Brew?
-    @State private var brewAgainSeed: Brew?
     @State private var isAsking = false
     @State private var showProfile = false
-    @State private var guided: GuidedSession?
-    @State private var after: GuidedSession?
 
     /// Reads through the store so edits made elsewhere show up here.
     private var live: CoffeeCard { store.card(id: card.id) ?? card }
@@ -83,53 +74,52 @@ struct CardDetailView: View {
         return forYourGrinder.line
     }
 
-    /// Opens a brew filled in from a recipe.
+    /// Opens the one brew journey, filled in from a recipe.
     private func use(_ recipe: Recipe, size: RecipeSize? = nil) {
-        var brew = recipe.seededBrew(size: size)
-        brew.equipmentIDs = setup.defaults(for: recipe.method).map(\.id)
-        guided = GuidedSession(card: live, recipe: recipe, brew: brew)
+        openFlow(recipe: recipe, size: size)
+    }
+
+    private func openFlow(
+        recipe: Recipe? = nil,
+        size: RecipeSize? = nil,
+        existing: Brew? = nil,
+        mode: BrewSession.Mode = .create,
+        start: BrewSession.Step = .scope
+    ) {
+        flow = BrewSession(
+            card: live,
+            recipe: recipe,
+            size: size,
+            existing: existing,
+            mode: mode,
+            start: start,
+            setup: setup
+        )
     }
 
     @ViewBuilder
     private var brewAndAsk: some View {
-        if live.brews.isEmpty {
-            suggestedSection
-            kitPrompt
-            Button {
-                isAddingBrew = true
-            } label: {
-                HStack(spacing: 6) {
-                    Image(systemName: "plus")
-                        .font(.system(size: 10, weight: .semibold))
-                    Text("Log a brew")
-                        .font(Typography.tag)
+        BrewList(
+            card: live,
+            suggestion: suggestion,
+            inYourTerms: forYourGrinderLine,
+            onSelect: { openFlow(existing: $0, mode: .edit, start: .after) },
+            onAdd: { openFlow() },
+            onUseRecipe: live.recipeSuggestion == nil ? nil : {
+                if let printed = live.recipeSuggestion {
+                    openFlow(recipe: RecipeRules.recipe(from: printed, card: live))
                 }
-                .foregroundStyle(Palette.ink)
-            }
-            .buttonStyle(.plain)
-            .padding(.top, 14)
-        } else {
-            BrewList(
-                card: live,
-                suggestion: suggestion,
-                inYourTerms: forYourGrinderLine,
-                onSelect: { brewToEdit = $0 },
-                onAdd: { isAddingBrew = true },
-                onUseRecipe: live.recipeSuggestion == nil ? nil : {
-                    seedFromRecipe = true
-                    isAddingBrew = true
-                },
-                onOpenSuggestion: { openedRecipe = $0.recipe },
-                onUseSuggestion: { use($0.recipe) },
-                onAgain: {
-                    let brew = $0.again()
-                    let recipe = $0.recipeSnapshot.map(Recipe.init(snapshot:))
-                        ?? Recipe(method: $0.method ?? .v60, dose: $0.dose, water: $0.water, beverage: $0.beverage, temperature: $0.temperature, seconds: $0.seconds, grindLabel: $0.grind.display())
-                    guided = GuidedSession(card: live, recipe: recipe, brew: brew)
-                },
-                onCompare: lotFlags.isOn(.brewCompare) ? { brewToCompare = $0 } : nil
-            )
-        }
+            },
+            onOpenSuggestion: { openedRecipe = $0.recipe },
+            onUseSuggestion: { use($0.recipe) },
+            onAgain: { brew in
+                let recipe = brew.recipeSnapshot.map(Recipe.init(snapshot:))
+                openFlow(recipe: recipe, existing: brew.again(), start: .kit)
+            },
+            onCompare: lotFlags.isOn(.brewCompare) ? { brewToCompare = $0 } : nil
+        )
+
+        kitPrompt
 
         if flags.isOn(.ask) {
             Button { isAsking = true } label: {
@@ -138,41 +128,6 @@ struct CardDetailView: View {
             }
             .buttonStyle(.plain)
             .padding(.top, 8)
-        }
-    }
-
-    @ViewBuilder
-    private var suggestedSection: some View {
-        if let suggestion {
-            VStack(alignment: .leading, spacing: 10) {
-                Text("Suggested recipe")
-                    .catalogueLabel()
-                HStack(alignment: .top, spacing: 12) {
-                    Button { openedRecipe = suggestion.recipe } label: {
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text(suggestion.recipe.compactLine)
-                                .font(Typography.tag)
-                                .foregroundStyle(Palette.ink)
-                                .lineLimit(1)
-                            if let forYourGrinderLine {
-                                Text(forYourGrinderLine)
-                                    .font(Typography.tag)
-                                    .foregroundStyle(Palette.inkMuted)
-                                    .lineLimit(1)
-                            }
-                        }
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    }
-                    .buttonStyle(.plain)
-                    Button("Use") { use(suggestion.recipe) }
-                        .font(Typography.tag)
-                        .foregroundStyle(Palette.ink)
-                        .touchTarget()
-                        .buttonStyle(.plain)
-                }
-                Rectangle().fill(Palette.hairline).frame(height: 1)
-            }
-            .id("suggested-recipe")
         }
     }
 
@@ -205,10 +160,7 @@ struct CardDetailView: View {
                             width: objectWidth,
                             variant: showingScan ? .scan : .poster
                         )
-                        .onTapGesture {
-                            guard live.poster == .ready else { return }
-                            withAnimation(Motion.snappy) { showingScan.toggle() }
-                        }
+                        .accessibilityLabel(showingScan || live.poster != .ready ? "Scan" : "Flyer")
 
                         if live.poster == .ready {
                             visualPicker
@@ -314,13 +266,10 @@ struct CardDetailView: View {
                 .appEnvironment(appEnvironment)
         }
         .task {
-            // Arriving from the Recipes tab: the recipe was already chosen, so
-            // the brew sheet opens on top of the card rather than making you
-            // find the button.
             if let seedRecipe {
                 use(seedRecipe, size: seedSize)
             } else if startsBrew {
-                isAddingBrew = true
+                openFlow()
             }
         }
         .sheet(item: $openedRecipe) { recipe in
@@ -334,61 +283,19 @@ struct CardDetailView: View {
             )
             .appEnvironment(appEnvironment)
         }
-        .fullScreenCover(item: $guided) { session in
-            GuidedBrewView(
-                card: session.card,
-                recipe: session.recipe,
-                brew: session.brew,
-                onFinish: { brew in
-                    guided = nil
-                    after = GuidedSession(card: session.card, recipe: session.recipe, brew: brew)
+        .fullScreenCover(item: $flow) { session in
+            BrewFlowHost(
+                session: session,
+                onDismiss: { flow = nil },
+                onAgain: { seed in
+                    openFlow(existing: seed.again(), start: .kit)
                 },
-                onCancel: { guided = nil }
-            )
-            .appEnvironment(appEnvironment)
-        }
-        .sheet(item: $after) { session in
-            AfterBrewSheet(card: session.card, recipe: session.recipe, draft: session.brew) { brew in
-                var updated = live
-                updated.brews.insert(brew, at: 0)
-                store.update(updated)
-            }
-            .appEnvironment(appEnvironment)
-        }
-        .sheet(isPresented: $isAddingBrew, onDismiss: {
-            seedFromRecipe = false
-            seedFromSuggestion = nil
-            seedFromSize = nil
-            brewAgainSeed = nil
-        }) {
-            BrewSheet(
-                card: live,
-                brew: prefilled(),
-                recipe: seedFromSuggestion,
-                onSave: { brew in
+                onDelete: session.mode == .edit ? {
                     var updated = live
-                    updated.brews.insert(brew, at: 0)
+                    updated.brews.removeAll { $0.id == session.brew.id }
                     store.update(updated)
-                }
-            )
-            .appEnvironment(appEnvironment)
-        }
-        .sheet(item: $brewToEdit) { brew in
-            BrewSheet(
-                card: live,
-                brew: brew,
-                onSave: { edited in
-                    var updated = live
-                    if let i = updated.brews.firstIndex(where: { $0.id == edited.id }) {
-                        updated.brews[i] = edited
-                    }
-                    store.update(updated)
-                },
-                onDelete: {
-                    var updated = live
-                    updated.brews.removeAll { $0.id == brew.id }
-                    store.update(updated)
-                }
+                    flow = nil
+                } : nil
             )
             .appEnvironment(appEnvironment)
         }
@@ -400,8 +307,7 @@ struct CardDetailView: View {
                 waters: setup.waterProfiles,
                 equipment: setup.equipment
             ) { seed in
-                brewAgainSeed = seed.again()
-                isAddingBrew = true
+                openFlow(existing: seed.again(), start: .kit)
             }
             .appEnvironment(appEnvironment)
         }
@@ -507,40 +413,6 @@ struct CardDetailView: View {
                 .foregroundStyle(Palette.ink)
                 .fixedSize(horizontal: false, vertical: true)
         }
-    }
-
-    /// Pre-fills a new brew from the card's printed recipe when asked, else
-    /// from the most recent brew, so repeating a recipe is just a tap.
-    private func prefilled() -> Brew {
-        if let brewAgainSeed {
-            return brewAgainSeed
-        }
-        if let seedFromSuggestion {
-            return seedFromSuggestion.seededBrew(size: seedFromSize)
-        }
-        if seedFromRecipe, let recipe = live.recipeSuggestion {
-            return Brew(
-                method: recipe.method ?? live.brewMethod,
-                dose: recipe.dose,
-                water: recipe.water,
-                seconds: recipe.seconds,
-                grind: recipe.grind,
-                temperature: recipe.temperature
-            )
-        }
-        if let last = live.brews.first {
-            if let saved = last.nextTimeSuggestion,
-               let suggestion = BrewDiagnosis.candidates(for: last)
-                   .first(where: { $0.change == saved }) {
-                return BrewDiagnosis.draft(
-                    from: last,
-                    applying: suggestion,
-                    grinder: setup.preferredGrinder(for: last.method)
-                )
-            }
-            return last.again()
-        }
-        return Brew(method: live.brewMethod)
     }
 
     /// The card's own words, shown under the translated fields. "風味: 白花"

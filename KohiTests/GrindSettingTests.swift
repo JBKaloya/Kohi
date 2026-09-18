@@ -24,6 +24,34 @@ struct GrindSettingTests {
         #expect(setting.raw == "medium-fine")
         #expect(setting.display() == "medium-fine")
         #expect(!setting.isEmpty)
+        #expect(GrindGrade.parse("medium-fine") == .mediumFine)
+        #expect(GrindGrade.parse("medium fine") == .mediumFine)
+        #expect(GrindGrade.nearest(position: 0) == .extraFine)
+        #expect(GrindGrade.nearest(position: 1) == .extraCoarse)
+    }
+
+    @Test func aClickyGrinderGetsANumericSpan() {
+        let mill = Equipment(
+            kind: .grinder,
+            brand: "1Zpresso",
+            model: "J-Ultra",
+            adjustment: .clicks,
+            stepsPerRotation: 100,
+            ranges: [GrindRange(method: .v60, low: 18, high: 36)]
+        )
+        let span = GrindSpan.make(grinder: mill, method: .v60, current: nil)
+        #expect(span?.band == 18...36)
+        #expect(span?.step == 1)
+        #expect(span?.unit == "clicks")
+        #expect(span?.low ?? 0 < 18)
+        #expect(span?.high ?? 0 > 36)
+        #expect(span?.snap(22.4) == 22)
+        #expect(GrindSpan.stepSize(for: mill) == 1)
+    }
+
+    @Test func aVerbalGrindStaysAGradeWithoutAGrinder() {
+        #expect(GrindSpan.make(grinder: nil, method: .v60, current: nil) == nil)
+        #expect(GrindGrade.parse("coarse") == .coarse)
     }
 
     @Test func emptyTextIsEmpty() {

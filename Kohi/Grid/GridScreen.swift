@@ -9,6 +9,7 @@ struct GridScreen: View {
     @Environment(RecipeStore.self) private var recipes
     @Environment(CardStore.self) private var store
     @Environment(AccountStore.self) private var account
+    @Environment(SetupStore.self) private var setup
     @Environment(IntentRouter.self) private var router
     @Environment(\.appEnvironment) private var appEnvironment
     @Environment(\.displayScale) private var displayScale
@@ -35,6 +36,7 @@ struct GridScreen: View {
     @State private var scrollToSuggested = false
     @State private var isPickingCoffee = false
     @State private var brewCoffee: CoffeeCard?
+    @State private var flow: BrewSession?
     @Namespace private var namespace
 
     private var filteredCards: [CoffeeCard] {
@@ -87,11 +89,6 @@ struct GridScreen: View {
                         RecipesScreen(
                             onOpen: { card in
                                 scrollToSuggested = true
-                                selection = card
-                            },
-                            onUse: { card, recipe, size in
-                                pendingRecipe = recipe
-                                pendingScale = size
                                 selection = card
                             }
                         )
@@ -163,11 +160,27 @@ struct GridScreen: View {
                     mine: recipes.recipes,
                     neighbours: store.cards
                 )
-                pendingRecipe = suggestion?.recipe
-                pendingScale = nil
-                startsBrew = suggestion == nil
-                selection = card
+                flow = BrewSession(
+                    card: card,
+                    recipe: suggestion?.recipe,
+                    setup: setup
+                )
                 brewCoffee = nil
+            }
+            .fullScreenCover(item: $flow) { session in
+                BrewFlowHost(
+                    session: session,
+                    onDismiss: { flow = nil },
+                    onAgain: { seed in
+                        flow = BrewSession(
+                            card: session.card,
+                            existing: seed.again(),
+                            start: .kit,
+                            setup: setup
+                        )
+                    }
+                )
+                .appEnvironment(appEnvironment)
             }
             .navigationDestination(item: $selection) { card in
                 CardDetailView(
@@ -209,8 +222,7 @@ struct GridScreen: View {
 
         guard let card else { return }
         tab = .coffees
-        startsBrew = true
-        selection = card
+        flow = BrewSession(card: card, setup: setup)
     }
 
     /// The coffee a brew most likely belongs to: the one most recently brewed

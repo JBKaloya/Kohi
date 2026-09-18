@@ -1,11 +1,13 @@
 import SwiftUI
 
-/// A recipe in Mine or Reference: name, compact parameters, provenance in 86 pt.
+/// A recipe in Mine or Reference: name, compact parameters, provenance as the
+/// trailing mark so the chosen row can invert it.
 struct RecipeRowView: View {
     let recipe: Recipe
     var provenance: String = ""
     var attribution: String = ""
     var scaledFrom: String = ""
+    var isSelected: Bool = false
     let action: () -> Void
 
     var body: some View {
@@ -35,11 +37,8 @@ struct RecipeRowView: View {
 
                     VStack(alignment: .trailing, spacing: 4) {
                         if !provenance.isEmpty {
-                            Text(provenance)
-                                .catalogueLabel()
+                            CatalogueMark(text: provenance, isSelected: isSelected)
                                 .multilineTextAlignment(.trailing)
-                                .lineLimit(1)
-                                .minimumScaleFactor(0.8)
                         }
                         if !attribution.isEmpty {
                             Text(attribution)
@@ -49,13 +48,15 @@ struct RecipeRowView: View {
                                 .lineLimit(1)
                         }
                     }
-                    .frame(width: 86, alignment: .trailing)
+                    .frame(width: 110, alignment: .trailing)
                 }
-                Rectangle().fill(Palette.hairline).frame(height: 1)
+                Rectangle().fill(CatalogueChoice.rule(isSelected)).frame(height: 1)
             }
             .padding(.vertical, 11)
             .frame(maxWidth: .infinity, alignment: .leading)
         }
         .buttonStyle(.plain)
+        .accessibilityAddTraits(isSelected ? .isSelected : [])
+        .animation(Motion.quick, value: isSelected)
     }
 }

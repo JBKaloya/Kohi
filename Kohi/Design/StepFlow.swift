@@ -15,6 +15,8 @@ struct StepFlow<Content: View>: View {
     var onNext: (() -> Void)?
     @ViewBuilder var content: () -> Content
 
+    @State private var fieldFocused = false
+
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             header
@@ -36,14 +38,20 @@ struct StepFlow<Content: View>: View {
             }
             .scrollIndicators(.hidden)
             .scrollBounceBehavior(.basedOnSize)
+            .scrollDismissesKeyboard(.interactively)
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
 
-            footer
-                .padding(.horizontal, 26)
-                .padding(.bottom, 28)
-                .padding(.top, 12)
+            if !fieldFocused {
+                footer
+                    .padding(.horizontal, 26)
+                    .padding(.bottom, 28)
+                    .padding(.top, 12)
+                    .transition(.opacity.combined(with: .move(edge: .bottom)))
+            }
         }
         .background(Palette.paper.ignoresSafeArea())
+        .onPreferenceChange(FieldFocusPreference.self) { fieldFocused = $0 }
+        .animation(Motion.snappy, value: fieldFocused)
     }
 
     private var header: some View {

@@ -27,6 +27,12 @@ nonisolated enum RecipeSize: String, CaseIterable, Identifiable, Codable, Equata
         case .batch: "Batch"
         }
     }
+
+    /// The cup size whose water is closest to what is already in the brew.
+    static func inferred(from water: Double?) -> RecipeSize {
+        guard let water, water > 0 else { return .cup }
+        return allCases.min(by: { abs($0.waterGrams - water) < abs($1.waterGrams - water) }) ?? .cup
+    }
 }
 
 nonisolated struct ScaledRecipe: Hashable, Sendable {

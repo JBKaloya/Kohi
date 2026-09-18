@@ -2,6 +2,7 @@ import SwiftUI
 import Testing
 @testable import Kohi
 
+@Suite(.serialized)
 @MainActor
 struct DevBrief4SnapshotTests {
     @Test func cardCaptionShowsRoastedOn() {
@@ -55,7 +56,7 @@ struct DevBrief4SnapshotTests {
                 RecipeStep(at: 45, action: .pour, targetMass: 300),
             ], autoAdvance: true)
         SnapshotSupport.image(
-            of:             GuidedBrewView(
+            of: GuidedBrewView(
                 card: CoffeeCard(name: "Chelbesa"),
                 recipe: recipe,
                 brew: recipe.seededBrew(),
@@ -125,8 +126,76 @@ struct DevBrief4SnapshotTests {
                 onAdd: {}
             )
             .padding(26),
-            height: 280,
+            height: 360,
             named: "suggested-row"
+        )
+    }
+
+    @Test func brewScopeShowsSizeAndRecipes() {
+        let setup = BrewJourneySupport.setup()
+        let session = BrewSession(
+            card: BrewJourneySupport.card(agitation: nil),
+            recipe: ReferenceBase.recipe(referenceID: "a1-v60-ultimate"),
+            size: .twoCups,
+            setup: setup
+        )
+        SnapshotSupport.image(
+            of: BrewJourneySupport.wrap(
+                BrewScopeView(session: session, onClose: {}, onNext: {}),
+                setup: setup
+            ),
+            height: 720,
+            named: "scope"
+        )
+    }
+
+    @Test func brewKitShowsMethodAndGear() {
+        let setup = BrewJourneySupport.setup()
+        let session = BrewSession(
+            card: BrewJourneySupport.card(agitation: nil),
+            recipe: ReferenceBase.recipe(referenceID: "a1-v60-ultimate"),
+            size: .twoCups,
+            start: .kit,
+            setup: setup
+        )
+        SnapshotSupport.image(
+            of: BrewJourneySupport.wrap(
+                BrewKitView(
+                    session: session,
+                    onBack: {},
+                    onClose: {},
+                    onBrewNow: {},
+                    onAlreadyBrewed: {}
+                ),
+                setup: setup
+            ),
+            height: 980,
+            named: "kit"
+        )
+    }
+
+    @Test func brewAfterShowsRatingAndSave() {
+        let setup = BrewJourneySupport.setup()
+        var brew = Brew(method: .v60, dose: 30, water: 500, seconds: 210, rating: 4)
+        brew.notes = "Bright, a little thin."
+        let session = BrewSession(
+            card: BrewJourneySupport.card(agitation: nil),
+            existing: brew,
+            mode: .edit,
+            start: .after,
+            setup: setup
+        )
+        SnapshotSupport.image(
+            of: BrewJourneySupport.wrap(
+                AfterBrewSheet(
+                    session: session,
+                    onSave: {},
+                    onBack: {}
+                ),
+                setup: setup
+            ),
+            height: 720,
+            named: "after"
         )
     }
 }

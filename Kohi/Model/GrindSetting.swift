@@ -115,6 +115,126 @@ extension GrindSetting: ExpressibleByStringLiteral {
     }
 }
 
+/// The seven verbal grades a recipe prints when it has no number. Fine is the
+/// left of a grind rail, coarse the right — the same direction as click counts.
+nonisolated enum GrindGrade: Int, CaseIterable, Identifiable, Sendable {
+    case extraFine
+    case fine
+    case mediumFine
+    case medium
+    case mediumCoarse
+    case coarse
+    case extraCoarse
+
+    var id: Int { rawValue }
+
+    var label: String {
+        switch self {
+        case .extraFine: "extra-fine"
+        case .fine: "fine"
+        case .mediumFine: "medium-fine"
+        case .medium: "medium"
+        case .mediumCoarse: "medium-coarse"
+        case .coarse: "coarse"
+        case .extraCoarse: "extra-coarse"
+        }
+    }
+
+    /// 0 is extra-fine, 1 is extra-coarse.
+    var position: Double {
+        Double(rawValue) / Double(Self.allCases.count - 1)
+    }
+
+    static func parse(_ raw: String?) -> GrindGrade? {
+        guard let raw else { return nil }
+        let key = raw.lowercased().filter { $0.isLetter }
+        switch key {
+        case "extrafine", "superfine", "espressofine": return .extraFine
+        case "fine": return .fine
+        case "mediumfine": return .mediumFine
+        case "medium": return .medium
+        case "mediumcoarse": return .mediumCoarse
+        case "coarse": return .coarse
+        case "extracoarse", "supercoarse": return .extraCoarse
+        default: return nil
+        }
+    }
+
+    static func nearest(position: Double) -> GrindGrade {
+        let scaled = min(max(position, 0), 1) * Double(allCases.count - 1)
+        return Self(rawValue: min(max(Int(scaled.rounded()), 0), allCases.count - 1)) ?? .medium
+    }
+}
+
+/// The numbers a grind rail can travel. Nil means the rail is grades only —
+/// a verbal recipe is not invented into clicks until you drag.
+nonisolated struct GrindSpan: Equatable, Sendable {
+    var low: Double
+    var high: Double
+    var step: Double
+    var unit: String
+    var band: ClosedRange<Double>?
+
+    var width: Double { high - low }
+
+    static func stepSize(for grinder: Equipment?) -> Double {
+        grinder?.adjustment?.isDetented == true ? 1 : 0.1
+    }
+
+    static func make(
+        grinder: Equipment?,
+        method: BrewMethod?,
+        current: Double?
+    ) -> GrindSpan? {
+        let unit = grinder?.unitLabel ?? ""
+        let step = stepSize(for: grinder)
+        if let grinder, let method,
+           let range = GrindConversion.range(for: method, on: grinder),
+           range.span > 0
+        {
+            let pad = range.span * 0.25
+            return GrindSpan(
+                low: max(0, range.low - pad),
+                high: range.high + pad,
+                step: step,
+                unit: unit,
+                band: range.low...range.high
+            )
+        }
+        if let steps = grinder?.stepsPerRotation, steps > 0 {
+            let high = max(Double(steps * 3), current ?? 0)
+            return GrindSpan(low: 0, high: high, step: step, unit: unit, band: nil)
+        }
+        guard let adjustment = grinder?.adjustment else { return nil }
+        let floor: Double = switch adjustment {
+        case .clicks: 240
+        case .stepless, .dial: 10
+        }
+        return GrindSpan(
+            low: 0,
+            high: max(floor, current ?? 0),
+            step: step,
+            unit: unit,
+            band: nil
+        )
+    }
+
+    func snap(_ value: Double) -> Double {
+        guard width > 0, step > 0 else { return min(max(value, low), high) }
+        let snapped = (value / step).rounded() * step
+        return min(max(snapped, low), high)
+    }
+
+    func position(of value: Double) -> Double {
+        guard width > 0 else { return 0.5 }
+        return min(max((value - low) / width, 0), 1)
+    }
+
+    func value(at position: Double) -> Double {
+        snap(low + min(max(position, 0), 1) * width)
+    }
+}
+
 nonisolated extension GrindSetting {
     enum CodingKeys: String, CodingKey {
         case grinderId, value, raw

@@ -1,6 +1,6 @@
 # Kohi — Fonctionnalités actuelles et écart PRD
 
-**Date** : 15 septembre 2026 · **PRD de référence** : [kohi-prd-v1.md](kohi-prd-v1.md) (brouillon 0.2, 9 septembre 2026)
+**Date** : 17 septembre 2026 · **PRD de référence** : [kohi-prd-v1.md](kohi-prd-v1.md) (brouillon 0.2, 9 septembre 2026)
 
 Kohi est une archive personnelle de cartes de café, sur iPhone, devenue un **atelier** : le même objet-carte ouvre une pratique (brasser avec *son* matériel, garder ce qui a marché). L’app est **light only**, 100 % locale par défaut. Le cloud (Sign in with Apple + Supabase) est optionnel : sans configuration, scan, OCR, recettes de référence, kit (Profil) et archive restent sur l’appareil.
 
@@ -29,7 +29,7 @@ Deux mots en `catalogueLabel` à côté du wordmark — **Coffees** · **Recipes
 
 Raccourcis système (App Intents, exposés à Siri / Shortcuts) :
 
-- **Log a brew** — ouvre le brew sheet du café le plus récent (ou d’un café nommé).
+- **Log a brew** — ouvre le parcours brew du café le plus récent (ou d’un café nommé).
 - **Start a brew** — même chose, méthode déjà choisie, timer guidé prêt.
 
 Pas de widget, pas de Control Center, pas de Share Extension.
@@ -192,7 +192,7 @@ Profil = nom, source (*tap / filtered / bottled / recipe*), Ca / Mg / Na / HCO�
 
 ### Défauts et mouture
 
-- Défauts par méthode (grinder / brewer / machine) : le brew sheet part de là.
+- Défauts par méthode (grinder / brewer / machine) : le parcours brew part de là.
 - **Convert a setting** : conversion proportionnelle entre deux broyeurs, avec « ≈ » et la base de la conversion affichée.
 - **Calibration perso** (« mon 22 clics ≈ 700 µm ») — prévue 1.1, déjà là.
 
@@ -214,7 +214,7 @@ La température d’une suggestion ne bouge que si la carte dit le niveau de tor
 
 ### Brasser
 
-Le bouton `cup.and.saucer` ouvre l’onglet Recipes. Le parcours recette est **trois écrans** : fiche recette → brew guidé (un bloc, cible interpolée, tap = Next) → After (rating, taste, correction, comment, Suggested correction, Save).
+Le bouton `cup.and.saucer` ouvre un picker de café, puis le **même** parcours brew que la carte. Depuis une fiche recette, **Brew** ouvre ce parcours déjà rempli (Scope → Kit, puis Brew now ou Already brewed).
 
 ### From the pros
 
@@ -234,37 +234,36 @@ Bouton **ASK** en tête de Recipes, et « Ask about this coffee » sous Brews su
 
 ---
 
-## 10. Brew — avant, pendant, après
+## 10. Brew — un parcours, quatre temps
+
+Un seul host (`BrewFlowHost`) pour la carte, une recette, le FAB cup, un intent, l’édition d’un brew, et **Brew again**. Un seul seed (`BrewPrefill`) et un seul save (`BrewSession.finish`) : grind dans l’unité du moulin, eau, filtre, agitation, `captureSource`, `flowGs`.
 
 Pensé pour le *deuxième* café : Save suffit si rien n’a changé. Pré-rempli depuis la recette, le dernier brew (éventuellement déjà ajusté par une Suggested correction), et les défauts du Setup.
 
-### Avant
+### 1. Scope
 
-- **Dictate** — dictée on-device (`SpeechAnalyzer` iOS 26, repli `SFSpeechRecognizer`). Grammaire locale d’abord. Si la couverture est faible et que **Understand dictation** est on → edge `field-extract`. Surlignage `paperShade` 1,1 s, tap = undo. `DictationField` enveloppe tout texte libre.
-- **Method** — chips.
-- **Recipe** — picker : Card · Suggested · Last brew · Mine · From the pros. `checkmark` sur la choisie.
-- **With** — kit par défaut de la méthode.
-- **Water** — profil par défaut.
-- **Parameters** — **Coffee dose**, **Water weight** (filtre) ou **Beverage** (espresso), ratio, temps.
-- **Grind** — chip broyeur + valeur. **For your grinder** convertit avec « ≈ ».
-- **Temperature** — rangée principale.
+Format (1 cup / 2 cups / Batch), dose, eau, ratio. **Dictate** en tête : une phrase remplit format, dose, eau, temp, grind avant le choix de recette (`SpokenBrewParser`, puis `FieldExtract` si la couverture est faible). Recettes en liste : Card · Suggested · Last brew · Mine · From the pros. Une recette déjà en Suggested n’est pas répétée sous From the pros. Hors-dose : **scalée** à la taille courante, sous-ligne `scaled from 15 g`. Espresso et dose < 12 g : chiffres d’auteur, pas de sous-ligne.
 
-En tête d’un brew existant : **Brew again** · **Compare**.
+### 2. Kit
 
-### Pendant
+Méthode, bouilloire, brewer, eau, moulin, température, agitation, filtre. **Brew now** ouvre le timer. **Already brewed** saute le timer et va à After. En édition d’un brew sauvé : pas de timer, After est l’arrivée.
 
-Sans étapes : chrono. Avec étapes (parcours recette) : **GuidedBrewView** — un seul bloc, `Typography.number`, cible interpolée, tap = Next, Stop en bas. Avance automatique après 3 s si `autoAdvance`. **Total brew time** à la fin.
+### 3. Pour
 
-### Après
+Sans étapes : chrono vide. Avec étapes : **GuidedBrewView** — un seul bloc, `Typography.number`, cible interpolée, tap = Next, Stop en bas. Avance automatique après 3 s si `autoAdvance`. **Total brew time** à la fin. Pas de `g/s` à l’écran (calculé à l’enregistrement).
 
-- **Rating 1–5** (cibles 44 pt).
-- **Taste** (flag `taste7`) : 7 axes.
+### 4. After
+
+- **Rating 1–5** (cibles 44 pt) + pastille de complétude.
+- **Taste** (flag `taste7`) : radar + 7 axes. Le brew précédent de ce café est l’underlay, pas un pré-remplissage.
+- **Flavors** (flag `flavorWheel`).
 - **Correction** : − · +.
-- **Comment** dicté.
+- **Comment** dicté (`DictationField`). Le Save est un `safeAreaInset`, pas un bouton toolbar — le champ ne passe plus dessous.
 - **Suggested correction** : lecture + trois mouvements classés (ensemble admissible G7 + steps + dripper). Hors ligne : une règle. Flag on par défaut.
 - **How useful was this?** : échelle à quatre niveaux + texte, sous chaque sortie modèle.
-- **Compare with…** (flag `brewCompare`) : tous les brews comparables, chip Any coffee.
-- Date. Suppression.
+- Paramètres repliés, éditables (dose, eau, grind, temp, time).
+- TDS, yield, **Save as recipe**, date, suppression.
+- **Compare with…** (flag `brewCompare`) : tous les brews comparables, chip Any coffee. **Brew again** depuis Compare atterrit au Kit.
 
 La caféine (calcul, override, ligne) **n’existe plus**.
 

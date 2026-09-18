@@ -20,7 +20,7 @@ struct GuidedBrewView: View {
     /// Tests snapshot the first frame without starting the clock.
     var startsRunning: Bool = true
 
-    @State private var elapsed: Int = 0
+    @State private var elapsed: TimeInterval = 0
     @State private var running = false
     @State private var start: Date?
     @State private var cancellable: AnyCancellable?
@@ -31,46 +31,61 @@ struct GuidedBrewView: View {
     @State private var tickTrigger = 0
     @State private var appeared = true
     @State private var handedOff = false
+    @FocusState private var notesFocused: Bool
 
     private var steps: [RecipeStep] { recipe.steps }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            HStack {
-                Text(steps.isEmpty ? "1 / 1" : "\(min(index + 1, max(steps.count, 1))) / \(max(steps.count, 1))")
-                    .catalogueLabel()
+        ZStack {
+            PourFill(
+                fill: tideFill,
+                showsTide: GuidedTarget.showsTide(brew.method ?? recipe.method),
+                activeRing: GuidedTarget.showsRings(brew.method ?? recipe.method)
+                    ? GuidedTarget.activeRing(steps: steps, index: index)
+                    : nil
+            )
+
+            VStack(alignment: .leading, spacing: 0) {
+                HStack {
+                    Text(steps.isEmpty ? "1 / 1" : "\(min(index + 1, max(steps.count, 1))) / \(max(steps.count, 1))")
+                        .catalogueLabel()
+                    Spacer()
+                    Text(clock)
+                        .font(Typography.number)
+                        .foregroundStyle(Palette.ink)
+                        .monospacedDigit()
+                        .contentTransition(.numericText())
+                }
+                .padding(.horizontal, 26)
+                .padding(.top, 18)
+
+                Spacer(minLength: 12)
+
+                if steps.isEmpty {
+                    emptyClock
+                } else if isFinished {
+                    finishedBlock
+                } else {
+                    currentBlock
+                        .contentShape(Rectangle())
+                        .onTapGesture { advance() }
+                }
+
                 Spacer()
-                Text(clock)
-                    .font(Typography.number)
-                    .foregroundStyle(Palette.ink)
-                    .monospacedDigit()
-                    .contentTransition(.numericText())
+
+                if !notesFocused {
+                    Button("Stop") {
+                        stop(finish: true)
+                    }
+                    .catalogueLabel()
+                    .frame(maxWidth: .infinity)
+                    .padding(.bottom, 36)
+                    .transition(.opacity)
+                }
             }
-            .padding(.horizontal, 26)
-            .padding(.top, 18)
-
-            Spacer(minLength: 12)
-
-            if steps.isEmpty {
-                emptyClock
-            } else if isFinished {
-                finishedBlock
-            } else {
-                currentBlock
-                    .contentShape(Rectangle())
-                    .onTapGesture { advance() }
-            }
-
-            Spacer()
-
-            Button("Stop") {
-                stop(finish: true)
-            }
-            .catalogueLabel()
-            .frame(maxWidth: .infinity)
-            .padding(.bottom, 36)
         }
-        .background(Palette.paper.ignoresSafeArea())
+        .animation(Motion.snappy, value: notesFocused)
+        .fieldKeyboardClearance()
         .opacity(appeared ? 1 : 0)
         .onAppear {
             if startsRunning { startClock() }
@@ -79,17 +94,30 @@ struct GuidedBrewView: View {
             autoTask?.cancel()
             cancellable?.cancel()
             running = false
+            BrewLiveActivity.end()
         }
         .haptic(.stepAdvance, trigger: stepTrigger)
         .haptic(.tick, trigger: tickTrigger)
-        .onChange(of: elapsed) { _, value in
+        .onChange(of: Int(elapsed)) { _, value in
             armAutoAdvanceIfNeeded()
             tickTrigger = value
+            pushLiveActivity()
         }
     }
 
     private var clock: String {
-        String(format: "%d:%02d", elapsed / 60, elapsed % 60)
+        let seconds = Int(elapsed)
+        return String(format: "%d:%02d", seconds / 60, seconds % 60)
+    }
+
+    private var tideFill: Double {
+        GuidedTarget.fill(
+            steps: steps,
+            index: index,
+            elapsed: elapsed,
+            total: recipe.seconds,
+            water: recipe.water ?? brew.water
+        )
     }
 
     @ViewBuilder
@@ -146,14 +174,23 @@ struct GuidedBrewView: View {
     }
 
     private var emptyClock: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            Text("Brew")
+        VStack(alignment: .leading, spacing: 14) {
+            Text(Copy.whatYoureDoing)
                 .catalogueLabel()
-            Text("No steps on this recipe. Stop when the cup is done.")
-                .font(Typography.body)
-                .foregroundStyle(Palette.inkMuted)
+            TextField(
+                "Bloom, two pours, a swirl — stop when the cup is done",
+                text: $brew.notes,
+                axis: .vertical
+            )
+            .font(Typography.body)
+            .foregroundStyle(Palette.ink)
+            .lineLimit(3...8)
+            .focused($notesFocused)
+            .reportsFieldFocus(notesFocused)
+            DictationField(text: $brew.notes)
         }
         .padding(.horizontal, 26)
+        .scrollDismissesKeyboard(.interactively)
     }
 
     private var finishedBlock: some View {
@@ -197,7 +234,7 @@ struct GuidedBrewView: View {
         let start = Double(steps[index].at)
         let end = GuidedTarget.targetTime(for: steps, at: index, total: recipe.seconds)
         let span = max(end - start, 1)
-        let t = min(max(Double(elapsed) - start, 0), span) / span
+        let t = min(max(elapsed - start, 0), span) / span
         return CGFloat(t) * 180
     }
 
@@ -211,18 +248,27 @@ struct GuidedBrewView: View {
             targetMass: target,
             startTime: startTime,
             targetTime: endTime,
-            at: Double(elapsed)
+            at: elapsed
         )
     }
 
     private func startClock() {
         running = true
-        start = Date.now.addingTimeInterval(-Double(elapsed))
-        cancellable = Timer.publish(every: 0.2, on: .main, in: .common)
+        let started = Date.now.addingTimeInterval(-elapsed)
+        start = started
+        BrewLiveActivity.start(
+            card: card,
+            recipe: recipe,
+            brew: brew,
+            index: index,
+            elapsed: elapsed,
+            startedAt: started
+        )
+        cancellable = Timer.publish(every: 0.1, on: .main, in: .common)
             .autoconnect()
             .sink { now in
                 guard let start else { return }
-                elapsed = Int(now.timeIntervalSince(start))
+                elapsed = now.timeIntervalSince(start)
             }
     }
 
@@ -233,14 +279,15 @@ struct GuidedBrewView: View {
         withAnimation(Motion.quick) { index += 1 }
         autoArmed = false
         if isFinished {
-            brew.seconds = elapsed
+            brew.seconds = Int(elapsed)
         }
+        pushLiveActivity(force: true)
     }
 
     private func armAutoAdvanceIfNeeded() {
         guard recipe.autoAdvance, !steps.isEmpty, index < steps.count, !autoArmed else { return }
         let end = GuidedTarget.targetTime(for: steps, at: index, total: recipe.seconds)
-        guard Double(elapsed) >= end else { return }
+        guard elapsed >= end else { return }
         autoArmed = true
         autoTask?.cancel()
         autoTask = Task {
@@ -256,7 +303,7 @@ struct GuidedBrewView: View {
         brew.steps.append(BrewStep(
             index: index,
             action: planned.action,
-            at: elapsed,
+            at: Int(elapsed),
             mass: recordedMass(for: planned),
             targetAt: planned.at,
             targetMass: planned.targetMass,
@@ -268,13 +315,26 @@ struct GuidedBrewView: View {
         planned.targetMass.map { _ in nowMass(for: planned) }
     }
 
+    private func pushLiveActivity(force: Bool = false) {
+        guard running, let start else { return }
+        BrewLiveActivity.update(
+            recipe: recipe,
+            brew: brew,
+            index: index,
+            elapsed: elapsed,
+            startedAt: start,
+            force: force
+        )
+    }
+
     private func stop(finish: Bool) {
         guard !handedOff else { return }
         handedOff = true
         autoTask?.cancel()
         cancellable?.cancel()
         running = false
-        brew.seconds = elapsed
+        brew.seconds = Int(elapsed)
+        BrewLiveActivity.end()
         if finish {
             onFinish(brew)
         } else {

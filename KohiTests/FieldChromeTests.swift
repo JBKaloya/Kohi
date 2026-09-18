@@ -1,5 +1,7 @@
 import Foundation
+import SwiftUI
 import Testing
+import UIKit
 @testable import Kohi
 
 struct FieldChromeTests {
@@ -53,6 +55,41 @@ struct FieldChromeTests {
         #expect(FieldCopy.boiling(94) == nil)
         #expect(FieldCopy.boiling(100) == nil)
         #expect(FieldCopy.boiling(104) == "104 °C is past boiling")
+    }
+
+    @Test func comparisonTokensMatchTheAgreedHex() {
+        var r: CGFloat = 0, g: CGFloat = 0, b: CGFloat = 0, a: CGFloat = 0
+        #expect(UIColor(Palette.primary).getRed(&r, green: &g, blue: &b, alpha: &a))
+        #expect(abs(r - 130 / 255) < 0.01)
+        #expect(abs(g - 78 / 255) < 0.01)
+        #expect(abs(b - 52 / 255) < 0.01)
+
+        #expect(UIColor(Palette.secondary).getRed(&r, green: &g, blue: &b, alpha: &a))
+        #expect(abs(r - 61 / 255) < 0.01)
+        #expect(abs(g - 92 / 255) < 0.01)
+        #expect(abs(b - 86 / 255) < 0.01)
+        #expect(Palette.primary != Palette.secondary)
+    }
+
+    @Test func recipeParameterLabelsFitTheCatalogueColumn() {
+        let labels = [Copy.coffeeDose, Copy.waterWeight, Copy.totalBrewTime, Copy.forYourGrinder]
+        for label in labels {
+            let width = catalogueWidth(label)
+            #expect(
+                width <= CatalogueRow.labelColumn,
+                "\(label) needs \(width) pt, column is \(CatalogueRow.labelColumn)"
+            )
+        }
+    }
+
+    private func catalogueWidth(_ text: String) -> CGFloat {
+        let font = UIFont.monospacedSystemFont(ofSize: 10, weight: .medium)
+        return ceil(
+            (text.uppercased() as NSString).size(withAttributes: [
+                .font: font,
+                .kern: Typography.labelTracking
+            ]).width
+        )
     }
 
     @Test func originFoldsWhenNothingIsInIt() {
