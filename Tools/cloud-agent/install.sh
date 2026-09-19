@@ -18,8 +18,12 @@ if ! command -v docker >/dev/null 2>&1; then
 fi
 
 # 2. fuse-overlayfs: overlay2 cannot mount over the VM's overlay root.
+#    Run non-interactively and keep existing conffiles (fuse3 prompts on
+#    /etc/fuse.conf otherwise, which would hang/fail an unattended build).
 sudo apt-get update -qq
-sudo apt-get install -y -qq fuse-overlayfs
+sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq \
+  -o Dpkg::Options::=--force-confold -o Dpkg::Options::=--force-confdef \
+  fuse-overlayfs
 
 # 3. Point the daemon at fuse-overlayfs and allow the agent user to reach it.
 sudo mkdir -p /etc/docker
