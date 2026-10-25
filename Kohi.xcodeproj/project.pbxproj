@@ -7,9 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0100000000000000000000F6 /* KohiBrewWidget.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 0100000000000000000000F0 /* KohiBrewWidget.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		AB579001304572E3005DD5D9 /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = 0100000000000000000000C2 /* Supabase */; };
 		AB579002304572E3005DD5DA /* SnapshotTesting in Frameworks */ = {isa = PBXBuildFile; productRef = 0100000000000000000000C4 /* SnapshotTesting */; };
-		0100000000000000000000F6 /* KohiBrewWidget.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 0100000000000000000000F0 /* KohiBrewWidget.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -28,6 +28,20 @@
 			remoteInfo = KohiBrewWidget;
 		};
 /* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		0100000000000000000000F5 /* Embed App Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				0100000000000000000000F6 /* KohiBrewWidget.appex in Embed App Extensions */,
+			);
+			name = "Embed App Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		0100000000000000000000A5 /* Kohi.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Kohi.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -194,8 +208,8 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				0100000000000000000000F2 /* KohiBrewWidget */,
 				0100000000000000000000F1 /* KohiBrewShared */,
+				0100000000000000000000F2 /* KohiBrewWidget */,
 			);
 			name = KohiBrewWidget;
 			packageProductDependencies = (
@@ -264,17 +278,6 @@
 			buildActionMask = 2147483647;
 			files = (
 			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		0100000000000000000000F5 /* Embed App Extensions */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 13;
-			files = (
-				0100000000000000000000F6 /* KohiBrewWidget.appex in Embed App Extensions */,
-			);
-			name = "Embed App Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
@@ -406,7 +409,7 @@
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_ENTITLEMENTS = Kohi/Kohi.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 6;
+				CURRENT_PROJECT_VERSION = 10;
 				DEVELOPMENT_TEAM = 49PK3NA5D2;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -414,10 +417,11 @@
 				INFOPLIST_KEY_CFBundleDisplayName = Kohi;
 				INFOPLIST_KEY_NSCameraUsageDescription = "Kohi uses the camera to scan coffee cards.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Kohi uses your location to put nearby coffee shops and roasters at the top of the place search.";
-				INFOPLIST_KEY_NSMicrophoneUsageDescription = "So you can say what you brewed instead of typing it. Recording stops the moment you tap again.";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Kohi records a brew note on this phone so you can talk through a timed brew, even if the screen locks. The audio never leaves the device.";
 				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "Speech is turned into text on this phone. Nothing you say is sent anywhere.";
 				INFOPLIST_KEY_NSSupportsLiveActivities = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIBackgroundModes = audio;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UIStatusBarStyle = UIStatusBarStyleDarkContent;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
@@ -442,7 +446,7 @@
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_ENTITLEMENTS = Kohi/Kohi.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 6;
+				CURRENT_PROJECT_VERSION = 10;
 				DEVELOPMENT_TEAM = 49PK3NA5D2;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -450,10 +454,11 @@
 				INFOPLIST_KEY_CFBundleDisplayName = Kohi;
 				INFOPLIST_KEY_NSCameraUsageDescription = "Kohi uses the camera to scan coffee cards.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Kohi uses your location to put nearby coffee shops and roasters at the top of the place search.";
-				INFOPLIST_KEY_NSMicrophoneUsageDescription = "So you can say what you brewed instead of typing it. Recording stops the moment you tap again.";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Kohi records a brew note on this phone so you can talk through a timed brew, even if the screen locks. The audio never leaves the device.";
 				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "Speech is turned into text on this phone. Nothing you say is sent anywhere.";
 				INFOPLIST_KEY_NSSupportsLiveActivities = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIBackgroundModes = audio;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UIStatusBarStyle = UIStatusBarStyleDarkContent;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;

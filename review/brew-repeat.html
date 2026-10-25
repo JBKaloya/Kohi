@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>Répéter un brew · Kohi</title>
+  <link rel="stylesheet" href="./tastings.css">
+  <link rel="stylesheet" href="./brew-repeat.css">
+  <link rel="stylesheet" href="./site.css">
+  <link rel="stylesheet" href="./review.css">
+</head>
+<body>
+  <article class="page" id="review-root" data-review-root>
+    <a class="crumb" href="./index.html" data-review-chrome>Itérations</a>
+    <header class="stack gap-8" data-anchor="intro" data-anchor-label="Introduction">
+      <h1>Répéter un brew</h1>
+      <p class="lead">
+        Version C. Le lanceur n’apparaît que si ce café a déjà un brew. Le premier brew ouvre
+        directement les recettes. Il ne reste que Mine et From the pros. Chaque écran revient au
+        précédent. À la place de Today’s settings : le grammage, l’eau, et une estimation de tasses.
+      </p>
+    </header>
+
+    <div class="row gap-6 wrap" id="personas" style="margin-top:22px"></div>
+
+    <section class="section">
+      <div class="after-grid">
+        <div id="frame" class="brew-frame" data-anchor="parcours" data-anchor-label="Parcours"></div>
+        <div id="notes" class="stack gap-14" data-anchor="notes" data-anchor-label="Notes du parcours"></div>
+      </div>
+    </section>
+
+    <section class="section stack gap-14" id="recipes">
+      <h2>Recettes</h2>
+      <p class="note">Last sort. Répéter un brew est le rôle du lanceur, pas d’un troisième onglet.</p>
+      <div class="grid-2">
+        <div class="stack gap-8" data-anchor="recipes-before" data-anchor-label="Recettes · avant">
+          <strong>Avant</strong>
+          <div class="brew-frame short">
+            <div class="brew-title">Which recipe?</div>
+            <div class="brew-body stack gap-14">
+              <div class="row gap-14"><span class="lane on">Last</span><span class="lane">Mine</span><span class="lane">From the pros</span></div>
+              <span class="cat">Suggested</span>
+              <div class="brew-line"><div class="between"><strong>Filter · 26 Sep</strong><span class="cat">Express</span></div><div class="mono muted">V60 · 30 g · 1:16.7 · 99 °C</div></div>
+              <span class="cat">Brewed before</span>
+              <div class="brew-line"><div class="between"><strong>Huabal · 17 Sep</strong><span class="cat">Mine</span></div><div class="mono muted">V60 · 30 g · 1:16.7 · 99 °C</div></div>
+              <div class="brew-line"><div class="between"><strong>Huabal · 17 Sep</strong><span class="cat">Mine</span></div><div class="mono muted">V60 · 30 g · 1:16.7 · 99 °C</div></div>
+            </div>
+          </div>
+          <p class="note">Last mélange une suggestion, d’autres cafés, et deux lignes identiques.</p>
+        </div>
+        <div class="stack gap-8" data-anchor="recipes-after" data-anchor-label="Recettes · après">
+          <strong>Après</strong>
+          <div class="brew-frame short">
+            <div class="brew-title">Which recipe?</div>
+            <div class="brew-body stack gap-14">
+              <div class="row gap-14"><span class="lane on">Mine</span><span class="lane">From the pros</span></div>
+              <div class="brew-line" style="border-bottom-color:#1a1815"><div class="between"><strong>Huabal · V60</strong><span class="cat">Mine</span></div><div class="mono muted">30 g · 1:16.7 · 99 °C</div></div>
+              <div class="brew-line"><div class="between"><strong>Batch · Moccamaster</strong><span class="cat">Mine</span></div><div class="mono muted">60 g · 1:16 · 94 °C</div></div>
+            </div>
+          </div>
+          <p class="note">Deux onglets. Mine pour une recette enregistrée, From the pros pour partir de zéro.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section stack gap-14" id="amounts">
+      <h2>Quantités</h2>
+      <p class="note">Le format 1 cup / 2 cups / Batch disparaît. L’eau donne une estimation, environ une tasse pour 250 g. Ce n’est pas un réglage.</p>
+      <div class="grid-2">
+        <div class="stack gap-8" data-anchor="amounts-before" data-anchor-label="Quantités · avant">
+          <strong>Avant</strong>
+          <div class="brew-frame short">
+            <div class="brew-title">Today's settings</div>
+            <div class="brew-body stack gap-14">
+              <span class="cat">Format</span>
+              <div class="row gap-6 wrap"><span class="chip on">1 cup</span><span class="chip">2 cups</span><span class="chip">Batch</span></div>
+              <span class="cat">Parameters</span>
+              <div class="between"><span>Dose 30 g</span><span class="muted">1:16.7</span><span>Water 500 g</span></div>
+              <div class="between"><span>Temp 99 °C</span><span>Grind 22</span></div>
+            </div>
+          </div>
+          <p class="note">Le format, la température et le grind sont des réglages de plus, avant même le grammage.</p>
+        </div>
+        <div class="stack gap-8" data-anchor="amounts-after" data-anchor-label="Quantités · après">
+          <strong>Après</strong>
+          <div class="brew-frame short">
+            <div class="brew-title">How much?</div>
+            <div class="brew-body stack gap-14">
+              <p class="note">From 26 Sep · V60 · Ode</p>
+              <span class="cat">Coffee</span>
+              <div class="between"><span>Dose 30 g</span><span class="muted">1:16.7</span><span>Water 500 g</span></div>
+              <span class="cat">About 2 cups</span>
+            </div>
+          </div>
+          <p class="note">Dose et eau seulement. « About 2 cups » se lit, il ne se choisit pas.</p>
+        </div>
+      </div>
+    </section>
+
+    <div class="callout" data-anchor="fixed" data-anchor-label="Ce qui est fixé" style="margin-top:36px">
+      <h3>Ce qui est fixé</h3>
+      <p>Start a brew seulement s’il existe déjà un brew de ce café. Premier brew : recettes directement. Mine et From the pros, sans Last. Retour d’un écran à l’autre. Quantités : grammage et eau, plus une estimation de tasses. Les pastilles de format sont retirées.</p>
+    </div>
+  </article>
+  <script src="./config.js"></script>
+  <script type="module" src="./brew-repeat.js"></script>
+</body>
+</html>

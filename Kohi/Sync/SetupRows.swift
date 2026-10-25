@@ -30,6 +30,8 @@ struct EquipmentRow: Codable, Sendable {
     var filter_shape: String?
     var filters: [BrewFilter]?
     var default_filter_id: UUID?
+    var size: String?
+    var accepts_filter_shapes: [String]?
 
     var basket_g: Double?
     var pressure_bar: Double?
@@ -64,6 +66,8 @@ struct EquipmentRow: Codable, Sendable {
         self.filter_shape = equipment.filterShape
         self.filters = equipment.filters
         self.default_filter_id = equipment.defaultFilterId
+        self.size = equipment.size
+        self.accepts_filter_shapes = equipment.acceptsFilterShapes.map(\.rawValue)
         self.basket_g = equipment.basketG
         self.pressure_bar = equipment.pressureBar
         self.is_gooseneck = equipment.isGooseneck
@@ -95,6 +99,8 @@ struct EquipmentRow: Codable, Sendable {
             filterShape: filter_shape,
             filters: filters ?? [],
             defaultFilterId: default_filter_id,
+            size: size,
+            acceptsFilterShapes: (accepts_filter_shapes ?? []).compactMap(FilterShape.init(rawValue:)),
             basketG: basket_g,
             pressureBar: pressure_bar,
             isGooseneck: is_gooseneck,
@@ -211,6 +217,48 @@ struct WaterProfileRow: Codable, Sendable {
             notes: notes,
             isDefault: is_default,
             waterRef: water_ref,
+            createdAt: created_at,
+            updatedAt: updated_at
+        )
+    }
+}
+
+/// DTO matching the `public.filter_stock` table schema (snake_case).
+struct FilterStockRow: Codable, Sendable {
+    let id: UUID
+    let user_id: UUID
+
+    var model_id: String?
+    var custom_name: String?
+    var size: String
+    var origin: String?
+    var shape: String?
+    var is_default_for: [UUID]
+    var created_at: Date
+    var updated_at: Date
+
+    init(stock: FilterStock, userID: UUID) {
+        self.id = stock.id
+        self.user_id = userID
+        self.model_id = stock.modelId
+        self.custom_name = stock.customName
+        self.size = stock.size
+        self.origin = stock.origin
+        self.shape = stock.shape?.rawValue
+        self.is_default_for = stock.isDefaultFor
+        self.created_at = stock.createdAt
+        self.updated_at = stock.updatedAt
+    }
+
+    func toStock() -> FilterStock {
+        FilterStock(
+            id: id,
+            modelId: model_id,
+            customName: custom_name,
+            size: size,
+            origin: origin,
+            shape: shape.flatMap(FilterShape.init(rawValue:)),
+            isDefaultFor: is_default_for,
             createdAt: created_at,
             updatedAt: updated_at
         )

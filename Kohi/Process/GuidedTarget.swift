@@ -18,7 +18,7 @@ nonisolated enum GuidedTarget {
 
     /// Previous pour's target mass, or zero at the first pour.
     static func startMass(for steps: [RecipeStep], at index: Int) -> Double {
-        steps.prefix(index).reversed().compactMap(\.targetMass).first ?? 0
+        steps.prefix(index).reversed().first { $0.action != .rinse && $0.targetMass != nil }?.targetMass ?? 0
     }
 
     /// When this step should be done: `untilSeconds`, else the next step's `at`.
@@ -39,6 +39,7 @@ nonisolated enum GuidedTarget {
     ) -> Double {
         guard !steps.isEmpty else { return 0 }
         if index >= steps.count { return finalMass(steps: steps, water: nil) }
+        if steps[index].action == .rinse { return 0 }
         let start = startMass(for: steps, at: index)
         guard let target = steps[index].targetMass else { return start }
         return massNow(
@@ -51,7 +52,7 @@ nonisolated enum GuidedTarget {
     }
 
     static func finalMass(steps: [RecipeStep], water: Double?) -> Double {
-        if let last = steps.reversed().compactMap(\.targetMass).first, last > 0 {
+        if let last = steps.reversed().first(where: { $0.action != .rinse })?.targetMass, last > 0 {
             return last
         }
         return water ?? 0

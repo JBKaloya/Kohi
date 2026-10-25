@@ -14,6 +14,7 @@ struct EquipmentSheet: View {
     @State private var appliedRef: String?
     @State private var isConfirmingDelete = false
     @State private var tapCount = 0
+    @State private var showCatalog = false
 
     /// Editing an existing item.
     init(equipment: Equipment) {
@@ -37,6 +38,10 @@ struct EquipmentSheet: View {
                     }
 
                     if showingSuggestions { suggestionSection }
+                    if isNew, draft.kind == .grinder || draft.kind == .brewer {
+                        Button("Browse catalogue") { showCatalog = true }
+                            .catalogueLabel()
+                    }
 
                     switch draft.kind {
                     case .grinder: grinderSection
@@ -89,6 +94,23 @@ struct EquipmentSheet: View {
                 dismiss()
             }
         }
+        .sheet(isPresented: $showCatalog) {
+            CatalogPicker(
+                title: draft.kind.label,
+                entries: catalogEntries,
+                selectedID: appliedRef,
+                onPick: { entry in
+                    if draft.kind == .grinder, let grinder = ReferenceBase.grinder(id: entry.id) {
+                        apply(grinder)
+                    } else if let brewer = ReferenceBase.brewer(id: entry.id) {
+                        draft = Equipment(reference: brewer, preserving: draft)
+                        appliedRef = brewer.id
+                    }
+                    showCatalog = false
+                },
+                onAddManually: { showCatalog = false }
+            )
+        }
     }
 
     // MARK: - Reference base
@@ -108,6 +130,13 @@ struct EquipmentSheet: View {
 
     private var suggestions: [ReferenceBase.Item] {
         ReferenceBase.equipment(kind: draft.kind, matching: query)
+    }
+
+    private var catalogEntries: [CatalogEntry] {
+        if draft.kind == .grinder {
+            return ReferenceBase.grinders.map { $0.catalogEntry(owned: false) }
+        }
+        return ReferenceBase.brewers.map { $0.catalogEntry(owned: false) }
     }
 
     private var suggestionSection: some View {
@@ -216,55 +245,19 @@ struct EquipmentSheet: View {
     private var brewerSection: some View {
         VStack(alignment: .leading, spacing: 16) {
             TextRow(label: "Type", text: $draft.brewerType.orEmpty, placeholder: Placeholders.text(.brewerModel))
-            filterEditor
-        }
-    }
-
-    private var filterEditor: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text("Filters").catalogueLabel()
-            ForEach($draft.filters) { $filter in
-                VStack(spacing: 8) {
-                    HStack(alignment: .firstTextBaseline, spacing: 10) {
-                        TextField(Placeholders.text(.brewerBrand), text: $filter.brand)
-                            .font(Typography.value)
-                        TextField(Placeholders.text(.brewerFilter), text: $filter.shape)
-                            .font(Typography.value)
-                        Button {
-                            let id = filter.id
-                            draft.filters.removeAll { $0.id == id }
-                            if draft.defaultFilterId == id {
-                                draft.defaultFilterId = draft.filters.first?.id
-                            }
-                        } label: {
-                            Image(systemName: "xmark")
-                                .font(.system(size: 10, weight: .semibold))
-                                .foregroundStyle(Palette.inkMuted)
-                        }
-                        .buttonStyle(.plain)
+            Text("Accepts").catalogueLabel()
+            ChipPicker(
+                items: Array(FilterShape.allCases),
+                label: \.label,
+                selection: Binding(
+                    get: { draft.acceptsFilterShapes.first },
+                    set: { shape in
+                        if let shape { draft.acceptsFilterShapes = [shape] }
                     }
-                    HStack {
-                        TagChip(
-                            text: "Default",
-                            isSelected: draft.defaultFilterId == filter.id
-                        ) {
-                            draft.defaultFilterId = filter.id
-                        }
-                        Spacer()
-                    }
-                    Rectangle().fill(Palette.hairline).frame(height: 1)
-                }
-            }
-            Button {
-                let added = BrewFilter()
-                draft.filters.append(added)
-                if draft.defaultFilterId == nil { draft.defaultFilterId = added.id }
-            } label: {
-                Text("Add a filter")
-                    .font(Typography.tag)
-                    .foregroundStyle(Palette.inkMuted)
-            }
-            .buttonStyle(.plain)
+                ),
+                allowsDeselect: true,
+                onPick: { tapCount += 1 }
+            )
         }
     }
 
@@ -305,8 +298,14 @@ struct EquipmentSheet: View {
     /// falls back to the base's indicative hints and says so.
     private var rangesSection: some View {
         VStack(alignment: .leading, spacing: 14) {
-            Text("My range per method")
-                .catalogueLabel()
+            HStack(alignment: .firstTextBaseline) {
+                Text(Copy.setYourRange)
+                    .catalogueLabel()
+                Spacer()
+                Button("Later", action: save)
+                    .catalogueLabel()
+                    .disabled(draft.displayName == draft.kind.label)
+            }
 
             ForEach(BrewMethod.allCases) { method in
                 rangeRow(method)

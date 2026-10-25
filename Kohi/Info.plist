@@ -7,9 +7,13 @@
 		<string>AngustaTest-DemiBold.otf</string>
 	</array>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>So you can say what you brewed instead of typing it. Recording stops the moment you tap again.</string>
+	<string>Kohi records a brew note on this phone so you can talk through a timed brew, even if the screen locks. The audio never leaves the device.</string>
 	<key>NSSpeechRecognitionUsageDescription</key>
 	<string>Speech is turned into text on this phone. Nothing you say is sent anywhere.</string>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>audio</string>
+	</array>
 	<key>NSSupportsLiveActivities</key>
 	<true/>
 </dict>

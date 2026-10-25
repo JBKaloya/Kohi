@@ -1,0 +1,262 @@
+.review-remote {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 30;
+  width: 320px;
+  overflow: auto;
+  background: #f6f4ef;
+  color: #1a1815;
+  border-left: 1px solid #e2ddd3;
+  padding: 22px 18px 32px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+body.review-has-remote {
+  margin-right: 320px;
+}
+
+.review-kicker {
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #8a8378;
+}
+
+.review-title {
+  margin: 6px 0 0;
+  font-family: Didot, "Bodoni 72", "Iowan Old Style", Palatino, Georgia, serif;
+  font-size: 22px;
+  font-weight: 500;
+  line-height: 1.15;
+}
+
+.review-status {
+  margin: 8px 0 0;
+  font-size: 12px;
+  line-height: 1.4;
+  color: #8a8378;
+}
+
+.review-status.is-error {
+  color: #824e34;
+}
+
+.review-block {
+  margin-top: 22px;
+}
+
+.review-label {
+  margin: 0 0 8px;
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #8a8378;
+}
+
+.review-names,
+.review-scenes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.review-choice,
+.review-text-button,
+.review-send {
+  border: 1px solid #e2ddd3;
+  background: transparent;
+  color: #1a1815;
+  border-radius: 999px;
+  padding: 6px 10px;
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.review-choice.is-on,
+.review-send {
+  background: #1a1815;
+  color: #faf8f4;
+  border-color: #1a1815;
+}
+
+.review-choice:disabled,
+.review-send:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.review-arm {
+  width: 100%;
+  border-radius: 8px;
+  padding: 10px 12px;
+  text-align: left;
+}
+
+.review-arm.is-on {
+  background: #824e34;
+  border-color: #824e34;
+  color: #faf8f4;
+}
+
+.review-hint {
+  margin: 8px 0 0;
+  font-size: 12px;
+  line-height: 1.4;
+  color: #8a8378;
+}
+
+.review-name-field {
+  width: 100%;
+  margin-top: 8px;
+  box-sizing: border-box;
+  border: none;
+  border-bottom: 1px solid #1a1815;
+  background: transparent;
+  color: #1a1815;
+  font: inherit;
+  font-size: 14px;
+  padding: 6px 0;
+}
+
+.review-thread {
+  width: 100%;
+  text-align: left;
+  border: none;
+  border-top: 1px solid #e2ddd3;
+  background: transparent;
+  color: inherit;
+  padding: 10px 0;
+  cursor: pointer;
+  font: inherit;
+}
+
+.review-thread.is-open {
+  background: transparent;
+}
+
+.review-thread-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  align-items: baseline;
+}
+
+.review-thread-no {
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 11px;
+}
+
+.review-thread-meta,
+.review-reply-meta {
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 10px;
+  color: #8a8378;
+}
+
+.review-thread-body,
+.review-reply-body {
+  margin: 4px 0 0;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.review-detail {
+  padding: 0 0 12px;
+  border-bottom: 1px solid #e2ddd3;
+}
+
+.review-reply {
+  padding: 8px 0 0;
+}
+
+.review-compose textarea,
+.review-detail textarea {
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 72px;
+  resize: vertical;
+  border: 1px solid #e2ddd3;
+  border-radius: 8px;
+  background: #faf8f4;
+  color: #1a1815;
+  font: inherit;
+  font-size: 13px;
+  line-height: 1.4;
+  padding: 8px 10px;
+}
+
+.review-compose-actions,
+.review-detail-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.review-root.is-armed,
+.review-root.is-armed * {
+  cursor: crosshair !important;
+}
+
+.review-pin {
+  position: absolute;
+  z-index: 4;
+  display: grid;
+  place-items: center;
+  box-sizing: border-box;
+  width: 22px;
+  height: 22px;
+  margin-left: -11px;
+  margin-top: -11px;
+  border: none;
+  border-radius: 11px;
+  padding: 0;
+  background: #1a1815;
+  color: #faf8f4;
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 11px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.review-pin.is-resolved {
+  background: #faf8f4;
+  color: #8a8378;
+  border: 1px solid #8a8378;
+}
+
+.review-pin.is-active,
+.review-pin.is-draft {
+  background: #824e34;
+  color: #faf8f4;
+}
+
+@media (pointer: coarse) {
+  .review-pin {
+    width: 28px;
+    height: 28px;
+    margin-left: -14px;
+    margin-top: -14px;
+    border-radius: 14px;
+  }
+}
+
+@media (max-width: 860px) {
+  body.review-has-remote {
+    margin-right: 0;
+    padding-bottom: min(48vh, 420px);
+  }
+
+  .review-remote {
+    top: auto;
+    left: 0;
+    width: auto;
+    height: min(48vh, 420px);
+    border-left: none;
+    border-top: 1px solid #e2ddd3;
+  }
+}

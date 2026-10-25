@@ -13,6 +13,10 @@ struct StepFlow<Content: View>: View {
     var nextTitle: String = "Next"
     var nextEnabled: Bool = true
     var onNext: (() -> Void)?
+    var primaryTitle: String?
+    var onPrimary: (() -> Void)?
+    var secondaryTitle: String?
+    var onSecondary: (() -> Void)?
     @ViewBuilder var content: () -> Content
 
     @State private var fieldFocused = false
@@ -29,16 +33,30 @@ struct StepFlow<Content: View>: View {
                 .fixedSize(horizontal: false, vertical: true)
                 .padding(.horizontal, 26)
                 .padding(.top, 28)
+                .contentShape(Rectangle())
+                .onTapGesture { dismissIfFocused() }
 
-            ScrollView {
-                content()
-                    .padding(.horizontal, 26)
-                    .padding(.top, 22)
-                    .frame(maxWidth: .infinity, alignment: .top)
+            ScrollView(.vertical) {
+                VStack(alignment: .leading, spacing: 0) {
+                    content()
+                        .padding(.horizontal, 26)
+                        .padding(.top, 22)
+                        .frame(maxWidth: .infinity, alignment: .topLeading)
+                    if fieldFocused {
+                        Color.clear
+                            .frame(minHeight: 160)
+                            .frame(maxWidth: .infinity)
+                            .contentShape(Rectangle())
+                            .onTapGesture { dismissKeyboard() }
+                    }
+                }
+                .containerRelativeFrame(.horizontal, alignment: .topLeading)
             }
             .scrollIndicators(.hidden)
-            .scrollBounceBehavior(.basedOnSize)
-            .scrollDismissesKeyboard(.interactively)
+            .scrollBounceBehavior(fieldFocused ? .always : .basedOnSize)
+            .scrollBounceBehavior(.basedOnSize, axes: .horizontal)
+            .scrollDismissesKeyboard(.immediately)
+            .clipped()
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
 
             if !fieldFocused {
@@ -52,12 +70,30 @@ struct StepFlow<Content: View>: View {
         .background(Palette.paper.ignoresSafeArea())
         .onPreferenceChange(FieldFocusPreference.self) { fieldFocused = $0 }
         .animation(Motion.snappy, value: fieldFocused)
+        .toolbar {
+            ToolbarItemGroup(placement: .keyboard) {
+                Spacer()
+                Button("Done") { dismissIfFocused() }
+                    .catalogueLabel()
+            }
+        }
+    }
+
+    private func dismissIfFocused() {
+        guard fieldFocused else { return }
+        dismissKeyboard()
     }
 
     private var header: some View {
         HStack(spacing: 12) {
             if let onBack {
-                Button(action: onBack) {
+                Button {
+                    if fieldFocused {
+                        dismissKeyboard()
+                    } else {
+                        onBack()
+                    }
+                } label: {
                     Image(systemName: "chevron.left")
                         .font(.system(size: 10, weight: .semibold))
                         .foregroundStyle(Palette.ink)
@@ -94,24 +130,44 @@ struct StepFlow<Content: View>: View {
 
     private var footer: some View {
         VStack(spacing: 10) {
-            HStack {
-                if let onSkip {
-                    Button("Skip", action: onSkip)
-                        .catalogueLabel()
-                        .touchTarget()
+            if let primaryTitle, let onPrimary {
+                Button(action: onPrimary) {
+                    Text(primaryTitle)
+                        .font(Typography.label)
+                        .tracking(Typography.labelTracking)
+                        .textCase(.uppercase)
+                        .foregroundStyle(Palette.paper)
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 52)
+                        .background(Palette.ink, in: Capsule())
                 }
-                Spacer()
-                if let onNext {
-                    Button(action: onNext) {
-                        Image(systemName: "chevron.right")
-                            .font(.system(size: 16, weight: .semibold))
-                            .foregroundStyle(Palette.paper)
-                            .frame(width: 52, height: 52)
-                            .background(nextEnabled ? Palette.ink : Palette.hairline, in: Circle())
+                .buttonStyle(.plain)
+                if let secondaryTitle, let onSecondary {
+                    Button(secondaryTitle, action: onSecondary)
+                        .catalogueLabel()
+                        .frame(maxWidth: .infinity)
+                        .frame(minHeight: 44)
+                }
+            } else {
+                HStack {
+                    if let onSkip {
+                        Button("Skip", action: onSkip)
+                            .catalogueLabel()
+                            .touchTarget()
                     }
-                    .buttonStyle(.plain)
-                    .disabled(!nextEnabled)
-                    .accessibilityLabel(nextTitle)
+                    Spacer()
+                    if let onNext {
+                        Button(action: onNext) {
+                            Image(systemName: "chevron.right")
+                                .font(.system(size: 16, weight: .semibold))
+                                .foregroundStyle(Palette.paper)
+                                .frame(width: 52, height: 52)
+                                .background(nextEnabled ? Palette.ink : Palette.hairline, in: Circle())
+                        }
+                        .buttonStyle(.plain)
+                        .disabled(!nextEnabled)
+                        .accessibilityLabel(nextTitle)
+                    }
                 }
             }
         }

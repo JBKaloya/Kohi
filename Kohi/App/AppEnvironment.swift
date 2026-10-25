@@ -9,8 +9,10 @@ import SwiftUI
 struct AppEnvironment {
     var store: CardStore
     var roasters: RoasterStore
+    var places: PlaceIndex
     var setup: SetupStore
     var recipes: RecipeStore
+    var tastings: TastingStore
     var account: AccountStore
     var setupFlow: SetupFlowController
     var sync: SyncCoordinator
@@ -18,6 +20,9 @@ struct AppEnvironment {
     var lotFlags: LotFlags
     var aiEvents: AIEventLog
     var feedback: AIFeedbackStore
+    var cardLooks: CardLookStore
+    var stamps: StampLibrary
+    var stampRefresh: StampRefresh
 }
 
 private struct AppEnvironmentKey: EnvironmentKey {
@@ -38,8 +43,10 @@ extension View {
             .environment(\.appEnvironment, env)
             .environment(env.store)
             .environment(env.roasters)
+            .environment(env.places)
             .environment(env.setup)
             .environment(env.recipes)
+            .environment(env.tastings)
             .environment(env.account)
             .environment(env.setupFlow)
             .environment(env.sync)
@@ -47,6 +54,9 @@ extension View {
             .environment(env.lotFlags)
             .environment(env.aiEvents)
             .environment(env.feedback)
+            .environment(env.cardLooks)
+            .environment(env.stamps)
+            .environment(env.stampRefresh)
             .environment(IntentRouter.shared)
     }
 

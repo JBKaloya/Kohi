@@ -11,6 +11,10 @@ nonisolated enum StepAction: String, Codable, CaseIterable, Identifiable, Sendab
     case steep
     case release
     case wait
+    case rinse
+    case preInfusion
+    case shot
+    case fill
     case custom
 
     var id: String { rawValue }
@@ -26,6 +30,10 @@ nonisolated enum StepAction: String, Codable, CaseIterable, Identifiable, Sendab
         case .steep: "Steep"
         case .release: "Release"
         case .wait: "Wait"
+        case .rinse: "Rinse"
+        case .preInfusion: "Pre-infusion"
+        case .shot: "Shot"
+        case .fill: "Fill"
         case .custom: "Step"
         }
     }
@@ -43,9 +51,36 @@ nonisolated enum StepAction: String, Codable, CaseIterable, Identifiable, Sendab
         case .steep: "Steep"
         case .release: "Release"
         case .wait: "Wait"
+        case .rinse: "Rinse"
+        case .preInfusion: "Pre-infuse"
+        case .shot: "Shot to"
+        case .fill: "Fill"
         case .custom: "Step"
         }
     }
+
+    /// Whether this action carries a target mass on the scale.
+    var acceptsMass: Bool {
+        switch self {
+        case .bloom, .pour, .rinse, .shot, .fill, .steep: true
+        case .stir, .press, .swirl, .drawdown, .release,
+             .wait, .preInfusion, .custom: false
+        }
+    }
+
+    /// Whether an "until" time reads as anything. A stir is instant; a steep
+    /// has a duration.
+    var hasUntil: Bool {
+        switch self {
+        case .bloom, .pour, .preInfusion, .shot, .steep, .wait,
+             .rinse, .fill: true
+        case .stir, .press, .swirl, .drawdown, .release, .custom: false
+        }
+    }
+
+    /// Actions that read the same whatever the method: you can always stir,
+    /// swirl, wait, or write a step of your own.
+    static let universal: [StepAction] = [.stir, .swirl, .wait, .custom]
 }
 
 /// One instruction, at a time on the clock.
@@ -61,6 +96,13 @@ nonisolated struct RecipeStep: Identifiable, Codable, Hashable, Sendable {
     /// by: "pour to 300 g, there by 1:15".
     var untilSeconds: Int?
     var note: String
+    var agitation: Agitation?
+    var derived: Bool
+    /// Kit accessories to use during this step (e.g. Melodrip, Switch).
+    /// Decoded with `decodeIfPresent` so existing data is not affected.
+    var accessoryIDs: [UUID]
+    /// Optional sensory mark. Nil means the step is timed.
+    var cue: StepCue?
 
     init(
         id: UUID = UUID(),
@@ -68,7 +110,11 @@ nonisolated struct RecipeStep: Identifiable, Codable, Hashable, Sendable {
         action: StepAction,
         targetMass: Double? = nil,
         untilSeconds: Int? = nil,
-        note: String = ""
+        note: String = "",
+        agitation: Agitation? = nil,
+        derived: Bool = false,
+        accessoryIDs: [UUID] = [],
+        cue: StepCue? = nil
     ) {
         self.id = id
         self.at = at
@@ -76,6 +122,10 @@ nonisolated struct RecipeStep: Identifiable, Codable, Hashable, Sendable {
         self.targetMass = targetMass
         self.untilSeconds = untilSeconds
         self.note = note
+        self.agitation = agitation
+        self.derived = derived
+        self.accessoryIDs = accessoryIDs
+        self.cue = cue
     }
 
     var timeLabel: String {
@@ -84,11 +134,20 @@ nonisolated struct RecipeStep: Identifiable, Codable, Hashable, Sendable {
 
     /// "Pour to 300 g" / "Bloom 60 g" / "Stir".
     var instruction: String {
-        guard let targetMass else { return action.imperative }
+        guard let targetMass else {
+            if action == .rinse {
+                let extra = note.trimmingCharacters(in: .whitespaces)
+                return extra.isEmpty ? "Rinse" : "Rinse · \(extra)"
+            }
+            return action.imperative
+        }
         let mass = GrindRange.number(targetMass) + " g"
         switch action {
         case .pour: return "Pour to \(mass)"
         case .bloom: return "Bloom \(mass)"
+        case .rinse:
+            let extra = note.trimmingCharacters(in: .whitespaces)
+            return extra.isEmpty ? "Rinse \(mass)" : "Rinse \(mass) · \(extra)"
         case .custom:
             let name = note.trimmingCharacters(in: .whitespaces)
             return name.isEmpty ? "Step \(mass)" : "\(name) \(mass)"
@@ -96,8 +155,6 @@ nonisolated struct RecipeStep: Identifiable, Codable, Hashable, Sendable {
         }
     }
 }
-
-/// Where a recipe came from. Always shown, never inferred at display time.
 nonisolated enum RecipeSource: String, Codable, CaseIterable, Identifiable, Sendable {
     /// Printed on the coffee's own card.
     case card
@@ -110,6 +167,8 @@ nonisolated enum RecipeSource: String, Codable, CaseIterable, Identifiable, Send
     /// A variant proposed by the model, always shown beneath the rules'
     /// answer and never in its place.
     case ai
+    /// Built in thirty seconds on the brew journey.
+    case express
 
     var id: String { rawValue }
 
@@ -120,6 +179,7 @@ nonisolated enum RecipeSource: String, Codable, CaseIterable, Identifiable, Send
         case .mine: "Mine"
         case .adapted: "Adapted"
         case .ai: "Variant"
+        case .express: "Express"
         }
     }
 }
@@ -200,6 +260,10 @@ nonisolated struct Recipe: Identifiable, Codable, Hashable, Sendable {
     /// The guided brew advances on its own when the step's time is up.
     /// On for reference recipes; off for yours unless you turn it on.
     var autoAdvance: Bool
+    /// Auto follows the clock, Manual waits for a tap, Cues shows a sensory mark.
+    var advanceMode: AdvanceMode
+    /// Chemex (and similar) can override the indicative rinse mass.
+    var rinseMassOverride: Double?
 
     var createdAt: Date
     var updatedAt: Date
@@ -229,6 +293,8 @@ nonisolated struct Recipe: Identifiable, Codable, Hashable, Sendable {
         profileTags: [String] = [],
         authorGrinder: String? = nil,
         autoAdvance: Bool = false,
+        advanceMode: AdvanceMode? = nil,
+        rinseMassOverride: Double? = nil,
         createdAt: Date = .now,
         updatedAt: Date = .now
     ) {
@@ -256,6 +322,8 @@ nonisolated struct Recipe: Identifiable, Codable, Hashable, Sendable {
         self.profileTags = profileTags
         self.authorGrinder = authorGrinder
         self.autoAdvance = autoAdvance
+        self.advanceMode = advanceMode ?? (autoAdvance ? .auto : .manual)
+        self.rinseMassOverride = rinseMassOverride
         self.createdAt = createdAt
         self.updatedAt = updatedAt
     }
@@ -339,15 +407,41 @@ nonisolated struct Recipe: Identifiable, Codable, Hashable, Sendable {
             recipeID: link.recipeID,
             recipeRef: link.recipeRef,
             recipeSnapshot: link.snapshot,
-            scale: scaled?.isScaled == true ? size : nil
+            scale: scaled?.isScaled == true ? size : nil,
+            plannedSteps: source.steps.enumerated().map { index, step in
+                BrewStep(
+                    index: index,
+                    action: step.action,
+                    at: 0,
+                    targetAt: step.untilSeconds ?? step.at,
+                    targetMass: step.targetMass,
+                    note: step.note,
+                    agitation: step.agitation
+                )
+            },
+            recipeName: source.name
         )
+    }
+
+    static func expressTitle(family: BrewerFamily, date: Date = .now, card: CoffeeCard? = nil) -> String {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "en_GB")
+        formatter.setLocalizedDateFormatFromTemplate("d MMM")
+        let dateStr = formatter.string(from: date)
+        let coffeePrefix = card.map { c in c.name.isEmpty ? nil : c.name }?.map { "\($0) · " } ?? ""
+        return "\(coffeePrefix)\(family.label) · \(dateStr)"
     }
 
     /// How this recipe is stored on a brew: user recipes keep a FK, bundled
     /// ones a `ref:` key, and both keep a snapshot of the numbers as they were.
     func brewLink() -> (recipeID: UUID?, recipeRef: String?, snapshot: RecipeSnapshot) {
-        let snapshot = RecipeSnapshot(from: self)
-        if source == .mine {
+        // Rinse steps are ephemeral: RinseRule injects them at timer time from
+        // the day's brewer and paper. Storing a rinse in the snapshot led to
+        // stale, sometimes enormous masses being used by the timer.
+        var withoutRinse = self
+        withoutRinse.steps = steps.filter { $0.action != .rinse }
+        let snapshot = RecipeSnapshot(from: withoutRinse)
+        if source == .mine || source == .express {
             return (id, nil, snapshot)
         }
         return (nil, referenceID.map { "ref:\($0)" }, snapshot)
@@ -431,6 +525,9 @@ nonisolated extension Recipe {
         profileTags = try c.decodeIfPresent([String].self, forKey: .profileTags) ?? []
         authorGrinder = try c.decodeIfPresent(String.self, forKey: .authorGrinder)
         autoAdvance = try c.decodeIfPresent(Bool.self, forKey: .autoAdvance) ?? (source == .reference)
+        advanceMode = try c.decodeIfPresent(AdvanceMode.self, forKey: .advanceMode)
+            ?? (autoAdvance ? .auto : .manual)
+        rinseMassOverride = try c.decodeIfPresent(Double.self, forKey: .rinseMassOverride)
         createdAt = try c.decodeIfPresent(Date.self, forKey: .createdAt) ?? .now
         updatedAt = try c.decodeIfPresent(Date.self, forKey: .updatedAt) ?? .now
     }
@@ -445,5 +542,51 @@ nonisolated extension RecipeStep {
         targetMass = try c.decodeIfPresent(Double.self, forKey: .targetMass)
         untilSeconds = try c.decodeIfPresent(Int.self, forKey: .untilSeconds)
         note = try c.decodeIfPresent(String.self, forKey: .note) ?? ""
+        agitation = try c.decodeIfPresent(Agitation.self, forKey: .agitation)
+        derived = try c.decodeIfPresent(Bool.self, forKey: .derived) ?? false
+        accessoryIDs = try c.decodeIfPresent([UUID].self, forKey: .accessoryIDs) ?? []
+        cue = try c.decodeIfPresent(StepCue.self, forKey: .cue)
+    }
+}
+
+/// How the guided timer leaves a step.
+nonisolated enum AdvanceMode: String, Codable, CaseIterable, Identifiable, Sendable {
+    case auto
+    case manual
+    case cues
+
+    var id: String { rawValue }
+
+    var label: String {
+        switch self {
+        case .auto: "Auto"
+        case .manual: "Manual"
+        case .cues: "Cues"
+        }
+    }
+
+    var detail: String {
+        switch self {
+        case .auto: "By time"
+        case .manual: "Tap"
+        case .cues: "Visual"
+        }
+    }
+}
+
+/// What tells you the step is done, when it is not the clock.
+nonisolated enum StepCue: Codable, Hashable, Sendable {
+    case time
+    case mass
+    case visual(String)
+    case smell(String)
+
+    var label: String {
+        switch self {
+        case .time: "Time"
+        case .mass: "Mass"
+        case .visual(let text): text.isEmpty ? "Visual" : text
+        case .smell(let text): text.isEmpty ? "Smell" : text
+        }
     }
 }

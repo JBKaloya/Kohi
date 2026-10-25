@@ -24,6 +24,8 @@ nonisolated struct GrindTranslation: Hashable, Sendable {
         /// The target grinder's declared range, against a published particle
         /// size band for the method.
         case methodRange
+        /// A published range for this grinder and method, with its source.
+        case published(String)
         /// The maker's microns per step, scaled within one grinder.
         case makerStep
 
@@ -34,6 +36,7 @@ nonisolated struct GrindTranslation: Hashable, Sendable {
             case .calibration: "from your calibration"
             case .declaredRanges: "from your ranges"
             case .methodRange: "from range"
+            case .published(let source): "≈ · from \(source)"
             case .makerStep: "from maker step"
             }
         }
@@ -43,7 +46,7 @@ nonisolated struct GrindTranslation: Hashable, Sendable {
         var isYours: Bool {
             switch self {
             case .calibration, .declaredRanges: true
-            case .methodRange, .makerStep: false
+            case .methodRange, .makerStep, .published: false
             }
         }
     }
@@ -197,6 +200,9 @@ nonisolated enum GrindConversion {
     /// `equipment.range(for:)` itself — the translation records it in `basis`.
     static func range(for method: BrewMethod, on grinder: Equipment) -> GrindRange? {
         if let declared = grinder.range(for: method) { return declared }
+        if let published = PublishedGrindRanges.range(grinderRef: grinder.grinderRef, method: method) {
+            return published
+        }
         guard let ref = grinder.grinderRef,
               let reference = ReferenceBase.grinder(id: ref),
               let hint = reference.ranges?.first(where: { $0.method == method })

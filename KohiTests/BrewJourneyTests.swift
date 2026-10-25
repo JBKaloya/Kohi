@@ -57,6 +57,10 @@ enum BrewJourneySupport {
             .environment(setup)
             .environment(CardStore(files: CardFileStore(url: FileManager.default.temporaryDirectory.appending(path: "cards-\(UUID().uuidString).json"))))
             .environment(RecipeStore(files: JSONFileStore(filename: "recipes-journey-\(UUID().uuidString).json")))
+            .environment(TastingStore(
+                files: JSONFileStore(filename: "tastings-journey-\(UUID().uuidString).json"),
+                ledgerFile: JSONDocumentStore(filename: "tastings-ledger-journey-\(UUID().uuidString).json")
+            ))
             .environment(AIFlags(defaults: defaults))
             .environment(LotFlags(defaults: defaults))
             .environment(AIEventLog())
@@ -101,10 +105,23 @@ struct BrewPrefillTests {
         #expect(brew.grind.grinderId == setup.preferredGrinder(for: .v60)?.id)
         #expect(brew.grind.value != nil)
         #expect(brew.agitation == .swirl)
-        #expect(brew.filterId != nil)
+        #expect(brew.filterStockId != nil)
         #expect(brew.captureSource == .prefilled)
         #expect(brew.taste.isEmpty)
         #expect(!brew.equipmentIDs.isEmpty)
+        #expect(brew.recipeSnapshot != nil)
+    }
+
+    @Test func aSuggestionPrefillsWithoutASnapshot() {
+        let setup = BrewJourneySupport.setup()
+        let card = BrewJourneySupport.card()
+        let recipe = ReferenceBase.recipe(referenceID: "a5-kalita-wave")
+            ?? Recipe(name: "Kalita Wave 185", method: .filter, dose: 15, water: 250)
+
+        let brew = BrewPrefill.seed(card: card, recipe: recipe, setup: setup, keepSnapshot: false)
+
+        #expect(brew.recipeSnapshot == nil)
+        #expect(brew.dose != nil)
     }
 
     @Test func finishWritesFlowAndACaptureSource() {
@@ -114,6 +131,58 @@ struct BrewPrefillTests {
         #expect(saved.flowGs == brew.averageFlow)
         #expect(saved.flowGs != nil)
         #expect(saved.captureSource == .typed)
+    }
+
+    @Test func aV60WithoutADefaultStillGetsABrewer() {
+        let setup = SetupStore(files: JSONDocumentStore(filename: "setup-filter-\(UUID().uuidString).json"))
+        let paper = BrewFilter(brand: "Hario", shape: "01")
+        let v60 = Equipment(
+            kind: .brewer,
+            brand: "Hario",
+            model: "V60",
+            brewerType: "V60",
+            filters: [paper]
+        )
+        setup.add(v60)
+        var brew = Brew(method: .v60)
+        BrewPrefill.ensureMatchingBrewer(on: &brew, setup: setup)
+        #expect(brew.equipmentIDs == [v60.id])
+    }
+
+    @Test func espressoDoesNotBorrowAFilterBrewer() {
+        let setup = SetupStore(files: JSONDocumentStore(filename: "setup-espresso-\(UUID().uuidString).json"))
+        let v60 = Equipment(kind: .brewer, brand: "Hario", model: "V60", brewerType: "V60")
+        setup.add(v60)
+        var brew = Brew(method: .espresso)
+        BrewPrefill.ensureMatchingBrewer(on: &brew, setup: setup)
+        #expect(brew.equipmentIDs.isEmpty)
+    }
+
+    @Test func interchangeableFiltersFollowTheFamily() {
+        let paper = BrewFilter(brand: "Hario", shape: "01")
+        let v60 = Equipment(
+            kind: .brewer,
+            brand: "Hario",
+            model: "V60",
+            brewerType: "V60",
+            filters: [paper]
+        )
+        let press = Equipment(kind: .brewer, brand: "Bodum", model: "Brazil", brewerType: "French press")
+        let machine = Equipment(kind: .espressoMachine, brand: "Decent", model: "DE1")
+
+        #expect(BrewMethod.v60.usesInterchangeableFilter)
+        #expect(BrewMethod.filter.usesInterchangeableFilter)
+        #expect(BrewMethod.aeropress.usesInterchangeableFilter)
+        #expect(!BrewMethod.espresso.usesInterchangeableFilter)
+        #expect(!BrewMethod.moka.usesInterchangeableFilter)
+        #expect(!BrewMethod.frenchPress.usesInterchangeableFilter)
+        #expect(!BrewMethod.coldBrew.usesInterchangeableFilter)
+
+        #expect(BrewPrefill.showsFilter(method: .v60, brewer: v60))
+        #expect(BrewPrefill.showsFilter(method: .filter, brewer: nil))
+        #expect(!BrewPrefill.showsFilter(method: .espresso, brewer: machine))
+        #expect(!BrewPrefill.showsFilter(method: .frenchPress, brewer: press))
+        #expect(!BrewPrefill.showsFilter(method: .v60, brewer: press))
     }
 
     @Test func persistInsertsTheFinishedBrewOnTheCard() {
@@ -140,8 +209,9 @@ struct BrewSessionJourneyTests {
             setup: setup
         )
         #expect(session.step == .scope)
-        session.goToKit()
-        session.alreadyBrewed()
+        #expect(session.progressTotal == 4)
+        session.goToDial()
+        session.alreadyBrewed(in: setup)
         #expect(session.step == .after)
         #expect(session.logged)
         #expect(session.progressTotal == 3)
@@ -164,18 +234,96 @@ struct BrewSessionJourneyTests {
         #expect(session.brew.id == existing.id)
     }
 
-    @Test func brewAgainLandsOnKit() {
+    @Test func brewAgainLandsOnAmounts() {
         let setup = BrewJourneySupport.setup()
         let last = Brew(method: .v60, dose: 30, water: 500, grind: GrindSetting(value: 22))
         let session = BrewSession(
             card: BrewJourneySupport.card(),
             existing: last.again(),
-            start: .kit,
+            start: .dial,
             setup: setup
         )
-        #expect(session.step == .kit)
+        #expect(session.step == .dial)
         #expect(session.mode == .create)
         #expect(!session.logged)
+        #expect(session.progressTotal == 4)
+        #expect(!session.retreat())
+    }
+
+    @Test func aFirstBrewOpensRecipes() {
+        let setup = BrewJourneySupport.setup()
+        let session = BrewSession(
+            card: BrewJourneySupport.card(agitation: nil),
+            setup: setup
+        )
+        #expect(session.step == .scope)
+        #expect(!session.includesLauncher)
+        #expect(session.recipeLane == .pros)
+        #expect(!session.retreat())
+    }
+
+    @Test func aRepeatOpensTheLauncherAndReturns() {
+        let setup = BrewJourneySupport.setup()
+        let session = BrewSession(
+            card: BrewJourneySupport.card(),
+            suggested: Recipe(name: "Suggested", method: .v60, dose: 15, water: 250),
+            setup: setup
+        )
+        #expect(session.step == .start)
+        #expect(session.includesLauncher)
+        #expect(session.recipe == nil)
+        #expect(session.brew.dose == nil)
+
+        session.openRecipes(.mine)
+        #expect(session.recipeLane == .mine)
+        #expect(session.retreat())
+        #expect(session.step == .start)
+
+        session.openRecipes(.pros)
+        #expect(session.recipeLane == .pros)
+        session.goToDial()
+        #expect(session.step == .dial)
+        #expect(session.retreat())
+        #expect(session.step == .scope)
+
+        session.openPrevious()
+        #expect(session.step == .previous)
+        session.repeatLast(in: setup)
+        #expect(session.step == .dial)
+        #expect(session.brew.dose == 15)
+        #expect(session.retreat())
+        #expect(session.step == .previous)
+    }
+
+    @Test func howMuchEstimatesCupsAndKeepsTheScaleLine() {
+        #expect(RecipeScaling.cupEstimateLabel(for: 250) == "About 1 cup")
+        #expect(RecipeScaling.cupEstimateLabel(for: 500) == "About 2 cups")
+        #expect(RecipeScaling.cupEstimateLabel(for: 960) == "About 4 cups")
+        #expect(RecipeScaling.cupEstimateLabel(for: nil) == nil)
+        let dial = try! String(
+            contentsOf: BrewJourneySupport.kohiRoot().appending(path: "Recipes/BrewDialView.swift")
+        )
+        #expect(dial.contains("Copy.howMuch"))
+        #expect(dial.contains("cupEstimateLabel"))
+        #expect(dial.contains("Scaled from"))
+        #expect(dial.contains("Steps rescaled"))
+        #expect(!dial.contains("RecipeSize"))
+        #expect(!dial.contains("GrindRail"))
+    }
+
+    @Test func aSuggestedRecipeDoesNotNameTheBrew() {
+        let setup = BrewJourneySupport.setup()
+        let recipe = ReferenceBase.recipe(referenceID: "a5-kalita-wave")
+            ?? Recipe(name: "Kalita Wave 185", method: .filter, dose: 15, water: 250)
+        let session = BrewSession(
+            card: BrewJourneySupport.card(),
+            suggested: recipe,
+            setup: setup
+        )
+        #expect(session.step == .start)
+        #expect(session.recipe == nil)
+        #expect(session.brew.recipeSnapshot == nil)
+        #expect(session.brew.dose == nil)
     }
 }
 
@@ -205,6 +353,15 @@ struct RecipePickerJourneyTests {
         #expect(scaledFour.scaledFromLabel == "scaled from 20 g")
     }
 
+    @Test func recipeLanesAreMineAndFromThePros() throws {
+        #expect(RecipePickerList.Lane.allCases.map(\.label) == ["Mine", Copy.fromThePros])
+        let picker = try String(contentsOf: BrewJourneySupport.kohiRoot().appending(path: "Edit/RecipePickerSheet.swift"))
+        #expect(!picker.contains("Brewed before"))
+        #expect(!picker.contains("case last"))
+        #expect(picker.contains("case mine"))
+        #expect(picker.contains("Copy.fromThePros"))
+    }
+
     @Test func aScaledSeedKeepsTheTimerOnTheScaledSteps() {
         let oneCup = ReferenceBase.recipe(referenceID: "a2-v60-one-cup")
             ?? Recipe(name: "V60 « 1 cup »", method: .v60, dose: 15, water: 250, steps: [
@@ -227,6 +384,7 @@ struct BrewJourneyInvariantTests {
 
         #expect(filesContaining("GuidedBrewView(") == ["Recipes/BrewFlowHost.swift"])
         #expect(filesContaining("AfterBrewSheet(") == ["Recipes/BrewFlowHost.swift"])
+        #expect(filesContaining("BrewDialView(") == ["Recipes/BrewFlowHost.swift"])
         #expect(filesContaining("struct BrewSheet").isEmpty)
         #expect(filesContaining("struct StepTimer").isEmpty)
         #expect(filesContaining("StepTimer(").isEmpty)
@@ -245,12 +403,23 @@ struct BrewJourneyInvariantTests {
         let after = try String(contentsOf: BrewJourneySupport.kohiRoot().appending(path: "Recipes/AfterBrewSheet.swift"))
         #expect(!after.contains("confirmationAction"))
         #expect(!after.contains(".toolbar"))
-        #expect(after.contains("safeAreaInset(edge: .bottom)"))
         #expect(after.contains("DictationField"))
         #expect(after.contains("Save as recipe"))
         #expect(after.contains("Compare with"))
         #expect(after.contains("TDS"))
         #expect(after.contains("Delete this brew"))
+        #expect(!after.contains("appearCorrection"))
+        #expect(!after.contains("SuggestedCorrectionView"))
+        #expect(after.contains("SensoryEvaluationSection"))
+        #expect(!after.contains("brewAgainButton"))
+        #expect(!after.contains("Copy.brewAgain"))
+        #expect(!after.contains("var onAgain"))
+        #expect(!after.contains("session.brew.notes)\""))
+        let flow = try String(contentsOf: BrewJourneySupport.kohiRoot().appending(path: "Design/StepFlow.swift"))
+        #expect(flow.contains("if !fieldFocused"))
+        let correctionView = try String(contentsOf: BrewJourneySupport.kohiRoot().appending(path: "AI/SuggestedCorrectionView.swift"))
+        #expect(correctionView.contains("\"Model\""))
+        #expect(correctionView.contains("Ask the model"))
     }
 
     @Test func catalogueSelectionDoesNotUseACheckmark() throws {

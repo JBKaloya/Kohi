@@ -30,12 +30,19 @@ nonisolated struct Brew: Identifiable, Codable, Hashable, Sendable {
     var equipmentIDs: [UUID]
     var waterProfileID: UUID?
     var agitation: Agitation?
-    var filterId: UUID?
+    var filterStockId: UUID?
 
     /// What actually happened, when the guided timer was used.
     var steps: [BrewStep]
+    /// Plan shown at the timer, recipe or derived default.
+    var plannedSteps: [BrewStep]
+    var actualSource: ActualSource
     /// Average flow in g/s, computed at save time from the water and the time.
     var flowGs: Double?
+    /// Snapshot of the recipe name when this brew was saved.
+    var recipeName: String?
+    /// Per-pour rates from actuals. Empty when `actualSource` is `.none`.
+    var pourRates: [PourRate]
 
     /// Seven axes, 0 to 10. What the coffee was like, as opposed to what to change.
     var taste: TasteProfile
@@ -54,6 +61,9 @@ nonisolated struct Brew: Identifiable, Codable, Hashable, Sendable {
     var acidity: Int
     var bitterness: Int
     var body: Int
+    /// Aromatic complexity, stored as the wish for next time: +1 more, −1
+    /// less. Nil on every brew made before it existed, and when left as is.
+    var complexity: Int?
 
     var notes: String
 
@@ -75,9 +85,13 @@ nonisolated struct Brew: Identifiable, Codable, Hashable, Sendable {
         equipmentIDs: [UUID] = [],
         waterProfileID: UUID? = nil,
         agitation: Agitation? = nil,
-        filterId: UUID? = nil,
+        filterStockId: UUID? = nil,
         steps: [BrewStep] = [],
+        plannedSteps: [BrewStep] = [],
+        actualSource: ActualSource = .none,
         flowGs: Double? = nil,
+        recipeName: String? = nil,
+        pourRates: [PourRate] = [],
         taste: TasteProfile = TasteProfile(),
         legacyTaste: [String: Int]? = nil,
         flavors: [FlavorTag] = [],
@@ -87,6 +101,7 @@ nonisolated struct Brew: Identifiable, Codable, Hashable, Sendable {
         acidity: Int = 0,
         bitterness: Int = 0,
         body: Int = 0,
+        complexity: Int? = nil,
         notes: String = ""
     ) {
         self.id = id
@@ -106,9 +121,13 @@ nonisolated struct Brew: Identifiable, Codable, Hashable, Sendable {
         self.equipmentIDs = equipmentIDs
         self.waterProfileID = waterProfileID
         self.agitation = agitation
-        self.filterId = filterId
+        self.filterStockId = filterStockId
         self.steps = steps
+        self.plannedSteps = plannedSteps
+        self.actualSource = actualSource
         self.flowGs = flowGs
+        self.recipeName = recipeName
+        self.pourRates = pourRates
         self.taste = taste
         self.legacyTaste = legacyTaste
         self.flavors = flavors
@@ -118,6 +137,7 @@ nonisolated struct Brew: Identifiable, Codable, Hashable, Sendable {
         self.acidity = acidity
         self.bitterness = bitterness
         self.body = body
+        self.complexity = complexity
         self.notes = notes
     }
 
@@ -142,6 +162,17 @@ nonisolated struct Brew: Identifiable, Codable, Hashable, Sendable {
     // MARK: - Computed
 
     /// Brew ratio as "1:16" when it is a whole number, "1:14.3" otherwise.
+    /// Today's water divided by the recipe's nominal water. Not `scale`, which is a cup size.
+    var waterScale: Double? {
+        guard let live = water ?? beverage,
+              let nominal = recipeSnapshot?.water ?? recipeSnapshot?.beverage,
+              nominal > 0, live > 0
+        else { return nil }
+        let factor = live / nominal
+        guard abs(factor - 1) >= 0.01 else { return 1 }
+        return factor
+    }
+
     var ratio: String? {
         guard let dose, dose > 0 else { return nil }
         let liquid = water ?? beverage
@@ -169,7 +200,7 @@ nonisolated struct Brew: Identifiable, Codable, Hashable, Sendable {
         var result: [(BrewStep, Double)] = []
         var previousMass = 0.0
         var previousAt = 0
-        for step in steps.sorted(by: { $0.at < $1.at }) {
+        for step in steps.sorted(by: { $0.at < $1.at }) where step.action != .rinse {
             defer {
                 if let mass = step.mass { previousMass = mass }
                 previousAt = step.at
@@ -234,7 +265,7 @@ nonisolated struct Brew: Identifiable, Codable, Hashable, Sendable {
             equipmentIDs: equipmentIDs,
             waterProfileID: waterProfileID,
             agitation: agitation,
-            filterId: filterId,
+            filterStockId: filterStockId,
             steps: steps.map {
                 BrewStep(
                     index: $0.index,
@@ -243,9 +274,13 @@ nonisolated struct Brew: Identifiable, Codable, Hashable, Sendable {
                     mass: nil,
                     targetAt: $0.targetAt,
                     targetMass: $0.targetMass,
-                    note: $0.note
+                    note: $0.note,
+                    agitation: $0.agitation
                 )
             },
+            plannedSteps: plannedSteps,
+            actualSource: .none,
+            recipeName: recipeName,
             captureSource: .prefilled
         )
     }
@@ -293,9 +328,15 @@ nonisolated extension Brew {
         equipmentIDs = try c.decodeIfPresent([UUID].self, forKey: .equipmentIDs) ?? []
         waterProfileID = try c.decodeIfPresent(UUID.self, forKey: .waterProfileID)
         agitation = try c.decodeIfPresent(Agitation.self, forKey: .agitation)
-        filterId = try c.decodeIfPresent(UUID.self, forKey: .filterId)
+        let filterKeys = try decoder.container(keyedBy: FilterIDKeys.self)
+        filterStockId = try filterKeys.decodeIfPresent(UUID.self, forKey: .filterStockId)
+            ?? filterKeys.decodeIfPresent(UUID.self, forKey: .filterId)
         steps = try c.decodeIfPresent([BrewStep].self, forKey: .steps) ?? []
+        plannedSteps = try c.decodeIfPresent([BrewStep].self, forKey: .plannedSteps) ?? []
+        actualSource = try c.decodeIfPresent(ActualSource.self, forKey: .actualSource) ?? .none
         flowGs = try c.decodeIfPresent(Double.self, forKey: .flowGs)
+        recipeName = try c.decodeIfPresent(String.self, forKey: .recipeName)
+        pourRates = try c.decodeIfPresent([PourRate].self, forKey: .pourRates) ?? []
         legacyTaste = try c.decodeIfPresent([String: Int].self, forKey: .legacyTaste)
         if let profile = try c.decodeIfPresent(TasteProfile.self, forKey: .taste) {
             taste = profile
@@ -316,6 +357,11 @@ nonisolated extension Brew {
         acidity = try c.decodeIfPresent(Int.self, forKey: .acidity) ?? 0
         bitterness = try c.decodeIfPresent(Int.self, forKey: .bitterness) ?? 0
         body = try c.decodeIfPresent(Int.self, forKey: .body) ?? 0
+        complexity = try c.decodeIfPresent(Int.self, forKey: .complexity)
         notes = try c.decodeIfPresent(String.self, forKey: .notes) ?? ""
     }
+}
+
+private enum FilterIDKeys: String, CodingKey {
+    case filterStockId, filterId
 }

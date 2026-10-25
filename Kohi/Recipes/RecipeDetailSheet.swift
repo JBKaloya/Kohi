@@ -14,6 +14,7 @@ struct RecipeDetailSheet: View {
 
     @Environment(CardStore.self) private var store
     @Environment(SetupStore.self) private var setup
+    @Environment(RecipeStore.self) private var recipes
     @Environment(AIFlags.self) private var flags
     @Environment(AIEventLog.self) private var events
     @Environment(AIFeedbackStore.self) private var feedback
@@ -27,6 +28,8 @@ struct RecipeDetailSheet: View {
     @State private var isPickingCoffee = false
     @State private var flow: BrewSession?
     @State private var showProfile = false
+    @State private var editingCopy: Recipe?
+    @State private var isEditingMine = false
 
     private var shown: Recipe { scaled?.recipe ?? recipe }
 
@@ -38,6 +41,20 @@ struct RecipeDetailSheet: View {
                     if let scaled, scaled.isScaled { inYourCup(scaled) }
                     if !adjustments.isEmpty { adjustmentsSection }
                     if !shown.steps.isEmpty { stepsSection }
+                    if !shown.steps.isEmpty {
+                        PourCurve(
+                            actual: [],
+                            planned: plannedAsBrewSteps,
+                            rates: []
+                        )
+                    }
+                    if recipe.source == .mine || recipe.source == .express {
+                        Button("Edit") { isEditingMine = true }
+                            .catalogueLabel()
+                    } else if recipe.source == .reference || recipe.source == .ai {
+                        Button("Save a copy") { saveCopy() }
+                            .catalogueLabel()
+                    }
                     if !recipe.notes.isEmpty { notesSection }
                     attributionSection
                     variantSection
@@ -113,8 +130,18 @@ struct RecipeDetailSheet: View {
             RecipeCoffeePicker(picked: $picked)
                 .appEnvironment(appEnvironment)
         }
+        .sheet(item: $editingCopy) { copy in
+            StepBuilderSheet(draft: copy) { saved in
+                recipes.add(saved)
+            }
+            .appEnvironment(appEnvironment)
+        }
         .sheet(isPresented: $showProfile) {
             ProfileSheet()
+                .appEnvironment(appEnvironment)
+        }
+        .sheet(isPresented: $isEditingMine) {
+            RecipeEditSheet(recipe: recipe)
                 .appEnvironment(appEnvironment)
         }
         .fullScreenCover(item: $flow) { session in
@@ -122,10 +149,13 @@ struct RecipeDetailSheet: View {
                 session: session,
                 onDismiss: { flow = nil },
                 onAgain: { seed in
+                    let prepared = BrewPrefill.preparedAgain(from: seed, setup: setup)
                     flow = BrewSession(
                         card: session.card,
-                        existing: seed.again(),
-                        start: .kit,
+                        recipe: seed.recipeSnapshot.map(Recipe.init(snapshot:)),
+                        existing: prepared.brew,
+                        start: .dial,
+                        lastApplication: prepared.application,
                         setup: setup
                     )
                 }
@@ -368,6 +398,44 @@ struct RecipeDetailSheet: View {
         }
     }
 
+    private var plannedAsBrewSteps: [BrewStep] {
+        shown.steps.enumerated().map { index, step in
+            BrewStep(
+                index: index,
+                action: step.action,
+                at: step.at,
+                targetAt: step.untilSeconds ?? step.at,
+                targetMass: step.targetMass,
+                note: step.note,
+                agitation: step.agitation
+            )
+        }
+    }
+
+    private func saveCopy() {
+        var copy = Recipe(
+            name: shown.name,
+            method: shown.method,
+            dose: shown.dose,
+            water: shown.water,
+            beverage: shown.beverage,
+            temperature: shown.temperature,
+            temperatureMax: shown.temperatureMax,
+            seconds: shown.seconds,
+            grindLabel: shown.grindLabel,
+            grindMicronsLow: shown.grindMicronsLow,
+            grindMicronsHigh: shown.grindMicronsHigh,
+            steps: shown.steps,
+            source: .mine,
+            evidence: .unverified,
+            attribution: shown.attribution,
+            notes: shown.notes,
+            referenceID: shown.referenceID,
+            autoAdvance: false
+        )
+        editingCopy = copy
+    }
+
     private var notesSection: some View {
         VStack(alignment: .leading, spacing: 10) {
             Text("Notes")
@@ -417,49 +485,66 @@ struct RecipeDetailSheet: View {
     }
 }
 
-/// Coffee picker for "Another coffee…"
+/// Coffee picker for "Which coffee?" and "Another coffee…"
 struct RecipeCoffeePicker: View {
     @Binding var picked: CoffeeCard?
+    var showsJourneyChrome = false
     @Environment(CardStore.self) private var store
     @Environment(\.dismiss) private var dismiss
 
     var body: some View {
-        NavigationStack {
-            ScrollView {
-                VStack(spacing: 0) {
-                    ForEach(store.cards.sorted { $0.createdAt > $1.createdAt }) { coffee in
-                        let on = picked?.id == coffee.id
-                        Button {
-                            picked = coffee
-                            dismiss()
-                        } label: {
-                            HStack {
-                                Text(store.title(for: coffee))
-                                    .font(Typography.value)
-                                    .foregroundStyle(CatalogueChoice.ink(on))
-                                Spacer()
-                            }
-                            .padding(.vertical, 14)
-                            .frame(minHeight: 44)
-                        }
-                        .buttonStyle(.plain)
-                        .accessibilityAddTraits(on ? .isSelected : [])
-                        Rectangle().fill(CatalogueChoice.rule(on)).frame(height: 1)
+        if showsJourneyChrome {
+            StepFlow(
+                step: 0,
+                total: 6,
+                question: Copy.whichCoffee,
+                onClose: { dismiss() }
+            ) {
+                coffeeList
+                    .padding(.bottom, 24)
+            }
+        } else {
+            NavigationStack {
+                ScrollView {
+                    coffeeList
+                        .padding(.horizontal, 26)
+                        .padding(.top, 16)
+                }
+                .scrollIndicators(.hidden)
+                .background(Palette.paper.ignoresSafeArea())
+                .navigationTitle("Coffee")
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    ToolbarItem(placement: .cancellationAction) {
+                        Button("Close") { dismiss() }
                     }
                 }
-                .padding(.horizontal, 26)
-                .padding(.top, 16)
             }
-            .scrollIndicators(.hidden)
-            .background(Palette.paper.ignoresSafeArea())
-            .navigationTitle("Coffee")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Close") { dismiss() }
+            .tint(Palette.ink)
+        }
+    }
+
+    private var coffeeList: some View {
+        VStack(spacing: 0) {
+            ForEach(store.cards.sorted { $0.createdAt > $1.createdAt }) { coffee in
+                let on = picked?.id == coffee.id
+                Button {
+                    picked = coffee
+                    dismiss()
+                } label: {
+                    HStack {
+                        Text(store.title(for: coffee))
+                            .font(Typography.value)
+                            .foregroundStyle(CatalogueChoice.ink(on))
+                        Spacer()
+                    }
+                    .padding(.vertical, 14)
+                    .frame(minHeight: 44)
                 }
+                .buttonStyle(.plain)
+                .accessibilityAddTraits(on ? .isSelected : [])
+                Rectangle().fill(CatalogueChoice.rule(on)).frame(height: 1)
             }
         }
-        .tint(Palette.ink)
     }
 }

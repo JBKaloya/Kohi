@@ -15,7 +15,8 @@ enum BrewLiveActivity {
         brew: Brew,
         index: Int,
         elapsed: TimeInterval,
-        startedAt: Date
+        startedAt: Date,
+        isRecording: Bool = false
     ) {
         guard ActivityAuthorizationInfo().areActivitiesEnabled else { return }
         end()
@@ -28,7 +29,8 @@ enum BrewLiveActivity {
             brew: brew,
             index: index,
             elapsed: elapsed,
-            startedAt: startedAt
+            startedAt: startedAt,
+            isRecording: isRecording
         )
         do {
             activity = try Activity.request(
@@ -47,7 +49,8 @@ enum BrewLiveActivity {
         index: Int,
         elapsed: TimeInterval,
         startedAt: Date,
-        force: Bool = false
+        force: Bool = false,
+        isRecording: Bool = false
     ) {
         let second = Int(elapsed)
         guard force || second != lastSecond else { return }
@@ -58,7 +61,8 @@ enum BrewLiveActivity {
             brew: brew,
             index: index,
             elapsed: elapsed,
-            startedAt: startedAt
+            startedAt: startedAt,
+            isRecording: isRecording
         )
         Task { await activity.update(.init(state: state, staleDate: nil)) }
     }
@@ -76,7 +80,8 @@ enum BrewLiveActivity {
         brew: Brew,
         index: Int,
         elapsed: TimeInterval,
-        startedAt: Date
+        startedAt: Date,
+        isRecording: Bool
     ) -> BrewActivityAttributes.ContentState {
         let steps = recipe.steps
         let masses = steps.compactMap(\.targetMass)
@@ -109,7 +114,8 @@ enum BrewLiveActivity {
             stepMasses: masses,
             stepIndex: min(index, max(steps.count, 1)),
             stepCount: max(steps.count, 1),
-            startedAt: startedAt
+            startedAt: startedAt,
+            isRecording: isRecording
         )
     }
 }

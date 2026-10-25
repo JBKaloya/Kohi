@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>Timing des recettes · Kohi</title>
+  <link rel="stylesheet" href="./tastings.css">
+  <link rel="stylesheet" href="./advance-modes.css">
+  <link rel="stylesheet" href="./site.css">
+  <link rel="stylesheet" href="./review.css">
+</head>
+<body>
+  <article class="page" id="review-root" data-review-root>
+    <a class="crumb" href="./index.html" data-review-chrome>Itérations</a>
+    <header class="stack gap-8" data-anchor="intro" data-anchor-label="Introduction">
+      <h1>Timing des recettes</h1>
+      <p class="lead">
+        Même tasse, même séquence. Advance choisit qui fait quitter l’étape au minuteur guidé,
+        après Brew. L’idée est d’en garder un par défaut, sans laisser le choix dans l’app.
+        Dose, eau, température et mouture restent leurs propres blocs.
+      </p>
+    </header>
+
+    <section class="section stack gap-14" id="moments">
+      <div class="row gap-6 wrap" id="moment-pills"></div>
+      <p class="note">Un bloom à 0:45, puis une attente. Le cue « bed drops to 2 mm » est l’exemple du champ Cue dans l’éditeur d’étape.</p>
+      <div class="modes" id="modes"></div>
+    </section>
+
+    <section class="section stack gap-8" data-anchor="split" data-anchor-label="Où les modes se séparent">
+      <h2>Où les trois modes se séparent</h2>
+      <p class="note">
+        Le tap avance dans les trois cas et enregistre le temps réel. Le rinçage n’avance jamais
+        seul. Les recettes livrées ouvrent sur Auto. Les tiennes ouvrent sur Manual. Cues n’est le
+        départ d’aucune recette, et aucune recette livrée n’a de cue écrit.
+      </p>
+      <table class="sheet">
+        <thead>
+          <tr>
+            <th>Moment</th>
+            <th>Auto · By time</th>
+            <th>Manual · Tap</th>
+            <th>Cues · Visual</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Après le rinçage</td>
+            <td>3-2-1, puis le chrono</td>
+            <td>3-2-1, puis le chrono</td>
+            <td>Le chrono part tout de suite</td>
+          </tr>
+          <tr>
+            <td>Sous l’étape</td>
+            <td>Aperçu de la suivante</td>
+            <td>Aperçu de la suivante</td>
+            <td>Le cue, s’il est écrit</td>
+          </tr>
+          <tr>
+            <td>Temps prévu atteint</td>
+            <td>Avance seul après 3 s</td>
+            <td>Reste jusqu’au tap</td>
+            <td>Reste jusqu’au tap</td>
+          </tr>
+          <tr>
+            <td>Un tap avant la fin</td>
+            <td>Enregistre le réel, passe</td>
+            <td>Enregistre le réel, passe</td>
+            <td>Enregistre le réel, passe</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="section stack gap-12" id="keep" data-anchor="keep-one" data-anchor-label="Si on n’en gardait qu’un">
+      <h2>Si on n’en gardait qu’un</h2>
+      <div class="callout">
+        <h3>Question ouverte</h3>
+        <p>Lequel garderais-tu une fois le café en main, et qu’est-ce que les deux autres t’apportent encore — le passage tout seul, le tap, ou le repère visuel ?</p>
+      </div>
+      <p class="note">La réponse se pose en commentaire, sur la colonne du mode que tu garderais.</p>
+    </section>
+
+    <p class="note" style="margin-top:28px">Source : AdvanceMode, GuidedBrewView, StepBuilderSheet. Comportement du code actuel.</p>
+  </article>
+  <script src="./config.js"></script>
+  <script type="module" src="./advance-modes.js"></script>
+</body>
+</html>

@@ -11,6 +11,10 @@ struct ProfileSheet: View {
     @Environment(AIEventLog.self) private var aiEvents
     @Environment(AccountStore.self) private var account
     @Environment(SetupFlowController.self) private var flow
+    @Environment(CardLookStore.self) private var looks
+    @Environment(CardStore.self) private var store
+    @Environment(StampLibrary.self) private var stamps
+    @Environment(StampRefresh.self) private var refresh
     @Environment(\.appEnvironment) private var appEnvironment
     @Environment(\.dismiss) private var dismiss
 
@@ -18,6 +22,8 @@ struct ProfileSheet: View {
     @State private var addingKind: EquipmentKind?
     @State private var editingWater: WaterProfile?
     @State private var isAddingWater = false
+    @State private var editingFilter: FilterStock?
+    @State private var isAddingFilter = false
     @State private var isConverting = false
     @State private var isShowingAccount = false
     @State private var isShowingFlow = false
@@ -28,8 +34,10 @@ struct ProfileSheet: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 34) {
                     kitSection
+                    filtersSection
                     waterSection
                     defaultsSection
+                    displaySection
                     grindSection
                     setUpAgainSection
                     #if DEBUG
@@ -43,7 +51,7 @@ struct ProfileSheet: View {
                     }
                 }
                 .padding(.horizontal, 26)
-                .padding(.top, 16)
+                .padding(.top, 28)
                 .padding(.bottom, 48)
             }
             .scrollIndicators(.hidden)
@@ -57,6 +65,7 @@ struct ProfileSheet: View {
             }
         }
         .tint(Palette.ink)
+        .onDisappear { refresh.cancel() }
         .sheet(item: $editing) { item in
             EquipmentSheet(equipment: item)
                 .appEnvironment(appEnvironment)
@@ -71,6 +80,14 @@ struct ProfileSheet: View {
         }
         .sheet(isPresented: $isAddingWater) {
             WaterSheet(profile: nil)
+                .appEnvironment(appEnvironment)
+        }
+        .sheet(item: $editingFilter) { stock in
+            FilterSheet(stock: stock)
+                .appEnvironment(appEnvironment)
+        }
+        .sheet(isPresented: $isAddingFilter) {
+            FilterSheet(defaultFor: defaultFilterBrewerID)
                 .appEnvironment(appEnvironment)
         }
         .sheet(isPresented: $isConverting) {
@@ -90,11 +107,15 @@ struct ProfileSheet: View {
         }
     }
 
+    private var defaultFilterBrewerID: UUID? {
+        setup.equipment(.brewer).first { !$0.resolvedFilterShapes.isEmpty }?.id
+    }
+
     // MARK: - Kit
 
     private var kitSection: some View {
         SetupSection(title: "Your kit", waiting: "", isEmpty: false) {
-            VStack(spacing: 8) {
+            VStack(spacing: 20) {
                 ForEach(EquipmentKind.allCases) { kind in
                     let items = setup.equipment(kind)
                     VStack(spacing: 0) {
@@ -114,6 +135,21 @@ struct ProfileSheet: View {
                     title: "Add from a photo",
                     systemImage: "camera"
                 )
+            }
+        }
+    }
+
+    private var filtersSection: some View {
+        SetupSection(
+            title: "Filters",
+            waiting: "The paper you actually own",
+            isEmpty: setup.filterStock.isEmpty
+        ) {
+            VStack(spacing: 0) {
+                ForEach(setup.filterStock) { stock in
+                    FilterKitRow(stock: stock) { editingFilter = stock }
+                }
+                SetupAddRow(title: Copy.addAFilter) { isAddingFilter = true }
             }
         }
     }
@@ -155,6 +191,84 @@ struct ProfileSheet: View {
 
     private var methodsWithDefaults: [BrewMethod] {
         BrewMethod.allCases.filter { !setup.defaults(for: $0).isEmpty }
+    }
+
+    private var displaySection: some View {
+        SetupSection(title: "Display", waiting: "", isEmpty: false) {
+            VStack(alignment: .leading, spacing: 10) {
+                Text(Copy.cards)
+                    .catalogueLabel()
+                HStack(spacing: 8) {
+                    faceChoice(Copy.scans, look: .scan)
+                    faceChoice(Copy.kohiCards, look: .kohi)
+                }
+                Text(Copy.kohiCardsSubtitle)
+                    .font(Typography.tag)
+                    .foregroundStyle(Palette.inkMuted)
+                    .fixedSize(horizontal: false, vertical: true)
+
+                Text(Copy.cardLayout)
+                    .catalogueLabel()
+                    .padding(.top, 8)
+                HStack(spacing: 8) {
+                    layoutChoice(Copy.layoutLabel, layout: .label)
+                    layoutChoice(Copy.layoutFullBleed, layout: .fullBleed)
+                }
+
+                Button {
+                    let cards = store.cards
+                        .filter { ImageStore.shared.exists($0.id, kind: .flat) }
+                        .map { (id: $0.id, roaster: $0.roaster) }
+                    refresh.start(cards: cards, library: stamps)
+                } label: {
+                    HStack {
+                        Text("Regenerate symbols")
+                            .catalogueLabel()
+                            .foregroundStyle(Palette.ink)
+                        Spacer()
+                        if refresh.running {
+                            ProgressView()
+                        }
+                    }
+                }
+                .buttonStyle(.plain)
+                .disabled(refresh.running || cardsToMeasure == 0)
+
+                Text(measureCaption)
+                    .font(Typography.tag)
+                    .foregroundStyle(Palette.inkMuted)
+            }
+        }
+    }
+
+    private var cardsToMeasure: Int {
+        store.cards.filter { ImageStore.shared.exists($0.id, kind: .flat) }.count
+    }
+
+    private var measureCaption: String {
+        if refresh.running {
+            return "\(refresh.completed) of \(refresh.total)"
+        }
+        let count = cardsToMeasure
+        return count == 1 ? "1 card" : "\(count) cards"
+    }
+
+    private func layoutChoice(_ title: String, layout: CardLayout) -> some View {
+        Button {
+            looks.layout = layout
+        } label: {
+            CatalogueMark(text: title, isSelected: looks.layout == layout)
+        }
+        .buttonStyle(.plain)
+    }
+
+    private func faceChoice(_ title: String, look: CardLook) -> some View {
+        Button {
+            looks.global = look
+        } label: {
+            CatalogueMark(text: title, isSelected: looks.global == look)
+        }
+        .buttonStyle(.plain)
     }
 
     private var grindSection: some View {

@@ -4,6 +4,8 @@ import SwiftUI
 struct SuggestedCorrectionView: View {
     let correction: SuggestedCorrection
     @Binding var pickedRank: Int?
+    var onAskModel: (() -> Void)? = nil
+    var isAskingModel: Bool = false
     var onPick: (SuggestedCorrection.Move) -> Void
 
     var body: some View {
@@ -13,7 +15,8 @@ struct SuggestedCorrectionView: View {
             provenance: correction.isModel
                 ? "DERIVED FROM THIS BREW"
                 : "SOURCE: RULE G7",
-            isModel: correction.isModel
+            isModel: correction.isModel,
+            accessory: { askModelButton }
         ) {
             VStack(alignment: .leading, spacing: 10) {
                 ForEach(correction.moves) { move in
@@ -34,6 +37,15 @@ struct SuggestedCorrectionView: View {
                                 Text(move.why)
                                     .font(Typography.tag)
                                     .foregroundStyle(Palette.inkMuted)
+                                if let because = move.because, !because.isEmpty {
+                                    Text("Because " + because.joined(separator: " → "))
+                                        .font(Typography.tag)
+                                        .foregroundStyle(Palette.inkMuted)
+                                }
+                                if let confidence = move.confidence {
+                                    Text("Confidence: \(confidence)")
+                                        .catalogueLabel()
+                                }
                             }
                             Spacer()
                         }
@@ -42,10 +54,31 @@ struct SuggestedCorrectionView: View {
                     .touchTarget()
                 }
                 if pickedRank != nil {
-                    Text("Use next time")
+                    Text(Copy.useNextTime)
                         .catalogueLabel()
                 }
             }
         }
+    }
+
+    @ViewBuilder
+    private var askModelButton: some View {
+        #if DEBUG
+        if let onAskModel {
+            Button(action: onAskModel) {
+                HStack(spacing: 4) {
+                    CoffeeCupIcon(size: 12, color: Palette.primary)
+                    Text(isAskingModel ? "…" : "Model")
+                        .foregroundStyle(Palette.primary)
+                }
+                .font(Typography.label)
+                .tracking(Typography.labelTracking)
+                .textCase(.uppercase)
+            }
+            .buttonStyle(.plain)
+            .disabled(isAskingModel)
+            .accessibilityLabel("Ask the model")
+        }
+        #endif
     }
 }

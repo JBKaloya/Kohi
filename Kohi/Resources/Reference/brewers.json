@@ -7,6 +7,9 @@
     "family": "cone",
     "bypass": "high",
     "filter": "V60 01",
+    "shapes": [
+      "cone60"
+    ],
     "note": "Classique",
     "source": "Timour 2026-09",
     "status": "à vérifier"
@@ -19,6 +22,9 @@
     "family": "cone",
     "bypass": "high",
     "filter": "V60 02",
+    "shapes": [
+      "cone60"
+    ],
     "note": "Référence du pour-over",
     "source": "Timour 2026-09",
     "status": "à vérifier"
@@ -31,6 +37,9 @@
     "family": "cone",
     "bypass": "high",
     "filter": "V60 03",
+    "shapes": [
+      "cone60"
+    ],
     "note": "Gros volumes",
     "source": "Timour 2026-09",
     "status": "à vérifier"
@@ -43,6 +52,9 @@
     "family": "cone",
     "bypass": "low",
     "filter": "V60",
+    "shapes": [
+      "cone60"
+    ],
     "note": "Extraction plus douce",
     "source": "Timour 2026-09",
     "status": "à vérifier"
@@ -55,6 +67,9 @@
     "family": "hybrid",
     "bypass": "variable",
     "filter": "V60",
+    "shapes": [
+      "cone60"
+    ],
     "note": "Immersion + percolation",
     "source": "Timour 2026-09",
     "status": "à vérifier"
@@ -67,6 +82,9 @@
     "family": "cone",
     "bypass": "high",
     "filter": "V60",
+    "shapes": [
+      "cone60"
+    ],
     "note": "Géométrie ajourée",
     "source": "Timour 2026-09",
     "status": "à vérifier"
@@ -79,6 +97,10 @@
     "family": "flat-cone",
     "bypass": "medium",
     "filter": "Pegasus",
+    "shapes": [
+      "cone60",
+      "wave"
+    ],
     "note": "Alternative au V60",
     "source": "Timour 2026-09",
     "status": "à vérifier"
@@ -91,6 +113,9 @@
     "family": "cone",
     "bypass": "high",
     "filter": "V60",
+    "shapes": [
+      "cone60"
+    ],
     "note": "Voyage",
     "source": "Timour 2026-09",
     "status": "à vérifier"
@@ -103,6 +128,9 @@
     "family": "cone",
     "bypass": "high",
     "filter": "V60",
+    "shapes": [
+      "cone60"
+    ],
     "note": "Très léger",
     "source": "Timour 2026-09",
     "status": "à vérifier"
@@ -115,6 +143,9 @@
     "family": "cone",
     "bypass": "high",
     "filter": "V60",
+    "shapes": [
+      "cone60"
+    ],
     "note": "Dripper + carafe",
     "source": "Timour 2026-09",
     "status": "à vérifier"
@@ -127,6 +158,9 @@
     "family": "cone",
     "bypass": "medium",
     "filter": "Kono",
+    "shapes": [
+      "cone60"
+    ],
     "note": "Tradition japonaise",
     "source": "Timour 2026-09",
     "status": "à vérifier"
@@ -139,6 +173,9 @@
     "family": "cone",
     "bypass": "high",
     "filter": "Origami/V60",
+    "shapes": [
+      "cone60"
+    ],
     "note": "Très polyvalent",
     "source": "Timour 2026-09",
     "status": "à vérifier"
@@ -151,6 +188,9 @@
     "family": "cone",
     "bypass": "high",
     "filter": "Origami/V60",
+    "shapes": [
+      "cone60"
+    ],
     "note": "Plastique",
     "source": "Timour 2026-09",
     "status": "à vérifier"
@@ -163,6 +203,9 @@
     "family": "cone",
     "bypass": "high",
     "filter": "Origami/V60",
+    "shapes": [
+      "cone60"
+    ],
     "note": "Petit format",
     "source": "Timour 2026-09",
     "status": "à vérifier"
@@ -175,6 +218,9 @@
     "family": "flat",
     "bypass": "medium",
     "filter": "Wave 155",
+    "shapes": [
+      "wave"
+    ],
     "note": "Petit volume",
     "source": "Timour 2026-09",
     "status": "à vérifier"
@@ -187,6 +233,9 @@
     "family": "flat",
     "bypass": "medium",
     "filter": "Wave 185",
+    "shapes": [
+      "wave"
+    ],
     "note": "Très populaire",
     "source": "Timour 2026-09",
     "status": "à vérifier"
@@ -199,6 +248,9 @@
     "family": "flat",
     "bypass": "medium",
     "filter": "Kalita",
+    "shapes": [
+      "wave"
+    ],
     "note": "Traditionnel",
     "source": "Timour 2026-09",
     "status": "à vérifier"
@@ -211,6 +263,9 @@
     "family": "flat",
     "bypass": "medium",
     "filter": "Kalita",
+    "shapes": [
+      "wave"
+    ],
     "note": "Classique",
     "source": "Timour 2026-09",
     "status": "à vérifier"
@@ -223,6 +278,9 @@
     "family": "flat",
     "bypass": "medium",
     "filter": "Kalita",
+    "shapes": [
+      "wave"
+    ],
     "note": "Gros volume",
     "source": "Timour 2026-09",
     "status": "à vérifier"
@@ -235,6 +293,9 @@
     "family": "cone",
     "bypass": "high",
     "filter": "V60/Cafec",
+    "shapes": [
+      "cone60"
+    ],
     "note": "Géométrie rapide",
     "source": "Timour 2026-09",
     "status": "à vérifier"
@@ -247,6 +308,9 @@
     "family": "cone-deep",
     "bypass": "high",
     "filter": "Deep27",
+    "shapes": [
+      "coneDeep"
+    ],
     "note": "Très petit lit de café",
     "source": "Timour 2026-09",
     "status": "à vérifier"
@@ -259,6 +323,9 @@
     "family": "cone",
     "bypass": "medium",
     "filter": "Cafec",
+    "shapes": [
+      "cone60"
+    ],
     "note": "Design specialty",
     "source": "Timour 2026-09",
     "status": "à vérifier"
@@ -271,6 +338,9 @@
     "family": "cone",
     "bypass": "high",
     "filter": "V60",
+    "shapes": [
+      "cone60"
+    ],
     "note": "Parois striées",
     "source": "Timour 2026-09",
     "status": "à vérifier"
@@ -283,6 +353,9 @@
     "family": "flat",
     "bypass": "medium",
     "filter": "B75",
+    "shapes": [
+      "wave"
+    ],
     "note": "Gros débit",
     "source": "Timour 2026-09",
     "status": "à vérifier"
@@ -295,6 +368,9 @@
     "family": "flat",
     "bypass": "low-medium",
     "filter": "B75",
+    "shapes": [
+      "wave"
+    ],
     "note": "Version améliorée",
     "source": "Timour 2026-09",
     "status": "à vérifier"
@@ -307,6 +383,10 @@
     "family": "flat",
     "bypass": "low",
     "filter": "Stagg X",
+    "shapes": [
+      "wave",
+      "flatSmooth"
+    ],
     "note": "Tasse concentrée",
     "source": "Timour 2026-09",
     "status": "à vérifier"
@@ -319,6 +399,10 @@
     "family": "flat",
     "bypass": "low",
     "filter": "Stagg XF",
+    "shapes": [
+      "wave",
+      "flatSmooth"
+    ],
     "note": "Gros volume",
     "source": "Timour 2026-09",
     "status": "à vérifier"
@@ -331,6 +415,10 @@
     "family": "flat",
     "bypass": "low",
     "filter": "Orea",
+    "shapes": [
+      "wave",
+      "flatSmooth"
+    ],
     "note": "Fast-flow",
     "source": "Timour 2026-09",
     "status": "à vérifier"
@@ -343,6 +431,10 @@
     "family": "flat",
     "bypass": "low",
     "filter": "Orea",
+    "shapes": [
+      "wave",
+      "flatSmooth"
+    ],
     "note": "Très rapide",
     "source": "Timour 2026-09",
     "status": "à vérifier"
@@ -355,6 +447,10 @@
     "family": "flat",
     "bypass": "low",
     "filter": "Orea",
+    "shapes": [
+      "wave",
+      "flatSmooth"
+    ],
     "note": "Specialty",
     "source": "Timour 2026-09",
     "status": "à vérifier"
@@ -367,6 +463,10 @@
     "family": "flat",
     "bypass": "low",
     "filter": "Orea",
+    "shapes": [
+      "wave",
+      "flatSmooth"
+    ],
     "note": "Géométrie optimisée",
     "source": "Timour 2026-09",
     "status": "à vérifier"
@@ -379,6 +479,10 @@
     "family": "flat",
     "bypass": "variable",
     "filter": "Orea",
+    "shapes": [
+      "wave",
+      "flatSmooth"
+    ],
     "note": "Modularité",
     "source": "Timour 2026-09",
     "status": "à vérifier"
@@ -391,6 +495,10 @@
     "family": "flat",
     "bypass": "medium",
     "filter": "April",
+    "shapes": [
+      "wave",
+      "flatSmooth"
+    ],
     "note": "Extraction homogène",
     "source": "Timour 2026-09",
     "status": "à vérifier"
@@ -403,6 +511,9 @@
     "family": "no-bypass",
     "bypass": "very-low",
     "filter": "Tricolate",
+    "shapes": [
+      "flatSmooth"
+    ],
     "note": "Haute extraction",
     "source": "Timour 2026-09",
     "status": "à vérifier"
@@ -415,6 +526,9 @@
     "family": "no-bypass",
     "bypass": "very-low",
     "filter": "Pulsar",
+    "shapes": [
+      "flatSmooth"
+    ],
     "note": "Immersion contrôlée",
     "source": "Timour 2026-09",
     "status": "à vérifier"
@@ -427,6 +541,9 @@
     "family": "no-bypass",
     "bypass": "very-low",
     "filter": "LVL-10",
+    "shapes": [
+      "flatSmooth"
+    ],
     "note": "Multi-perforation",
     "source": "Timour 2026-09",
     "status": "à vérifier"
@@ -439,6 +556,9 @@
     "family": "flat-nobypass",
     "bypass": "low",
     "filter": "W40",
+    "shapes": [
+      "flatSmooth"
+    ],
     "note": "Débit très rapide",
     "source": "Timour 2026-09",
     "status": "à vérifier"
@@ -451,19 +571,10 @@
     "family": "flat-nobypass",
     "bypass": "low",
     "filter": "W60",
+    "shapes": [
+      "flatSmooth"
+    ],
     "note": "Grande surface",
-    "source": "Timour 2026-09",
-    "status": "à vérifier"
-  },
-  {
-    "id": "dripper-039",
-    "brand": "Sibarist",
-    "model": "B3",
-    "name": "Sibarist B3",
-    "family": "no-bypass",
-    "bypass": "very-low",
-    "filter": "B3",
-    "note": "Filtres FAST",
     "source": "Timour 2026-09",
     "status": "à vérifier"
   },
@@ -475,6 +586,9 @@
     "family": "no-bypass",
     "bypass": "very-low",
     "filter": "Papier spécifique",
+    "shapes": [
+      "dedicated"
+    ],
     "note": "Zéro bypass",
     "source": "Timour 2026-09",
     "status": "à vérifier"
@@ -487,6 +601,9 @@
     "family": "cone",
     "bypass": "medium",
     "filter": "V60",
+    "shapes": [
+      "cone60"
+    ],
     "note": "Parois métalliques",
     "source": "Timour 2026-09",
     "status": "à vérifier"
@@ -499,6 +616,9 @@
     "family": "cone",
     "bypass": "controlled",
     "filter": "Gabi",
+    "shapes": [
+      "cone60"
+    ],
     "note": "Diffusion de l'eau",
     "source": "Timour 2026-09",
     "status": "à vérifier"
@@ -511,6 +631,9 @@
     "family": "cone",
     "bypass": "controlled",
     "filter": "Gabi",
+    "shapes": [
+      "cone60"
+    ],
     "note": "Travel/specialty",
     "source": "Timour 2026-09",
     "status": "à vérifier"
@@ -523,6 +646,9 @@
     "family": "cone",
     "bypass": "medium",
     "filter": "V60",
+    "shapes": [
+      "cone60"
+    ],
     "note": "Design japonais",
     "source": "Timour 2026-09",
     "status": "à vérifier"
@@ -535,6 +661,9 @@
     "family": "flat",
     "bypass": "medium",
     "filter": "Wave",
+    "shapes": [
+      "wave"
+    ],
     "note": "Géométrie annulaire",
     "source": "Timour 2026-09",
     "status": "à vérifier"
@@ -547,6 +676,9 @@
     "family": "cone",
     "bypass": "medium",
     "filter": "V60",
+    "shapes": [
+      "cone60"
+    ],
     "note": "Japonais",
     "source": "Timour 2026-09",
     "status": "à vérifier"
@@ -559,6 +691,9 @@
     "family": "immersion",
     "bypass": "very-low",
     "filter": "Melitta",
+    "shapes": [
+      "melitta"
+    ],
     "note": "Immersion",
     "source": "Timour 2026-09",
     "status": "à vérifier"
@@ -571,6 +706,9 @@
     "family": "immersion",
     "bypass": "very-low",
     "filter": "Wave/flat",
+    "shapes": [
+      "wave"
+    ],
     "note": "Contrôle immersion",
     "source": "Timour 2026-09",
     "status": "à vérifier"
@@ -583,6 +721,9 @@
     "family": "flat-cone",
     "bypass": "medium",
     "filter": "Papier",
+    "shapes": [
+      "wave"
+    ],
     "note": "Design japonais",
     "source": "Timour 2026-09",
     "status": "à vérifier"
@@ -595,6 +736,9 @@
     "family": "cone",
     "bypass": "medium",
     "filter": "Kinto",
+    "shapes": [
+      "cone60"
+    ],
     "note": "Céramique",
     "source": "Timour 2026-09",
     "status": "à vérifier"
@@ -607,6 +751,9 @@
     "family": "cone",
     "bypass": "medium",
     "filter": "Beasty",
+    "shapes": [
+      "cone60"
+    ],
     "note": "Parois particulières",
     "source": "Timour 2026-09",
     "status": "à vérifier"
@@ -619,6 +766,9 @@
     "family": "accessory",
     "bypass": "variable",
     "filter": "V60",
+    "shapes": [
+      "cone60"
+    ],
     "note": "Modifie le débit",
     "source": "Timour 2026-09",
     "status": "à vérifier"
@@ -631,6 +781,9 @@
     "family": "cone",
     "bypass": "low",
     "filter": "Papier",
+    "shapes": [
+      "cone60"
+    ],
     "note": "Flux osmotique",
     "source": "Timour 2026-09",
     "status": "à vérifier"
@@ -643,9 +796,13 @@
     "family": "flat-cone",
     "bypass": "variable",
     "filter": "Papier compatible",
+    "shapes": [
+      "cone60",
+      "wave"
+    ],
     "note": "Design UFO / specialty",
     "source": "Timour 2026-09",
-    "status": "à vérifier"
+    "status": "à vérifier (papier compatible et forme)"
   },
   {
     "id": "dripper-055",
@@ -655,9 +812,12 @@
     "family": "flat-cone",
     "bypass": "variable",
     "filter": "Papier dédié",
+    "shapes": [
+      "dedicated"
+    ],
     "note": "Évolution UFO",
     "source": "Timour 2026-09",
-    "status": "à vérifier"
+    "status": "à vérifier (papier compatible et forme)"
   },
   {
     "id": "dripper-056",
@@ -667,9 +827,12 @@
     "family": "other",
     "bypass": "variable",
     "filter": "Papier",
+    "shapes": [
+      "dedicated"
+    ],
     "note": "Géométrie expérimentale",
     "source": "Timour 2026-09",
-    "status": "à vérifier"
+    "status": "à vérifier (papier compatible et forme)"
   },
   {
     "id": "dripper-057",
@@ -679,6 +842,9 @@
     "family": "no-bypass",
     "bypass": "very-low",
     "filter": "Dédié",
+    "shapes": [
+      "dedicated"
+    ],
     "note": "Haute extraction",
     "source": "Timour 2026-09",
     "status": "à vérifier"
@@ -691,6 +857,9 @@
     "family": "hybrid",
     "bypass": "variable",
     "filter": "Dédié",
+    "shapes": [
+      "dedicated"
+    ],
     "note": "Plusieurs modes",
     "source": "Timour 2026-09",
     "status": "à vérifier"
@@ -703,6 +872,9 @@
     "family": "hybrid",
     "bypass": "variable",
     "filter": "Papier",
+    "shapes": [
+      "cone60"
+    ],
     "note": "Immersion/percolation",
     "source": "Timour 2026-09",
     "status": "à vérifier"
@@ -715,6 +887,9 @@
     "family": "flat",
     "bypass": "low",
     "filter": "Papier dédié",
+    "shapes": [
+      "flatSmooth"
+    ],
     "note": "Très simple",
     "source": "Timour 2026-09",
     "status": "à vérifier"
@@ -727,6 +902,9 @@
     "family": "cone",
     "bypass": "high",
     "filter": "V60",
+    "shapes": [
+      "cone60"
+    ],
     "note": "Géométrie spiralée",
     "source": "Timour 2026-09",
     "status": "à vérifier"
@@ -739,6 +917,9 @@
     "family": "flat-cone",
     "bypass": "medium",
     "filter": "Melitta",
+    "shapes": [
+      "melitta"
+    ],
     "note": "Ancêtre du pour-over",
     "source": "Timour 2026-09",
     "status": "à vérifier"
@@ -751,6 +932,9 @@
     "family": "flat-cone",
     "bypass": "medium",
     "filter": "1x2",
+    "shapes": [
+      "melitta"
+    ],
     "note": "Classique",
     "source": "Timour 2026-09",
     "status": "à vérifier"
@@ -763,6 +947,9 @@
     "family": "flat-cone",
     "bypass": "medium",
     "filter": "1x4",
+    "shapes": [
+      "melitta"
+    ],
     "note": "Gros volume",
     "source": "Timour 2026-09",
     "status": "à vérifier"
@@ -775,6 +962,9 @@
     "family": "cone",
     "bypass": "low",
     "filter": "Chemex",
+    "shapes": [
+      "chemex"
+    ],
     "note": "Filtre épais",
     "source": "Timour 2026-09",
     "status": "à vérifier"
@@ -787,6 +977,9 @@
     "family": "cone",
     "bypass": "low",
     "filter": "Chemex",
+    "shapes": [
+      "chemex"
+    ],
     "note": "Classique",
     "source": "Timour 2026-09",
     "status": "à vérifier"
@@ -799,6 +992,9 @@
     "family": "cone",
     "bypass": "low",
     "filter": "Chemex",
+    "shapes": [
+      "chemex"
+    ],
     "note": "Gros volume",
     "source": "Timour 2026-09",
     "status": "à vérifier"
@@ -811,6 +1007,9 @@
     "family": "cone",
     "bypass": "low",
     "filter": "Chemex",
+    "shapes": [
+      "chemex"
+    ],
     "note": "Très gros volume",
     "source": "Timour 2026-09",
     "status": "à vérifier"
@@ -823,6 +1022,9 @@
     "family": "cloth",
     "bypass": "very-low",
     "filter": "Tissu",
+    "shapes": [
+      "cloth"
+    ],
     "note": "Filtre permanent",
     "source": "Timour 2026-09",
     "status": "à vérifier"
@@ -835,6 +1037,7 @@
     "family": "immersion",
     "bypass": "low",
     "filter": "Métal",
+    "shapes": [],
     "note": "Café vietnamien",
     "source": "Timour 2026-09",
     "status": "à vérifier"
@@ -847,6 +1050,9 @@
     "family": "cone",
     "bypass": "high",
     "filter": "Papier",
+    "shapes": [
+      "cone60"
+    ],
     "note": "Outdoor",
     "source": "Timour 2026-09",
     "status": "à vérifier"
@@ -859,6 +1065,9 @@
     "family": "flat",
     "bypass": "medium",
     "filter": "Papier",
+    "shapes": [
+      "wave"
+    ],
     "note": "Pliable",
     "source": "Timour 2026-09",
     "status": "à vérifier"
@@ -871,6 +1080,9 @@
     "family": "cone",
     "bypass": "high",
     "filter": "Papier",
+    "shapes": [
+      "cone60"
+    ],
     "note": "Ultra-compact",
     "source": "Timour 2026-09",
     "status": "à vérifier"
@@ -883,6 +1095,9 @@
     "family": "cone",
     "bypass": "medium",
     "filter": "Papier",
+    "shapes": [
+      "cone60"
+    ],
     "note": "Voyage",
     "source": "Timour 2026-09",
     "status": "à vérifier"
@@ -895,6 +1110,9 @@
     "family": "cone",
     "bypass": "high",
     "filter": "Papier",
+    "shapes": [
+      "cone60"
+    ],
     "note": "Outdoor",
     "source": "Timour 2026-09",
     "status": "à vérifier"
@@ -907,6 +1125,9 @@
     "family": "hybrid",
     "bypass": "variable",
     "filter": "Dédié",
+    "shapes": [
+      "dedicated"
+    ],
     "note": "Tout-en-un",
     "source": "Timour 2026-09",
     "status": "à vérifier"
@@ -919,6 +1140,9 @@
     "family": "cone",
     "bypass": "high",
     "filter": "Sachet",
+    "shapes": [
+      "dedicated"
+    ],
     "note": "Nomade",
     "source": "Timour 2026-09",
     "status": "à vérifier"
@@ -931,6 +1155,9 @@
     "family": "cone",
     "bypass": "medium",
     "filter": "Papier",
+    "shapes": [
+      "cone60"
+    ],
     "note": "Verre",
     "source": "Timour 2026-09",
     "status": "à vérifier"
@@ -943,6 +1170,9 @@
     "family": "cone",
     "bypass": "medium",
     "filter": "Papier",
+    "shapes": [
+      "cone60"
+    ],
     "note": "Japon",
     "source": "Timour 2026-09",
     "status": "à vérifier"
@@ -955,6 +1185,9 @@
     "family": "cone",
     "bypass": "variable",
     "filter": "Papier",
+    "shapes": [
+      "cone60"
+    ],
     "note": "Artisan/japonais",
     "source": "Timour 2026-09",
     "status": "à vérifier"

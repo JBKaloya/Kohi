@@ -17,6 +17,11 @@ nonisolated struct SuggestedCorrection: Hashable, Sendable {
         var change: String
         var why: String
         var effect: [String: String]?
+        /// The chain from the wish to this move: extraction factors, then
+        /// coffee factors. Empty from older payloads.
+        var because: [String]?
+        /// "high", "medium" or "low".
+        var confidence: String?
 
         var id: Int { rank }
 
@@ -57,19 +62,82 @@ nonisolated struct SuggestedCorrection: Hashable, Sendable {
     }
 
     /// Offline: the highest-priority rule, as a single-move correction.
-    static func fallback(from brew: Brew, equipment: [Equipment] = []) -> SuggestedCorrection? {
-        let allowed = BrewDiagnosis.admissibleSet(for: brew, equipment: equipment)
+    static func fallback(
+        from brew: Brew,
+        card: CoffeeCard? = nil,
+        equipment: [Equipment] = [],
+        filterStock: [FilterStock] = [],
+        tasting: [TastingIntent] = []
+    ) -> SuggestedCorrection? {
+        let allowed = BrewDiagnosis.admissibleSet(
+            for: brew,
+            equipment: equipment,
+            filterStock: filterStock,
+            tasting: tasting,
+            card: card
+        )
         guard let first = allowed.min(by: { $0.variable.priority < $1.variable.priority })
                 ?? allowed.first else { return nil }
         return SuggestedCorrection(
             reading: first.reason.capitalizedFirst,
             target: first.change,
             moves: [
-                Move(rank: 1, variable: first.variable.rawValue, change: first.change, why: first.reason)
+                Move(
+                    rank: 1,
+                    variable: first.variable.rawValue,
+                    change: first.change,
+                    why: first.reason,
+                    because: because(for: brew, card: card),
+                    confidence: confidence(of: first.evidence)
+                )
             ],
             eventID: nil,
             isModel: false
         )
+    }
+
+    /// What the rule stood on, in the order the screen reads: the wish,
+    /// then the extraction, then the coffee.
+    static func because(for brew: Brew, card: CoffeeCard?) -> [String] {
+        var chain = BrewWish.Axis.allCases.compactMap { axis -> String? in
+            let wish = BrewWish.wish(axis, of: brew)
+            return wish == 0 ? nil : BrewWish.caption(axis, wish: wish)
+        }
+        let reading = ExtractionReading.read(brew, card: card)
+        chain += reading.extractionFactors.prefix(1).map { "\($0.label.lowercased()) \($0.value)" }
+        chain += reading.coffeeFactors.prefix(1).map { "\($0.label.lowercased()) \($0.value)" }
+        return chain
+    }
+
+    static func confidence(of evidence: Evidence) -> String {
+        switch evidence {
+        case .verified: "high"
+        case .partial, .practice: "medium"
+        case .unverified: "low"
+        }
+    }
+
+    /// Stable for one brew + comment + admissible set. Reopening After with
+    /// the same diagnosis must not spend another generate.
+    static func cacheKey(
+        brew: Brew,
+        comment: String,
+        equipment: [Equipment],
+        filterStock: [FilterStock] = []
+    ) -> String {
+        cacheKey(
+            brew: brew,
+            comment: comment,
+            allowed: BrewDiagnosis.admissibleSet(for: brew, equipment: equipment, filterStock: filterStock)
+        )
+    }
+
+    static func cacheKey(brew: Brew, comment: String, allowed: [NextTime]) -> String {
+        let moves = allowed
+            .map { "\($0.variable.rawValue)\u{1f}\($0.change)" }
+            .sorted()
+            .joined(separator: "\n")
+        return [brew.id.uuidString, comment, moves].joined(separator: "\u{1e}")
     }
 
     @MainActor
@@ -78,30 +146,57 @@ nonisolated struct SuggestedCorrection: Hashable, Sendable {
         card: CoffeeCard?,
         comment: String,
         equipment: [Equipment],
+        filterStock: [FilterStock] = [],
         flags: AIFlags,
-        events: AIEventLog
+        events: AIEventLog,
+        refresh: Bool = false
     ) async -> SuggestedCorrection? {
-        let allowed = BrewDiagnosis.admissibleSet(for: brew, equipment: equipment)
+        let allowed = BrewDiagnosis.admissibleSet(
+            for: brew,
+            equipment: equipment,
+            filterStock: filterStock,
+            tasting: TastingIntent.confirmed(from: comment),
+            card: card
+        )
         guard !allowed.isEmpty else { return nil }
+        let key = cacheKey(brew: brew, comment: comment, allowed: allowed)
 
-        if flags.isOn(.suggestedCorrection), let client = SupabaseConfig.current {
-            if let ranked = await askModel(
-                brew: brew,
-                card: card,
-                comment: comment,
-                allowed: allowed,
-                client: client,
-                events: events
-            ) {
+        if flags.isOn(.suggestedCorrection) {
+            if !refresh, let cached = AICallCache.suggested(for: key) {
+                return cached
+            }
+            if let client = SupabaseConfig.current,
+               let ranked = await askModel(
+                    brew: brew,
+                    card: card,
+                    comment: comment,
+                    allowed: allowed,
+                    client: client,
+                    events: events
+               ) {
+                AICallCache.store(ranked, for: key)
                 return ranked
             }
         }
-        return fallback(from: brew, equipment: equipment)
+        return fallback(
+            from: brew,
+            card: card,
+            equipment: equipment,
+            filterStock: filterStock,
+            tasting: TastingIntent.confirmed(from: comment)
+        )
     }
 
     private struct Request: Encodable {
         var readingHint: String?
         var comment: String
+        var recipeName: String?
+        var actualSource: String?
+        var pourRates: [String]
+        var deviations: Int
+        /// "less bitterness", "more complexity".
+        var wishes: [String]
+        var reading: ExtractionReading
         var allowed: [Allowed]
         struct Allowed: Encodable {
             var variable: String
@@ -133,6 +228,15 @@ nonisolated struct SuggestedCorrection: Hashable, Sendable {
         let request = Request(
             readingHint: BrewDiagnosis.nextTime(for: brew)?.reason,
             comment: comment,
+            recipeName: brew.recipeName ?? brew.title,
+            actualSource: brew.actualSource.rawValue,
+            pourRates: brew.pourRates.map(\.tag),
+            deviations: brew.deviations.filter(\.isMaterial).count,
+            wishes: BrewWish.Axis.allCases.compactMap { axis in
+                let wish = BrewWish.wish(axis, of: brew)
+                return wish == 0 ? nil : BrewWish.caption(axis, wish: wish)
+            },
+            reading: ExtractionReading.read(brew, card: card),
             allowed: allowed.map {
                 Request.Allowed(variable: $0.variable.rawValue, change: $0.change, why: $0.reason)
             }

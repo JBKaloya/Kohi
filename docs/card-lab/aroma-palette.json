@@ -1,0 +1,992 @@
+{
+  "schema": "kohi.aroma-palette/1",
+  "note": "One colour per note. ids without x- are flavor-wheel.json node ids; x- ids are specialty notes the wheel lacks. Match: FlavorMatcher first, then the longest synonym contained in the note.",
+  "entries": [
+    {
+      "id": "fruity-berry-blackberry",
+      "color": "#4A2152",
+      "family": "fruity",
+      "synonyms": [
+        "blackberry",
+        "blackberries",
+        "mure"
+      ]
+    },
+    {
+      "id": "fruity-berry-raspberry",
+      "color": "#D6265B",
+      "family": "fruity",
+      "synonyms": [
+        "raspberry",
+        "framboise"
+      ]
+    },
+    {
+      "id": "fruity-berry-blueberry",
+      "color": "#4B4BC0",
+      "family": "fruity",
+      "synonyms": [
+        "blueberry",
+        "blueberries",
+        "myrtille"
+      ]
+    },
+    {
+      "id": "fruity-berry-strawberry",
+      "color": "#F0414B",
+      "family": "fruity",
+      "synonyms": [
+        "strawberry",
+        "strawberries",
+        "fraise"
+      ]
+    },
+    {
+      "id": "fruity-berry",
+      "color": "#B8235A",
+      "family": "fruity",
+      "synonyms": [
+        "berry",
+        "berries",
+        "red fruit",
+        "red fruits",
+        "fruits rouges"
+      ]
+    },
+    {
+      "id": "x-red-currant",
+      "color": "#D3123E",
+      "family": "fruity",
+      "synonyms": [
+        "red currant",
+        "redcurrant",
+        "groseille"
+      ]
+    },
+    {
+      "id": "x-blackcurrant",
+      "color": "#3A1240",
+      "family": "fruity",
+      "synonyms": [
+        "blackcurrant",
+        "black currant",
+        "cassis"
+      ]
+    },
+    {
+      "id": "x-cranberry",
+      "color": "#B5163A",
+      "family": "fruity",
+      "synonyms": [
+        "cranberry",
+        "cranberries"
+      ]
+    },
+    {
+      "id": "x-gooseberry",
+      "color": "#B9C95A",
+      "family": "fruity",
+      "synonyms": [
+        "gooseberry",
+        "gooseberries"
+      ]
+    },
+    {
+      "id": "fruity-dried-fruit-raisin",
+      "color": "#7A3046",
+      "family": "fruity",
+      "synonyms": [
+        "raisin",
+        "raisins",
+        "sultana",
+        "golden raisin"
+      ]
+    },
+    {
+      "id": "fruity-dried-fruit-prune",
+      "color": "#4E2440",
+      "family": "fruity",
+      "synonyms": [
+        "prune",
+        "prunes",
+        "pruneau"
+      ]
+    },
+    {
+      "id": "fruity-dried-fruit",
+      "color": "#7A3B2E",
+      "family": "fruity",
+      "synonyms": [
+        "dried fruit",
+        "fruits secs"
+      ]
+    },
+    {
+      "id": "x-fig",
+      "color": "#6B3A5A",
+      "family": "fruity",
+      "synonyms": [
+        "fig",
+        "figue"
+      ]
+    },
+    {
+      "id": "x-date",
+      "color": "#7A4428",
+      "family": "fruity",
+      "synonyms": [
+        "date",
+        "datte"
+      ]
+    },
+    {
+      "id": "x-plum",
+      "color": "#6A1F4D",
+      "family": "fruity",
+      "synonyms": [
+        "plum",
+        "prune rouge",
+        "plum jam"
+      ]
+    },
+    {
+      "id": "fruity-other-fruit-coconut",
+      "color": "#EFE4D2",
+      "family": "fruity",
+      "synonyms": [
+        "coconut",
+        "noix de coco"
+      ]
+    },
+    {
+      "id": "fruity-other-fruit-cherry",
+      "color": "#B5122E",
+      "family": "fruity",
+      "synonyms": [
+        "cherry",
+        "cherries",
+        "cerise",
+        "griotte"
+      ]
+    },
+    {
+      "id": "x-black-cherry",
+      "color": "#5E0E26",
+      "family": "fruity",
+      "synonyms": [
+        "black cherry",
+        "cereza negra"
+      ]
+    },
+    {
+      "id": "fruity-other-fruit-pomegranate",
+      "color": "#C2213F",
+      "family": "fruity",
+      "synonyms": [
+        "pomegranate",
+        "grenade"
+      ]
+    },
+    {
+      "id": "fruity-other-fruit-pineapple",
+      "color": "#F6C639",
+      "family": "fruity",
+      "synonyms": [
+        "pineapple",
+        "ananas"
+      ]
+    },
+    {
+      "id": "fruity-other-fruit-grape",
+      "color": "#6B3A8C",
+      "family": "fruity",
+      "synonyms": [
+        "grape",
+        "grapes",
+        "muscat"
+      ]
+    },
+    {
+      "id": "fruity-other-fruit-apple",
+      "color": "#9CCB4A",
+      "family": "fruity",
+      "synonyms": [
+        "apple",
+        "green apple",
+        "pomme",
+        "crisp apple",
+        "manzana"
+      ]
+    },
+    {
+      "id": "fruity-other-fruit-peach",
+      "color": "#FF9A6B",
+      "family": "fruity",
+      "synonyms": [
+        "peach",
+        "apricot",
+        "abricot",
+        "nectarine",
+        "peche"
+      ]
+    },
+    {
+      "id": "fruity-other-fruit-pear",
+      "color": "#D6D66A",
+      "family": "fruity",
+      "synonyms": [
+        "pear",
+        "poire"
+      ]
+    },
+    {
+      "id": "fruity-other-fruit",
+      "color": "#FF8C5A",
+      "family": "fruity",
+      "synonyms": [
+        "fruit",
+        "fruity",
+        "other fruit"
+      ]
+    },
+    {
+      "id": "x-stone-fruit",
+      "color": "#FF9F6B",
+      "family": "fruity",
+      "synonyms": [
+        "stone fruit",
+        "stonefruit",
+        "stonefruits",
+        "stone fruits",
+        "fruits a noyau"
+      ]
+    },
+    {
+      "id": "x-lychee",
+      "color": "#F7A9BE",
+      "family": "fruity",
+      "synonyms": [
+        "lychee",
+        "litchi",
+        "lichi"
+      ]
+    },
+    {
+      "id": "x-passion-fruit",
+      "color": "#FFB21E",
+      "family": "fruity",
+      "synonyms": [
+        "passion fruit",
+        "passionfruit",
+        "maracuja",
+        "fruit de la passion"
+      ]
+    },
+    {
+      "id": "x-mango",
+      "color": "#FFA62B",
+      "family": "fruity",
+      "synonyms": [
+        "mango",
+        "mangue",
+        "dried mango"
+      ]
+    },
+    {
+      "id": "x-papaya",
+      "color": "#FF8A5C",
+      "family": "fruity",
+      "synonyms": [
+        "papaya",
+        "papaye"
+      ]
+    },
+    {
+      "id": "x-guava",
+      "color": "#FF7A8A",
+      "family": "fruity",
+      "synonyms": [
+        "guava",
+        "goyave"
+      ]
+    },
+    {
+      "id": "x-watermelon",
+      "color": "#FF5A6E",
+      "family": "fruity",
+      "synonyms": [
+        "watermelon",
+        "pasteque"
+      ]
+    },
+    {
+      "id": "x-kiwi",
+      "color": "#8DC63F",
+      "family": "fruity",
+      "synonyms": [
+        "kiwi"
+      ]
+    },
+    {
+      "id": "x-tropical",
+      "color": "#FFB238",
+      "family": "fruity",
+      "synonyms": [
+        "tropical",
+        "tropical fruit",
+        "fruits tropicaux"
+      ]
+    },
+    {
+      "id": "x-rhubarb",
+      "color": "#D9576B",
+      "family": "fruity",
+      "synonyms": [
+        "rhubarb",
+        "rhubarbe",
+        "rebarbora"
+      ]
+    },
+    {
+      "id": "x-tamarind",
+      "color": "#8A4A2A",
+      "family": "fruity",
+      "synonyms": [
+        "tamarind",
+        "tamarin"
+      ]
+    },
+    {
+      "id": "fruity-citrus-fruit-grapefruit",
+      "color": "#F26B5B",
+      "family": "fruity",
+      "synonyms": [
+        "grapefruit",
+        "pamplemousse"
+      ]
+    },
+    {
+      "id": "fruity-citrus-fruit-orange",
+      "color": "#FF8A1F",
+      "family": "fruity",
+      "synonyms": [
+        "orange",
+        "mandarin",
+        "tangerine",
+        "clementine",
+        "naranja",
+        "blood orange"
+      ]
+    },
+    {
+      "id": "fruity-citrus-fruit-lemon",
+      "color": "#F7E04B",
+      "family": "fruity",
+      "synonyms": [
+        "lemon",
+        "citron",
+        "lemon zest",
+        "zeste"
+      ]
+    },
+    {
+      "id": "fruity-citrus-fruit-lime",
+      "color": "#9BD13B",
+      "family": "fruity",
+      "synonyms": [
+        "lime",
+        "citron vert"
+      ]
+    },
+    {
+      "id": "fruity-citrus-fruit",
+      "color": "#FFB020",
+      "family": "fruity",
+      "synonyms": [
+        "citrus",
+        "agrumes",
+        "citrus fruit"
+      ]
+    },
+    {
+      "id": "x-yuzu",
+      "color": "#F2D43A",
+      "family": "fruity",
+      "synonyms": [
+        "yuzu"
+      ]
+    },
+    {
+      "id": "x-bergamot",
+      "color": "#CDD94A",
+      "family": "floral",
+      "synonyms": [
+        "bergamot",
+        "bergamote",
+        "earl grey"
+      ]
+    },
+    {
+      "id": "x-lemongrass",
+      "color": "#C9D96A",
+      "family": "green-vegetative",
+      "synonyms": [
+        "lemongrass",
+        "lemon grass",
+        "citronnelle"
+      ]
+    },
+    {
+      "id": "sour-fermented-sour-citric-acid",
+      "color": "#F3DE3C",
+      "family": "sour-fermented",
+      "synonyms": [
+        "citric",
+        "citric acid",
+        "bright"
+      ]
+    },
+    {
+      "id": "sour-fermented-sour-malic-acid",
+      "color": "#B8D648",
+      "family": "sour-fermented",
+      "synonyms": [
+        "malic",
+        "malic acid"
+      ]
+    },
+    {
+      "id": "sour-fermented-sour",
+      "color": "#E1C315",
+      "family": "sour-fermented",
+      "synonyms": [
+        "sour",
+        "acidic",
+        "tart"
+      ]
+    },
+    {
+      "id": "sour-fermented-alcohol-fermented-winey",
+      "color": "#7E1F3D",
+      "family": "sour-fermented",
+      "synonyms": [
+        "winey",
+        "wine",
+        "vineux",
+        "red wine",
+        "boozy"
+      ]
+    },
+    {
+      "id": "x-white-wine",
+      "color": "#E6D98A",
+      "family": "sour-fermented",
+      "synonyms": [
+        "white wine",
+        "vin blanc"
+      ]
+    },
+    {
+      "id": "sour-fermented-alcohol-fermented-whiskey",
+      "color": "#9C5A23",
+      "family": "sour-fermented",
+      "synonyms": [
+        "whiskey",
+        "whisky",
+        "rum",
+        "rhum",
+        "brandy"
+      ]
+    },
+    {
+      "id": "sour-fermented-alcohol-fermented-fermented",
+      "color": "#8E3B5A",
+      "family": "sour-fermented",
+      "synonyms": [
+        "fermented",
+        "funky",
+        "ferment"
+      ]
+    },
+    {
+      "id": "sour-fermented-alcohol-fermented-overripe",
+      "color": "#A8483A",
+      "family": "sour-fermented",
+      "synonyms": [
+        "overripe"
+      ]
+    },
+    {
+      "id": "green-vegetative-green-vegetative-herb-like",
+      "color": "#5FA97A",
+      "family": "green-vegetative",
+      "synonyms": [
+        "herbal",
+        "herbs",
+        "mint",
+        "menthe",
+        "eucalyptus",
+        "green tea",
+        "basil"
+      ]
+    },
+    {
+      "id": "green-vegetative-green-vegetative-fresh",
+      "color": "#6CC48A",
+      "family": "green-vegetative",
+      "synonyms": [
+        "fresh"
+      ]
+    },
+    {
+      "id": "green-vegetative-green-vegetative-hay-like",
+      "color": "#CDB86A",
+      "family": "green-vegetative",
+      "synonyms": [
+        "hay",
+        "straw",
+        "foin"
+      ]
+    },
+    {
+      "id": "green-vegetative-olive-oil",
+      "color": "#9A9A3A",
+      "family": "green-vegetative",
+      "synonyms": [
+        "olive oil",
+        "olive"
+      ]
+    },
+    {
+      "id": "green-vegetative",
+      "color": "#3E8E4E",
+      "family": "green-vegetative",
+      "synonyms": [
+        "vegetal",
+        "green",
+        "grassy"
+      ]
+    },
+    {
+      "id": "other-papery-musty-woody",
+      "color": "#8A6A4A",
+      "family": "other",
+      "synonyms": [
+        "woody",
+        "wood",
+        "cedar",
+        "oak",
+        "boise"
+      ]
+    },
+    {
+      "id": "other-papery-musty-musty-earthy",
+      "color": "#6B4E36",
+      "family": "other",
+      "synonyms": [
+        "earthy",
+        "terreux"
+      ]
+    },
+    {
+      "id": "other-papery-musty-animalic",
+      "color": "#5E3F2E",
+      "family": "other",
+      "synonyms": [
+        "leather",
+        "cuir"
+      ]
+    },
+    {
+      "id": "other-chemical-salty",
+      "color": "#BFD3D9",
+      "family": "other",
+      "synonyms": [
+        "salty",
+        "saline",
+        "sea salt"
+      ]
+    },
+    {
+      "id": "roasted-tobacco",
+      "color": "#8A5A32",
+      "family": "roasted",
+      "synonyms": [
+        "tobacco",
+        "tabac",
+        "pipe tobacco"
+      ]
+    },
+    {
+      "id": "roasted-burnt-smoky",
+      "color": "#5A4E48",
+      "family": "roasted",
+      "synonyms": [
+        "smoky",
+        "smoke",
+        "fume"
+      ]
+    },
+    {
+      "id": "roasted-cereal-grain",
+      "color": "#D2A867",
+      "family": "roasted",
+      "synonyms": [
+        "biscuit",
+        "bread",
+        "cookie",
+        "butter cookie",
+        "galleta",
+        "grain",
+        "toast",
+        "cereal"
+      ]
+    },
+    {
+      "id": "roasted-cereal-malt",
+      "color": "#B98244",
+      "family": "roasted",
+      "synonyms": [
+        "malt",
+        "malty"
+      ]
+    },
+    {
+      "id": "spices-pepper",
+      "color": "#3D3532",
+      "family": "spices",
+      "synonyms": [
+        "pepper",
+        "poivre",
+        "black pepper",
+        "pink pepper"
+      ]
+    },
+    {
+      "id": "spices-brown-spice-anise",
+      "color": "#4A3B5C",
+      "family": "spices",
+      "synonyms": [
+        "anise",
+        "anis",
+        "licorice",
+        "reglisse"
+      ]
+    },
+    {
+      "id": "spices-brown-spice-nutmeg",
+      "color": "#A0603A",
+      "family": "spices",
+      "synonyms": [
+        "nutmeg",
+        "muscade"
+      ]
+    },
+    {
+      "id": "spices-brown-spice-cinnamon",
+      "color": "#B5562A",
+      "family": "spices",
+      "synonyms": [
+        "cinnamon",
+        "cannelle"
+      ]
+    },
+    {
+      "id": "spices-brown-spice-clove",
+      "color": "#6A2E22",
+      "family": "spices",
+      "synonyms": [
+        "clove",
+        "cloves",
+        "girofle"
+      ]
+    },
+    {
+      "id": "spices",
+      "color": "#9E4A2A",
+      "family": "spices",
+      "synonyms": [
+        "spice",
+        "spices",
+        "spicy",
+        "epices",
+        "cardamom",
+        "ginger"
+      ]
+    },
+    {
+      "id": "nutty-cocoa-nutty-peanuts",
+      "color": "#C89A5A",
+      "family": "nutty-cocoa",
+      "synonyms": [
+        "peanut",
+        "peanuts",
+        "cacahuete"
+      ]
+    },
+    {
+      "id": "nutty-cocoa-nutty-hazelnut",
+      "color": "#A8693A",
+      "family": "nutty-cocoa",
+      "synonyms": [
+        "hazelnut",
+        "noisette",
+        "praline"
+      ]
+    },
+    {
+      "id": "nutty-cocoa-nutty-almond",
+      "color": "#E2C49A",
+      "family": "nutty-cocoa",
+      "synonyms": [
+        "almond",
+        "amande",
+        "marzipan",
+        "cashew",
+        "pecan",
+        "walnut",
+        "nougat"
+      ]
+    },
+    {
+      "id": "nutty-cocoa-nutty",
+      "color": "#B98552",
+      "family": "nutty-cocoa",
+      "synonyms": [
+        "nutty",
+        "nuts"
+      ]
+    },
+    {
+      "id": "nutty-cocoa-cocoa-chocolate",
+      "color": "#6B3A26",
+      "family": "nutty-cocoa",
+      "synonyms": [
+        "chocolate",
+        "chocolat",
+        "cocoa",
+        "cacao",
+        "cacao nibs",
+        "cocoa nibs"
+      ]
+    },
+    {
+      "id": "x-milk-chocolate",
+      "color": "#8B5A3C",
+      "family": "nutty-cocoa",
+      "synonyms": [
+        "milk chocolate",
+        "chocolat au lait"
+      ]
+    },
+    {
+      "id": "nutty-cocoa-cocoa-dark-chocolate",
+      "color": "#3E2218",
+      "family": "nutty-cocoa",
+      "synonyms": [
+        "dark chocolate",
+        "chocolat noir",
+        "bittersweet",
+        "chocolate amargo"
+      ]
+    },
+    {
+      "id": "x-cola",
+      "color": "#4A1E14",
+      "family": "nutty-cocoa",
+      "synonyms": [
+        "cola"
+      ]
+    },
+    {
+      "id": "sweet-brown-sugar-molasses",
+      "color": "#4A2A1A",
+      "family": "sweet",
+      "synonyms": [
+        "molasses",
+        "melasse"
+      ]
+    },
+    {
+      "id": "sweet-brown-sugar-maple-syrup",
+      "color": "#C2702A",
+      "family": "sweet",
+      "synonyms": [
+        "maple",
+        "maple syrup",
+        "erable"
+      ]
+    },
+    {
+      "id": "sweet-brown-sugar-caramelized",
+      "color": "#D08A2E",
+      "family": "sweet",
+      "synonyms": [
+        "caramel",
+        "caramelized",
+        "butterscotch",
+        "dulce de leche"
+      ]
+    },
+    {
+      "id": "x-toffee",
+      "color": "#B8661F",
+      "family": "sweet",
+      "synonyms": [
+        "toffee"
+      ]
+    },
+    {
+      "id": "sweet-brown-sugar-honey",
+      "color": "#F0B23A",
+      "family": "sweet",
+      "synonyms": [
+        "honey",
+        "miel",
+        "honeyed"
+      ]
+    },
+    {
+      "id": "sweet-brown-sugar",
+      "color": "#C47A35",
+      "family": "sweet",
+      "synonyms": [
+        "brown sugar",
+        "cassonade",
+        "sucre brun"
+      ]
+    },
+    {
+      "id": "x-cane-sugar",
+      "color": "#E2B878",
+      "family": "sweet",
+      "synonyms": [
+        "cane sugar",
+        "panela",
+        "raw sugar",
+        "sucre de canne"
+      ]
+    },
+    {
+      "id": "sweet-vanilla",
+      "color": "#F2DFAE",
+      "family": "sweet",
+      "synonyms": [
+        "vanilla",
+        "vanille",
+        "vanilla bean"
+      ]
+    },
+    {
+      "id": "sweet-sweet-aromatics",
+      "color": "#FFB3D1",
+      "family": "sweet",
+      "synonyms": [
+        "candy",
+        "cotton candy",
+        "marshmallow",
+        "bonbon"
+      ]
+    },
+    {
+      "id": "sweet-overall-sweet",
+      "color": "#F2B8A0",
+      "family": "sweet",
+      "synonyms": [
+        "sweet",
+        "sweetness",
+        "sucre"
+      ]
+    },
+    {
+      "id": "x-cream",
+      "color": "#F3E7CF",
+      "family": "sweet",
+      "synonyms": [
+        "cream",
+        "creamy",
+        "butter",
+        "buttery",
+        "creme"
+      ]
+    },
+    {
+      "id": "floral-black-tea",
+      "color": "#B5652E",
+      "family": "floral",
+      "synonyms": [
+        "black tea",
+        "tea",
+        "the noir"
+      ]
+    },
+    {
+      "id": "floral-floral-chamomile",
+      "color": "#F2D46B",
+      "family": "floral",
+      "synonyms": [
+        "chamomile",
+        "camomille"
+      ]
+    },
+    {
+      "id": "floral-floral-rose",
+      "color": "#E85A8A",
+      "family": "floral",
+      "synonyms": [
+        "rose",
+        "rosewater",
+        "eau de rose"
+      ]
+    },
+    {
+      "id": "x-hibiscus",
+      "color": "#C2185B",
+      "family": "floral",
+      "synonyms": [
+        "hibiscus"
+      ]
+    },
+    {
+      "id": "floral-floral-jasmine",
+      "color": "#F5EDD6",
+      "family": "floral",
+      "synonyms": [
+        "jasmine",
+        "jasmin",
+        "orange blossom",
+        "fleur d oranger",
+        "elderflower"
+      ]
+    },
+    {
+      "id": "x-lavender",
+      "color": "#9A86C8",
+      "family": "floral",
+      "synonyms": [
+        "lavender",
+        "lavande",
+        "violet"
+      ]
+    },
+    {
+      "id": "x-honeysuckle",
+      "color": "#F5DC86",
+      "family": "floral",
+      "synonyms": [
+        "honeysuckle",
+        "chevrefeuille"
+      ]
+    },
+    {
+      "id": "floral-floral",
+      "color": "#E58FB8",
+      "family": "floral",
+      "synonyms": [
+        "floral",
+        "flowers",
+        "flowery"
+      ]
+    }
+  ]
+}

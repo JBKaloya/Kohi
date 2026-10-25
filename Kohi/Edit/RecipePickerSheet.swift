@@ -7,12 +7,27 @@ import SwiftUI
 /// picking a recipe is a choice about whose judgement to follow. Lives without
 /// a NavigationStack so the brew flow can embed it.
 struct RecipePickerList: View {
+    enum Lane: String, CaseIterable, Identifiable {
+        case mine
+        case pros
+
+        var id: String { rawValue }
+
+        var label: String {
+            switch self {
+            case .mine: "Mine"
+            case .pros: Copy.fromThePros
+            }
+        }
+    }
+
     let card: CoffeeCard
     let method: BrewMethod?
     /// When set, rows show the recipe at this cup size and keep a "scaled from"
     /// line rather than hiding a 15 g recipe from a 30 g brew.
     var size: RecipeSize? = nil
     var selected: Recipe? = nil
+    var lane: Lane? = nil
     let onPick: (Recipe) -> Void
 
     @Environment(CardStore.self) private var store
@@ -20,27 +35,20 @@ struct RecipePickerList: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 30) {
-            if let printed { section("Card", recipes: [printed]) }
-            if let suggested {
-                section(
-                    "Suggested",
-                    recipes: [suggested.recipe]
-                )
-            }
-            if let last { section("Last brew", recipes: [last]) }
-            if !recipes.recipes.isEmpty {
+            if shows(.mine), !recipes.recipes.isEmpty {
                 section("Mine", recipes: filtered(recipes.recipes))
             }
-            section(Copy.fromThePros, recipes: dedupedReferences)
+            if shows(.pros) {
+                section(Copy.fromThePros, recipes: dedupedReferences)
+            }
         }
     }
 
-    // MARK: - Sources
-
-    private var printed: Recipe? {
-        guard let recipe = card.recipeSuggestion, recipe.dose != nil else { return nil }
-        return RecipeRules.recipe(from: recipe, card: card)
+    private func shows(_ wanted: Lane) -> Bool {
+        lane == nil || lane == wanted
     }
+
+    // MARK: - Sources
 
     private var suggested: RecipeSuggestion? {
         let result = RecipeRules.suggestion(
@@ -53,18 +61,12 @@ struct RecipePickerList: View {
         return result
     }
 
-    private var last: Recipe? {
-        guard let brew = card.brews.first, brew.dose != nil else { return nil }
-        var recipe = RecipeRules.recipe(from: brew, card: card, source: .mine)
-        recipe.name = "Last brew · \(CatalogueDate.happened(brew.date))"
-        return recipe
-    }
-
-    /// Filtered to the chosen method when there is one, because a French press
-    /// recipe is not a candidate for the espresso you are about to pull.
+    /// Filtered by family (Pour Over / Immersion / Espresso), not the exact method.
+    /// A Chemex is still a candidate after a V60; an AeroPress won't show up
+    /// under Pour Over, and Moka sits with Espresso.
     private func filtered(_ pool: [Recipe]) -> [Recipe] {
         guard let method else { return pool }
-        return pool.filter { $0.method == method }
+        return pool.filter { RecipePickerMatch.belongs($0, to: method) }
     }
 
     /// A recipe already offered as Suggested is not listed again under From
@@ -159,5 +161,10 @@ nonisolated enum RecipePickerMatch {
     static func withoutDuplicate(_ pool: [Recipe], of suggested: Recipe?) -> [Recipe] {
         guard let suggested else { return pool }
         return pool.filter { !isSame($0, suggested) }
+    }
+
+    static func belongs(_ recipe: Recipe, to method: BrewMethod?) -> Bool {
+        guard let method else { return true }
+        return recipe.method.journeyTab == method.journeyTab
     }
 }

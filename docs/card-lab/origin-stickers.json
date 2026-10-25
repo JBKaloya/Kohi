@@ -1,0 +1,2833 @@
+{
+  "schema": "kohi.origin-stickers/1",
+  "box": 240,
+  "paper": "#FBF6EA",
+  "texture": {
+    "halftone": {
+      "cell": 4.2,
+      "dotRadius": 0.95,
+      "angleDeg": 28,
+      "opacity": 0.13,
+      "color": "ink"
+    },
+    "keyline": {
+      "width": 3.4,
+      "offset": [
+        1.1,
+        -0.9
+      ]
+    },
+    "dieCut": {
+      "width": 15,
+      "color": "paper"
+    },
+    "shadow": {
+      "dy": 2,
+      "blur": 2.2,
+      "opacity": 0.38,
+      "color": "#24180e"
+    },
+    "wear": {
+      "noiseFrequency": 0.7,
+      "octaves": 2,
+      "holeAbove": 0.756
+    }
+  },
+  "shapes": {
+    "oval": {
+      "svgPath": "M16 120 A104 72 0 1 1 224 120 A104 72 0 1 1 16 120 Z",
+      "top": 48,
+      "bottom": 192,
+      "textArc": null
+    },
+    "circle": {
+      "svgPath": "M26 120 A94 94 0 1 1 214 120 A94 94 0 1 1 26 120 Z",
+      "top": 26,
+      "bottom": 214,
+      "textArc": "M44 128 A76 76 0 0 1 196 128"
+    },
+    "ticket": {
+      "svgPath": "M28 72 H212 Q228 72 228 88 V152 Q228 168 212 168 H28 Q12 168 12 152 V88 Q12 72 28 72 Z",
+      "top": 72,
+      "bottom": 168,
+      "textArc": null
+    },
+    "shield": {
+      "svgPath": "M40 40 H200 Q206 40 206 46 V118 Q206 182 120 218 Q34 182 34 118 V46 Q34 40 40 40 Z",
+      "top": 40,
+      "bottom": 218,
+      "textArc": null
+    },
+    "arch": {
+      "svgPath": "M26 200 V124 A94 94 0 0 1 214 124 V200 Q214 206 208 206 H32 Q26 206 26 200 Z",
+      "top": 30,
+      "bottom": 206,
+      "textArc": null
+    },
+    "hexa": {
+      "svgPath": "M14 120 L58 56 H182 L226 120 L182 184 H58 Z",
+      "top": 56,
+      "bottom": 184,
+      "textArc": null
+    },
+    "tri": {
+      "svgPath": "M120 22 Q126 22 129 27 L226 196 Q229 204 220 204 H20 Q11 204 14 196 L111 27 Q114 22 120 22 Z",
+      "top": 22,
+      "bottom": 204,
+      "textArc": null
+    },
+    "scallop": {
+      "svgPath": "M120.0 24.0 L132.8 30.9 L147.0 27.9 L157.4 38.1 L171.9 39.2 L178.9 52.0 L192.6 57.1 L195.7 71.3 L207.3 80.1 L206.4 94.6 L215.0 106.3 L210.0 120.0 L215.0 133.7 L206.4 145.4 L207.3 159.9 L195.7 168.7 L192.6 182.9 L178.9 188.0 L171.9 200.8 L157.4 201.9 L147.0 212.1 L132.8 209.1 L120.0 216.0 L107.2 209.1 L93.0 212.1 L82.6 201.9 L68.1 200.8 L61.1 188.0 L47.4 182.9 L44.3 168.7 L32.7 159.9 L33.6 145.4 L25.0 133.7 L30.0 120.0 L25.0 106.3 L33.6 94.6 L32.7 80.1 L44.3 71.3 L47.4 57.1 L61.1 52.0 L68.1 39.2 L82.6 38.1 L93.0 27.9 L107.2 30.9 L120.0 24.0 Z",
+      "top": 24,
+      "bottom": 216,
+      "textArc": "M46 126 A74 74 0 0 1 194 126"
+    },
+    "banner": {
+      "svgPath": "M10 76 H230 L212 120 L230 164 H10 L28 120 Z",
+      "top": 76,
+      "bottom": 164,
+      "textArc": null
+    }
+  },
+  "typeStyles": {
+    "italic": "DM Serif Display Italic (or New York italic, black)",
+    "condensed": "Archivo wdth 62 wght 900 (or SF Pro .compressed .black)",
+    "expanded": "Archivo wdth 125 wght 800 (or SF Pro .expanded .heavy)",
+    "spaced": "Archivo wdth 100 wght 700, tracking 0.24 em",
+    "arched": "Archivo wdth 112 wght 800, tracking 0.06 em, set on textArc"
+  },
+  "origins": {
+    "ET": {
+      "shape": "shield",
+      "background": "#F1DFAF",
+      "ink": "#1F2A1C",
+      "layers": [
+        {
+          "kind": "sun",
+          "args": {
+            "x": 120,
+            "y": 112,
+            "r": 26,
+            "c": "#E9A93B",
+            "rays": 14,
+            "rc": "#F3CB6E"
+          }
+        },
+        {
+          "kind": "hills",
+          "args": {
+            "y": 118,
+            "amp": 7,
+            "phase": 1,
+            "c": "#5E8A3E"
+          }
+        },
+        {
+          "kind": "hills",
+          "args": {
+            "y": 132,
+            "amp": 6,
+            "freq": 0.05,
+            "c": "#2E4A2A"
+          }
+        },
+        {
+          "kind": "cherries",
+          "args": {
+            "x": 120,
+            "y": 150,
+            "s": 0.9,
+            "c": "#C63A2E",
+            "leaf": "#8FB55A",
+            "stem": "#F1DFAF"
+          }
+        },
+        {
+          "kind": "rect",
+          "args": [
+            164,
+            196,
+            "#B83A2B"
+          ]
+        }
+      ],
+      "name": {
+        "text": "ETHIOPIA",
+        "style": "spaced",
+        "x": 120,
+        "y": 186,
+        "width": 104,
+        "size": 15,
+        "fill": "#FBF6EA",
+        "stroke": "none",
+        "shadow": "#5a1a12",
+        "onArc": false
+      }
+    },
+    "KE": {
+      "shape": "oval",
+      "background": "#F4D59C",
+      "ink": "#2A1F1A",
+      "layers": [
+        {
+          "kind": "sun",
+          "args": {
+            "x": 156,
+            "y": 90,
+            "r": 22,
+            "c": "#D9482B"
+          }
+        },
+        {
+          "kind": "range",
+          "args": {
+            "base": 140,
+            "peaks": [
+              [
+                86,
+                52
+              ],
+              [
+                112,
+                76
+              ],
+              [
+                136,
+                58
+              ],
+              [
+                168,
+                34
+              ]
+            ],
+            "c": "#4D5E8C",
+            "snow": "#F6F1E6"
+          }
+        },
+        {
+          "kind": "rect",
+          "args": [
+            138,
+            200,
+            "#B5562A"
+          ]
+        },
+        {
+          "kind": "acacia",
+          "args": {
+            "x": 58,
+            "base": 140,
+            "s": 0.9,
+            "c": "#2A1F1A"
+          }
+        }
+      ],
+      "name": {
+        "text": "KENYA",
+        "style": "italic",
+        "x": 120,
+        "y": 180,
+        "width": 132,
+        "size": 44,
+        "fill": "#F6C343",
+        "stroke": "#2A1F1A",
+        "shadow": "#2A1F1A",
+        "onArc": false
+      }
+    },
+    "CO": {
+      "shape": "banner",
+      "background": "#9CCFE0",
+      "ink": "#14283A",
+      "layers": [
+        {
+          "kind": "hills",
+          "args": {
+            "y": 120,
+            "amp": 9,
+            "phase": 2,
+            "c": "#4E8F3E"
+          }
+        },
+        {
+          "kind": "palm",
+          "args": {
+            "x": 40,
+            "base": 128,
+            "h": 48,
+            "c": "#173B2C",
+            "lean": 4
+          }
+        },
+        {
+          "kind": "palm",
+          "args": {
+            "x": 206,
+            "base": 128,
+            "h": 54,
+            "c": "#173B2C",
+            "lean": -6
+          }
+        },
+        {
+          "kind": "rect",
+          "args": [
+            128,
+            170,
+            "#173B2C"
+          ]
+        }
+      ],
+      "name": {
+        "text": "COLOMBIA",
+        "style": "condensed",
+        "x": 120,
+        "y": 113,
+        "width": 128,
+        "size": 40,
+        "fill": "#F4C531",
+        "stroke": "#14283A",
+        "shadow": "#14283A",
+        "onArc": false
+      }
+    },
+    "BR": {
+      "shape": "arch",
+      "background": "#F6DE9C",
+      "ink": "#203018",
+      "layers": [
+        {
+          "kind": "sun",
+          "args": {
+            "x": 120,
+            "y": 92,
+            "r": 30,
+            "c": "#E8A33A",
+            "rays": 18,
+            "rc": "#F2C86A"
+          }
+        },
+        {
+          "kind": "hills",
+          "args": {
+            "y": 118,
+            "amp": 10,
+            "freq": 0.03,
+            "c": "#6FA34A"
+          }
+        },
+        {
+          "kind": "rows",
+          "args": {
+            "y": 116,
+            "amp": 10,
+            "freq": 0.03,
+            "c": "#3E7B3A",
+            "n": 5,
+            "gap": 8
+          }
+        },
+        {
+          "kind": "rect",
+          "args": [
+            164,
+            210,
+            "#2F6B3A"
+          ]
+        }
+      ],
+      "name": {
+        "text": "BRAZIL",
+        "style": "condensed",
+        "x": 120,
+        "y": 196,
+        "width": 120,
+        "size": 34,
+        "fill": "#FBF6EA",
+        "stroke": "#203018",
+        "shadow": "#1b2a14",
+        "onArc": false
+      }
+    },
+    "PE": {
+      "shape": "hexa",
+      "background": "#F3D3A6",
+      "ink": "#3A1A1A",
+      "layers": [
+        {
+          "kind": "range",
+          "args": {
+            "base": 128,
+            "peaks": [
+              [
+                48,
+                46
+              ],
+              [
+                92,
+                70
+              ],
+              [
+                140,
+                54
+              ],
+              [
+                190,
+                64
+              ]
+            ],
+            "c": "#7A4A6E",
+            "snow": "#FBF2E4"
+          }
+        },
+        {
+          "kind": "terraces",
+          "args": {
+            "y0": 124,
+            "n": 5,
+            "gap": 9,
+            "c1": "#C2452E",
+            "c2": "#D9853A",
+            "bow": 6
+          }
+        }
+      ],
+      "name": {
+        "text": "PERU",
+        "style": "expanded",
+        "x": 120,
+        "y": 104,
+        "width": 112,
+        "size": 30,
+        "fill": "#FBF2E4",
+        "stroke": "#3A1A1A",
+        "shadow": "#3A1A1A",
+        "onArc": false
+      }
+    },
+    "GT": {
+      "shape": "scallop",
+      "background": "#BFE0E3",
+      "ink": "#1E2533",
+      "layers": [
+        {
+          "kind": "volcano",
+          "args": {
+            "x": 72,
+            "base": 150,
+            "w": 92,
+            "h": 66,
+            "c": "#3B4A5E"
+          }
+        },
+        {
+          "kind": "volcano",
+          "args": {
+            "x": 168,
+            "base": 150,
+            "w": 100,
+            "h": 78,
+            "c": "#2E3B4E",
+            "plume": "#EEF4F2"
+          }
+        },
+        {
+          "kind": "volcano",
+          "args": {
+            "x": 120,
+            "base": 150,
+            "w": 70,
+            "h": 44,
+            "c": "#4D5E74"
+          }
+        },
+        {
+          "kind": "rect",
+          "args": [
+            148,
+            220,
+            "#3A8EA8"
+          ]
+        },
+        {
+          "kind": "waves",
+          "args": {
+            "y": 158,
+            "c": "#BFE0E3",
+            "n": 1,
+            "gap": 9,
+            "sw": 2
+          }
+        },
+        {
+          "kind": "rect",
+          "args": [
+            170,
+            196,
+            "#E0563A"
+          ]
+        }
+      ],
+      "name": {
+        "text": "GUATEMALA",
+        "style": "condensed",
+        "x": 120,
+        "y": 191,
+        "width": 112,
+        "size": 22,
+        "fill": "#FBF6EA",
+        "stroke": "none",
+        "shadow": "#7a2412",
+        "onArc": false
+      }
+    },
+    "PA": {
+      "shape": "arch",
+      "background": "#F7CF9A",
+      "ink": "#17262E",
+      "layers": [
+        {
+          "kind": "sun",
+          "args": {
+            "x": 150,
+            "y": 100,
+            "r": 20,
+            "c": "#F06A3A"
+          }
+        },
+        {
+          "kind": "volcano",
+          "args": {
+            "x": 104,
+            "base": 160,
+            "w": 170,
+            "h": 96,
+            "c": "#23434A"
+          }
+        },
+        {
+          "kind": "hills",
+          "args": {
+            "y": 146,
+            "amp": 6,
+            "freq": 0.06,
+            "c": "#2E8B7A"
+          }
+        },
+        {
+          "kind": "clouds",
+          "args": {
+            "pts": [
+              [
+                74,
+                104,
+                1
+              ],
+              [
+                168,
+                126,
+                0.8
+              ]
+            ],
+            "c": "#FBEFE0"
+          }
+        },
+        {
+          "kind": "birds",
+          "args": {
+            "pts": [
+              [
+                176,
+                74,
+                7
+              ],
+              [
+                190,
+                84,
+                5
+              ]
+            ],
+            "c": "#17262E"
+          }
+        },
+        {
+          "kind": "rect",
+          "args": [
+            160,
+            210,
+            "#17262E"
+          ]
+        }
+      ],
+      "name": {
+        "text": "PANAMA",
+        "style": "italic",
+        "x": 120,
+        "y": 194,
+        "width": 124,
+        "size": 36,
+        "fill": "#F7CF9A",
+        "stroke": "none",
+        "shadow": "#0b1418",
+        "onArc": false
+      }
+    },
+    "HN": {
+      "shape": "oval",
+      "background": "#CFE6E2",
+      "ink": "#162C38",
+      "layers": [
+        {
+          "kind": "range",
+          "args": {
+            "base": 130,
+            "peaks": [
+              [
+                60,
+                40
+              ],
+              [
+                110,
+                58
+              ],
+              [
+                170,
+                48
+              ]
+            ],
+            "c": "#6B8FA8"
+          }
+        },
+        {
+          "kind": "pines",
+          "args": {
+            "base": 140,
+            "xs": [
+              [
+                40,
+                34
+              ],
+              [
+                62,
+                44
+              ],
+              [
+                86,
+                30
+              ],
+              [
+                150,
+                38
+              ],
+              [
+                176,
+                46
+              ],
+              [
+                200,
+                32
+              ]
+            ],
+            "c": "#2E5A3E"
+          }
+        },
+        {
+          "kind": "rect",
+          "args": [
+            138,
+            200,
+            "#E0A32E"
+          ]
+        }
+      ],
+      "name": {
+        "text": "HONDURAS",
+        "style": "expanded",
+        "x": 120,
+        "y": 170,
+        "width": 150,
+        "size": 24,
+        "fill": "#162C38",
+        "stroke": "none",
+        "shadow": "#F7E3B0",
+        "onArc": false
+      }
+    },
+    "CR": {
+      "shape": "hexa",
+      "background": "#F5D8B0",
+      "ink": "#16281E",
+      "layers": [
+        {
+          "kind": "volcano",
+          "args": {
+            "x": 118,
+            "base": 140,
+            "w": 140,
+            "h": 78,
+            "c": "#6E4A3E",
+            "lip": "#E2643A",
+            "plume": "#FBF2E4"
+          }
+        },
+        {
+          "kind": "hills",
+          "args": {
+            "y": 132,
+            "amp": 8,
+            "freq": 0.05,
+            "c": "#2F7A48"
+          }
+        },
+        {
+          "kind": "hills",
+          "args": {
+            "y": 146,
+            "amp": 6,
+            "freq": 0.07,
+            "phase": 2,
+            "c": "#1B3828"
+          }
+        }
+      ],
+      "name": {
+        "text": "COSTA RICA",
+        "style": "condensed",
+        "x": 120,
+        "y": 177,
+        "width": 140,
+        "size": 30,
+        "fill": "#F5D8B0",
+        "stroke": "#16281E",
+        "shadow": "#16281E",
+        "onArc": false
+      }
+    },
+    "SV": {
+      "shape": "ticket",
+      "background": "#F0D9A0",
+      "ink": "#1E2836",
+      "layers": [
+        {
+          "kind": "volcano",
+          "args": {
+            "x": 58,
+            "base": 132,
+            "w": 92,
+            "h": 50,
+            "c": "#3A4A62"
+          }
+        },
+        {
+          "kind": "rect",
+          "args": [
+            126,
+            170,
+            "#3A6EA5"
+          ]
+        },
+        {
+          "kind": "waves",
+          "args": {
+            "y": 138,
+            "c": "#9CC2E0",
+            "n": 2,
+            "gap": 9,
+            "sw": 2
+          }
+        }
+      ],
+      "name": {
+        "text": "EL SALVADOR",
+        "style": "condensed",
+        "x": 158,
+        "y": 114,
+        "width": 104,
+        "size": 26,
+        "fill": "#1E2836",
+        "stroke": "none",
+        "shadow": "#E3B23A",
+        "onArc": false
+      }
+    },
+    "NI": {
+      "shape": "circle",
+      "background": "#F2E2B6",
+      "ink": "#1F2A22",
+      "layers": [
+        {
+          "kind": "rect",
+          "args": [
+            130,
+            230,
+            "#3A7EA0"
+          ]
+        },
+        {
+          "kind": "volcano",
+          "args": {
+            "x": 96,
+            "base": 136,
+            "w": 74,
+            "h": 56,
+            "c": "#2B3828"
+          }
+        },
+        {
+          "kind": "volcano",
+          "args": {
+            "x": 146,
+            "base": 136,
+            "w": 62,
+            "h": 42,
+            "c": "#3E5236"
+          }
+        },
+        {
+          "kind": "waves",
+          "args": {
+            "y": 150,
+            "c": "#A8D0E0",
+            "n": 3,
+            "gap": 10,
+            "sw": 2
+          }
+        }
+      ],
+      "name": {
+        "text": "NICARAGUA",
+        "style": "arched",
+        "x": 120,
+        "y": null,
+        "width": null,
+        "size": 21,
+        "fill": "#1F2A22",
+        "stroke": "none",
+        "shadow": null,
+        "onArc": true
+      }
+    },
+    "MX": {
+      "shape": "scallop",
+      "background": "#F7C9B8",
+      "ink": "#2A1A14",
+      "layers": [
+        {
+          "kind": "sun",
+          "args": {
+            "x": 120,
+            "y": 98,
+            "r": 34,
+            "c": "#F2A33A"
+          }
+        },
+        {
+          "kind": "agave",
+          "args": {
+            "x": 120,
+            "base": 160,
+            "s": 1.1,
+            "c": "#2E8A6A",
+            "tip": "#1E5E48"
+          }
+        },
+        {
+          "kind": "rect",
+          "args": [
+            158,
+            220,
+            "#D2483A"
+          ]
+        }
+      ],
+      "name": {
+        "text": "MEXICO",
+        "style": "italic",
+        "x": 120,
+        "y": 192,
+        "width": 110,
+        "size": 32,
+        "fill": "#FBF6EA",
+        "stroke": "none",
+        "shadow": "#6a1a12",
+        "onArc": false
+      }
+    },
+    "RW": {
+      "shape": "banner",
+      "background": "#F2E3A0",
+      "ink": "#14281E",
+      "layers": [
+        {
+          "kind": "sun",
+          "args": {
+            "x": 186,
+            "y": 100,
+            "r": 14,
+            "c": "#E8A33A"
+          }
+        },
+        {
+          "kind": "hills",
+          "args": {
+            "y": 112,
+            "amp": 6,
+            "freq": 0.06,
+            "c": "#A9C76A"
+          }
+        },
+        {
+          "kind": "hills",
+          "args": {
+            "y": 124,
+            "amp": 7,
+            "freq": 0.05,
+            "phase": 2,
+            "c": "#6FA35A"
+          }
+        },
+        {
+          "kind": "hills",
+          "args": {
+            "y": 138,
+            "amp": 6,
+            "freq": 0.07,
+            "phase": 4,
+            "c": "#3E7B4A"
+          }
+        },
+        {
+          "kind": "hills",
+          "args": {
+            "y": 152,
+            "amp": 5,
+            "freq": 0.06,
+            "phase": 1,
+            "c": "#1E4434"
+          }
+        }
+      ],
+      "name": {
+        "text": "RWANDA",
+        "style": "condensed",
+        "x": 92,
+        "y": 106,
+        "width": 92,
+        "size": 30,
+        "fill": "#14281E",
+        "stroke": "none",
+        "shadow": "#F7EFC8",
+        "onArc": false
+      }
+    },
+    "BI": {
+      "shape": "shield",
+      "background": "#F0E2BE",
+      "ink": "#1F2A20",
+      "layers": [
+        {
+          "kind": "sun",
+          "args": {
+            "x": 120,
+            "y": 98,
+            "r": 28,
+            "c": "#C4483A"
+          }
+        },
+        {
+          "kind": "hills",
+          "args": {
+            "y": 112,
+            "amp": 8,
+            "freq": 0.05,
+            "c": "#6E9A4E"
+          }
+        },
+        {
+          "kind": "hills",
+          "args": {
+            "y": 128,
+            "amp": 7,
+            "freq": 0.06,
+            "phase": 3,
+            "c": "#3E6B3A"
+          }
+        },
+        {
+          "kind": "rows",
+          "args": {
+            "y": 126,
+            "amp": 7,
+            "freq": 0.06,
+            "phase": 3,
+            "c": "#2A4A2A",
+            "n": 3,
+            "gap": 8
+          }
+        },
+        {
+          "kind": "rect",
+          "args": [
+            160,
+            220,
+            "#233F2C"
+          ]
+        }
+      ],
+      "name": {
+        "text": "BURUNDI",
+        "style": "spaced",
+        "x": 120,
+        "y": 186,
+        "width": 118,
+        "size": 16,
+        "fill": "#F0E2BE",
+        "stroke": "none",
+        "shadow": "#0f1a12",
+        "onArc": false
+      }
+    },
+    "TZ": {
+      "shape": "arch",
+      "background": "#BFD9E6",
+      "ink": "#2A2018",
+      "layers": [
+        {
+          "kind": "range",
+          "args": {
+            "base": 140,
+            "peaks": [
+              [
+                84,
+                40
+              ],
+              [
+                120,
+                64
+              ],
+              [
+                162,
+                44
+              ]
+            ],
+            "c": "#4E6E8C",
+            "snow": "#FBF7EE",
+            "valley": 0.6
+          }
+        },
+        {
+          "kind": "rect",
+          "args": [
+            138,
+            210,
+            "#D9A85A"
+          ]
+        },
+        {
+          "kind": "acacia",
+          "args": {
+            "x": 176,
+            "base": 150,
+            "s": 1,
+            "c": "#2F2620"
+          }
+        }
+      ],
+      "name": {
+        "text": "TANZANIA",
+        "style": "italic",
+        "x": 120,
+        "y": 190,
+        "width": 140,
+        "size": 32,
+        "fill": "#2F2620",
+        "stroke": "none",
+        "shadow": "#F4E2B8",
+        "onArc": false
+      }
+    },
+    "UG": {
+      "shape": "oval",
+      "background": "#F3D7A0",
+      "ink": "#1F2A16",
+      "layers": [
+        {
+          "kind": "sun",
+          "args": {
+            "x": 120,
+            "y": 92,
+            "r": 22,
+            "c": "#C9982E",
+            "rays": 12,
+            "rc": "#F0C77A"
+          }
+        },
+        {
+          "kind": "range",
+          "args": {
+            "base": 136,
+            "peaks": [
+              [
+                64,
+                40
+              ],
+              [
+                100,
+                56
+              ],
+              [
+                140,
+                46
+              ],
+              [
+                176,
+                60
+              ]
+            ],
+            "c": "#2B3820",
+            "snow": "#F6F1E6"
+          }
+        },
+        {
+          "kind": "rect",
+          "args": [
+            134,
+            200,
+            "#A23A2A"
+          ]
+        }
+      ],
+      "name": {
+        "text": "UGANDA",
+        "style": "expanded",
+        "x": 120,
+        "y": 170,
+        "width": 128,
+        "size": 26,
+        "fill": "#FBF6EA",
+        "stroke": "none",
+        "shadow": "#4a120c",
+        "onArc": false
+      }
+    },
+    "ID": {
+      "shape": "hexa",
+      "background": "#F2D29C",
+      "ink": "#132420",
+      "layers": [
+        {
+          "kind": "volcano",
+          "args": {
+            "x": 130,
+            "base": 130,
+            "w": 150,
+            "h": 68,
+            "c": "#1B2B23",
+            "plume": "#FBF2E4"
+          }
+        },
+        {
+          "kind": "terraces",
+          "args": {
+            "y0": 120,
+            "n": 3,
+            "gap": 9,
+            "c1": "#6FA34A",
+            "c2": "#A9C76A",
+            "bow": 8
+          }
+        },
+        {
+          "kind": "rect",
+          "args": [
+            146,
+            190,
+            "#2E7A6A"
+          ]
+        },
+        {
+          "kind": "waves",
+          "args": {
+            "y": 156,
+            "c": "#9CD0C2",
+            "n": 2,
+            "gap": 9,
+            "sw": 2
+          }
+        }
+      ],
+      "name": {
+        "text": "INDONESIA",
+        "style": "condensed",
+        "x": 90,
+        "y": 98,
+        "width": 84,
+        "size": 24,
+        "fill": "#132420",
+        "stroke": "none",
+        "shadow": "#F7E7C2",
+        "onArc": false
+      }
+    },
+    "YE": {
+      "shape": "shield",
+      "background": "#F0D2A0",
+      "ink": "#2A1A10",
+      "layers": [
+        {
+          "kind": "sun",
+          "args": {
+            "x": 168,
+            "y": 78,
+            "r": 16,
+            "c": "#E06A3A"
+          }
+        },
+        {
+          "kind": "towers",
+          "args": {
+            "base": 160,
+            "c": "#9A5A30",
+            "win": "#FBF2E4"
+          }
+        },
+        {
+          "kind": "rect",
+          "args": [
+            160,
+            220,
+            "#4A311F"
+          ]
+        }
+      ],
+      "name": {
+        "text": "YEMEN",
+        "style": "spaced",
+        "x": 120,
+        "y": 192,
+        "width": 104,
+        "size": 17,
+        "fill": "#F0D2A0",
+        "stroke": "none",
+        "shadow": "#1a0e06",
+        "onArc": false
+      }
+    },
+    "IN": {
+      "shape": "scallop",
+      "background": "#F3D19A",
+      "ink": "#1E2A18",
+      "layers": [
+        {
+          "kind": "sun",
+          "args": {
+            "x": 120,
+            "y": 104,
+            "r": 28,
+            "c": "#E07A2A"
+          }
+        },
+        {
+          "kind": "clouds",
+          "args": {
+            "pts": [
+              [
+                86,
+                98,
+                1.1
+              ],
+              [
+                168,
+                88,
+                0.9
+              ]
+            ],
+            "c": "#FBF2E4"
+          }
+        },
+        {
+          "kind": "hills",
+          "args": {
+            "y": 132,
+            "amp": 8,
+            "freq": 0.05,
+            "c": "#3A6A4A"
+          }
+        },
+        {
+          "kind": "rows",
+          "args": {
+            "y": 132,
+            "amp": 8,
+            "freq": 0.05,
+            "c": "#2B3824",
+            "n": 3,
+            "gap": 8
+          }
+        },
+        {
+          "kind": "rect",
+          "args": [
+            164,
+            220,
+            "#3A6A8A"
+          ]
+        }
+      ],
+      "name": {
+        "text": "INDIA",
+        "style": "expanded",
+        "x": 120,
+        "y": 196,
+        "width": 100,
+        "size": 26,
+        "fill": "#FBF6EA",
+        "stroke": "none",
+        "shadow": "#16283a",
+        "onArc": false
+      }
+    },
+    "VN": {
+      "shape": "ticket",
+      "background": "#F2E2B0",
+      "ink": "#162A1E",
+      "layers": [
+        {
+          "kind": "karst",
+          "args": {
+            "base": 150,
+            "xs": [
+              [
+                36,
+                56,
+                30
+              ],
+              [
+                64,
+                40,
+                26
+              ],
+              [
+                204,
+                60,
+                32
+              ]
+            ],
+            "c": "#2E5A3E"
+          }
+        },
+        {
+          "kind": "rect",
+          "args": [
+            140,
+            170,
+            "#3A8A7A"
+          ]
+        },
+        {
+          "kind": "sun",
+          "args": {
+            "x": 182,
+            "y": 96,
+            "r": 12,
+            "c": "#C2342A"
+          }
+        }
+      ],
+      "name": {
+        "text": "VIETNAM",
+        "style": "italic",
+        "x": 126,
+        "y": 132,
+        "width": 108,
+        "size": 34,
+        "fill": "#C2342A",
+        "stroke": "none",
+        "shadow": "#162A1E",
+        "onArc": false
+      }
+    },
+    "TH": {
+      "shape": "tri",
+      "background": "#F4DCB4",
+      "ink": "#1E1A2A",
+      "layers": [
+        {
+          "kind": "sun",
+          "args": {
+            "x": 120,
+            "y": 96,
+            "r": 18,
+            "c": "#E0603A"
+          }
+        },
+        {
+          "kind": "hills",
+          "args": {
+            "y": 118,
+            "amp": 9,
+            "freq": 0.04,
+            "c": "#9A9AB8"
+          }
+        },
+        {
+          "kind": "hills",
+          "args": {
+            "y": 134,
+            "amp": 8,
+            "freq": 0.05,
+            "phase": 2,
+            "c": "#6A6A90"
+          }
+        },
+        {
+          "kind": "hills",
+          "args": {
+            "y": 150,
+            "amp": 7,
+            "freq": 0.06,
+            "phase": 4,
+            "c": "#3A7A5A"
+          }
+        },
+        {
+          "kind": "rect",
+          "args": [
+            166,
+            210,
+            "#2C2838"
+          ]
+        }
+      ],
+      "name": {
+        "text": "THAILAND",
+        "style": "condensed",
+        "x": 120,
+        "y": 194,
+        "width": 120,
+        "size": 24,
+        "fill": "#F4DCB4",
+        "stroke": "none",
+        "shadow": "#0a0810",
+        "onArc": false
+      }
+    },
+    "CN": {
+      "shape": "circle",
+      "background": "#F2DDB0",
+      "ink": "#1E2A20",
+      "layers": [
+        {
+          "kind": "sun",
+          "args": {
+            "x": 120,
+            "y": 112,
+            "r": 22,
+            "c": "#B83A2E"
+          }
+        },
+        {
+          "kind": "terraces",
+          "args": {
+            "y0": 124,
+            "n": 6,
+            "gap": 10,
+            "c1": "#8AB06A",
+            "c2": "#5E8A4E",
+            "bow": 12
+          }
+        }
+      ],
+      "name": {
+        "text": "CHINA",
+        "style": "arched",
+        "x": 120,
+        "y": null,
+        "width": null,
+        "size": 26,
+        "fill": "#1E2A20",
+        "stroke": "none",
+        "shadow": null,
+        "onArc": true
+      }
+    },
+    "PG": {
+      "shape": "shield",
+      "background": "#F4D3A0",
+      "ink": "#1E1410",
+      "layers": [
+        {
+          "kind": "range",
+          "args": {
+            "base": 132,
+            "peaks": [
+              [
+                56,
+                50
+              ],
+              [
+                104,
+                74
+              ],
+              [
+                150,
+                56
+              ],
+              [
+                190,
+                66
+              ]
+            ],
+            "c": "#2A1C18"
+          }
+        },
+        {
+          "kind": "hills",
+          "args": {
+            "y": 132,
+            "amp": 6,
+            "freq": 0.06,
+            "c": "#3A6A3A"
+          }
+        },
+        {
+          "kind": "birds",
+          "args": {
+            "pts": [
+              [
+                86,
+                82,
+                8
+              ],
+              [
+                104,
+                74,
+                6
+              ]
+            ],
+            "c": "#C23A2E"
+          }
+        },
+        {
+          "kind": "rect",
+          "args": [
+            158,
+            220,
+            "#C23A2E"
+          ]
+        }
+      ],
+      "name": {
+        "text": "PAPUA N.G.",
+        "style": "condensed",
+        "x": 120,
+        "y": 190,
+        "width": 114,
+        "size": 24,
+        "fill": "#F4D3A0",
+        "stroke": "none",
+        "shadow": "#3a0e08",
+        "onArc": false
+      }
+    },
+    "JM": {
+      "shape": "oval",
+      "background": "#F7D98C",
+      "ink": "#122436",
+      "layers": [
+        {
+          "kind": "sun",
+          "args": {
+            "x": 176,
+            "y": 92,
+            "r": 18,
+            "c": "#E06A3A"
+          }
+        },
+        {
+          "kind": "range",
+          "args": {
+            "base": 132,
+            "peaks": [
+              [
+                54,
+                36
+              ],
+              [
+                96,
+                58
+              ],
+              [
+                140,
+                44
+              ]
+            ],
+            "c": "#2E4E7A"
+          }
+        },
+        {
+          "kind": "range",
+          "args": {
+            "base": 140,
+            "peaks": [
+              [
+                120,
+                26
+              ],
+              [
+                176,
+                34
+              ]
+            ],
+            "c": "#3A8A4A"
+          }
+        },
+        {
+          "kind": "rect",
+          "args": [
+            138,
+            200,
+            "#1C3756"
+          ]
+        },
+        {
+          "kind": "waves",
+          "args": {
+            "y": 150,
+            "c": "#7FB0D8",
+            "n": 2,
+            "gap": 9,
+            "sw": 2
+          }
+        }
+      ],
+      "name": {
+        "text": "JAMAICA",
+        "style": "italic",
+        "x": 120,
+        "y": 186,
+        "width": 120,
+        "size": 32,
+        "fill": "#F7D98C",
+        "stroke": "none",
+        "shadow": "#0a1420",
+        "onArc": false
+      }
+    },
+    "US": {
+      "shape": "arch",
+      "background": "#F7C8A0",
+      "ink": "#1E1410",
+      "layers": [
+        {
+          "kind": "volcano",
+          "args": {
+            "x": 112,
+            "base": 148,
+            "w": 180,
+            "h": 70,
+            "c": "#3A2A26",
+            "lip": "#E06A3A"
+          }
+        },
+        {
+          "kind": "palm",
+          "args": {
+            "x": 184,
+            "base": 160,
+            "h": 64,
+            "c": "#1E1410",
+            "lean": -8
+          }
+        },
+        {
+          "kind": "rect",
+          "args": [
+            150,
+            210,
+            "#2E7A8A"
+          ]
+        },
+        {
+          "kind": "waves",
+          "args": {
+            "y": 160,
+            "c": "#9CD0D8",
+            "n": 2,
+            "gap": 9,
+            "sw": 2
+          }
+        }
+      ],
+      "name": {
+        "text": "HAWAII",
+        "style": "italic",
+        "x": 120,
+        "y": 196,
+        "width": 110,
+        "size": 30,
+        "fill": "#F7C8A0",
+        "stroke": "none",
+        "shadow": "#0e1a1e",
+        "onArc": false
+      }
+    },
+    "EC": {
+      "shape": "circle",
+      "background": "#CFE2EC",
+      "ink": "#13262E",
+      "layers": [
+        {
+          "kind": "range",
+          "args": {
+            "base": 140,
+            "peaks": [
+              [
+                86,
+                36
+              ],
+              [
+                124,
+                66
+              ],
+              [
+                166,
+                40
+              ]
+            ],
+            "c": "#3A5A70",
+            "snow": "#FBF7EE"
+          }
+        },
+        {
+          "kind": "rect",
+          "args": [
+            138,
+            230,
+            "#3A7A5A"
+          ]
+        },
+        {
+          "kind": "line",
+          "args": {
+            "y": 156,
+            "c": "#E5C13A",
+            "dash": "7 5",
+            "sw": 2.4
+          }
+        }
+      ],
+      "name": {
+        "text": "ECUADOR",
+        "style": "arched",
+        "x": 120,
+        "y": null,
+        "width": null,
+        "size": 25,
+        "fill": "#13262E",
+        "stroke": "none",
+        "shadow": null,
+        "onArc": true
+      }
+    },
+    "BO": {
+      "shape": "ticket",
+      "background": "#E8E2D6",
+      "ink": "#1E2436",
+      "layers": [
+        {
+          "kind": "rect",
+          "args": [
+            120,
+            180,
+            "#F7F4EE"
+          ]
+        },
+        {
+          "kind": "range",
+          "args": {
+            "base": 120,
+            "peaks": [
+              [
+                150,
+                30
+              ],
+              [
+                184,
+                42
+              ],
+              [
+                214,
+                28
+              ]
+            ],
+            "c": "#2C3350",
+            "valley": 0.5,
+            "floor": 120
+          }
+        },
+        {
+          "kind": "range",
+          "args": {
+            "base": 120,
+            "peaks": [
+              [
+                150,
+                30
+              ],
+              [
+                184,
+                42
+              ],
+              [
+                214,
+                28
+              ]
+            ],
+            "c": "#2C3350",
+            "valley": 0.5,
+            "floor": 120
+          }
+        },
+        {
+          "kind": "line",
+          "args": {
+            "y": 120,
+            "c": "#C25A3A",
+            "dash": "0",
+            "sw": 1.4
+          }
+        }
+      ],
+      "name": {
+        "text": "BOLIVIA",
+        "style": "expanded",
+        "x": 72,
+        "y": 112,
+        "width": 104,
+        "size": 22,
+        "fill": "#C25A3A",
+        "stroke": "none",
+        "shadow": "#1E2436",
+        "onArc": false
+      }
+    },
+    "MG": {
+      "shape": "oval",
+      "background": "#F6B98C",
+      "ink": "#2A140C",
+      "layers": [
+        {
+          "kind": "sun",
+          "args": {
+            "x": 120,
+            "y": 112,
+            "r": 34,
+            "c": "#F4D06A"
+          }
+        },
+        {
+          "kind": "rect",
+          "args": [
+            138,
+            200,
+            "#7A3A1E"
+          ]
+        },
+        {
+          "kind": "baobab",
+          "args": {
+            "x": 70,
+            "base": 140,
+            "h": 64,
+            "c": "#2A140C"
+          }
+        },
+        {
+          "kind": "baobab",
+          "args": {
+            "x": 120,
+            "base": 140,
+            "h": 80,
+            "c": "#2A140C"
+          }
+        },
+        {
+          "kind": "baobab",
+          "args": {
+            "x": 170,
+            "base": 140,
+            "h": 58,
+            "c": "#2A140C"
+          }
+        }
+      ],
+      "name": {
+        "text": "MADAGASCAR",
+        "style": "condensed",
+        "x": 120,
+        "y": 174,
+        "width": 130,
+        "size": 26,
+        "fill": "#F6B98C",
+        "stroke": "none",
+        "shadow": "#1a0a04",
+        "onArc": false
+      }
+    },
+    "LK": {
+      "shape": "scallop",
+      "background": "#E2E8B0",
+      "ink": "#16241A",
+      "layers": [
+        {
+          "kind": "hills",
+          "args": {
+            "y": 100,
+            "amp": 10,
+            "freq": 0.04,
+            "c": "#8AB06A"
+          }
+        },
+        {
+          "kind": "rows",
+          "args": {
+            "y": 98,
+            "amp": 10,
+            "freq": 0.04,
+            "c": "#5E8A4E",
+            "n": 7,
+            "gap": 8,
+            "sw": 2.4
+          }
+        },
+        {
+          "kind": "rect",
+          "args": [
+            160,
+            220,
+            "#A0302E"
+          ]
+        }
+      ],
+      "name": {
+        "text": "SRI LANKA",
+        "style": "condensed",
+        "x": 120,
+        "y": 192,
+        "width": 118,
+        "size": 26,
+        "fill": "#F7EFC8",
+        "stroke": "none",
+        "shadow": "#3a0e0c",
+        "onArc": false
+      }
+    },
+    "NP": {
+      "shape": "tri",
+      "background": "#D6E2EE",
+      "ink": "#1C2234",
+      "layers": [
+        {
+          "kind": "range",
+          "args": {
+            "base": 150,
+            "peaks": [
+              [
+                70,
+                54
+              ],
+              [
+                112,
+                96
+              ],
+              [
+                150,
+                70
+              ],
+              [
+                184,
+                50
+              ]
+            ],
+            "c": "#3A4A70",
+            "snow": "#FBF9F4"
+          }
+        },
+        {
+          "kind": "rect",
+          "args": [
+            150,
+            210,
+            "#B83A3A"
+          ]
+        }
+      ],
+      "name": {
+        "text": "NEPAL",
+        "style": "spaced",
+        "x": 120,
+        "y": 186,
+        "width": 104,
+        "size": 18,
+        "fill": "#FBF9F4",
+        "stroke": "none",
+        "shadow": "#3a0e0e",
+        "onArc": false
+      }
+    },
+    "MW": {
+      "shape": "oval",
+      "background": "#F3D7A6",
+      "ink": "#16243A",
+      "layers": [
+        {
+          "kind": "sun",
+          "args": {
+            "x": 120,
+            "y": 118,
+            "r": 26,
+            "c": "#C9483A"
+          }
+        },
+        {
+          "kind": "rect",
+          "args": [
+            124,
+            200,
+            "#3A6E9A"
+          ]
+        },
+        {
+          "kind": "waves",
+          "args": {
+            "y": 136,
+            "c": "#A8C8E2",
+            "n": 3,
+            "gap": 9,
+            "sw": 2
+          }
+        },
+        {
+          "kind": "range",
+          "args": {
+            "base": 126,
+            "peaks": [
+              [
+                40,
+                18
+              ],
+              [
+                70,
+                26
+              ]
+            ],
+            "c": "#3A7A4A"
+          }
+        }
+      ],
+      "name": {
+        "text": "MALAWI",
+        "style": "expanded",
+        "x": 120,
+        "y": 178,
+        "width": 116,
+        "size": 24,
+        "fill": "#FBF6EA",
+        "stroke": "none",
+        "shadow": "#0e1828",
+        "onArc": false
+      }
+    },
+    "TW": {
+      "shape": "hexa",
+      "background": "#E4EEE6",
+      "ink": "#16262E",
+      "layers": [
+        {
+          "kind": "range",
+          "args": {
+            "base": 132,
+            "peaks": [
+              [
+                60,
+                42
+              ],
+              [
+                100,
+                60
+              ],
+              [
+                146,
+                50
+              ],
+              [
+                186,
+                38
+              ]
+            ],
+            "c": "#3A8A7A"
+          }
+        },
+        {
+          "kind": "clouds",
+          "args": {
+            "pts": [
+              [
+                86,
+                120,
+                1.1
+              ],
+              [
+                160,
+                112,
+                0.9
+              ]
+            ],
+            "c": "#FBFBF6"
+          }
+        },
+        {
+          "kind": "rect",
+          "args": [
+            132,
+            190,
+            "#22323A"
+          ]
+        }
+      ],
+      "name": {
+        "text": "TAIWAN",
+        "style": "expanded",
+        "x": 120,
+        "y": 166,
+        "width": 118,
+        "size": 22,
+        "fill": "#E0603A",
+        "stroke": "none",
+        "shadow": "#0a1216",
+        "onArc": false
+      }
+    }
+  },
+  "generic": {
+    "note": "Origins on the whitelist without a recipe: shape picked by mulberry32(fnv1a(\"sticker-\"+ISO)) from [oval, ticket, hexa, shield, scallop, arch]; sky = mix(tone1, #FBF3E2, 0.72) in OKLab; sun r18 in tone2 at top+54; range base 136 with 3 seeded peaks in ground; band from 134 in tone1; condensed name in ground with sky shadow.",
+    "examples": {
+      "MM": {
+        "shape": "ticket",
+        "background": "#f0dcb7",
+        "ink": "#3A2C1C",
+        "layers": [
+          {
+            "kind": "sun",
+            "args": {
+              "x": 120,
+              "y": 126,
+              "r": 18,
+              "c": "#5A3A6A"
+            }
+          },
+          {
+            "kind": "range",
+            "args": {
+              "base": 136,
+              "peaks": [
+                [
+                  64.33433664496988,
+                  34.243183885701
+                ],
+                [
+                  117.24767854437232,
+                  71.86546982033178
+                ],
+                [
+                  175.75907650403678,
+                  44.1515257358551
+                ]
+              ],
+              "c": "#3A2C1C"
+            }
+          },
+          {
+            "kind": "rect",
+            "args": [
+              134,
+              230,
+              "#D2A23A"
+            ]
+          }
+        ],
+        "name": {
+          "text": "MYANMAR",
+          "style": "condensed",
+          "x": 120,
+          "y": 150,
+          "width": 117,
+          "size": 26,
+          "fill": "#3A2C1C",
+          "stroke": "none",
+          "shadow": "#f0dcb7",
+          "onArc": false
+        }
+      },
+      "LA": {
+        "shape": "ticket",
+        "background": "#efc6af",
+        "ink": "#23362B",
+        "layers": [
+          {
+            "kind": "sun",
+            "args": {
+              "x": 120,
+              "y": 126,
+              "r": 18,
+              "c": "#E3C46A"
+            }
+          },
+          {
+            "kind": "range",
+            "args": {
+              "base": 136,
+              "peaks": [
+                [
+                  66.3770391792059,
+                  40.44012579135597
+                ],
+                [
+                  117.73576769977808,
+                  50.7277646525763
+                ],
+                [
+                  183.14686119556427,
+                  50.14403619803488
+                ]
+              ],
+              "c": "#23362B"
+            }
+          },
+          {
+            "kind": "rect",
+            "args": [
+              134,
+              230,
+              "#C2502E"
+            ]
+          }
+        ],
+        "name": {
+          "text": "LAOS",
+          "style": "condensed",
+          "x": 120,
+          "y": 150,
+          "width": 78,
+          "size": 26,
+          "fill": "#23362B",
+          "stroke": "none",
+          "shadow": "#efc6af",
+          "onArc": false
+        }
+      },
+      "PH": {
+        "shape": "arch",
+        "background": "#f5e1b9",
+        "ink": "#1C3848",
+        "layers": [
+          {
+            "kind": "sun",
+            "args": {
+              "x": 120,
+              "y": 84,
+              "r": 18,
+              "c": "#C23A3A"
+            }
+          },
+          {
+            "kind": "range",
+            "args": {
+              "base": 136,
+              "peaks": [
+                [
+                  50.20463848952204,
+                  40.80518111586571
+                ],
+                [
+                  124.20102733187377,
+                  74.97345772571862
+                ],
+                [
+                  183.34558453410864,
+                  40.22358027845621
+                ]
+              ],
+              "c": "#1C3848"
+            }
+          },
+          {
+            "kind": "rect",
+            "args": [
+              134,
+              230,
+              "#E3B23A"
+            ]
+          }
+        ],
+        "name": {
+          "text": "PHILIPPINES",
+          "style": "condensed",
+          "x": 120,
+          "y": 172,
+          "width": 132,
+          "size": 26,
+          "fill": "#1C3848",
+          "stroke": "none",
+          "shadow": "#f5e1b9",
+          "onArc": false
+        }
+      },
+      "ZM": {
+        "shape": "oval",
+        "background": "#f2cfb2",
+        "ink": "#2C381C",
+        "layers": [
+          {
+            "kind": "sun",
+            "args": {
+              "x": 120,
+              "y": 102,
+              "r": 18,
+              "c": "#3A8A4A"
+            }
+          },
+          {
+            "kind": "range",
+            "args": {
+              "base": 136,
+              "peaks": [
+                [
+                  51.77723164204508,
+                  46.7315448820591
+                ],
+                [
+                  122.38039234653115,
+                  66.44429690064862
+                ],
+                [
+                  186.83417692780495,
+                  50.247375866398215
+                ]
+              ],
+              "c": "#2C381C"
+            }
+          },
+          {
+            "kind": "rect",
+            "args": [
+              134,
+              230,
+              "#D2702E"
+            ]
+          }
+        ],
+        "name": {
+          "text": "ZAMBIA",
+          "style": "condensed",
+          "x": 120,
+          "y": 172,
+          "width": 104,
+          "size": 26,
+          "fill": "#2C381C",
+          "stroke": "none",
+          "shadow": "#f2cfb2",
+          "onArc": false
+        }
+      },
+      "ZW": {
+        "shape": "hexa",
+        "background": "#f4e1b8",
+        "ink": "#3A2C1C",
+        "layers": [
+          {
+            "kind": "sun",
+            "args": {
+              "x": 120,
+              "y": 110,
+              "r": 18,
+              "c": "#3A7A3A"
+            }
+          },
+          {
+            "kind": "range",
+            "args": {
+              "base": 136,
+              "peaks": [
+                [
+                  55.57942764367908,
+                  32.22411584109068
+                ],
+                [
+                  121.84887653682381,
+                  65.47157392231748
+                ],
+                [
+                  181.04929419234395,
+                  45.713296830654144
+                ]
+              ],
+              "c": "#3A2C1C"
+            }
+          },
+          {
+            "kind": "rect",
+            "args": [
+              134,
+              230,
+              "#E0B23A"
+            ]
+          }
+        ],
+        "name": {
+          "text": "ZIMBABWE",
+          "style": "condensed",
+          "x": 120,
+          "y": 166,
+          "width": 130,
+          "size": 26,
+          "fill": "#3A2C1C",
+          "stroke": "none",
+          "shadow": "#f4e1b8",
+          "onArc": false
+        }
+      },
+      "CM": {
+        "shape": "ticket",
+        "background": "#f2c4af",
+        "ink": "#2C381C",
+        "layers": [
+          {
+            "kind": "sun",
+            "args": {
+              "x": 120,
+              "y": 126,
+              "r": 18,
+              "c": "#E8C23A"
+            }
+          },
+          {
+            "kind": "range",
+            "args": {
+              "base": 136,
+              "peaks": [
+                [
+                  68.58562838751823,
+                  45.07787867449224
+                ],
+                [
+                  120.98891253583133,
+                  59.45823367824778
+                ],
+                [
+                  174.10952623467892,
+                  31.080935457721353
+                ]
+              ],
+              "c": "#2C381C"
+            }
+          },
+          {
+            "kind": "rect",
+            "args": [
+              134,
+              230,
+              "#C9452E"
+            ]
+          }
+        ],
+        "name": {
+          "text": "CAMEROON",
+          "style": "condensed",
+          "x": 120,
+          "y": 150,
+          "width": 130,
+          "size": 26,
+          "fill": "#2C381C",
+          "stroke": "none",
+          "shadow": "#f2c4af",
+          "onArc": false
+        }
+      },
+      "HT": {
+        "shape": "hexa",
+        "background": "#f1c1b1",
+        "ink": "#1C2C48",
+        "layers": [
+          {
+            "kind": "sun",
+            "args": {
+              "x": 120,
+              "y": 110,
+              "r": 18,
+              "c": "#3A8A6A"
+            }
+          },
+          {
+            "kind": "range",
+            "args": {
+              "base": 136,
+              "peaks": [
+                [
+                  51.978100668638945,
+                  31.562730208970606
+                ],
+                [
+                  122.8545871982351,
+                  70.81681060325354
+                ],
+                [
+                  173.55008344631642,
+                  46.689060531556606
+                ]
+              ],
+              "c": "#1C2C48"
+            }
+          },
+          {
+            "kind": "rect",
+            "args": [
+              134,
+              230,
+              "#C23A3A"
+            ]
+          }
+        ],
+        "name": {
+          "text": "HAITI",
+          "style": "condensed",
+          "x": 120,
+          "y": 166,
+          "width": 91,
+          "size": 26,
+          "fill": "#1C2C48",
+          "stroke": "none",
+          "shadow": "#f1c1b1",
+          "onArc": false
+        }
+      },
+      "DO": {
+        "shape": "shield",
+        "background": "#f1c1b1",
+        "ink": "#1C3858",
+        "layers": [
+          {
+            "kind": "sun",
+            "args": {
+              "x": 120,
+              "y": 94,
+              "r": 18,
+              "c": "#3A8A5A"
+            }
+          },
+          {
+            "kind": "range",
+            "args": {
+              "base": 136,
+              "peaks": [
+                [
+                  52.11683518253267,
+                  42.745857276022434
+                ],
+                [
+                  125.44841217808425,
+                  67.77486140280962
+                ],
+                [
+                  175.28731015045196,
+                  39.52657216228545
+                ]
+              ],
+              "c": "#1C3858"
+            }
+          },
+          {
+            "kind": "rect",
+            "args": [
+              134,
+              230,
+              "#C23A3A"
+            ]
+          }
+        ],
+        "name": {
+          "text": "DOMINICAN REP.",
+          "style": "condensed",
+          "x": 120,
+          "y": 172,
+          "width": 132,
+          "size": 26,
+          "fill": "#1C3858",
+          "stroke": "none",
+          "shadow": "#f1c1b1",
+          "onArc": false
+        }
+      },
+      "CU": {
+        "shape": "hexa",
+        "background": "#c7d5bf",
+        "ink": "#1C384E",
+        "layers": [
+          {
+            "kind": "sun",
+            "args": {
+              "x": 120,
+              "y": 110,
+              "r": 18,
+              "c": "#E0B23A"
+            }
+          },
+          {
+            "kind": "range",
+            "args": {
+              "base": 136,
+              "peaks": [
+                [
+                  69.5067269122228,
+                  47.40774861071259
+                ],
+                [
+                  110.58948710095137,
+                  54.69483988219872
+                ],
+                [
+                  180.51710110157728,
+                  37.124796353280544
+                ]
+              ],
+              "c": "#1C384E"
+            }
+          },
+          {
+            "kind": "rect",
+            "args": [
+              134,
+              230,
+              "#3A8A6A"
+            ]
+          }
+        ],
+        "name": {
+          "text": "CUBA",
+          "style": "condensed",
+          "x": 120,
+          "y": 166,
+          "width": 78,
+          "size": 26,
+          "fill": "#1C384E",
+          "stroke": "none",
+          "shadow": "#c7d5bf",
+          "onArc": false
+        }
+      },
+      "VE": {
+        "shape": "arch",
+        "background": "#f4e1b8",
+        "ink": "#2C3828",
+        "layers": [
+          {
+            "kind": "sun",
+            "args": {
+              "x": 120,
+              "y": 84,
+              "r": 18,
+              "c": "#3A5AA0"
+            }
+          },
+          {
+            "kind": "range",
+            "args": {
+              "base": 136,
+              "peaks": [
+                [
+                  57.83985808491707,
+                  47.02990552876145
+                ],
+                [
+                  119.83180660754442,
+                  60.387371407821774
+                ],
+                [
+                  182.11777498479933,
+                  33.17880676500499
+                ]
+              ],
+              "c": "#2C3828"
+            }
+          },
+          {
+            "kind": "rect",
+            "args": [
+              134,
+              230,
+              "#E0B23A"
+            ]
+          }
+        ],
+        "name": {
+          "text": "VENEZUELA",
+          "style": "condensed",
+          "x": 120,
+          "y": 172,
+          "width": 132,
+          "size": 26,
+          "fill": "#2C3828",
+          "stroke": "none",
+          "shadow": "#f4e1b8",
+          "onArc": false
+        }
+      }
+    }
+  },
+  "seals": {
+    "washed": {
+      "shape": "scallop",
+      "background": "#E6EEF0",
+      "ink": "#1E3A4A",
+      "layers": [
+        {
+          "kind": "drop",
+          "args": {
+            "x": 120,
+            "y": 124,
+            "s": 1.15,
+            "c": "#3A7EA8"
+          }
+        }
+      ],
+      "name": {
+        "text": "WASHED",
+        "style": "arched",
+        "x": 120,
+        "y": null,
+        "width": null,
+        "size": 23,
+        "fill": "#1E3A4A",
+        "stroke": "none",
+        "shadow": null,
+        "onArc": true
+      }
+    },
+    "natural": {
+      "shape": "scallop",
+      "background": "#F6E2BC",
+      "ink": "#4A2210",
+      "layers": [
+        {
+          "kind": "sun",
+          "args": {
+            "x": 120,
+            "y": 122,
+            "r": 22,
+            "c": "#E08A2A",
+            "rays": 12,
+            "rc": "#F0B86A",
+            "spread": 0.12
+          }
+        }
+      ],
+      "name": {
+        "text": "NATURAL",
+        "style": "arched",
+        "x": 120,
+        "y": null,
+        "width": null,
+        "size": 23,
+        "fill": "#4A2210",
+        "stroke": "none",
+        "shadow": null,
+        "onArc": true
+      }
+    },
+    "honey": {
+      "shape": "scallop",
+      "background": "#F8E4A8",
+      "ink": "#4A2E08",
+      "layers": [
+        {
+          "kind": "combs",
+          "args": {
+            "x": 120,
+            "y": 122,
+            "r": 12,
+            "c": "#E8A93A",
+            "c2": "#C47A1E"
+          }
+        }
+      ],
+      "name": {
+        "text": "HONEY",
+        "style": "arched",
+        "x": 120,
+        "y": null,
+        "width": null,
+        "size": 23,
+        "fill": "#4A2E08",
+        "stroke": "none",
+        "shadow": null,
+        "onArc": true
+      }
+    },
+    "anaerobic": {
+      "shape": "scallop",
+      "background": "#F0D6DE",
+      "ink": "#4A1028",
+      "layers": [
+        {
+          "kind": "bubbles",
+          "args": {
+            "x": 120,
+            "y": 124,
+            "c": "#7A1E46"
+          }
+        }
+      ],
+      "name": {
+        "text": "FERMENTED",
+        "style": "arched",
+        "x": 120,
+        "y": null,
+        "width": null,
+        "size": 19,
+        "fill": "#4A1028",
+        "stroke": "none",
+        "shadow": null,
+        "onArc": true
+      }
+    },
+    "wetHulled": {
+      "shape": "scallop",
+      "background": "#E2DCC8",
+      "ink": "#2A2418",
+      "layers": [
+        {
+          "kind": "bean",
+          "args": {
+            "x": 120,
+            "y": 124,
+            "c": "#6B4E36",
+            "cut": "#E2DCC8"
+          }
+        }
+      ],
+      "name": {
+        "text": "WET-HULLED",
+        "style": "arched",
+        "x": 120,
+        "y": null,
+        "width": null,
+        "size": 19,
+        "fill": "#2A2418",
+        "stroke": "none",
+        "shadow": null,
+        "onArc": true
+      }
+    }
+  }
+}

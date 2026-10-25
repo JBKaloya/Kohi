@@ -15,10 +15,23 @@ final class PlaceLocator: NSObject, CLLocationManagerDelegate {
 
     @ObservationIgnored private let manager = CLLocationManager()
 
-    override init() {
+    convenience override init() {
+        self.init(accuracy: kCLLocationAccuracyKilometer)
+    }
+
+    init(accuracy: CLLocationAccuracy) {
         super.init()
         manager.delegate = self
-        manager.desiredAccuracy = kCLLocationAccuracyKilometer
+        manager.desiredAccuracy = accuracy
+    }
+
+    /// Whether a fix can be taken without asking. The tasting capture only
+    /// locates on its own when this is already true.
+    static var isAuthorized: Bool {
+        switch CLLocationManager().authorizationStatus {
+        case .authorizedWhenInUse, .authorizedAlways: true
+        default: false
+        }
     }
 
     /// Asks the first time, then simply reuses the answer.

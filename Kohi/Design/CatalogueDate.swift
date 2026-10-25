@@ -27,4 +27,9 @@ nonisolated enum CatalogueDate {
             : .dateTime.day().month(.abbreviated).year()
         return date.formatted(style.locale(locale))
     }
+
+    /// "October 2026", for a list grouped by month.
+    static func month(_ date: Date, locale: Locale = .current) -> String {
+        date.formatted(.dateTime.month(.wide).year().locale(locale))
+    }
 }

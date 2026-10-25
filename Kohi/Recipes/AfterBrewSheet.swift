@@ -1,11 +1,16 @@
+import os
 import SwiftUI
 
-/// After the pour: rating, taste, correction, comment, parameters, save.
+/// After the pour: the note. What you did, how the cup was, a comment.
+/// What to change next time is the next screen, reachable again from every
+/// past brew; nothing here asks for it.
 struct AfterBrewSheet: View {
     @Bindable var session: BrewSession
     var onSave: () -> Void
     var onDelete: (() -> Void)?
-    var onAgain: ((Brew) -> Void)?
+    /// Compare can still start a cup from one of the two brews. The note
+    /// itself has no Brew again: that button lives on For next time.
+    var onBrewFromCompare: ((Brew) -> Void)? = nil
     var onBack: () -> Void
 
     @Environment(SetupStore.self) private var setup
@@ -13,83 +18,68 @@ struct AfterBrewSheet: View {
     @Environment(CardStore.self) private var store
     @Environment(AIFlags.self) private var flags
     @Environment(AIEventLog.self) private var events
-    @Environment(AIFeedbackStore.self) private var feedback
     @Environment(LotFlags.self) private var lotFlags
     @Environment(\.appEnvironment) private var appEnvironment
 
-    @State private var showParameters = false
-    @State private var showTaste = true
     @State private var showCompare = false
+    @State private var showStepEditor = false
     @State private var tapCount = 0
-    @State private var correction: SuggestedCorrection?
-    @State private var pickedMove: Int?
     @State private var saveTrigger = 0
     @State private var savedAsRecipe = false
     @State private var completenessTrigger = 0
+    @State private var voiceNoteTrigger = 0
+    @State private var brewBeforeVoice: Brew?
+    @State private var isTranscribingNote = false
+    @State private var voiceTranscript = ""
     @FocusState private var timeFocused: Bool
     @FocusState private var commentFocused: Bool
     @State private var fieldFocused = false
+    @State private var isEditingSaved = false
+    @State private var droppedTasting: Set<String> = []
+    @State private var editingTasting = false
+    @State private var acceptedNarration: Set<String> = []
 
     private var card: CoffeeCard { session.card }
-    private var recipe: Recipe { session.timerRecipe }
-
-    private var progressIndex: Int { session.progressTotal - 1 }
+    private var isLocked: Bool { session.mode == .edit && !isEditingSaved }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            header
-                .padding(.horizontal, 26)
-                .padding(.top, 14)
-
-            ScrollView {
-                VStack(alignment: .leading, spacing: 28) {
-                    rating
-                        .completenessPulse(.rating, completeness: session.brew.completeness, trigger: completenessTrigger)
-                    if lotFlags.isOn(.taste7) { taste }
-                    axes
-                    comment
-                    suggested
-                    parameters
-                    more
-                    dateSection
-                    if onDelete != nil { deleteButton }
+        StepFlow(
+            step: session.progressIndex,
+            total: session.progressTotal,
+            question: Copy.itsDone,
+            onBack: onBack,
+            onClose: nil,
+            primaryTitle: "Save",
+            onPrimary: save
+        ) {
+            VStack(alignment: .leading, spacing: 28) {
+                if isLocked {
+                    Button { isEditingSaved = true } label: {
+                        Text(Copy.savedTapToEdit).catalogueLabel()
+                    }
+                    .buttonStyle(.plain)
                 }
-                .padding(.horizontal, 26)
-                .padding(.top, 22)
-                .padding(.bottom, 24)
+                Text(session.brew.completeness.tag)
+                    .font(Typography.tag)
+                    .foregroundStyle(Palette.inkMuted)
+                    .onTapGesture { completenessTrigger += 1 }
+                summary
+                whatYouDid
+                sensory
+                comment
+                tastingUnderstood
+                more
+                dateSection
+                if onDelete != nil { deleteButton }
             }
-            .scrollIndicators(.hidden)
-            .scrollDismissesKeyboard(.interactively)
-            .fieldKeyboardClearance()
+            .padding(.bottom, 24)
         }
-        .background(Palette.paper.ignoresSafeArea())
         .onPreferenceChange(FieldFocusPreference.self) { fieldFocused = $0 }
         .animation(Motion.snappy, value: fieldFocused)
-        .safeAreaInset(edge: .bottom) {
-            if !fieldFocused {
-                Button(action: save) {
-                    Text("Save")
-                        .font(Typography.label)
-                        .tracking(Typography.labelTracking)
-                        .textCase(.uppercase)
-                        .foregroundStyle(Palette.paper)
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 52)
-                        .background(Palette.ink, in: Capsule())
-                }
-                .buttonStyle(.plain)
-                .padding(.horizontal, 26)
-                .padding(.top, 12)
-                .padding(.bottom, 18)
-                .background(Palette.paper)
-                .transition(.opacity.combined(with: .move(edge: .bottom)))
-            }
-        }
         .haptic(.tap, trigger: tapCount)
         .haptic(.saved, trigger: saveTrigger)
-        .task { await loadCorrection() }
-        .task(id: "\(session.brew.acidity)-\(session.brew.bitterness)-\(session.brew.body)-\(session.brew.rating ?? 0)-\(session.brew.notes)") {
-            await loadCorrection()
+        .task {
+            await transcribeVoiceNoteIfNeeded()
         }
         .sheet(isPresented: $showCompare) {
             if let appEnvironment {
@@ -98,106 +88,199 @@ struct AfterBrewSheet: View {
                     reference: session.brew,
                     others: store.cards,
                     waters: setup.waterProfiles,
-                    equipment: setup.equipment
+                    equipment: setup.equipment,
+                    filterStock: setup.filterStock
                 ) { seed in
-                    onAgain?(seed)
+                    onBrewFromCompare?(seed)
                 }
                 .appEnvironment(appEnvironment)
             }
         }
-    }
-
-    private var header: some View {
-        HStack(spacing: 12) {
-            Button(action: onBack) {
-                Image(systemName: "chevron.left")
-                    .font(.system(size: 10, weight: .semibold))
-                    .foregroundStyle(Palette.ink)
-                    .touchTarget()
+        .sheet(isPresented: $showStepEditor) {
+            StepBuilderSheet(draft: editedRecipe) { recipe in
+                applyEdited(recipe)
+                showStepEditor = false
             }
-            .buttonStyle(.plain)
-
-            HStack(spacing: 4) {
-                ForEach(0..<session.progressTotal, id: \.self) { index in
-                    Rectangle()
-                        .fill(index == progressIndex ? Palette.ink : Palette.hairline)
-                        .frame(width: 24, height: 1)
-                }
-            }
-            Spacer()
-            Text(session.brew.completeness.tag)
-                .font(Typography.tag)
-                .foregroundStyle(Palette.inkMuted)
-                .onTapGesture { completenessTrigger += 1 }
+            .appEnvironment(appEnvironment)
         }
     }
 
-    private var rating: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text("Rating").catalogueLabel()
-            HStack(spacing: 10) {
-                ForEach(1...5, id: \.self) { step in
-                    Button {
-                        tapCount += 1
-                        session.brew.rating = session.brew.rating == step ? nil : step
-                    } label: {
-                        Circle()
-                            .fill((session.brew.rating ?? 0) >= step ? Palette.ink : Color.clear)
-                            .frame(width: 22, height: 22)
-                            .overlay(Circle().stroke(Palette.hairline, lineWidth: 1))
+    private var summary: some View {
+        FieldGroup(title: "Summary") {
+            HStack(spacing: 0) {
+                NumberRow(Copy.coffeeDose, value: $session.brew.dose, unit: "g", compactWidth: 70)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                NumberRow(
+                    session.brew.method == .espresso ? Copy.beverage : Copy.waterWeight,
+                    value: session.brew.method == .espresso ? $session.brew.beverage : $session.brew.water,
+                    unit: "g",
+                    compactWidth: 70
+                )
+                .frame(maxWidth: .infinity, alignment: .leading)
+                DerivedValue(text: session.brew.ratio ?? "—")
+                    .frame(maxWidth: .infinity)
+            }
+            HStack(spacing: 0) {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Grind").catalogueLabel()
+                    Text(session.brew.grind.display())
+                        .font(Typography.value)
+                        .foregroundStyle(Palette.ink)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.7)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                NumberRow("Temp", value: $session.brew.temperature, unit: "°C", compactWidth: 70)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                timeRow
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
+        }
+    }
+
+    private var whatYouDid: some View {
+        InsightBlock(
+            title: Copy.whatYouDid,
+            bodyText: whatYouDidReading,
+            provenance: session.brew.actualSource.provenance,
+            accessory: {
+                Button("Edit") { showStepEditor = true }
+                    .catalogueLabel()
+            }
+        ) {
+            let rows = session.brew.actualSteps.isEmpty ? session.brew.plannedSteps : session.brew.actualSteps
+            let muted = session.brew.actualSource == .none
+            VStack(alignment: .leading, spacing: 8) {
+                if isTranscribingNote {
+                    Text(Copy.transcribingBrewNote).catalogueLabel()
+                    ShimmerBar()
+                }
+                if !voiceTranscript.isEmpty || session.voiceNote.hasFile {
+                    TextField("What you said", text: $voiceTranscript, axis: .vertical)
+                        .font(Typography.body)
+                        .foregroundStyle(Palette.ink)
+                        .lineLimit(2...8)
+                    if !narrationLines.isEmpty {
+                        Text("What we understood")
+                            .catalogueLabel()
+                        ForEach(narrationLines) { line in
+                            HStack(alignment: .firstTextBaseline, spacing: 12) {
+                                Text(line.summary)
+                                    .font(Typography.tag)
+                                    .foregroundStyle(Palette.inkMuted)
+                                Spacer(minLength: 8)
+                                Button(acceptedNarration.contains(line.id) ? "Confirmed" : "Confirm") {
+                                    if acceptedNarration.contains(line.id) {
+                                        acceptedNarration.remove(line.id)
+                                    } else {
+                                        acceptedNarration.insert(line.id)
+                                    }
+                                }
+                                .catalogueLabel()
+                            }
+                        }
                     }
-                    .buttonStyle(.plain)
-                    .touchTarget()
                 }
-            }
-        }
-    }
-
-    private var taste: some View {
-        VStack(alignment: .leading, spacing: 14) {
-            Button {
-                tapCount += 1
-                withAnimation(Motion.snappy) { showTaste.toggle() }
-            } label: {
-                HStack(spacing: 6) {
-                    Text("Taste").catalogueLabel()
-                    Image(systemName: "chevron.right")
-                        .font(.system(size: 8, weight: .semibold))
-                        .foregroundStyle(Palette.inkMuted)
-                        .rotationEffect(.degrees(showTaste ? 90 : 0))
-                    Spacer()
-                    if !session.brew.taste.isEmpty, !showTaste {
-                        Text("\(session.brew.taste.scoredAxes.count) of 7")
+                ForEach(rows) { step in
+                    HStack(alignment: .firstTextBaseline, spacing: 8) {
+                        Text(step.action.label)
+                            .catalogueLabel()
+                        if let mass = step.mass ?? step.targetMass {
+                            Text("\(GrindRange.number(mass)) g")
+                                .font(Typography.value)
+                                .foregroundStyle(muted ? Palette.inkMuted : Palette.ink)
+                        }
+                        Spacer()
+                        Text(String(format: "%d:%02d", step.at / 60, step.at % 60))
                             .font(Typography.tag)
                             .foregroundStyle(Palette.inkMuted)
-                    }
-                }
-            }
-            .buttonStyle(.plain)
-
-            if showTaste {
-                VStack(alignment: .leading, spacing: 20) {
-                    HStack {
-                        Spacer()
-                        TasteRadar(taste: session.brew.taste, previous: previousTaste)
-                        Spacer()
-                    }
-                    if previousTaste != nil {
-                        Text("The previous brew of this coffee is the lighter shape.")
-                            .font(Typography.tag)
-                            .foregroundStyle(Palette.inkMuted)
-                    }
-                    AxisRails(taste: $session.brew.taste) { tapCount += 1 }
-                    if lotFlags.isOn(.flavorWheel) {
-                        FlavorPicker(
-                            selection: $session.brew.flavors,
-                            recent: recentFlavors,
-                            suggested: card.declaredFlavors
-                        )
+                        if let delta = step.timingDelta, session.brew.actualSource != .none {
+                            Text(delta)
+                                .font(Typography.tag)
+                                .foregroundStyle(Palette.ink)
+                        }
+                        if step.skipped {
+                            Text("skipped")
+                                .font(Typography.tag)
+                                .foregroundStyle(Palette.inkMuted)
+                        }
                     }
                 }
             }
         }
+    }
+
+    private var whatYouDidReading: String {
+        switch session.brew.actualSource {
+        case .none:
+            return Copy.defaultSequenceNotConfirmed
+        case .narration:
+            return "Narrated"
+        case .edited:
+            return "Edited"
+        case .timer:
+            let count = session.brew.deviations.filter(\.isMaterial).count
+            if count == 0 { return Copy.followedThePlan }
+            if count == 1 { return "Followed the plan, with one deviation" }
+            return "Followed the plan, with \(count) deviations"
+        }
+    }
+
+    private var editedRecipe: Recipe {
+        var recipe = RecipeRules.recipe(
+            from: session.brew,
+            card: card,
+            source: .express,
+            name: session.brew.recipeName
+        )
+        if recipe.steps.isEmpty {
+            recipe.steps = session.brew.plannedSteps.map {
+                RecipeStep(
+                    at: $0.at,
+                    action: $0.action,
+                    targetMass: $0.mass ?? $0.targetMass,
+                    untilSeconds: $0.targetAt,
+                    note: $0.note,
+                    agitation: $0.agitation
+                )
+            }
+        }
+        if recipe.name.isEmpty {
+            recipe.name = Recipe.expressTitle(family: (session.brew.method ?? .v60).family)
+        }
+        return recipe
+    }
+
+    private func applyEdited(_ recipe: Recipe) {
+        session.brew.actualSteps = recipe.steps.enumerated().map { index, step in
+            BrewStep(
+                index: index,
+                action: step.action,
+                at: step.at,
+                mass: step.targetMass,
+                targetAt: step.at,
+                targetMass: step.targetMass,
+                note: step.note,
+                agitation: step.agitation
+            )
+        }
+        session.brew.recipeName = recipe.name
+        session.brew.actualSource = .edited
+        session.brew.refreshPourRates()
+    }
+
+    private var sensory: some View {
+        SensoryEvaluationSection(
+            rating: $session.brew.rating,
+            taste: $session.brew.taste,
+            flavors: $session.brew.flavors,
+            previousTaste: previousTaste,
+            previousCaption: Copy.previousBrewIsLighter,
+            declared: card.declaredFlavors,
+            recent: recentFlavors,
+            enabled: !isLocked
+        ) { tapCount += 1 }
+        .completenessPulse(.rating, completeness: session.brew.completeness, trigger: completenessTrigger)
     }
 
     private var previousTaste: TasteProfile? {
@@ -222,139 +305,32 @@ struct AfterBrewSheet: View {
             ?? setup.preferredGrinder(for: session.brew.method)
     }
 
-    private var axes: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            Text("Correction").catalogueLabel()
-            axis("Acidity", value: $session.brew.acidity)
-            axis("Bitterness", value: $session.brew.bitterness)
-            axis("Body", value: $session.brew.body)
-        }
-    }
-
-    private func axis(_ name: String, value: Binding<Int>) -> some View {
-        HStack(spacing: 14) {
-            Text(name)
-                .font(Typography.tag)
-                .foregroundStyle(Palette.inkMuted)
-                .frame(width: 74, alignment: .leading)
-            ForEach([-1, 0, 1], id: \.self) { step in
-                Button {
-                    tapCount += 1
-                    value.wrappedValue = value.wrappedValue == step ? 0 : step
-                } label: {
-                    Text(step < 0 ? "−" : step > 0 ? "+" : "·")
-                        .font(.system(size: 14, weight: .medium, design: .monospaced))
-                        .foregroundStyle(value.wrappedValue == step ? Palette.paper : Palette.ink)
-                        .frame(width: 28, height: 28)
-                        .background {
-                            RoundedRectangle(cornerRadius: 6)
-                                .fill(value.wrappedValue == step ? Palette.ink : Color.clear)
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: 6)
-                                        .stroke(Palette.hairline, lineWidth: value.wrappedValue == step ? 0 : 1)
-                                )
-                        }
-                }
-                .buttonStyle(.plain)
-                .touchTarget()
-            }
-        }
-    }
-
     private var comment: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("Comment").catalogueLabel()
+            Text(Copy.comment).catalogueLabel()
             TextField(Placeholders.text(.brewNotes), text: $session.brew.notes, axis: .vertical)
                 .font(Typography.body)
                 .lineLimit(2...6)
                 .focused($commentFocused)
                 .reportsFieldFocus(commentFocused)
+                .guessHighlight(trigger: voiceNoteTrigger, onUndo: undoVoiceNote)
             DictationField(text: $session.brew.notes)
         }
     }
 
-    @ViewBuilder
-    private var suggested: some View {
-        if let correction {
-            VStack(alignment: .leading, spacing: 12) {
-                SuggestedCorrectionView(
-                    correction: correction,
-                    pickedRank: $pickedMove
-                ) { move in
-                    session.brew.nextTimeSuggestion = move.change
-                }
-                if flags.isOn(.aiFeedback), let eventID = correction.eventID {
-                    AIFeedbackScale(eventID: eventID, feature: .suggestedCorrection, store: feedback)
-                }
-            }
-        }
-    }
-
-    private var parameters: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Button {
-                withAnimation(Motion.snappy) { showParameters.toggle() }
-            } label: {
-                HStack(spacing: 6) {
-                    Text("Parameters").catalogueLabel()
-                    Image(systemName: "chevron.right")
-                        .font(.system(size: 8, weight: .semibold))
-                        .foregroundStyle(Palette.inkMuted)
-                        .rotationEffect(.degrees(showParameters ? 90 : 0))
-                }
-            }
-            .buttonStyle(.plain)
-
-            if showParameters {
-                Text(recipe.compactLine)
-                    .font(Typography.tag)
-                    .foregroundStyle(Palette.inkMuted)
-                NumberRow(
-                    Copy.coffeeDose,
-                    value: $session.brew.dose,
-                    unit: "g",
-                    placeholder: Placeholders.text(.brewDose),
-                    labelWidth: 74
-                )
-                NumberRow(
-                    session.brew.method == .espresso ? Copy.beverage : Copy.waterWeight,
-                    value: session.brew.method == .espresso ? $session.brew.beverage : $session.brew.water,
-                    unit: "g",
-                    placeholder: Placeholders.text(.brewWater),
-                    labelWidth: 74
-                )
-                timeRow
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("Grind").catalogueLabel()
-                    GrindRail(
-                        setting: $session.brew.grind,
-                        grinder: grindGrinder,
-                        method: session.brew.method,
-                        onChange: { tapCount += 1 }
-                    )
-                }
-                NumberRow(
-                    "Temp",
-                    value: $session.brew.temperature,
-                    unit: "°C",
-                    placeholder: Placeholders.text(.brewTemperature),
-                    labelWidth: 74
-                )
-            }
-        }
-    }
-
     private var timeRow: some View {
-        HStack(spacing: 8) {
+        VStack(alignment: .leading, spacing: 4) {
             Text("Time").catalogueLabel()
-                .frame(width: 74, alignment: .leading)
+                .lineLimit(1)
+                .minimumScaleFactor(0.7)
             TextField(
                 "",
                 text: timeBinding,
                 prompt: Text(Placeholders.text(.brewTime)).foregroundStyle(Palette.hairline)
             )
             .formValue()
-            .frame(width: 50)
+            .lineLimit(1)
+            .minimumScaleFactor(0.7)
             .keyboardType(.numbersAndPunctuation)
             .focused($timeFocused)
             .reportsFieldFocus(timeFocused)
@@ -440,19 +416,127 @@ struct AfterBrewSheet: View {
         .padding(.top, 4)
     }
 
-    private func loadCorrection() async {
-        correction = await SuggestedCorrection.ranked(
-            for: session.brew,
-            card: card,
-            comment: session.brew.notes,
-            equipment: setup.equipment,
-            flags: flags,
-            events: events
+    private var confirmedTasting: [TastingIntent] {
+        TastingIntent.confirmed(from: session.brew.notes, dropping: droppedTasting)
+    }
+
+    private var tastingUnderstood: some View {
+        let note = session.brew.notes
+        let line = TastingIntent.understoodLine(for: note, dropping: droppedTasting)
+        return VStack(alignment: .leading, spacing: 8) {
+            if let line {
+                Button {
+                    editingTasting.toggle()
+                } label: {
+                    HStack(spacing: 8) {
+                        Text(line)
+                            .font(Typography.tag)
+                            .foregroundStyle(Palette.inkMuted)
+                        Image(systemName: "checkmark")
+                            .font(.system(size: 11, weight: .medium))
+                            .foregroundStyle(Palette.inkMuted)
+                    }
+                }
+                .buttonStyle(.plain)
+            }
+            if editingTasting {
+                ForEach(TastingIntent.extract(note)) { intent in
+                    Button(droppedTasting.contains(intent.id) ? "Restore \(intent.axis.rawValue)" : "Not \(intent.axis.rawValue)") {
+                        if droppedTasting.contains(intent.id) {
+                            droppedTasting.remove(intent.id)
+                        } else {
+                            droppedTasting.insert(intent.id)
+                        }
+                    }
+                    .catalogueLabel()
+                }
+            }
+        }
+    }
+
+    private var narrationLines: [NarrationDeviation] {
+        NarrationDeviation.parse(voiceTranscript) + NarrationDeviation.clockNotes(
+            in: voiceTranscript,
+            steps: session.brew.actualSteps
         )
     }
 
     private func save() {
         saveTrigger += 1
+        TastingIntent.prefill(&session.brew, from: confirmedTasting)
+        let frozen = SuggestedCorrection.fallback(
+            from: session.brew,
+            card: card,
+            equipment: setup.equipment,
+            filterStock: setup.filterStock,
+            tasting: confirmedTasting
+        )
+        session.frozenCorrection = frozen
+        let spoken = NarrationDeviation.parse(voiceTranscript)
+            .filter { acceptedNarration.contains($0.id) }
+        if !spoken.isEmpty {
+            NarrationDeviation.apply(spoken, to: &session.brew)
+        }
         onSave()
+    }
+
+    private func transcribeVoiceNoteIfNeeded() async {
+        guard session.voiceNote.hasFile else { return }
+        isTranscribingNote = true
+        defer { isTranscribingNote = false }
+        do {
+            let text = try await session.voiceNote.transcribe(
+                keepAudio: lotFlags.isOn(.keepVoiceNote)
+            )
+            let spoken = text.trimmingCharacters(in: .whitespacesAndNewlines)
+            guard !spoken.isEmpty else { return }
+            let terms = SpokenLexicon.terms(
+                brew: session.brew,
+                recipe: session.recipe,
+                equipment: setup.equipment,
+                filters: setup.filterStock
+            )
+            let rewritten = SpokenLexicon.rewrite(spoken, terms: terms)
+            brewBeforeVoice = session.brew
+            let parsed = SpokenBrewParser.parse(
+                rewritten,
+                waters: setup.waterProfiles,
+                filters: setup.filterStock
+            )
+            SpokenBrewParser.apply(parsed, to: &session.brew, appendLeftover: false)
+            session.brew.notes = DictationTranscript.apply(
+                rewritten,
+                to: brewBeforeVoice?.notes ?? "",
+                mode: .append
+            )
+            voiceTranscript = rewritten
+            if session.brew.actualSource == .timer || session.brew.actualSource == .none {
+                session.brew.actualSource = .narration
+                session.brew.refreshPourRates()
+            }
+            voiceNoteTrigger += 1
+            if let tidied = await FieldExtract.tidy(
+                transcript: rewritten,
+                terms: terms,
+                flags: flags,
+                events: events
+            ), tidied != rewritten {
+                voiceTranscript = tidied
+                session.brew.notes = DictationTranscript.apply(
+                    tidied,
+                    to: brewBeforeVoice?.notes ?? "",
+                    mode: .append
+                )
+            }
+        } catch {
+            Log.app.notice("voice note transcription: \(error)")
+        }
+    }
+
+    private func undoVoiceNote() {
+        guard let brewBeforeVoice else { return }
+        withAnimation(Motion.snappy) { session.brew = brewBeforeVoice }
+        self.brewBeforeVoice = nil
+        voiceTranscript = ""
     }
 }

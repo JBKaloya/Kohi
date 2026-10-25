@@ -5,6 +5,7 @@ import SwiftUI
 struct AxisRail: View {
     let axis: TasteAxis
     @Binding var value: Int?
+    var enabled = true
     var onChange: () -> Void = {}
 
     @State private var gestureOrigin: Int?
@@ -57,34 +58,43 @@ struct AxisRail: View {
             }
             .contentShape(Rectangle())
             .gesture(
-                DragGesture(minimumDistance: 0)
+                DragGesture(minimumDistance: 12)
                     .onChanged { gesture in
+                        guard enabled else { return }
                         if !tracking {
                             gestureOrigin = value
                             tracking = true
                             didMove = false
                         }
-                        if abs(gesture.translation.width) > 4 { didMove = true }
-                        let tick = Int((gesture.location.x / width * 10).rounded())
-                        set(min(max(tick, 0), 10))
+                        didMove = true
+                        set(tick(at: gesture.location.x, width: width))
                     }
-                    .onEnded { gesture in
-                        let tick = Int((gesture.location.x / width * 10).rounded())
-                        let snapped = min(max(tick, 0), 10)
-                        if !didMove, gestureOrigin == snapped {
-                            set(nil)
-                        }
+                    .onEnded { _ in
                         tracking = false
                         didMove = false
                         gestureOrigin = nil
                     }
+            )
+            .simultaneousGesture(
+                SpatialTapGesture().onEnded { gesture in
+                    guard enabled else { return }
+                    let snapped = tick(at: gesture.location.x, width: width)
+                    set(value == snapped ? nil : snapped)
+                }
             )
         }
         .frame(height: 34)
     }
 
     private func x(for tick: Int, width: CGFloat) -> CGFloat {
-        width * CGFloat(tick) / 10
+        let inset: CGFloat = 4
+        return inset + (width - inset * 2) * CGFloat(tick) / 10
+    }
+
+    private func tick(at x: CGFloat, width: CGFloat) -> Int {
+        let inset: CGFloat = 4
+        let usable = max(width - inset * 2, 1)
+        return min(max(Int(((x - inset) / usable * 10).rounded()), 0), 10)
     }
 
     private func set(_ next: Int?) {
@@ -97,6 +107,7 @@ struct AxisRail: View {
 /// The seven rails, in radar order.
 struct AxisRails: View {
     @Binding var taste: TasteProfile
+    var enabled = true
     var onChange: () -> Void = {}
 
     var body: some View {
@@ -108,6 +119,7 @@ struct AxisRails: View {
                         get: { taste[axis] },
                         set: { taste[axis] = $0 }
                     ),
+                    enabled: enabled,
                     onChange: onChange
                 )
             }

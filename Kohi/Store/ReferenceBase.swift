@@ -91,7 +91,7 @@ nonisolated enum ReferenceBase {
         var brand: String
         var model: String
         var variant: String?
-        var family: BrewerFamily?
+        var family: BrewerType?
         var filters: [Filter]?
         var isGooseneck: Bool?
         var hasTemperatureControl: Bool?
@@ -117,7 +117,7 @@ nonisolated enum ReferenceBase {
             brand: String,
             model: String,
             variant: String? = nil,
-            family: BrewerFamily? = nil,
+            family: BrewerType? = nil,
             filters: [Filter]? = nil,
             isGooseneck: Bool? = nil,
             hasTemperatureControl: Bool? = nil,
@@ -159,7 +159,7 @@ nonisolated enum ReferenceBase {
                 kind: .brewer,
                 brand: brewer.brand,
                 model: brewer.model,
-                family: brewer.dripperFamily.brewerFamily,
+                family: brewer.dripperFamily.brewerType,
                 filters: brewer.filter.map { [Filter(brand: brewer.brand, shape: $0)] },
                 source: brewer.source ?? ""
             )
@@ -174,6 +174,7 @@ nonisolated enum ReferenceBase {
         var family: String
         var bypass: String
         var filter: String?
+        var shapes: [String]?
         var note: String?
         var source: String?
         var status: String?
@@ -187,6 +188,18 @@ nonisolated enum ReferenceBase {
         var bypassLevel: BypassLevel? {
             BypassLevel(rawValue: bypass)
         }
+
+        var filterShapes: [FilterShape] {
+            if let shapes {
+                return FilterShape.parseList(shapes)
+            }
+            return FilterShape.kit(from: filter, model: model).shapes
+        }
+
+        var declaresNoPaper: Bool {
+            if let shapes, shapes.isEmpty { return true }
+            return false
+        }
     }
 
     static let grinders: [Grinder] = load("grinders")
@@ -194,6 +207,9 @@ nonisolated enum ReferenceBase {
     static let mineralProducts: [MineralProduct] = load("mineral-products")
     static let kit: [Item] = load("equipment")
     static let brewers: [Brewer] = load("brewers")
+    static let filters: [FilterModel] = load("filters")
+    static let roasterSeeds: [RoasterSeed] = load("roasters-seed")
+    static let parisPlaces: [SeedPlace] = load("places-paris")
 
     /// The reference recipes (annexe A), minus the rows the verification gate
     /// rejects. Each keeps its attribution, its source URL and how much of it
@@ -300,7 +316,7 @@ nonisolated enum ReferenceBase {
                     || $0.model.localizedCaseInsensitiveContains(trimmed)
                     || ($0.variant?.localizedCaseInsensitiveContains(trimmed) ?? false)
             }
-        return Array(matched.prefix(16))
+        return Array(matched)
     }
 
     private static func load<T: Decodable>(_ name: String) -> [T] {
@@ -319,6 +335,12 @@ nonisolated enum ReferenceBase {
 }
 
 extension Equipment {
+    /// From the reference seed. A grinder typed by hand has no row, so this stays nil.
+    var isManual: Bool? {
+        guard let grinderRef else { return nil }
+        return ReferenceBase.grinder(id: grinderRef)?.isManual
+    }
+
     /// A grinder pre-filled from the reference base. Everything the base knows
     /// is copied in, so the record stays readable if the base later changes.
     init(reference: ReferenceBase.Grinder) {
@@ -341,6 +363,12 @@ extension Equipment {
         let filters = (reference.filter?.isEmpty == false)
             ? [BrewFilter(brand: reference.brand, shape: reference.filter ?? "")]
             : (draft?.filters ?? [])
+        let kit = {
+            let fromSeed = reference.filterShapes
+            if !fromSeed.isEmpty { return (size: FilterShape.kit(from: reference.filter, model: reference.model).size, shapes: fromSeed) }
+            if reference.declaresNoPaper { return (size: String?.none, shapes: [FilterShape]()) }
+            return FilterShape.kit(from: reference.filter, model: reference.model)
+        }()
         self.init(
             id: draft?.id ?? UUID(),
             kind: .brewer,
@@ -349,9 +377,11 @@ extension Equipment {
             notes: draft?.notes ?? (reference.note ?? ""),
             isDefaultFor: draft?.isDefaultFor ?? [],
             brewerRef: reference.id,
-            brewerType: reference.dripperFamily.brewerFamily.storageValue,
+            brewerType: reference.dripperFamily.brewerType.storageValue,
             filters: filters,
             defaultFilterId: filters.first?.id,
+            size: kit.size ?? draft?.size,
+            acceptsFilterShapes: kit.shapes.isEmpty ? (draft?.acceptsFilterShapes ?? []) : kit.shapes,
             createdAt: draft?.createdAt ?? .now
         )
     }
@@ -363,6 +393,10 @@ extension Equipment {
         let filters = (reference.filters ?? []).map {
             BrewFilter(brand: $0.brand, shape: $0.shape)
         }
+        let kit = FilterShape.kit(
+            from: reference.filters?.first?.shape,
+            model: reference.model
+        )
         self.init(
             id: draft?.id ?? UUID(),
             kind: reference.kind,
@@ -371,7 +405,9 @@ extension Equipment {
             notes: draft?.notes ?? "",
             isDefaultFor: draft?.isDefaultFor ?? [],
             grinderRef: draft?.grinderRef,
-            brewerRef: draft?.brewerRef ?? (reference.kind == .brewer ? reference.id : nil),
+            brewerRef: draft?.brewerRef ?? (
+                reference.kind == .brewer || reference.kind == .espressoMachine ? reference.id : nil
+            ),
             burrType: draft?.burrType,
             burrMm: draft?.burrMm,
             adjustment: draft?.adjustment,
@@ -381,6 +417,8 @@ extension Equipment {
             brewerType: reference.family?.storageValue,
             filters: filters,
             defaultFilterId: filters.first?.id,
+            size: kit.size ?? draft?.size,
+            acceptsFilterShapes: kit.shapes.isEmpty ? (draft?.acceptsFilterShapes ?? []) : kit.shapes,
             basketG: reference.basketG,
             pressureBar: reference.pressureBar,
             isGooseneck: reference.isGooseneck,

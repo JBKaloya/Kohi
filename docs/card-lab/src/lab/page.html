@@ -1,0 +1,239 @@
+<title>Kohi Card Lab</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=DM+Serif+Display:ital@0;1&family=IBM+Plex+Mono:wght@400;500&family=Instrument+Serif&display=swap">
+<style>
+/* Layout: Kohi's own catalogue on warm paper — a mosaic, a workbench, a dark board of stickers.
+   Kohi is light only by design (design-system.md §1.6), so this page commits to one theme. */
+:root {
+  --paper: #FAF8F4; --paper-shade: #F3F0E9; --ink: #1A1815; --ink-muted: #857D72; --hairline: #E2DDD3;
+  --shadow: rgba(77, 66, 51, .22); --board: #171512; --board-ink: #A39A8C; --focus: #824E34;
+  --display: 'Instrument Serif', 'Times New Roman', serif;
+  --mono: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+  --body: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+body { background: var(--paper); color: var(--ink); font: 15px/1.5 var(--body); -webkit-font-smoothing: antialiased; }
+.wrap { max-width: 1180px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.cap { font: 500 11px/1.2 var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--ink-muted); }
+header.top { padding-block: 40px 28px; display: grid; gap: 14px; }
+header.top h1 { font: 400 clamp(52px, 9vw, 92px)/.9 var(--display); margin: 0; letter-spacing: -.01em; }
+header.top h1 small { font: 500 12px var(--mono); letter-spacing: .16em; color: var(--ink-muted); vertical-align: top; margin-left: 10px; }
+header.top p { max-width: 64ch; margin: 0; color: #3b3630; text-wrap: pretty; }
+section { border-top: 1px solid var(--hairline); padding-block: 28px 44px; }
+.sec-head { display: flex; flex-wrap: wrap; gap: 12px 20px; align-items: center; justify-content: space-between; margin-bottom: 22px; }
+.sec-head h2 { font: 400 34px/1 var(--display); margin: 4px 0 0; }
+.sec-head p { margin: 6px 0 0; color: #4a443d; max-width: 62ch; }
+.segs { display: flex; flex-wrap: wrap; gap: 6px; }
+.segs button, .pill { font: 500 11px/1 var(--mono); letter-spacing: .1em; text-transform: uppercase; border: 1px solid var(--hairline); background: transparent; color: var(--ink); padding: 8px 11px; border-radius: 999px; cursor: pointer; }
+.segs button[aria-pressed="true"] { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+button:focus-visible, select:focus-visible, input:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+
+/* mosaic */
+#grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(200px, 40vw), 1fr)); gap: clamp(16px, 3vw, 34px); }
+.tile { all: unset; cursor: pointer; display: block; border-radius: 12px; transition: transform .18s ease; }
+.tile:hover { transform: translateY(-2px); }
+.tile:active { transform: scale(.965); }
+.tile:focus-visible { outline: 2px solid var(--focus); outline-offset: 4px; }
+
+/* ── the card (container-relative units so tile and fiche share one gabarit) */
+.kc { position: relative; width: 100%; aspect-ratio: 4 / 5; container-type: inline-size; border-radius: 5% / 4%; overflow: visible; box-shadow: 0 1px 3px rgba(0,0,0,.08), 0 10px 26px var(--shadow); }
+.kc-bg { position: absolute; inset: 0; width: 100%; height: 100%; border-radius: inherit; display: block; }
+.kc-label { position: absolute; left: 5cqw; right: 5cqw; bottom: 5cqw; background: #FBF8F2; border-radius: 2.2cqw; padding: 4cqw 4.4cqw 4.2cqw; box-shadow: 0 .3cqw .8cqw rgba(40,28,16,.18); }
+.kc-label::before { content: ''; position: absolute; inset: 0; border-radius: inherit; border: 1px solid rgba(26,24,21,.08); pointer-events: none; }
+.kc-roaster { font: 500 3cqw/1.2 var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--ink-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.kc-label.has-stk.side-right .kc-roaster { padding-right: 28cqw; }
+.kc-label.has-stk.side-left .kc-roaster { padding-left: 30cqw; text-align: right; }
+.kc-title { font: 400 10.4cqw/.98 var(--display); letter-spacing: -.005em; margin-top: 1.4cqw; text-wrap: balance; overflow-wrap: anywhere; }
+.kc-rule { height: 1px; background: var(--hairline); margin: 2.6cqw 0 2.2cqw; }
+.kc-place { font: 400 3.5cqw/1.35 var(--body); color: var(--ink); }
+.kc-place span { color: var(--ink-muted); }
+.kc-proc { color: var(--ink-muted); margin-top: .6cqw; }
+.kc-notes { font: 400 3.5cqw/1.35 var(--body); margin-top: 2.4cqw; }
+.kc-cap { display: block; font: 500 2.4cqw/1.2 var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--ink-muted); margin-bottom: .8cqw; }
+.kc-foot { font: 500 2.3cqw/1.2 var(--mono); letter-spacing: .12em; color: var(--ink-muted); margin-top: 3cqw; }
+.kc-tile .kc-title { font-size: 10.6cqw; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.kc-tile .kc-place { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 4cqw; }
+.kc-tile .kc-roaster { font-size: 3.4cqw; }
+.kc-sticker { position: absolute; width: 40cqw; top: -26cqw; transform: rotate(var(--rot, 0deg)); pointer-events: none; }
+.kc-detail .kc-sticker { width: 32cqw; top: -21cqw; }
+.kc-sticker.side-right { right: -3cqw; }
+.kc-sticker.side-left { left: -3cqw; }
+.kc-sticker svg { display: block; width: 100%; height: auto; overflow: visible; }
+.kc-bleed { position: absolute; left: 6cqw; right: 6cqw; top: 6cqw; }
+.kc-bleed .kc-title { font-size: 14cqw; line-height: .92; margin-top: 2cqw; }
+.kc-bleed .kc-place { margin-top: 2.4cqw; font-size: 3.8cqw; }
+.kc-bleed.tone-paper .kc-title, .kc-bleed.tone-paper .kc-place { color: #FBF8F2; }
+.kc-bleed.tone-paper .kc-roaster { color: rgba(251,248,242,.78); }
+.kc-bleed.tone-ink .kc-title, .kc-bleed.tone-ink .kc-place { color: var(--ink); }
+.kc-tile.kc-bleed-wrap .kc-title { white-space: normal; }
+.kc-sticker-free { top: auto; bottom: 4cqw; width: 36cqw; }
+.kc-detail .kc-sticker-free { width: 30cqw; top: auto; }
+.kc-sticker-free.side-right { right: 4cqw; }
+.kc-sticker-free.side-left { left: auto; right: 4cqw; }
+
+/* today's card, for the comparison */
+.kc-old { background: var(--paper); border: 1px solid var(--hairline); box-shadow: 0 8px 20px var(--shadow); overflow: hidden; }
+.kc-old-mark { position: absolute; right: 7cqw; bottom: 7cqw; width: 55cqw; opacity: .14; mix-blend-mode: multiply; }
+.kc-old-body { position: absolute; inset: 0; padding: 7cqw; }
+.kc-old-head { display: flex; justify-content: space-between; align-items: center; gap: 2cqw; min-height: 9cqw; }
+.kc-old-circle { width: 13cqw; height: 13cqw; border: 1px solid var(--hairline); border-radius: 50%; display: grid; place-items: center; font: 400 4.6cqw var(--body); flex: none; }
+.kc-old .kc-title { font-size: 7.5cqw; margin-top: 4cqw; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* atelier */
+.atelier { display: grid; grid-template-columns: minmax(0, 420px) minmax(0, 1fr); gap: 36px 48px; align-items: start; }
+#ed-stage { padding-top: 64px; max-width: 420px; }
+#ed-minis { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; margin-top: 30px; max-width: 300px; }
+#ed-minis figure { margin: 0; padding-top: 40px; }
+#ed-minis figcaption { margin-top: 10px; font: 500 10px var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--ink-muted); }
+.form { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 18px; }
+.field { display: grid; grid-template-columns: 96px minmax(0, 1fr); align-items: center; gap: 10px; border-bottom: 1px solid var(--hairline); padding-block: 9px; min-width: 0; }
+.field.wide { grid-column: 1 / -1; }
+.field label { font: 500 10.5px/1.2 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--ink-muted); }
+.field input[type=text], .field select { width: 100%; min-width: 0; font: 15px var(--body); color: var(--ink); background: transparent; border: 0; padding: 4px 0; }
+.field select { appearance: none; background-image: linear-gradient(45deg, transparent 50%, var(--ink-muted) 50%), linear-gradient(135deg, var(--ink-muted) 50%, transparent 50%); background-position: right 6px center, right 1px center; background-size: 5px 5px; background-repeat: no-repeat; padding-right: 18px; }
+.inkrow { display: flex; align-items: center; gap: 10px; }
+.inkrow input[type=range] { flex: 1; min-width: 0; accent-color: var(--ink); height: 18px; background: linear-gradient(90deg, hsl(0 70% 55%), hsl(60 70% 55%), hsl(120 70% 45%), hsl(180 70% 45%), hsl(240 70% 55%), hsl(300 70% 50%), hsl(360 70% 55%)); border-radius: 9px; appearance: none; }
+.inkrow input[type=range]:disabled { opacity: .25; }
+.ctl { display: grid; gap: 8px; margin-top: 18px; }
+.recipe { margin: 24px 0 0; border-top: 1px solid var(--ink); }
+.rrow { display: grid; grid-template-columns: 150px minmax(0, 1fr); gap: 12px; padding-block: 9px; border-bottom: 1px solid var(--hairline); align-items: baseline; }
+.rrow dt { font: 500 10.5px/1.4 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--ink-muted); }
+.rrow dd { margin: 0; font-size: 14px; min-width: 0; }
+.sw { display: inline-block; width: 13px; height: 13px; border-radius: 3px; vertical-align: -2px; margin-right: 4px; box-shadow: inset 0 0 0 1px rgba(0,0,0,.12); }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { display: inline-flex; align-items: center; gap: 2px; border: 1px solid var(--hairline); border-radius: 999px; padding: 3px 9px 3px 5px; font-size: 13px; }
+.chip em { font-style: normal; color: var(--ink-muted); margin-left: 3px; }
+.chip.miss { border-style: dashed; color: var(--ink-muted); padding-left: 9px; }
+.muted { color: var(--ink-muted); }
+code { font: 12px var(--mono); }
+#ed-upload-note { font-size: 13px; color: var(--ink-muted); min-height: 1.4em; margin: 2px 0 0; }
+
+/* sticker board */
+.board { background: var(--board); color: var(--board-ink); border-radius: 18px; padding: clamp(18px, 4vw, 40px); }
+.board h3 { font: 500 11px var(--mono); letter-spacing: .14em; text-transform: uppercase; margin: 0 0 18px; color: var(--board-ink); }
+#board, #seals { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(150px, 40vw), 1fr)); gap: 8px 18px; }
+#seals { margin-top: 10px; }
+.bd { margin: 0; text-align: center; }
+.bd-s svg { width: 100%; height: auto; display: block; overflow: visible; }
+.bd figcaption { font: 500 11px var(--mono); letter-spacing: .12em; color: #e9e2d6; margin-top: -6px; }
+.bd figcaption span { display: block; color: var(--board-ink); font-size: 10px; letter-spacing: .06em; margin-top: 2px; }
+.bd.gen { opacity: .8; }
+.board .sep { border-top: 1px solid #2c2822; margin: 26px 0 18px; }
+
+/* rules */
+.rules { width: 100%; border-collapse: collapse; font-size: 14px; min-width: 640px; }
+.rules th { text-align: left; font: 500 10.5px var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--ink-muted); padding: 8px 12px 8px 0; border-bottom: 1px solid var(--ink); }
+.rules td { padding: 10px 12px 10px 0; border-bottom: 1px solid var(--hairline); vertical-align: top; }
+.rules td:first-child { font-weight: 600; white-space: nowrap; }
+.scroll { overflow-x: auto; }
+footer { padding-block: 10px 48px; color: var(--ink-muted); font-size: 13px; }
+
+@media (max-width: 860px) {
+  .atelier { grid-template-columns: minmax(0, 1fr); }
+  #ed-stage { margin: 0 auto; width: min(100%, 380px); }
+  .form { grid-template-columns: minmax(0, 1fr); }
+  .rrow { grid-template-columns: minmax(0, 1fr); gap: 2px; }
+}
+@media (prefers-reduced-motion: reduce) { .tile { transition: none; } }
+</style>
+
+<header class="top wrap">
+  <div class="cap">jbk studio · Kohi · prototype de rendu</div>
+  <h1>Kohi <small>CARD LAB</small></h1>
+  <p>Chaque carte devient un petit paysage. La terre de l’origine en bas, les notes de dégustation au milieu, la lumière de l’altitude en haut. Le process règle l’énergie du dégradé, la torréfaction sa valeur, le grain imprime le tout. Le symbole du sachet passe en relief derrière l’étiquette, et chaque pays a son sticker, toujours le même.</p>
+</header>
+
+<section class="wrap" id="collection">
+  <div class="sec-head">
+    <div>
+      <div class="cap">Ta collection · 16 cafés</div>
+      <h2>La mosaïque</h2>
+      <p>Les cafés de ta grille et des scans de <code>backstages/planche.png</code>. Les notes ne sont remplies que là où le sachet les donne : les cartes vides montrent le chemin de secours. Touche une carte pour l’ouvrir dans l’atelier.</p>
+    </div>
+    <div style="display:grid;gap:8px">
+      <div class="segs" id="mode" role="group" aria-label="Version"><button type="button" data-v="new" aria-pressed="true">Nouvelle carte</button><button type="button" data-v="old" aria-pressed="false">Carte actuelle</button></div>
+      <div class="segs" id="layout" role="group" aria-label="Mise en page"><button type="button" data-v="label" aria-pressed="true">Étiquette</button><button type="button" data-v="bleed" aria-pressed="false">Plein</button></div>
+    </div>
+  </div>
+  <div id="grid"></div>
+</section>
+
+<section class="wrap" id="atelier">
+  <div class="sec-head">
+    <div>
+      <div class="cap">Atelier</div>
+      <h2>Une carte, ses règles</h2>
+      <p>Change un champ et regarde ce qui bouge. La recette visuelle sous le formulaire dit d’où vient chaque couleur.</p>
+    </div>
+  </div>
+  <div class="atelier">
+    <div>
+      <div id="ed-stage"></div>
+      <div id="ed-minis"></div>
+    </div>
+    <div>
+      <div class="form">
+        <div class="field wide"><label for="ed-card">Café</label><select id="ed-card"></select></div>
+        <div class="field"><label for="ed-name">Nom</label><input type="text" id="ed-name" autocomplete="off"></div>
+        <div class="field"><label for="ed-roaster">Roaster</label><input type="text" id="ed-roaster" autocomplete="off"></div>
+        <div class="field"><label for="ed-country">Pays</label><select id="ed-country"></select></div>
+        <div class="field"><label for="ed-region">Région</label><input type="text" id="ed-region" autocomplete="off"></div>
+        <div class="field"><label for="ed-alt">Altitude</label><input type="text" id="ed-alt" inputmode="numeric" autocomplete="off" placeholder="1800 ou 1800-1900"></div>
+        <div class="field"><label for="ed-process">Process</label><select id="ed-process"></select></div>
+        <div class="field"><label for="ed-roast">Torréf.</label><select id="ed-roast"></select></div>
+        <div class="field"><label for="ed-ink">Encre</label><div class="inkrow"><input type="checkbox" id="ed-ink-on" aria-label="Encre du sachet mesurée"><input type="range" id="ed-ink" min="0" max="1" step="0.01" aria-label="Teinte de l’encre du sachet"></div></div>
+        <div class="field wide"><label for="ed-notes">Notes</label><input type="text" id="ed-notes" autocomplete="off" placeholder="Blueberry, Jasmine, Cane Sugar"></div>
+      </div>
+      <div class="ctl"><div class="cap">Symbole du sachet</div><div class="segs" id="ed-symbol" role="group" aria-label="Symbole"></div><input type="file" id="ed-file" accept="image/*" hidden><p id="ed-upload-note">Importer : une photo de sachet ou un PNG détouré. L’extraction tourne dans la page.</p></div>
+      <div class="ctl"><div class="cap">Traitement du symbole</div><div class="segs" id="ed-treat" role="group" aria-label="Traitement"><button type="button" data-v="auto">Auto</button><button type="button" data-v="emboss">Gaufrage</button><button type="button" data-v="ink">Encre</button><button type="button" data-v="halftone">Trame</button><button type="button" data-v="pattern">Motif</button><button type="button" data-v="none">Aucun</button></div></div>
+      <div class="ctl"><div class="cap">Mise en page</div><div class="segs" id="ed-layout" role="group" aria-label="Mise en page de la fiche"><button type="button" data-v="label">Étiquette</button><button type="button" data-v="bleed">Plein</button></div></div>
+      <dl class="recipe" id="ed-recipe"></dl>
+    </div>
+  </div>
+</section>
+
+<section class="wrap" id="stickers">
+  <div class="sec-head">
+    <div>
+      <div class="cap">Stickers d’origine · un pays, un sticker</div>
+      <h2>La planche</h2>
+      <p>Dessinés en code à partir d’une recette par pays : forme découpée, paysage, lettrage, trame, léger décalage de repérage, usure. Les 32 origines les plus courantes ont une recette dédiée ; les autres pays de la liste en reçoivent une, générée depuis leur terre et toujours la même. Sans pays, la carte porte le sceau de son process.</p>
+    </div>
+  </div>
+  <div class="board">
+    <h3>Origines</h3>
+    <div id="board"></div>
+    <div class="sep"></div>
+    <h3>Sceaux de process · quand le pays manque</h3>
+    <div id="seals"></div>
+  </div>
+</section>
+
+<section class="wrap" id="regles">
+  <div class="sec-head"><div><div class="cap">Ce que lit la carte</div><h2>Les règles</h2></div></div>
+  <div class="scroll">
+  <table class="rules">
+    <thead><tr><th>Champ</th><th>Devient</th><th>Règle</th><th>Si vide</th></tr></thead>
+    <tbody>
+      <tr><td>Pays</td><td>La terre (bas) + le sticker</td><td>Une teinte de sol par origine, trois tons. Le sticker vient d’une recette par code ISO.</td><td>Terre neutre torréfiée, sceau de process</td></tr>
+      <tr><td>Notes</td><td>Les trois masses de couleur du milieu</td><td>Chaque note → une couleur d’arôme (roue Kohi + notes de spécialité). Trois au plus, comme la face.</td><td>Les tons de la terre, l’encre du sachet en tête</td></tr>
+      <tr><td>Altitude</td><td>Le ciel (haut)</td><td>900 m → 0 %, 2 200 m → 100 % d’air. Bas : brume chaude. Haut : air clair et froid.</td><td>50 %</td></tr>
+      <tr><td>Process</td><td>L’énergie du champ</td><td>Lavé net et clair ; nature chaud et dense ; honey un halo doré ; fermentations saturées et en tourbillon ; wet-hulled grain lourd.</td><td>Réglage moyen</td></tr>
+      <tr><td>Torréfaction</td><td>La valeur</td><td>De +0,07 (super light) à −0,10 (dark) de luminosité OKLab.</td><td>Light</td></tr>
+      <tr><td>Encre mesurée</td><td>Un accent au bord + le titre</td><td><code>PackInkReader</code> donne la teinte ; le champ la reprend en petite masse vive.</td><td>Rien</td></tr>
+      <tr><td>Symbole</td><td>Le relief derrière l’étiquette</td><td>Gaufrage, encre, trame ou motif répété, choisis selon la forme (trait, plein, minuscule).</td><td>Le fond porte seul la carte</td></tr>
+      <tr><td>Identifiant</td><td>La graine</td><td>FNV-1a de l’UUID → positions, rotation du sticker, côté. Jamais d’aléatoire au rendu.</td><td>—</td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<footer class="wrap">Prototype de référence pour le brief Cursor <code>docs/kohi-dev-brief-9.md</code>. Le rendu iOS suit les mêmes règles : champ basse définition en OKLab, agrandi, grain en tuile, sticker dessiné en <code>Path</code>.</footer>
+
+<script>
+const MARKS = __MARKS__;
+__SCRIPTS__
+</script>

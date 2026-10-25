@@ -5,43 +5,68 @@ struct RootView: View {
     @Environment(\.scenePhase) private var scenePhase
     @State private var store = CardStore()
     @State private var roasters = RoasterStore()
+    @State private var places = PlaceIndex()
     @State private var setup = SetupStore()
     @State private var recipes = RecipeStore()
+    @State private var tastings = TastingStore()
     @State private var account = AccountStore()
     @State private var setupFlow = SetupFlowController()
     @State private var flags = AIFlags()
     @State private var lotFlags = LotFlags()
     @State private var aiEvents = AIEventLog()
     @State private var feedback = AIFeedbackStore()
+    @State private var cardLooks = CardLookStore()
+    @State private var stamps = StampLibrary()
+    @State private var stampRefresh = StampRefresh()
     @State private var outbox = SyncOutbox()
     @State private var sync = SyncCoordinator(outbox: SyncOutbox())
     @State private var isScanning = false
-    /// A scan that has been filed to disk but not yet named. Presenting it is
-    /// what shows the edit sheet.
-    @State private var draft: CoffeeCard?
-    /// Holds an ingested card until the fullScreenCover finishes dismissing,
+    /// A scan that has been filed and read, but not yet named. Presenting it
+    /// is what shows the edit sheet.
+    @State private var draftScan: PendingScan?
+    /// Holds an ingested scan until the fullScreenCover finishes dismissing,
     /// so the sheet does not race the cover animation.
-    @State private var pendingScan: CoffeeCard?
+    @State private var pendingScan: PendingScan?
+    /// A scan that reads as a coffee already on the shelf.
+    @State private var duplicate: DuplicateOffer?
+    /// The new card's files, dropped when the duplicate sheet is dismissed
+    /// without "This is a different coffee".
+    @State private var duplicateCardID: UUID?
+    @State private var duplicateKept = false
+    /// A card the grid should open, after a scan recognised it.
+    @State private var cardToOpen: CoffeeCard?
     @State private var isIngesting = false
+    @State private var pendingVoiceNote: BrewVoiceNote.Pending?
+    @State private var recoveredTranscript: String?
+    @State private var showBrewDraft = false
 
     private var env: AppEnvironment {
         AppEnvironment(
             store: store,
             roasters: roasters,
+            places: places,
             setup: setup,
             recipes: recipes,
+            tastings: tastings,
             account: account,
             setupFlow: setupFlow,
             sync: sync,
             flags: flags,
             lotFlags: lotFlags,
             aiEvents: aiEvents,
-            feedback: feedback
+            feedback: feedback,
+            cardLooks: cardLooks,
+            stamps: stamps,
+            stampRefresh: stampRefresh
         )
     }
 
     var body: some View {
-        GridScreen(onScan: { isScanning = true }, isIngesting: isIngesting)
+        GridScreen(
+            onScan: { isScanning = true },
+            isIngesting: isIngesting,
+            openCard: $cardToOpen
+        )
             .appEnvironment(env)
             .fullScreenCover(isPresented: $isScanning, onDismiss: {
                 presentDraftIfReady()
@@ -56,66 +81,15 @@ struct RootView: View {
                 )
                 .appEnvironment(env)
             }
-            .onChange(of: pendingScan) { _, _ in
+            .onChange(of: pendingScan?.id) { _, _ in
                 guard !isScanning else { return }
                 presentDraftIfReady()
             }
-            .sheet(item: $draft) { card in
-                CardEditSheet(
-                    card: card,
-                    isNew: true,
-                    // Vision and the link fetch are detached because
-                    // `SWIFT_APPROACHABLE_CONCURRENCY` makes a nonisolated async
-                    // call run on the caller's actor: awaited straight from the
-                    // sheet's `task`, all of this would run on the main thread
-                    // and freeze the form until the read finished.
-                    extract: { [visionAllowed = flags.isOn(.cardVision)] in
-                        await Task.detached(priority: .userInitiated) {
-                            async let ocrLines = TextExtractor.read(cardID: card.id)
-                            async let codePayload = LabelCodeReader.read(cardID: card.id)
-
-                            let lines = await ocrLines
-                            var parsed = FieldParser.parse(lines)
-                            parsed.linesRead = lines.count
-
-                            let code = await codePayload
-                            if let code, code.hasPrefix("http") {
-                                if parsed.productURL == nil {
-                                    parsed.productURL = code
-                                }
-                            } else {
-                                parsed.labelCode = code
-                            }
-
-                            if let code, code.hasPrefix("http"),
-                               let linked = await LabelLink.fetch(code) {
-                                parsed.mergeLinked(linked)
-                            }
-
-                            // Weak local read — handwriting, CJK, free-form
-                            // layout — gets a second opinion from the vision
-                            // model, which only ever fills what is still empty.
-                            if parsed.wantsVisionAssist, visionAllowed, CardVision.isAvailable,
-                               let vision = await CardVision.read(cardID: card.id) {
-                                parsed.fillMissing(from: vision)
-                            }
-
-                            return parsed
-                        }.value
-                    },
-                    onSave: { saved in
-                        store.markLanding(saved)
-                        store.add(saved)
-                        setupFlow.noteFirstScanSaved()
-                        if saved.poster == .pending {
-                            generatePoster(for: saved)
-                        }
-                    },
-                    onDiscard: {
-                        ImageStore.shared.removeAll(for: card.id)
-                    }
-                )
-                .appEnvironment(env)
+            .sheet(item: $draftScan) { pending in
+                draftSheet(pending)
+            }
+            .sheet(item: $duplicate, onDismiss: discardAbandonedDuplicate) { offer in
+                duplicateSheet(offer)
             }
             .sheet(isPresented: $setupFlow.isPresented, onDismiss: { setupFlow.dismissed() }) {
                 SetupFlowSheet(kitIsEmpty: setup.kitIsEmpty)
@@ -126,18 +100,28 @@ struct RootView: View {
                 sync = SyncCoordinator(outbox: outbox)
                 sync.attach(store: store, account: account)
                 roasters.sink = sync
+                roasters.onReassign = { [store] old, new in
+                    store.relinkRoaster(from: old, to: new)
+                }
+                roasters.applySeed(ReferenceBase.roasterSeeds)
                 sync.register(roasters)
                 setup.sink = sync
                 sync.register(setup)
                 recipes.sink = sync
                 sync.register(recipes)
+                store.tastings = tastings
+                sync.attach(tastings: tastings)
                 aiEvents.attach(client: SupabaseConfig.current, userID: account.userID)
                 feedback.attach(client: SupabaseConfig.current, userID: account.userID)
                 await flags.refresh(client: SupabaseConfig.current)
                 await seedIfNeeded()
                 _ = ArchiveMigrator.migrateIfNeeded(cards: store, setup: setup)
+                TastingMigrator.importLegacy(cards: store.cards, into: tastings)
                 BrewDiagnosis.useFlavorOrigin = lotFlags.isOn(.flavorOrigin)
+                pendingVoiceNote = BrewVoiceNote.pending()
+                showBrewDraft = BrewDraft.load() != nil
                 sync.start()
+                CardRegeneration.shared.startIfNeeded(cards: store.cards, library: stamps)
                 #if DEBUG
                 if DebugHooks.opensReview { isScanning = true }
                 if DebugHooks.autoScans, let captured = DebugHooks.sampleCapture() {
@@ -158,56 +142,196 @@ struct RootView: View {
                     roasters.flush()
                     setup.flush()
                     recipes.flush()
+                    tastings.flush()
                     outbox.flush()
                     sync.pushSoon()
                 }
             }
+            .alert(
+                Copy.resumeBrew,
+                isPresented: $showBrewDraft
+            ) {
+                Button(Copy.resumeBrew) {
+                    BrewDraft.requestResume()
+                }
+                Button("Discard", role: .destructive) {
+                    BrewDraft.clear()
+                }
+            } message: {
+                Text(Copy.unfinishedBrew)
+            }
+            .alert(
+                "Unfinished recording",
+                isPresented: Binding(
+                    get: { pendingVoiceNote != nil && recoveredTranscript == nil },
+                    set: { if !$0 { pendingVoiceNote = nil } }
+                )
+            ) {
+                Button("Transcribe") {
+                    Task { await recoverPendingVoiceNote() }
+                }
+                Button("Discard", role: .destructive) {
+                    BrewVoiceNote.discardPending()
+                    pendingVoiceNote = nil
+                }
+            } message: {
+                Text(Copy.unfinishedVoiceNote)
+            }
+            .alert(
+                "Brew note",
+                isPresented: Binding(
+                    get: { recoveredTranscript != nil },
+                    set: { if !$0 { recoveredTranscript = nil } }
+                )
+            ) {
+                Button("OK") { recoveredTranscript = nil }
+            } message: {
+                Text(recoveredTranscript ?? "")
+            }
+    }
+
+    private func recoverPendingVoiceNote() async {
+        guard let pending = pendingVoiceNote else { return }
+        let note = BrewVoiceNote()
+        note.attachPending(pending)
+        do {
+            let text = try await note.transcribe(keepAudio: lotFlags.isOn(.keepVoiceNote))
+            let spoken = text.trimmingCharacters(in: .whitespacesAndNewlines)
+            if !spoken.isEmpty, var card = store.cards.first(where: {
+                $0.brews.contains { $0.id == pending.brewID }
+            }), let index = card.brews.firstIndex(where: { $0.id == pending.brewID }) {
+                var brew = card.brews[index]
+                let original = brew.notes
+                let parsed = SpokenBrewParser.parse(
+                    spoken,
+                    waters: setup.waterProfiles,
+                    filters: setup.filterStock
+                )
+                SpokenBrewParser.apply(parsed, to: &brew)
+                brew.notes = DictationTranscript.apply(spoken, to: original, mode: .append)
+                card.brews[index] = brew
+                store.update(card)
+            }
+            recoveredTranscript = spoken.isEmpty ? nil : spoken
+        } catch {
+            Log.app.notice("pending voice note: \(error)")
+            recoveredTranscript = nil
+        }
+        pendingVoiceNote = nil
+    }
+
+    private func draftSheet(_ pending: PendingScan) -> some View {
+        let visionAllowed = flags.isOn(.cardVision)
+        return CardEditSheet(
+            card: pending.card,
+            isNew: true,
+            // The local read already ran. What remains is the barcode, the
+            // label link and, when that read is weak, vision.
+            extract: {
+                await ScanEnrichment.fields(of: pending, visionAllowed: visionAllowed)
+            },
+            onSave: { saved in
+                store.markLanding(saved)
+                store.add(saved)
+                setupFlow.noteFirstScanSaved()
+                let library = stamps
+                Task {
+                    await InkStampPipeline.backfill(
+                        cardID: saved.id,
+                        library: library,
+                        roasterName: saved.roaster
+                    )
+                }
+            },
+            onDiscard: {
+                ImageStore.shared.removeAll(for: pending.card.id)
+            }
+        )
+        .appEnvironment(env)
+    }
+
+    private func duplicateSheet(_ offer: DuplicateOffer) -> some View {
+        DuplicateSheet(
+            offer: offer,
+            onOpen: { resolveDuplicate(offer) },
+            onDifferent: {
+                duplicateKept = true
+                draftScan = offer.pending
+                duplicate = nil
+            },
+            onAddPhoto: {
+                let pending = offer.pending
+                let existingID = offer.match.card.id
+                duplicateKept = false
+                duplicate = nil
+                Task { await attachScan(pending, to: existingID) }
+            }
+        )
+        .appEnvironment(env)
     }
 
     private func presentDraftIfReady() {
-        guard let card = pendingScan else { return }
-        draft = card
+        guard !isScanning, let pending = pendingScan else { return }
         pendingScan = nil
         isIngesting = false
+        let parsed = pending.parsed
+        if let hit = CardMatch.find(
+            roaster: parsed.roaster ?? "",
+            name: parsed.name ?? "",
+            origin: parsed,
+            in: store.cards
+        ) {
+            duplicateKept = false
+            duplicateCardID = pending.card.id
+            duplicate = DuplicateOffer(pending: pending, match: hit)
+        } else {
+            draftScan = pending
+        }
+    }
+
+    /// Opens the card the scan matched. The new card's files go away with the
+    /// sheet: it was never added to the archive.
+    private func resolveDuplicate(_ offer: DuplicateOffer) {
+        duplicateKept = false
+        cardToOpen = offer.match.card
+        duplicate = nil
+    }
+
+    private func discardAbandonedDuplicate() {
+        if !duplicateKept, let id = duplicateCardID {
+            ImageStore.shared.removeAll(for: id)
+        }
+        duplicateKept = false
+        duplicateCardID = nil
+    }
+
+    /// Keeps the scan as another page of the card it matched.
+    private func attachScan(_ pending: PendingScan, to cardID: UUID) async {
+        do {
+            let attachment = try await Task.detached(priority: .userInitiated) {
+                try await ImagePipeline.ingestAttachment(pending.scan, cardID: cardID)
+            }.value
+            guard var card = store.card(id: cardID) else { return }
+            card.attachments.insert(attachment, at: 0)
+            store.update(card)
+        } catch {
+            Log.app.error("could not keep the scan as a page: \(error)")
+        }
     }
 
     private func ingest(_ scan: ScanResult) async {
         do {
-            let card = try await Task.detached(priority: .userInitiated) {
-                try await ImagePipeline.ingest(scan)
+            let pending = try await Task.detached(priority: .userInitiated) {
+                let card = try await ImagePipeline.ingest(scan)
+                let lines = await TextExtractor.read(cardID: card.id)
+                var parsed = FieldParser.parse(lines)
+                parsed.linesRead = lines.count
+                return PendingScan(scan: scan, card: card, lines: lines, parsed: parsed)
             }.value
-            pendingScan = card
+            pendingScan = pending
         } catch {
             isIngesting = false
             Log.app.error("could not file the scan: \(error)")
-        }
-    }
-
-    private func generatePoster(for card: CoffeeCard) {
-        guard flags.isOn(.poster), CardPoster.isAvailable else {
-            print("[card-poster] generatePoster skipped: isAvailable == false")
-            return
-        }
-        let cardID = card.id
-        var pending = card
-        pending.poster = .pending
-        store.update(pending)
-        print("[card-poster] generatePoster: set pending for \(cardID)")
-        Task {
-            let success = await Task.detached(priority: .utility) {
-                await CardPoster.generate(cardID: cardID)
-            }.value
-            print("[card-poster] generatePoster: generate returned \(success)")
-            guard var latest = store.card(id: cardID) else {
-                print("[card-poster] generatePoster: card not found in store!")
-                return
-            }
-            latest.poster = success ? .ready : .failed
-            store.update(latest)
-            print("[card-poster] generatePoster: store updated → \(latest.poster)")
-            if success {
-                ThumbnailCache.shared.warm(latest, buckets: ThumbnailCache.buckets)
-            }
         }
     }
 
@@ -238,5 +362,46 @@ struct RootView: View {
             "bulk seeded \(generated.count) cards in \(started.duration(to: .now).description)"
         )
         #endif
+    }
+}
+
+/// Barcode, label link and vision, starting from the read `ingest` already did.
+/// Detached so the edit sheet does not freeze while it runs.
+private enum ScanEnrichment {
+    static func fields(of pending: PendingScan, visionAllowed: Bool) async -> ParsedFields {
+        await Task.detached(priority: .userInitiated) {
+            async let foundCodes = LabelCodeReader.readAll(cardID: pending.card.id)
+
+            var parsed = pending.parsed
+            parsed.linesRead = pending.lines.count
+
+            let found = await foundCodes
+            OCRSidecar.write(
+                cardID: pending.card.id,
+                lines: pending.lines,
+                barcodes: found.map(\.bounds)
+            )
+            let payloads = found.map(\.payload)
+            let code = payloads.first { $0.hasPrefix("https://") || $0.hasPrefix("http://") } ?? payloads.first
+            if let code, code.hasPrefix("http") {
+                if parsed.productURL == nil {
+                    parsed.productURL = code
+                }
+            } else {
+                parsed.labelCode = code
+            }
+
+            if let code, code.hasPrefix("http"),
+               let linked = await LabelLink.fetch(code) {
+                parsed.mergeLinked(linked)
+            }
+
+            if parsed.wantsVisionAssist, visionAllowed, CardVision.isAvailable,
+               let vision = await CardVision.read(cardID: pending.card.id) {
+                parsed.fillMissing(from: vision)
+            }
+
+            return parsed
+        }.value
     }
 }

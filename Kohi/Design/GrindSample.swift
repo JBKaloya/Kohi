@@ -3,19 +3,26 @@ import Foundation
 import SwiftUI
 
 /// A little sachet of grounds. Fine is powder; coarse is chips you can count.
-/// Same 0…1 as the rail: extra-fine on the left, extra-coarse on the right.
-struct GrindSample: View {
+/// Driven by a µm band (annexe G1), with a 1 mm hairline so the pile has a scale.
+struct GrindPreview: View {
+    var microns: ClosedRange<Double>
     var position: Double
     var isSet = true
+    /// Measured particle diameters in µm. Unused in 1.0 — section 9 phase B.
+    var measured: [Double]? = nil
 
     var body: some View {
         let primary = Palette.primary
         let ink = Palette.ink
         let muted = Palette.inkMuted
         let dim = isSet ? 1.0 : 0.4
+        let band = microns
+        let t = position
+        let sample = measured
 
         Canvas { context, size in
-            for grain in GrindSampleField.particles(position: position) {
+            let grains = GrindSampleField.particles(position: t, microns: band, measured: sample)
+            for grain in grains {
                 var copy = context
                 let frame = grain.frame(in: size)
                 copy.translateBy(x: frame.midX, y: frame.midY)
@@ -24,6 +31,19 @@ struct GrindSample: View {
                 copy.opacity = grain.opacity * dim
                 copy.fill(Path(ellipseIn: frame), with: .color(Self.ink(grain.shade, primary, ink, muted)))
             }
+
+            let millimetre = 6.4
+            var tick = context
+            tick.opacity = 0.55
+            tick.stroke(
+                Path { path in
+                    let y = size.height - 4
+                    path.move(to: CGPoint(x: 4, y: y))
+                    path.addLine(to: CGPoint(x: 4 + millimetre, y: y))
+                },
+                with: .color(ink),
+                lineWidth: 1
+            )
         }
         .frame(width: 44, height: 44)
         .background(Palette.paperShade)
@@ -41,6 +61,9 @@ struct GrindSample: View {
         return muted
     }
 }
+
+/// Kept so existing call sites and the rail preview still compile.
+typealias GrindSample = GrindPreview
 
 /// Deterministic grounds so the pile does not reshuffle while you drag.
 ///
@@ -71,10 +94,20 @@ nonisolated enum GrindSampleField: Sendable {
     }
 
     static func particles(position: Double) -> [Grain] {
+        particles(position: position, microns: 400...700, measured: nil)
+    }
+
+    static func particles(
+        position: Double,
+        microns: ClosedRange<Double>,
+        measured: [Double]? = nil
+    ) -> [Grain] {
         let t = clamp(position)
-        let count = count(at: t)
-        let minSize = lerp(0.7, 3.2, t)
-        let maxSize = lerp(1.5, 8.0, t)
+        let mid = microns.lowerBound + (microns.upperBound - microns.lowerBound) * t
+        let sizeT = clamp((mid - 180) / (1_300 - 180))
+        let count = measured?.count ?? count(at: sizeT)
+        let minSize = lerp(0.7, 3.2, sizeT)
+        let maxSize = lerp(1.5, 8.0, sizeT)
         var state: UInt64 = 0x6B6F6869
         func next() -> Double {
             state &+= 0x9E3779B97F4A7C15
@@ -88,13 +121,19 @@ nonisolated enum GrindSampleField: Sendable {
         var grains: [Grain] = []
         grains.reserveCapacity(count)
 
-        for _ in 0..<count {
+        for index in 0..<count {
             let u = next()
             let v = next()
-            let x = 0.5 + (u - 0.5) * lerp(0.92, 0.78, t)
-            let y = 0.5 + (v - 0.5) * lerp(0.92, 0.78, t)
-            let size = minSize + next() * (maxSize - minSize)
-            let stretch = lerp(1.0, 1.55, t)
+            let x = 0.5 + (u - 0.5) * lerp(0.92, 0.78, sizeT)
+            let y = 0.5 + (v - 0.5) * lerp(0.92, 0.78, sizeT)
+            let measuredSize = measured.flatMap { values -> Double? in
+                guard index < values.count, values[index] > 0 else { return nil }
+                return minSize + min(max((values[index] - microns.lowerBound)
+                    / max(microns.upperBound - microns.lowerBound, 1), 0), 1)
+                    * (maxSize - minSize)
+            }
+            let size = measuredSize ?? (minSize + next() * (maxSize - minSize))
+            let stretch = lerp(1.0, 1.55, sizeT)
             let width = size * (0.75 + next() * stretch)
             let height = size * (0.7 + next() * 0.6)
             let shade = next()
@@ -125,7 +164,7 @@ nonisolated enum GrindSampleField: Sendable {
 #Preview {
     HStack(spacing: 16) {
         ForEach([0.0, 0.35, 0.7, 1.0], id: \.self) { position in
-            GrindSample(position: position)
+            GrindPreview(microns: 400...700, position: position)
         }
     }
     .padding(26)

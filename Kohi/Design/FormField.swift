@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 
 /// Whether an empty field should still catch the eye.
 ///
@@ -160,7 +161,8 @@ struct FormField<Value: View>: View {
     }
 }
 
-/// Text entry, the common case.
+/// Text entry, the common case. Completions sit under the row while it is
+/// focused, the same chips a known roaster already offers.
 struct TextRow: View {
     let label: String
     @Binding var text: String
@@ -171,37 +173,52 @@ struct TextRow: View {
     var error: String?
     var isPending = false
     var capitalization: TextInputAutocapitalization = .words
+    var completions: [String] = []
+    var onComplete: ((String) -> Void)? = nil
 
     @FocusState private var isFocused: Bool
 
     var body: some View {
-        FormField(
-            label: label,
-            labelWidth: labelWidth,
-            presence: presence,
-            isEmpty: text.trimmingCharacters(in: .whitespaces).isEmpty,
-            isFocused: isFocused,
-            hint: hint,
-            error: error
-        ) {
-            ZStack(alignment: .leading) {
-                TextField(
-                    "",
-                    text: $text,
-                    prompt: Text(placeholder).foregroundStyle(FieldChrome.placeholder().color)
-                )
-                .formValue()
-                .textInputAutocapitalization(capitalization)
-                .autocorrectionDisabled()
-                .focused($isFocused)
-                .opacity(isPending && text.isEmpty ? 0 : 1)
+        VStack(alignment: .leading, spacing: 8) {
+            FormField(
+                label: label,
+                labelWidth: labelWidth,
+                presence: presence,
+                isEmpty: text.trimmingCharacters(in: .whitespaces).isEmpty,
+                isFocused: isFocused,
+                hint: completions.isEmpty ? hint : nil,
+                error: error
+            ) {
+                ZStack(alignment: .leading) {
+                    TextField(
+                        "",
+                        text: $text,
+                        prompt: Text(placeholder).foregroundStyle(FieldChrome.placeholder().color)
+                    )
+                    .formValue()
+                    .textInputAutocapitalization(capitalization)
+                    .autocorrectionDisabled()
+                    .focused($isFocused)
+                    .opacity(isPending && text.isEmpty ? 0 : 1)
 
-                if isPending, text.isEmpty {
-                    ShimmerBar()
-                        .transition(.opacity)
+                    if isPending, text.isEmpty {
+                        ShimmerBar()
+                            .transition(.opacity)
+                    }
                 }
             }
+
+            if isFocused, !completions.isEmpty {
+                FlowLayout {
+                    ForEach(completions, id: \.self) { item in
+                        TagChip(text: item) { onComplete?(item) }
+                    }
+                }
+                .transition(.opacity)
+            }
         }
+        .animation(Motion.snappy, value: isFocused)
+        .animation(Motion.snappy, value: completions)
     }
 }
 
@@ -222,6 +239,9 @@ struct NumberRow: View {
     var compactWidth: CGFloat?
 
     @FocusState private var isFocused: Bool
+    /// What is on screen while typing. The bound number updates on blur,
+    /// so a half-typed "2" never rewrites the ratio or the step masses.
+    @State private var draft = ""
 
     init(
         _ label: String,
@@ -297,7 +317,7 @@ struct NumberRow: View {
                     FieldChrome.label(presence: presence, isEmpty: isEmpty, isFocused: isFocused).color
                 )
                 .lineLimit(1)
-                .fixedSize(horizontal: true, vertical: false)
+                .minimumScaleFactor(0.7)
             HStack(spacing: 4) {
                 field
                     .frame(width: width - 20)
@@ -336,12 +356,37 @@ struct NumberRow: View {
     private var field: some View {
         TextField(
             "",
-            text: $text,
+            text: $draft,
             prompt: Text(placeholder).foregroundStyle(FieldChrome.placeholder().color)
         )
         .formValue()
         .keyboardType(keyboard)
         .focused($isFocused)
+        .onAppear { draft = text }
+        .onChange(of: text) { _, new in
+            if !isFocused { draft = new }
+        }
+        .onChange(of: isFocused) { _, focused in
+            if !focused { commitDraft() }
+        }
+        .onSubmit { commitDraft() }
+    }
+
+    /// Writes the number once, then shows the formatted value. An unparseable
+    /// fragment (a lone decimal mark is fine) falls back to what was committed.
+    private func commitDraft() {
+        let trimmed = draft.trimmingCharacters(in: .whitespaces)
+        if trimmed.isEmpty {
+            if !text.isEmpty { text = "" }
+            draft = ""
+            return
+        }
+        guard NumberText.parse(trimmed) != nil else {
+            draft = text
+            return
+        }
+        text = trimmed
+        draft = text
     }
 
     @ViewBuilder
@@ -399,8 +444,18 @@ extension View {
         preference(key: FieldFocusPreference.self, value: focused)
     }
 
-    /// Extra bottom inset while any catalogue field in this subtree is focused,
-    /// so the last row can scroll above the keyboard.
+    /// Number pads have no Return. Step screens call this from Done, Back, and a tap on the paper.
+    func dismissKeyboard() {
+        UIApplication.shared.sendAction(
+            #selector(UIResponder.resignFirstResponder),
+            to: nil,
+            from: nil,
+            for: nil
+        )
+    }
+
+    /// Extra inset while any catalogue field in this subtree is focused.
+    /// Kept as a hook; iOS already lifts the scroll view for the keyboard.
     func fieldKeyboardClearance() -> some View {
         modifier(FieldKeyboardClearance())
     }
@@ -431,6 +486,21 @@ private struct FieldKeyboardClearance: ViewModifier {
             .onPreferenceChange(FieldFocusPreference.self) { focused = $0 }
             .padding(.bottom, focused ? Motion.Field.keyboardClearance : 0)
             .animation(Motion.snappy, value: focused)
+    }
+}
+
+/// Applies a bottom safe-area bar only while it is on screen. An empty
+/// `safeAreaInset` still eats space above the keyboard.
+struct VisibleBottomInset<Bar: View>: ViewModifier {
+    var isVisible: Bool
+    @ViewBuilder var bar: () -> Bar
+
+    func body(content: Content) -> some View {
+        if isVisible {
+            content.safeAreaInset(edge: .bottom, spacing: 0, content: bar)
+        } else {
+            content
+        }
     }
 }
 
@@ -469,9 +539,10 @@ nonisolated enum NumberText {
     /// Accepts a comma as the decimal separator: a French keypad gives you one,
     /// and refusing it silently drops the digits.
     static func parse(_ text: String) -> Double? {
-        let cleaned = text
+        var cleaned = text
             .replacingOccurrences(of: ",", with: ".")
             .trimmingCharacters(in: .whitespaces)
+        if cleaned.hasSuffix(".") { cleaned.removeLast() }
         guard !cleaned.isEmpty else { return nil }
         return Double(cleaned)
     }

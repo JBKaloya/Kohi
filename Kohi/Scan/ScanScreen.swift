@@ -37,7 +37,11 @@ struct ScanScreen: View {
         case .visionKit:
             VisionKitCaptureView(onCapture: { pending = $0 }, onCancel: onCancel)
         case .camera:
-            CameraCaptureView(onCapture: { pending = $0 }, onCancel: onCancel)
+            CameraCaptureView(
+                onCapture: { pending = $0 },
+                onCancel: onCancel,
+                isActive: pending == nil
+            )
         }
         #endif
     }

@@ -1,0 +1,91 @@
+{
+  "schema": "kohi.card-art-vectors/1",
+  "tolerance": "colour ±2/255 per channel (exp/pow differ slightly across languages)",
+  "vectors": [
+    {
+      "id": "0b6e2c1a-7d4f-4e8a-9a51-3c2f8e6b1d01",
+      "name": "Nano Challa",
+      "seedHex": "6791af1f",
+      "firstRandoms": [
+        0.854337,
+        0.486342,
+        0.716995
+      ],
+      "process": "washed",
+      "altitudeShare": 0.883,
+      "side": "left",
+      "stickerRotationDeg": 8.8,
+      "titleInk": "#661c45",
+      "fieldAtCenter": "#ffb970",
+      "fieldAtTop": "#ffdfd9"
+    },
+    {
+      "id": "5c1d9f02-3b8e-41f7-8d2c-6a4e0f9b7c12",
+      "name": "Kenya Tekangu",
+      "seedHex": "9585693c",
+      "firstRandoms": [
+        0.104928,
+        0.076614,
+        0.893297
+      ],
+      "process": "washed",
+      "altitudeShare": 0.692,
+      "side": "right",
+      "stickerRotationDeg": -1.36,
+      "titleInk": "#661c45",
+      "fieldAtCenter": "#eb7a7f",
+      "fieldAtTop": "#ffe4de"
+    },
+    {
+      "id": "9a7e3c44-1f2b-4d6e-b0a8-2e5c7d9f1a23",
+      "name": "Chelbesa",
+      "seedHex": "9eefa408",
+      "firstRandoms": [
+        0.199599,
+        0.003735,
+        0.444148
+      ],
+      "process": "natural",
+      "altitudeShare": 0.885,
+      "side": "right",
+      "stickerRotationDeg": -0.97,
+      "titleInk": "#30307f",
+      "fieldAtCenter": "#d8c3c2",
+      "fieldAtTop": "#e6e9f7"
+    },
+    {
+      "id": "e2f4a6b8-c0d2-4e6f-8a0b-1c3d5e7f9a34",
+      "name": "El Paraíso Lychee",
+      "seedHex": "e5dd7703",
+      "firstRandoms": [
+        0.357928,
+        0.304782,
+        0.879645
+      ],
+      "process": "anaerobic",
+      "altitudeShare": 0.792,
+      "side": "right",
+      "stickerRotationDeg": -6.66,
+      "titleInk": "#632339",
+      "fieldAtCenter": "#ff9379",
+      "fieldAtTop": "#fff5d4"
+    },
+    {
+      "id": "3d5f7a9c-b1e3-4f5a-9c7e-0b2d4f6a8c45",
+      "name": "Huabal",
+      "seedHex": "e157eb17",
+      "firstRandoms": [
+        0.812967,
+        0.957468,
+        0.161321
+      ],
+      "process": "washed",
+      "altitudeShare": 0.712,
+      "side": "left",
+      "stickerRotationDeg": -3.34,
+      "titleInk": "#6d2100",
+      "fieldAtCenter": "#ed9642",
+      "fieldAtTop": "#efecc8"
+    }
+  ]
+}

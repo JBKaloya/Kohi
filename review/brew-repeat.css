@@ -1,0 +1,109 @@
+.brew-frame {
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  background: var(--paper);
+  min-height: 640px;
+  display: flex;
+  flex-direction: column;
+}
+
+.brew-frame.short { min-height: 0; }
+
+.brew-bar, .brew-title, .brew-body, .brew-foot {
+  padding-left: 22px;
+  padding-right: 22px;
+}
+
+.brew-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 16px;
+}
+
+.ticks { display: flex; gap: 4px; align-items: center; }
+.tick { width: 22px; height: 1px; background: var(--line); }
+.tick.on { background: var(--ink); }
+
+.brew-title {
+  padding-top: 22px;
+  font-size: 22px;
+  line-height: 28px;
+}
+
+.brew-body { padding-top: 18px; padding-bottom: 8px; flex: 1; }
+.brew-foot { padding-bottom: 22px; }
+
+.choice {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  width: 100%;
+  border: none;
+  background: transparent;
+  padding: 0;
+  text-align: left;
+}
+
+.choice-mark {
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.capsule {
+  height: 44px;
+  border-radius: 999px;
+  background: var(--ink);
+  color: var(--paper);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+button.capsule {
+  width: 100%;
+  border: none;
+  cursor: pointer;
+}
+
+.lane {
+  padding-bottom: 4px;
+  border: none;
+  border-bottom: 1px solid transparent;
+  background: transparent;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.lane.on { color: var(--ink); border-bottom-color: var(--ink); }
+
+.brew-line {
+  width: 100%;
+  border: none;
+  border-bottom: 1px solid var(--line);
+  background: transparent;
+  padding: 0 0 10px;
+  text-align: left;
+}
+
+.insight {
+  padding: 10px 0;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+
+.path-step { color: var(--muted); }
+.path-step.on { color: var(--ink); font-weight: 600; }

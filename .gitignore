@@ -20,6 +20,7 @@ Package.resolved
 *.heic
 *.png
 !Kohi/Resources/Assets.xcassets/**/*.png
+!Kohi/Resources/OriginStickers.xcassets/**/*.png
 !Kohi/Resources/SampleCards/*.png
 !KohiTests/__Snapshots__/**/*.png
 
@@ -27,14 +28,17 @@ Package.resolved
 Kohi/Resources/Supabase.plist
 supabase/.temp/
 
-# Secrets. Provider API keys live here and never in the repo or the app binary.
-.env
-.env.*
-!.env.example
+# Hosted canvas review. config.js holds the same publishable key.
+review/config.js
 
 # Poster bench scratch: source photos in, generated posters out.
 Tools/PosterBench/input/
 Tools/PosterBench/out/
+
+# Secrets. Provider API keys live here and never in the repo or the app binary.
+.env
+.env.*
+!.env.example
 
 # Cursor / editor
 .cursor/

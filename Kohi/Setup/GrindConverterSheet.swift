@@ -16,6 +16,7 @@ struct GrindConverterSheet: View {
     @State private var method: BrewMethod? = .v60
     @State private var setting: Double?
     @State private var isCalibrating = false
+    @State private var showCatalog = false
 
     var body: some View {
         NavigationStack {
@@ -23,12 +24,15 @@ struct GrindConverterSheet: View {
                 VStack(alignment: .leading, spacing: 28) {
                     if setup.grinders.count < 2 {
                         needsTwoGrinders
+                        Button("Browse catalogue") { showCatalog = true }
+                            .catalogueLabel()
                     } else {
                         pickers
                         result
                         calibrationSection
                     }
 
+                    publishedTable
                     explanation
                 }
                 .padding(.horizontal, 26)
@@ -47,6 +51,20 @@ struct GrindConverterSheet: View {
         }
         .tint(Palette.ink)
         .onAppear(perform: preselect)
+        .sheet(isPresented: $showCatalog) {
+            CatalogPicker(
+                title: "Grinder",
+                entries: ReferenceBase.grinders.map { $0.catalogEntry(owned: false) },
+                selectedID: nil,
+                onPick: { entry in
+                    if let grinder = ReferenceBase.grinder(id: entry.id) {
+                        setup.add(Equipment(reference: grinder))
+                    }
+                    showCatalog = false
+                },
+                onAddManually: { showCatalog = false }
+            )
+        }
         .sheet(isPresented: $isCalibrating) {
             if let target {
                 CalibrationSheet(grinder: target, method: method ?? .v60)
@@ -212,6 +230,46 @@ struct GrindConverterSheet: View {
                     .font(Typography.tag)
                     .foregroundStyle(Palette.ink)
             }
+        }
+    }
+
+    private var publishedTable: some View {
+        let brewMethod = method ?? .v60
+        let rows: [(id: String, name: String, low: Double, high: Double, caption: String)] =
+            setup.grinders.compactMap { grinder in
+                guard let row = PublishedGrindRanges.match(grinderRef: grinder.grinderRef, method: brewMethod),
+                      let caption = PublishedGrindRanges.caption(grinderRef: grinder.grinderRef, method: brewMethod)
+                else { return nil }
+                return (grinder.id.uuidString, grinder.displayName, row.min, row.max, caption)
+            }
+        return VStack(alignment: .leading, spacing: 10) {
+            Text("Published ranges")
+                .catalogueLabel()
+            if rows.isEmpty {
+                Text("No published range on file for \(brewMethod.label). Log your range and it takes over.")
+                    .font(Typography.tag)
+                    .foregroundStyle(Palette.inkMuted)
+            } else {
+                ForEach(rows, id: \.id) { row in
+                    HStack(alignment: .firstTextBaseline, spacing: 12) {
+                        Text(row.name)
+                            .font(Typography.value)
+                            .foregroundStyle(Palette.ink)
+                            .lineLimit(1)
+                        Spacer(minLength: 8)
+                        Text("\(GrindRange.number(row.low))–\(GrindRange.number(row.high))")
+                            .font(Typography.tag)
+                            .foregroundStyle(Palette.inkMuted)
+                    }
+                    Text(row.caption)
+                        .font(Typography.tag)
+                        .foregroundStyle(Palette.inkMuted)
+                }
+            }
+            Text(Copy.publishedRangesWarning)
+                .font(Typography.tag)
+                .foregroundStyle(Palette.inkMuted)
+                .fixedSize(horizontal: false, vertical: true)
         }
     }
 

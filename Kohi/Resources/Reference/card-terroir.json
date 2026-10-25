@@ -1,0 +1,309 @@
+{
+  "schema": "kohi.card-terroir/1",
+  "origins": {
+    "ET": {
+      "ground": "#2C3B22",
+      "tone1": "#C99A2E",
+      "tone2": "#9C3A2A"
+    },
+    "KE": {
+      "ground": "#5A1F17",
+      "tone1": "#D7742F",
+      "tone2": "#2F5B3A"
+    },
+    "RW": {
+      "ground": "#1E4434",
+      "tone1": "#6FA35A",
+      "tone2": "#E3BF4A"
+    },
+    "BI": {
+      "ground": "#233F2C",
+      "tone1": "#C4483A",
+      "tone2": "#E6D2A0"
+    },
+    "TZ": {
+      "ground": "#2F2620",
+      "tone1": "#4E8FB0",
+      "tone2": "#E6D6AE"
+    },
+    "UG": {
+      "ground": "#2B3820",
+      "tone1": "#C9982E",
+      "tone2": "#A23A2A"
+    },
+    "CO": {
+      "ground": "#173B2C",
+      "tone1": "#F0BE2F",
+      "tone2": "#3C6E9E"
+    },
+    "BR": {
+      "ground": "#37451B",
+      "tone1": "#E0B23A",
+      "tone2": "#8A3A1E"
+    },
+    "PE": {
+      "ground": "#3A2433",
+      "tone1": "#C2452E",
+      "tone2": "#E3A13A"
+    },
+    "BO": {
+      "ground": "#2C3350",
+      "tone1": "#D8D2C6",
+      "tone2": "#C25A3A"
+    },
+    "EC": {
+      "ground": "#1D3849",
+      "tone1": "#E5C13A",
+      "tone2": "#3A7A5A"
+    },
+    "GT": {
+      "ground": "#262B37",
+      "tone1": "#3A8EA8",
+      "tone2": "#E0563A"
+    },
+    "HN": {
+      "ground": "#1C3747",
+      "tone1": "#E0A32E",
+      "tone2": "#2E7A6A"
+    },
+    "SV": {
+      "ground": "#27303E",
+      "tone1": "#3A6EA5",
+      "tone2": "#E3B23A"
+    },
+    "NI": {
+      "ground": "#2B3828",
+      "tone1": "#3A7EA0",
+      "tone2": "#E8C24A"
+    },
+    "CR": {
+      "ground": "#1B3828",
+      "tone1": "#E2643A",
+      "tone2": "#6FB8C9"
+    },
+    "PA": {
+      "ground": "#20323C",
+      "tone1": "#2E8B7A",
+      "tone2": "#F0A93A"
+    },
+    "MX": {
+      "ground": "#3A261C",
+      "tone1": "#D2483A",
+      "tone2": "#2E8A6A"
+    },
+    "JM": {
+      "ground": "#1C3756",
+      "tone1": "#3A8A4A",
+      "tone2": "#F2C12E"
+    },
+    "ID": {
+      "ground": "#1B2B23",
+      "tone1": "#2E7A6A",
+      "tone2": "#C9822E"
+    },
+    "PG": {
+      "ground": "#2A1C18",
+      "tone1": "#C23A2E",
+      "tone2": "#E8B23A"
+    },
+    "IN": {
+      "ground": "#2B3824",
+      "tone1": "#E07A2A",
+      "tone2": "#3A6A8A"
+    },
+    "VN": {
+      "ground": "#26382A",
+      "tone1": "#C2342A",
+      "tone2": "#E8C23A"
+    },
+    "TH": {
+      "ground": "#2C2838",
+      "tone1": "#C99A2E",
+      "tone2": "#3A7A5A"
+    },
+    "CN": {
+      "ground": "#26382E",
+      "tone1": "#B83A2E",
+      "tone2": "#8AB06A"
+    },
+    "YE": {
+      "ground": "#4A311F",
+      "tone1": "#C99A5A",
+      "tone2": "#3A6A7A"
+    },
+    "MM": {
+      "ground": "#3A2C1C",
+      "tone1": "#D2A23A",
+      "tone2": "#5A3A6A"
+    },
+    "LA": {
+      "ground": "#23362B",
+      "tone1": "#C2502E",
+      "tone2": "#E3C46A"
+    },
+    "TW": {
+      "ground": "#22323A",
+      "tone1": "#3A8A7A",
+      "tone2": "#E0603A"
+    },
+    "PH": {
+      "ground": "#1C3848",
+      "tone1": "#E3B23A",
+      "tone2": "#C23A3A"
+    },
+    "MW": {
+      "ground": "#26364A",
+      "tone1": "#3A7A4A",
+      "tone2": "#C9483A"
+    },
+    "ZM": {
+      "ground": "#2C381C",
+      "tone1": "#D2702E",
+      "tone2": "#3A8A4A"
+    },
+    "NP": {
+      "ground": "#282E42",
+      "tone1": "#E3E0D8",
+      "tone2": "#B83A3A"
+    },
+    "ZW": {
+      "ground": "#3A2C1C",
+      "tone1": "#E0B23A",
+      "tone2": "#3A7A3A"
+    },
+    "CM": {
+      "ground": "#2C381C",
+      "tone1": "#C9452E",
+      "tone2": "#E8C23A"
+    },
+    "MG": {
+      "ground": "#47271B",
+      "tone1": "#C2502A",
+      "tone2": "#3A7A5A"
+    },
+    "HT": {
+      "ground": "#1C2C48",
+      "tone1": "#C23A3A",
+      "tone2": "#3A8A6A"
+    },
+    "DO": {
+      "ground": "#1C3858",
+      "tone1": "#C23A3A",
+      "tone2": "#3A8A5A"
+    },
+    "CU": {
+      "ground": "#1C384E",
+      "tone1": "#3A8A6A",
+      "tone2": "#E0B23A"
+    },
+    "VE": {
+      "ground": "#2C3828",
+      "tone1": "#E0B23A",
+      "tone2": "#3A5AA0"
+    },
+    "LK": {
+      "ground": "#243828",
+      "tone1": "#E0A02E",
+      "tone2": "#A0302E"
+    },
+    "US": {
+      "ground": "#241E1C",
+      "tone1": "#3A8A6A",
+      "tone2": "#E06A3A"
+    }
+  },
+  "unknownOrigin": {
+    "ground": "#3A2E26",
+    "tone1": "#B98552",
+    "tone2": "#6B4E36"
+  },
+  "process": {
+    "washed": {
+      "warp": 0.05,
+      "grainOverlay": 0.3,
+      "chroma": 1,
+      "sharpness": 1.25,
+      "swirl": 0,
+      "warmShift": 0,
+      "darken": 0,
+      "extraBlob": null
+    },
+    "natural": {
+      "warp": 0.11,
+      "grainOverlay": 0.4,
+      "chroma": 1.12,
+      "sharpness": 1.5,
+      "swirl": 0,
+      "warmShift": 0.012,
+      "darken": 0,
+      "extraBlob": null
+    },
+    "honey": {
+      "warp": 0.08,
+      "grainOverlay": 0.36,
+      "chroma": 1.08,
+      "sharpness": 1.4,
+      "swirl": 0,
+      "warmShift": 0,
+      "darken": 0,
+      "extraBlob": {
+        "color": "#EDB13B",
+        "weight": 0.8,
+        "sigma": 0.2
+      }
+    },
+    "anaerobic": {
+      "warp": 0.18,
+      "grainOverlay": 0.46,
+      "chroma": 1.24,
+      "sharpness": 1.8,
+      "swirl": 1.1,
+      "warmShift": 0,
+      "darken": 0,
+      "extraBlob": {
+        "color": "#7A1E46",
+        "weight": 0.75,
+        "sigma": 0.16
+      }
+    },
+    "wetHulled": {
+      "warp": 0.07,
+      "grainOverlay": 0.58,
+      "chroma": 0.95,
+      "sharpness": 1.3,
+      "swirl": 0,
+      "warmShift": 0,
+      "darken": 0.05,
+      "extraBlob": null
+    },
+    "unknown": {
+      "warp": 0.08,
+      "grainOverlay": 0.36,
+      "chroma": 1.05,
+      "sharpness": 1.4,
+      "swirl": 0,
+      "warmShift": 0,
+      "darken": 0,
+      "extraBlob": null
+    }
+  },
+  "roastLightness": {
+    "superLight": 0.07,
+    "light": 0.04,
+    "mediumLight": 0.02,
+    "medium": 0,
+    "mediumDark": -0.05,
+    "dark": -0.1
+  },
+  "roastUnknown": 0.02,
+  "sky": {
+    "lowAltitude": "#F4DDB7",
+    "highAltitude": "#EAF1EF",
+    "tintFromLightestNote": 0.18,
+    "minL": 0.9,
+    "altitudeRange": [
+      900,
+      2200
+    ]
+  }
+}

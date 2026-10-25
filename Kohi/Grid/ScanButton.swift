@@ -15,16 +15,23 @@ private struct GlassCircleModifier: ViewModifier {
 /// The circular glass button that sits at the bottom of the catalogue.
 /// Coffees uses it to scan; Recipes uses it to start a brew.
 struct CircleButton: View {
-    let systemName: String
+    var systemName: String? = nil
+    var showsCoffeeMark = false
     let accessibilityLabel: String
     let action: () -> Void
 
     var body: some View {
         Button(action: action) {
-            Image(systemName: systemName)
-                .font(.system(size: 22, weight: .regular))
-                .foregroundStyle(Palette.ink)
-                .frame(width: 62, height: 62)
+            Group {
+                if showsCoffeeMark {
+                    CoffeeCupIcon(size: 26, color: Palette.primary)
+                } else {
+                    Image(systemName: systemName ?? "circle")
+                        .font(.system(size: 22, weight: .regular))
+                        .foregroundStyle(Palette.ink)
+                }
+            }
+            .frame(width: 62, height: 62)
         }
         .buttonStyle(PressStyle(scale: Motion.Chrome.buttonPressScale))
         .modifier(GlassCircleModifier())

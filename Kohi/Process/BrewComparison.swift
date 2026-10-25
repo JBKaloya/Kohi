@@ -24,9 +24,10 @@ nonisolated struct BrewComparison: Equatable, Sendable {
         _ a: Brew,
         against b: Brew,
         waters: [WaterProfile] = [],
-        equipment: [Equipment] = []
+        equipment: [Equipment] = [],
+        filterStock: [FilterStock] = []
     ) -> BrewComparison {
-        let parameters = parameterDeltas(a, b, waters: waters, equipment: equipment)
+        let parameters = parameterDeltas(a, b, waters: waters, equipment: equipment, filterStock: filterStock)
         let taste = tasteDeltas(a, b)
         let (common, onlyA, onlyB) = flavorSplit(a, b)
         let sentence = sentence(parameters: parameters, taste: taste, waters: waters)
@@ -47,7 +48,8 @@ nonisolated struct BrewComparison: Equatable, Sendable {
         _ a: Brew,
         _ b: Brew,
         waters: [WaterProfile],
-        equipment: [Equipment]
+        equipment: [Equipment],
+        filterStock: [FilterStock]
     ) -> [ParameterDelta] {
         func row(_ label: String, _ left: String?, _ right: String?) -> ParameterDelta? {
             let a = left ?? "—"
@@ -80,6 +82,9 @@ nonisolated struct BrewComparison: Equatable, Sendable {
         let aWater = waters.first { $0.id == a.waterProfileID }?.displayName
         let bWater = waters.first { $0.id == b.waterProfileID }?.displayName
         if let water = row("Water", aWater, bWater) { rows.append(water) }
+        let aFilter = filterStock.first { $0.id == a.filterStockId }?.displayName
+        let bFilter = filterStock.first { $0.id == b.filterStockId }?.displayName
+        if let filter = row("Filter", aFilter, bFilter) { rows.append(filter) }
         return rows.filter { $0.a != "—" || $0.b != "—" }
     }
 
@@ -148,11 +153,16 @@ nonisolated struct BrewComparison: Equatable, Sendable {
     ) -> String? {
         let changed = parameters.filter(\.changed)
         let effects = taste.filter { abs($0.value) >= 2 }
-        if changed.count > 1 {
+        let filterWithTime = Set(changed.map(\.label)).subtracting(["Filter", "Time", "Flow"]).isEmpty
+            && changed.contains { $0.label == "Filter" }
+        if changed.count > 1, !filterWithTime {
             let names = changed.prefix(2).map { $0.label.lowercased() }
             return "Several things changed (\(names.joined(separator: ", "))) — hard to attribute"
         }
-        guard let cause = changed.first else { return nil }
+        guard let cause = filterWithTime
+                ? changed.first(where: { $0.label == "Filter" })
+                : changed.first
+        else { return nil }
         let effectText = effectPhrase(effects)
         switch cause.label {
         case "Grind":
@@ -168,6 +178,14 @@ nonisolated struct BrewComparison: Equatable, Sendable {
             return "Longer contact (\(cause.delta)) → \(effectText ?? "longer aftertaste")"
         case "Water":
             return "Different water (\(cause.b)) → \(effectText ?? "sweeter, softer")"
+        case "Filter":
+            let time = parameters.first { $0.label == "Time" }
+            let timeBit = time.flatMap { $0.changed ? $0.delta : nil }
+            let effect = effectText ?? "more clarity"
+            if let timeBit {
+                return "Different paper (\(cause.a) → \(cause.b)) → \(timeBit), \(effect)"
+            }
+            return "Different paper (\(cause.a) → \(cause.b)) → \(effect)"
         default:
             return effectText.map { "\(cause.label) \(cause.delta) → \($0)" }
         }

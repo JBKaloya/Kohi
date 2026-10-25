@@ -51,7 +51,7 @@ nonisolated enum EquipmentGlyph: String, CaseIterable, Identifiable, Sendable {
         }
     }
 
-    static func forKit(_ kind: EquipmentKind, family: BrewerFamily?) -> EquipmentGlyph {
+    static func forKit(_ kind: EquipmentKind, family: BrewerType?) -> EquipmentGlyph {
         switch kind {
         case .grinder: .handGrinder
         case .brewer: family?.glyph ?? .coneDripper
@@ -423,5 +423,70 @@ nonisolated private extension EquipmentGlyph {
             p.addLine(to: CGPoint(x: x, y: 21))
         }
         return p
+    }
+}
+
+/// The filled cup from the Coffee Intelligence sketch: a rounded body, a handle
+/// on the right, two eyes cut out of the fill.
+struct CoffeeCupMark: Shape {
+    func path(in rect: CGRect) -> Path {
+        let scale = min(rect.width, rect.height) / 24
+        let origin = CGPoint(x: rect.minX, y: rect.minY)
+        func box(_ x: CGFloat, _ y: CGFloat, _ width: CGFloat, _ height: CGFloat) -> CGRect {
+            CGRect(
+                x: origin.x + x * scale,
+                y: origin.y + y * scale,
+                width: width * scale,
+                height: height * scale
+            )
+        }
+
+        var path = Path()
+        path.addRoundedRect(
+            in: box(2.2, 7.4, 14.4, 13.2),
+            cornerSize: CGSize(width: 6.4 * scale, height: 6.4 * scale)
+        )
+        // Eyes, subtracted by even-odd fill.
+        path.addEllipse(in: box(6.0, 11.3, 2.35, 2.35))
+        path.addEllipse(in: box(10.15, 11.3, 2.35, 2.35))
+        return path
+    }
+
+    /// The handle sits outside the body so even-odd fill does not punch the cup.
+    func handle(in rect: CGRect) -> Path {
+        let scale = min(rect.width, rect.height) / 24
+        let center = CGPoint(
+            x: rect.minX + 16.6 * scale,
+            y: rect.minY + 13.2 * scale
+        )
+        var path = Path()
+        path.addArc(
+            center: center,
+            radius: 3.5 * scale,
+            startAngle: .degrees(-80),
+            endAngle: .degrees(80),
+            clockwise: false
+        )
+        return path
+    }
+}
+
+struct CoffeeCupIcon: View {
+    var size: CGFloat = 18
+    var color: Color = Palette.primary
+
+    var body: some View {
+        Canvas { context, canvas in
+            let mark = CoffeeCupMark()
+            let rect = CGRect(origin: .zero, size: canvas)
+            context.fill(mark.path(in: rect), with: .color(color), style: FillStyle(eoFill: true))
+            context.stroke(
+                mark.handle(in: rect),
+                with: .color(color),
+                style: StrokeStyle(lineWidth: max(1.25, size * 0.09), lineCap: .round, lineJoin: .round)
+            )
+        }
+        .frame(width: size, height: size)
+        .accessibilityHidden(true)
     }
 }

@@ -39,7 +39,7 @@ struct PourFill: View {
 
     private func rings(in size: CGSize, active: Int) -> some View {
         let shortest = min(size.width, size.height)
-        let diameters: [CGFloat] = [0.28, 0.52, 0.76]
+        let diameters: [CGFloat] = [0.28, 0.52, 0.72]
         return ZStack {
             ForEach(0..<3, id: \.self) { ring in
                 Circle()
@@ -51,5 +51,6 @@ struct PourFill: View {
             }
         }
         .frame(width: size.width, height: size.height)
+        .clipped()
     }
 }

@@ -4,44 +4,46 @@ import Observation
 /// Local switches for lot 2 surfaces. They hide UI; they never fork the
 /// model or the migration — two write paths would be two truths.
 ///
-/// On by default, except `flavorOrigin`: the origin classes on the wheel
-/// are still to verify. First launch seeds that one off; the rest stay on.
+/// On by default, except `flavorOrigin` (origin classes still to verify) and
+/// `keepVoiceNote` (audio is deleted after transcription). First launch seeds
+/// those off; the rest stay on.
 @Observable
 @MainActor
 final class LotFlags {
     enum Feature: String, CaseIterable, Identifiable, Sendable {
-        case taste7
-        case flavorWheel
         case brewCompare
         case cardProfile
         case flavorOrigin
+        case keepVoiceNote
 
         var id: String { rawValue }
 
         var label: String {
             switch self {
-            case .taste7: "Seven-axis taste"
-            case .flavorWheel: "Flavor wheel"
             case .brewCompare: "Brew compare"
             case .cardProfile: "Card profile"
             case .flavorOrigin: "Aroma origin in diagnosis"
+            case .keepVoiceNote: Copy.keepVoiceNotes
             }
         }
 
         /// What is lost when it is off — shown next to the switch.
         var fallback: String {
             switch self {
-            case .taste7: "Taste stays folded away."
-            case .flavorWheel: "Flavours stay as free text."
             case .brewCompare: "Compare with… is hidden."
             case .cardProfile: "The profile section is hidden."
             case .flavorOrigin: "Diagnosis ignores origin classes until they are verified."
+            case .keepVoiceNote: "A brew note is transcribed then deleted."
             }
         }
 
-        /// Off until the wheel's origin classes have been checked.
+        /// Off until the wheel's origin classes have been checked. Voice-note
+        /// audio is deleted after transcription unless this is turned on.
         var defaultsOnInDebug: Bool {
-            self != .flavorOrigin
+            switch self {
+            case .flavorOrigin, .keepVoiceNote: false
+            default: true
+            }
         }
     }
 
@@ -59,6 +61,25 @@ final class LotFlags {
             }
             defaults.set(true, forKey: Self.seededKey)
             defaults.set(set.map(\.rawValue), forKey: Self.disabledKey)
+        }
+        // Existing installs already have `seededKey`. A feature that defaults
+        // off has to be inserted once, or `isOn` would read it as on.
+        if defaults.object(forKey: Self.voiceNoteSeededKey) == nil {
+            set.insert(.keepVoiceNote)
+            defaults.set(true, forKey: Self.voiceNoteSeededKey)
+            defaults.set(set.map(\.rawValue), forKey: Self.disabledKey)
+        }
+        // Older builds seeded taste7 / flavorWheel (and sometimes compare /
+        // profile) off. Taste and the wheel are no longer optional; this
+        // one-shot also restores compare and profile.
+        if defaults.object(forKey: Self.surfacesResetKey) == nil {
+            let stored = defaults.stringArray(forKey: Self.disabledKey) ?? []
+            let purged = stored.filter {
+                !["taste7", "flavorWheel", "brewCompare", "cardProfile"].contains($0)
+            }
+            defaults.set(purged, forKey: Self.disabledKey)
+            defaults.set(true, forKey: Self.surfacesResetKey)
+            set = Set(purged.compactMap(Feature.init(rawValue:)))
         }
         disabled = set
     }
@@ -88,4 +109,6 @@ final class LotFlags {
 
     private static let disabledKey = "lot2.disabled"
     private static let seededKey = "lot2.seeded"
+    private static let voiceNoteSeededKey = "lot2.keepVoiceNote.seeded"
+    private static let surfacesResetKey = "lot2.surfaces.reset"
 }

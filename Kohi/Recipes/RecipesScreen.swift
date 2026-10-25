@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// Recipes as three views, not one long page.
+/// Recipes as three views: every brew, the saved recipes, the reference catalogue.
 struct RecipesScreen: View {
     @Environment(CardStore.self) private var store
     @Environment(RecipeStore.self) private var recipes
@@ -9,16 +9,39 @@ struct RecipesScreen: View {
     @Environment(\.appEnvironment) private var appEnvironment
 
     var onOpen: ((CoffeeCard) -> Void)?
+    var onOpenBrew: ((CoffeeCard, Brew) -> Void)?
+    var onAgainBrew: ((CoffeeCard, Brew) -> Void)?
+    var onReadBrew: ((CoffeeCard, Brew) -> Void)?
+    /// Set for the parcours export. The remembered tab is left untouched.
+    private let locksTab: Bool
+
+    init(
+        onOpen: ((CoffeeCard) -> Void)? = nil,
+        onOpenBrew: ((CoffeeCard, Brew) -> Void)? = nil,
+        onAgainBrew: ((CoffeeCard, Brew) -> Void)? = nil,
+        onReadBrew: ((CoffeeCard, Brew) -> Void)? = nil,
+        initialTab: RecipeTab? = nil
+    ) {
+        self.onOpen = onOpen
+        self.onOpenBrew = onOpenBrew
+        self.onAgainBrew = onAgainBrew
+        self.onReadBrew = onReadBrew
+        self.locksTab = initialTab != nil
+        if let initialTab {
+            _tab = State(initialValue: initialTab)
+        }
+    }
 
     @State private var isAsking = false
     @State private var isShowingProfile = false
-    @State private var tab: RecipeTab = .suggested
+    @State private var tab: RecipeTab = .all
     @State private var filters: [RecipeTab: RecipeFilterState] = [:]
     @State private var showingMore = false
     @State private var opened: OpenedRecipe?
     @State private var didRestoreTab = false
     @State private var showFilters = false
     @State private var isNewRecipe = false
+    @State private var editingRecipe: Recipe?
 
     private struct OpenedRecipe: Identifiable {
         let id = UUID()
@@ -41,21 +64,23 @@ struct RecipesScreen: View {
             .padding(.horizontal, 26)
             .padding(.top, 10)
 
-            HStack {
-                Button(Copy.filters) { showFilters = true }
-                    .catalogueLabel()
-                    .touchTarget()
-                Spacer()
-                if tab == .mine {
-                    Button(Copy.newRecipe) { isNewRecipe = true }
+            if tab != .all {
+                HStack {
+                    Button(Copy.filters) { showFilters = true }
                         .catalogueLabel()
                         .touchTarget()
+                    Spacer()
+                    if tab == .mine {
+                        Button(Copy.newRecipe) { isNewRecipe = true }
+                            .catalogueLabel()
+                            .touchTarget()
+                    }
                 }
+                .padding(.horizontal, 26)
+                .padding(.top, 12)
             }
-            .padding(.horizontal, 26)
-            .padding(.top, 12)
 
-            if !currentFilter.summary.isEmpty {
+            if tab != .all, !currentFilter.summary.isEmpty {
                 Text(currentFilter.summary)
                     .font(Typography.tag)
                     .foregroundStyle(Palette.inkMuted)
@@ -66,7 +91,7 @@ struct RecipesScreen: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 0) {
                     switch tab {
-                    case .suggested: suggestedContent
+                    case .all: allContent
                     case .reference: referenceContent
                     case .mine: mineContent
                     }
@@ -79,6 +104,7 @@ struct RecipesScreen: View {
         }
         .onAppear(perform: restore)
         .onChange(of: tab) { _, value in
+            guard !locksTab else { return }
             UserDefaults.standard.set(value.rawValue, forKey: Self.tabKey)
         }
         .sheet(isPresented: $isAsking) {
@@ -109,38 +135,63 @@ struct RecipesScreen: View {
             RecipeEditSheet()
                 .appEnvironment(appEnvironment)
         }
+        .sheet(item: $editingRecipe) { recipe in
+            RecipeEditSheet(recipe: recipe)
+                .appEnvironment(appEnvironment)
+        }
     }
 
-    // MARK: - Suggested
+    // MARK: - All
 
-    private var allSuggestions: [(card: CoffeeCard, suggestion: RecipeSuggestion)] {
+    private var hasBrew: Bool {
+        store.cards.contains { !$0.brews.isEmpty }
+    }
+
+    private var logged: [LoggedBrew] {
+        BrewArchive.recent(in: store.cards)
+    }
+
+    /// The per-coffee block. On All the recipe filters are hidden, so they
+    /// do not narrow it. On Mine they do.
+    private var suggestionItems: [(card: CoffeeCard, suggestion: RecipeSuggestion)] {
         var list = RecipeSuggestions.items(
             from: store.cards,
-            method: currentFilter.method,
+            method: tab == .all ? nil : currentFilter.method,
             mine: recipes.recipes,
             neighbours: store.cards
         )
-        if let roast = currentFilter.roast {
+        if tab != .all, let roast = currentFilter.roast {
             list = list.filter { roast.matches($0.card.roastLevel) }
         }
         return list
     }
 
+    private var suggestionHome: RecipeSuggestions.BlockHome {
+        RecipeSuggestions.blockHome(hasBrew: hasBrew, count: suggestionItems.count)
+    }
+
     private var visibleSuggestions: [(card: CoffeeCard, suggestion: RecipeSuggestion)] {
-        showingMore ? allSuggestions : Array(allSuggestions.prefix(RecipeSuggestions.visibleCap))
+        showingMore ? suggestionItems : Array(suggestionItems.prefix(RecipeSuggestions.visibleCap))
     }
 
     @ViewBuilder
-    private var suggestedContent: some View {
-        if allSuggestions.isEmpty {
-            Text(
-                store.cards.isEmpty
-                    ? "Scan a coffee first"
-                    : Copy.suggestedEmpty
-            )
-            .font(Typography.body)
-            .foregroundStyle(Palette.inkMuted)
-            .padding(.top, 8)
+    private var allContent: some View {
+        if suggestionHome == .all {
+            suggestionBlock
+        } else {
+            brewArchive
+        }
+    }
+
+    @ViewBuilder
+    private var suggestionBlock: some View {
+        if suggestionItems.isEmpty {
+            if store.cards.isEmpty {
+                Text("Scan a coffee first")
+                    .font(Typography.body)
+                    .foregroundStyle(Palette.inkMuted)
+                    .padding(.top, 8)
+            }
         } else {
             ForEach(visibleSuggestions, id: \.card.id) { item in
                 let scaled = RecipeScaling.scaled(item.suggestion.recipe, to: currentFilter.size)
@@ -152,12 +203,31 @@ struct RecipesScreen: View {
                     onOpen: { onOpen?(item.card) }
                 )
             }
-            if !showingMore, allSuggestions.count > RecipeSuggestions.visibleCap {
+            if !showingMore, suggestionItems.count > RecipeSuggestions.visibleCap {
                 Button("More") { showingMore = true }
                     .catalogueLabel()
                     .padding(.top, 8)
             }
         }
+    }
+
+    private var brewArchive: some View {
+        let rows = logged
+        return BrewLog(
+            brews: rows.map(\.brew),
+            coffeeName: { brew in
+                guard let card = rows.first(where: { $0.brew.id == brew.id })?.card else { return nil }
+                return store.title(for: card)
+            },
+            onSelect: { brew in open(brew, with: onOpenBrew) },
+            onAgain: onAgainBrew == nil ? nil : { brew in open(brew, with: onAgainBrew) },
+            onRead: onReadBrew == nil ? nil : { brew in open(brew, with: onReadBrew) }
+        )
+    }
+
+    private func open(_ brew: Brew, with action: ((CoffeeCard, Brew) -> Void)?) {
+        guard let card = logged.first(where: { $0.brew.id == brew.id })?.card else { return }
+        action?(card, brew)
     }
 
     // MARK: - Reference
@@ -219,6 +289,10 @@ struct RecipesScreen: View {
 
     @ViewBuilder
     private var mineContent: some View {
+        if suggestionHome == .mine {
+            suggestionBlock
+                .padding(.bottom, 22)
+        }
         if filteredMine.isEmpty {
             Text("Save a brew as a recipe to keep it here")
                 .font(Typography.tag)
@@ -241,6 +315,20 @@ struct RecipesScreen: View {
                         provenance: .mine(recipe.name),
                         isMine: true
                     )
+                }
+                // Edit and Delete via swipe — discoverable without opening the detail.
+                .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                    Button(role: .destructive) {
+                        recipes.delete(recipe)
+                    } label: {
+                        Label("Delete", systemImage: "trash")
+                    }
+                    Button {
+                        editingRecipe = recipe
+                    } label: {
+                        Label("Edit", systemImage: "pencil")
+                    }
+                    .tint(Palette.ink)
                 }
             }
         }
@@ -311,13 +399,14 @@ struct RecipesScreen: View {
     private func restore() {
         guard !didRestoreTab else { return }
         didRestoreTab = true
-        if let raw = UserDefaults.standard.string(forKey: Self.tabKey),
-           let stored = RecipeTab(rawValue: raw) {
-            tab = stored
-        } else {
-            tab = allSuggestions.isEmpty ? .reference : .suggested
+        if !locksTab {
+            if let raw = UserDefaults.standard.string(forKey: Self.tabKey),
+               let stored = RecipeTab(rawValue: raw) {
+                tab = stored
+            } else {
+                tab = .all
+            }
         }
-        if filters[.suggested] == nil { filters[.suggested] = seededFilter }
         if filters[.reference] == nil { filters[.reference] = seededFilter }
         if filters[.mine] == nil { filters[.mine] = seededFilter }
     }

@@ -1,21 +1,25 @@
 import SwiftUI
 
-/// The two halves of the catalogue.
+/// The three halves of the catalogue: two about drinking at home, one about
+/// coffee drunk out.
 enum CatalogueTab: String, CaseIterable, Identifiable, Sendable {
+    /// Raw value kept: only the label changed.
     case coffees
     case recipes
+    case tastings
 
     var id: String { rawValue }
 
     var label: String {
         switch self {
-        case .coffees: "Coffees"
-        case .recipes: "Recipes"
+        case .coffees: Copy.coffeeCollection
+        case .recipes: Copy.recipes
+        case .tastings: Copy.tastings
         }
     }
 }
 
-/// The level-1 rail: two catalogue labels over a hairline.
+/// The level-1 rail: catalogue labels over a hairline.
 struct CatalogueTabs: View {
     @Binding var selection: CatalogueTab
 

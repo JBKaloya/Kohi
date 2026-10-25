@@ -1,8 +1,10 @@
 import SwiftUI
 
 /// What the archive looks like before it has anything in it. One outlined card
-/// and one line of type; the scan button is the only thing to press.
+/// and one line of type; the scan button is the main thing to press. The
+/// tasting link is how someone who only drinks out gets in.
 struct EmptyStateView: View {
+    var onAddTasting: (() -> Void)?
     @State private var appeared = false
 
     var body: some View {
@@ -31,6 +33,15 @@ struct EmptyStateView: View {
                     .font(Typography.subtitle)
                     .foregroundStyle(Palette.inkMuted)
                     .multilineTextAlignment(.center)
+            }
+
+            if let onAddTasting {
+                Button(action: onAddTasting) {
+                    Text(Copy.addFirstTasting)
+                        .catalogueLabel()
+                }
+                .buttonStyle(.plain)
+                .touchTarget()
             }
         }
         .opacity(appeared ? 1 : 0)

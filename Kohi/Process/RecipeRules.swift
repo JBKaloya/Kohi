@@ -81,6 +81,7 @@ nonisolated enum RecipeRules {
     static func temperature(for roast: RoastLevel?, method: BrewMethod) -> ClosedRange<Double> {
         let isEspresso = method == .espresso
         switch roast {
+        case .superLight: return isEspresso ? 95...97 : 96...100
         case .light: return isEspresso ? 94...96 : 94...100
         case .mediumLight: return isEspresso ? 93...95 : 92...96
         case .medium, .none: return isEspresso ? 92...94 : 90...94
@@ -301,7 +302,7 @@ nonisolated enum RecipeRules {
     /// itself: +1 means 1:16 becomes 1:17.
     static func ratioShift(for roast: RoastLevel?) -> Double? {
         switch roast {
-        case .light: 1
+        case .superLight, .light: 1
         case .dark: -1
         case .mediumLight, .medium, .mediumDark, .none: nil
         }
@@ -377,6 +378,16 @@ nonisolated enum RecipeRules {
             temperature: brew.temperature,
             seconds: brew.seconds,
             grindLabel: brew.grind.display(),
+            steps: brew.actualSteps.filter { !$0.skipped }.map { step in
+                RecipeStep(
+                    at: step.at,
+                    action: step.action,
+                    targetMass: step.mass ?? step.targetMass,
+                    untilSeconds: step.targetAt,
+                    note: step.note,
+                    agitation: step.agitation
+                )
+            },
             source: source,
             evidence: .practice,
             attribution: source == .card ? card.roaster : "",

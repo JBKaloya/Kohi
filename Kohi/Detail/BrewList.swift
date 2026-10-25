@@ -20,75 +20,73 @@ struct BrewList: View {
     /// Opens the suggested recipe in full, with its reasons.
     var onOpenSuggestion: ((RecipeSuggestion) -> Void)?
     var onUseSuggestion: ((RecipeSuggestion) -> Void)?
+    var onSetGrindRange: (() -> Void)?
     var onAgain: ((Brew) -> Void)?
     var onCompare: ((Brew) -> Void)?
-
-    private var hasPrinted: Bool { card.recipeSuggestion != nil && onUseRecipe != nil }
-    private var hasSuggestion: Bool { suggestion != nil }
-    private var hasRecipes: Bool { hasPrinted || hasSuggestion }
+    var onDelete: ((Brew) -> Void)?
+    var onRead: ((Brew) -> Void)?
 
     var body: some View {
         VStack(alignment: .leading, spacing: 28) {
-            if hasRecipes {
-                recipesBlock
-            }
-            brewsBlock
+            BrewRecipes(
+                card: card,
+                suggestion: suggestion,
+                inYourTerms: inYourTerms,
+                onUseRecipe: onUseRecipe,
+                onOpenSuggestion: onOpenSuggestion,
+                onUseSuggestion: onUseSuggestion,
+                onSetGrindRange: onSetGrindRange
+            )
+            BrewLog(
+                brews: card.brews,
+                showsHeader: true,
+                showsAdd: true,
+                onSelect: onSelect,
+                onAdd: onAdd,
+                onAgain: onAgain,
+                onCompare: onCompare,
+                onDelete: onDelete,
+                onRead: onRead
+            )
         }
     }
+}
 
-    private var recipesBlock: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            if hasPrinted, let recipe = card.recipeSuggestion, let onUseRecipe {
-                Button(action: onUseRecipe) {
-                    recipeRow(recipe)
-                }
-                .buttonStyle(.plain)
+/// The recipe printed on the bag, and the one the rules suggest. Empty when
+/// neither exists, so it adds no gap of its own.
+struct BrewRecipes: View {
+    let card: CoffeeCard
+    var suggestion: RecipeSuggestion?
+    var inYourTerms: String?
+    var onUseRecipe: (() -> Void)?
+    var onOpenSuggestion: ((RecipeSuggestion) -> Void)?
+    var onUseSuggestion: ((RecipeSuggestion) -> Void)?
+    var onSetGrindRange: (() -> Void)?
 
-                if hasSuggestion {
-                    Rectangle()
-                        .fill(Palette.hairline)
-                        .frame(height: 1)
-                }
-            }
+    private var hasPrinted: Bool { card.recipeSuggestion != nil && onUseRecipe != nil }
+    private var hasSuggestion: Bool { suggestion != nil }
 
-            if let suggestion {
-                suggestedRow(suggestion)
-                    .id("suggested-recipe")
-            }
-        }
-    }
+    var body: some View {
+        if hasPrinted || hasSuggestion {
+            VStack(alignment: .leading, spacing: 0) {
+                if hasPrinted, let recipe = card.recipeSuggestion, let onUseRecipe {
+                    Button(action: onUseRecipe) {
+                        recipeRow(recipe)
+                    }
+                    .buttonStyle(.plain)
 
-    private var brewsBlock: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            if !card.brews.isEmpty {
-                header
-                    .padding(.bottom, 10)
-
-                VStack(spacing: 0) {
-                    ForEach(Array(card.brews.enumerated()), id: \.element.id) { index, brew in
-                        if index > 0 {
-                            Rectangle()
-                                .fill(Palette.hairline)
-                                .frame(height: 1)
-                        }
-                        Button { onSelect(brew) } label: {
-                            brewRow(brew)
-                        }
-                        .buttonStyle(.plain)
-                        .contextMenu {
-                            if onAgain != nil {
-                                Button(Copy.brewAgain) { onAgain?(brew) }
-                            }
-                            if onCompare != nil {
-                                Button(Copy.compare) { onCompare?(brew) }
-                            }
-                        }
+                    if hasSuggestion {
+                        Rectangle()
+                            .fill(Palette.hairline)
+                            .frame(height: 1)
                     }
                 }
-            }
 
-            addButton
-                .padding(.top, card.brews.isEmpty ? 0 : 14)
+                if let suggestion {
+                    suggestedRow(suggestion)
+                        .id("suggested-recipe")
+                }
+            }
         }
     }
 
@@ -122,21 +120,21 @@ struct BrewList: View {
                 VStack(alignment: .leading, spacing: 4) {
                     Text("Suggested")
                         .catalogueLabel()
-                    Text(suggestion.recipe.compactLine)
+                    Text(suggestedHeadline(suggestion))
                         .font(Typography.tag)
                         .foregroundStyle(Palette.ink)
-                        .lineLimit(1)
+                        .lineLimit(2)
                         .truncationMode(.tail)
-                    HStack(spacing: 8) {
-                        Text(suggestion.provenance.listLabel)
-                            .catalogueLabel()
-                            .lineLimit(1)
-                        if let secondLine {
-                            Text(secondLine)
-                                .font(Typography.tag)
-                                .foregroundStyle(Palette.inkMuted)
-                                .lineLimit(1)
+                    if inYourTerms == Copy.noClickRange, onSetGrindRange != nil {
+                        Button(Copy.forYourGrinderSetRange) {
+                            onSetGrindRange?()
                         }
+                        .catalogueLabel()
+                    } else if let secondLine {
+                        Text(secondLine)
+                            .font(Typography.tag)
+                            .foregroundStyle(Palette.inkMuted)
+                            .lineLimit(1)
                     }
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -154,12 +152,97 @@ struct BrewList: View {
         .padding(.vertical, 10)
     }
 
+    private func suggestedHeadline(_ suggestion: RecipeSuggestion) -> String {
+        var parts: [String] = []
+        let name = suggestion.recipe.name.trimmingCharacters(in: .whitespaces)
+        if !name.isEmpty { parts.append(name) }
+        if let dose = suggestion.recipe.dose { parts.append("\(GrindRange.number(dose)) g") }
+        if let ratio = suggestion.recipe.ratio { parts.append(ratio) }
+        if let temperatureLabel = suggestion.recipe.temperatureLabel {
+            parts.append(temperatureLabel)
+        }
+        return parts.isEmpty ? suggestion.recipe.compactLine : parts.joined(separator: " · ")
+    }
+
     /// What the rules moved, and the grind in your units. Both are the
     /// reason to trust the row, so they share its second line.
     private var secondLine: String? {
         var parts = suggestion?.adjustments.map(\.label) ?? []
-        if let inYourTerms { parts.append(inYourTerms) }
+        if let inYourTerms, inYourTerms != Copy.noClickRange { parts.append(inYourTerms) }
         return parts.isEmpty ? nil : parts.joined(separator: " · ")
+    }
+}
+
+/// Logged brews. The Tastings section hides the "Brews" header and the add
+/// button; `BrewList` keeps both, so the existing log reads the same.
+struct BrewLog: View {
+    let brews: [Brew]
+    var showsHeader = false
+    var showsAdd = false
+    /// Set on the cross-coffee list. The card's own log leaves it empty.
+    var coffeeName: (Brew) -> String? = { _ in nil }
+    let onSelect: (Brew) -> Void
+    var onAdd: () -> Void = {}
+    var onAgain: ((Brew) -> Void)?
+    var onCompare: ((Brew) -> Void)?
+    var onDelete: ((Brew) -> Void)?
+    var onRead: ((Brew) -> Void)?
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            if showsHeader, !brews.isEmpty {
+                header
+                    .padding(.bottom, 10)
+            }
+
+            if !brews.isEmpty {
+                VStack(spacing: 0) {
+                    ForEach(Array(brews.enumerated()), id: \.element.id) { index, brew in
+                        let name = coffeeName(brew)
+                        let previous = index > 0 ? coffeeName(brews[index - 1]) : nil
+                        let startsCoffee = name != nil && name != previous
+                        if index > 0, name == nil || name == previous {
+                            Rectangle()
+                                .fill(Palette.hairline)
+                                .frame(height: 1)
+                        }
+                        VStack(alignment: .leading, spacing: 0) {
+                            SwipeDeleteRow(onDelete: { onDelete?(brew) }) {
+                                Button { onSelect(brew) } label: {
+                                    brewRow(brew, name: startsCoffee ? name : nil)
+                                }
+                                .buttonStyle(.plain)
+                            }
+                            HStack(spacing: 16) {
+                                if onAgain != nil {
+                                    Button(Copy.brewAgain) { onAgain?(brew) }
+                                        .catalogueLabel()
+                                }
+                                if onRead != nil {
+                                    Button("\(Copy.improveTitle) ›") { onRead?(brew) }
+                                        .catalogueLabel()
+                                }
+                            }
+                            .padding(.bottom, 8)
+                        }
+                        .padding(.top, startsCoffee && index > 0 ? 18 : 0)
+                        .contextMenu {
+                            if onAgain != nil {
+                                Button(Copy.brewAgain) { onAgain?(brew) }
+                            }
+                            if onCompare != nil {
+                                Button(Copy.compare) { onCompare?(brew) }
+                            }
+                        }
+                    }
+                }
+            }
+
+            if showsAdd {
+                addButton
+                    .padding(.top, brews.isEmpty ? 0 : 14)
+            }
+        }
     }
 
     private var header: some View {
@@ -167,14 +250,20 @@ struct BrewList: View {
             Text("Brews")
                 .catalogueLabel()
             Spacer()
-            Text("\(card.brews.count)")
+            Text("\(brews.count)")
                 .font(Typography.tag)
                 .foregroundStyle(Palette.inkMuted)
         }
     }
 
-    private func brewRow(_ brew: Brew) -> some View {
+    private func brewRow(_ brew: Brew, name: String?) -> some View {
         VStack(alignment: .leading, spacing: 4) {
+            if let name {
+                Text(name)
+                    .font(Typography.value)
+                    .foregroundStyle(Palette.ink)
+                    .lineLimit(1)
+            }
             HStack(alignment: .firstTextBaseline, spacing: 8) {
                 Text(CatalogueDate.happened(brew.date))
                     .font(Typography.tag)
@@ -182,7 +271,7 @@ struct BrewList: View {
                     .lineLimit(1)
                 Spacer(minLength: 4)
                 if let rating = brew.rating {
-                    ratingDots(rating)
+                    RatingDots(rating: rating)
                 }
             }
 
@@ -205,27 +294,13 @@ struct BrewList: View {
 
     private func brewSubtitle(_ brew: Brew) -> String {
         var parts: [String] = []
-        if let name = brew.recipeSnapshot?.name, !name.isEmpty {
-            parts.append(name)
-        } else if let method = brew.method {
-            parts.append(method.label)
-        }
+        parts.append(brew.title)
         if let dose = brew.dose { parts.append("\(GrindRange.number(dose)) g") }
         if let ratio = brew.ratio { parts.append(ratio) }
         if let temperature = brew.temperature {
             parts.append("\(GrindRange.number(temperature)) °C")
         }
         return parts.joined(separator: " · ")
-    }
-
-    private func ratingDots(_ rating: Int) -> some View {
-        HStack(spacing: 2) {
-            ForEach(1...5, id: \.self) { step in
-                Circle()
-                    .fill(step <= rating ? Palette.ink : Palette.hairline)
-                    .frame(width: 5, height: 5)
-            }
-        }
     }
 
     private var addButton: some View {
@@ -239,5 +314,56 @@ struct BrewList: View {
             .foregroundStyle(Palette.ink)
         }
         .buttonStyle(.plain)
+    }
+}
+
+/// Five dots, filled up to the score. Shared by a brew row and a tasting row.
+struct RatingDots: View {
+    let rating: Int
+
+    var body: some View {
+        HStack(spacing: 2) {
+            ForEach(1...5, id: \.self) { step in
+                Circle()
+                    .fill(step <= rating ? Palette.ink : Palette.hairline)
+                    .frame(width: 5, height: 5)
+            }
+        }
+    }
+}
+
+/// Horizontal swipe reveals Delete. A vertical drag stays with the page scroll.
+struct SwipeDeleteRow<Content: View>: View {
+    var onDelete: () -> Void
+    @ViewBuilder var content: () -> Content
+
+    @State private var offset: CGFloat = 0
+
+    var body: some View {
+        ZStack(alignment: .trailing) {
+            if offset < -8 {
+                Button(role: .destructive, action: onDelete) {
+                    Text("Delete").catalogueLabel()
+                }
+                .frame(width: 88)
+            }
+            content()
+                .offset(x: offset)
+                .gesture(
+                    DragGesture(minimumDistance: 24)
+                        .onChanged { value in
+                            let dx = value.translation.width
+                            let dy = value.translation.height
+                            guard abs(dx) > abs(dy) else { return }
+                            offset = min(0, max(-96, dx))
+                        }
+                        .onEnded { value in
+                            withAnimation(Motion.snappy) {
+                                offset = value.translation.width < -48 ? -96 : 0
+                            }
+                        }
+                )
+        }
+        .clipped()
     }
 }

@@ -143,6 +143,9 @@ nonisolated struct Equipment: Identifiable, Codable, Hashable, Sendable {
     var filterShape: String?
     var filters: [BrewFilter]
     var defaultFilterId: UUID?
+    /// Size the dripper takes (`02`, `185`, `6 cups`), when the seed names one.
+    var size: String?
+    var acceptsFilterShapes: [FilterShape]
 
     // Espresso machine
     var basketG: Double?
@@ -179,6 +182,8 @@ nonisolated struct Equipment: Identifiable, Codable, Hashable, Sendable {
         filterShape: String? = nil,
         filters: [BrewFilter] = [],
         defaultFilterId: UUID? = nil,
+        size: String? = nil,
+        acceptsFilterShapes: [FilterShape] = [],
         basketG: Double? = nil,
         pressureBar: Double? = nil,
         isGooseneck: Bool? = nil,
@@ -207,6 +212,8 @@ nonisolated struct Equipment: Identifiable, Codable, Hashable, Sendable {
         self.filterShape = filterShape
         self.filters = filters
         self.defaultFilterId = defaultFilterId
+        self.size = size
+        self.acceptsFilterShapes = acceptsFilterShapes
         self.basketG = basketG
         self.pressureBar = pressureBar
         self.isGooseneck = isGooseneck
@@ -298,6 +305,8 @@ nonisolated extension Equipment {
         }
         defaultFilterId = try c.decodeIfPresent(UUID.self, forKey: .defaultFilterId)
             ?? filters.first?.id
+        size = try c.decodeIfPresent(String.self, forKey: .size)
+        acceptsFilterShapes = try c.decodeIfPresent([FilterShape].self, forKey: .acceptsFilterShapes) ?? []
         basketG = try c.decodeIfPresent(Double.self, forKey: .basketG)
         pressureBar = try c.decodeIfPresent(Double.self, forKey: .pressureBar)
         isGooseneck = try c.decodeIfPresent(Bool.self, forKey: .isGooseneck)

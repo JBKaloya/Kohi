@@ -234,4 +234,31 @@ struct SpokenBrewParserTests {
     @Test func cleanSetsClarity() {
         #expect(SpokenBrewParser.parse("clean cup").taste[.clarity] == 8)
     }
+
+    @Test func bloomAndPourMassesAreStepsNotWater() {
+        let result = SpokenBrewParser.parse("bloom 50 then pour to 150")
+        #expect(result.spokenSteps.count == 2)
+        #expect(result.spokenSteps[0].action == .bloom)
+        #expect(result.spokenSteps[0].mass == 50)
+        #expect(result.spokenSteps[1].action == .pour)
+        #expect(result.spokenSteps[1].mass == 150)
+        #expect(result.water == nil)
+    }
+
+    @Test func aFrenchPourIsAStep() {
+        let result = SpokenBrewParser.parse("verse à 150")
+        #expect(result.spokenSteps.contains { $0.action == .pour && $0.mass == 150 })
+    }
+
+    @Test func theLexiconRestoresCoffeeSpellings() {
+        let rewritten = SpokenLexicon.rewrite(
+            "bloom on the v 60 then aero press",
+            terms: SpokenLexicon.coffeeWords
+        )
+        #expect(rewritten.contains("V60"))
+        #expect(rewritten.contains("AeroPress"))
+        #expect(!rewritten.localizedCaseInsensitiveContains("v 60"))
+        let cafec = SpokenLexicon.rewrite("cafec abaca", terms: ["Cafec"])
+        #expect(cafec.contains("Cafec"))
+    }
 }

@@ -15,13 +15,16 @@ struct CardDetailView: View {
     var startsAtSuggested = false
 
     @Environment(CardStore.self) private var store
+    @Environment(TastingStore.self) private var tastings
+    @Environment(PlaceIndex.self) private var places
     @Environment(RecipeStore.self) private var recipes
     @Environment(SetupStore.self) private var setup
     @Environment(LotFlags.self) private var lotFlags
     @Environment(AIFlags.self) private var flags
+    @Environment(CardLookStore.self) private var looks
+    @Environment(StampLibrary.self) private var stamps
     @Environment(\.appEnvironment) private var appEnvironment
     @Environment(\.dismiss) private var dismiss
-    @Environment(\.openURL) private var openURL
     @State private var deleteTrigger = 0
     @State private var isEditing = false
     @State private var flow: BrewSession?
@@ -30,15 +33,29 @@ struct CardDetailView: View {
     @State private var selectedAttachment: CardAttachment?
     @State private var openedRecipe: Recipe?
     @State private var showOriginal = false
-    @State private var showMapPicker = false
-    @State private var showingScan = false
-    @State private var posterError: String?
     @State private var brewToCompare: Brew?
     @State private var isAsking = false
     @State private var showProfile = false
+    @State private var rangeGrinder: Equipment?
+    @State private var pendingDelete: (brew: Brew, index: Int)?
+    @State private var undoToken = 0
+    @State private var showFaceMenu = false
+    @State private var showSymbolEditor = false
+    @State private var openedTasting: Tasting?
 
     /// Reads through the store so edits made elsewhere show up here.
     private var live: CoffeeCard { store.card(id: card.id) ?? card }
+
+    /// Closed and temporarily closed places say so. Open places stay quiet.
+    private var placeTag: String? {
+        if let id = live.placeID, let place = places.place(id: id) {
+            return place.statusTag
+        }
+        if let name = live.place?.name, let match = places.match(name: name) {
+            return match.statusTag
+        }
+        return nil
+    }
 
     private var cardTitle: String { store.title(for: live) }
 
@@ -84,7 +101,8 @@ struct CardDetailView: View {
         size: RecipeSize? = nil,
         existing: Brew? = nil,
         mode: BrewSession.Mode = .create,
-        start: BrewSession.Step = .scope
+        start: BrewSession.Step = .scope,
+        lastApplication: BrewPrefill.LastApplication? = nil
     ) {
         flow = BrewSession(
             card: live,
@@ -93,38 +111,119 @@ struct CardDetailView: View {
             existing: existing,
             mode: mode,
             start: start,
+            lastApplication: lastApplication,
             setup: setup
+        )
+    }
+
+    private func deleteBrew(_ brew: Brew) {
+        let index = live.brews.firstIndex { $0.id == brew.id } ?? 0
+        pendingDelete = (brew, index)
+        var updated = live
+        updated.brews.removeAll { $0.id == brew.id }
+        store.update(updated)
+        deleteTrigger += 1
+        undoToken += 1
+        let token = undoToken
+        Task {
+            try? await Task.sleep(for: .seconds(5))
+            if undoToken == token { pendingDelete = nil }
+        }
+    }
+
+    private func restoreDeletedBrew() {
+        guard let pending = pendingDelete else { return }
+        undoToken += 1
+        var updated = live
+        let index = min(pending.index, updated.brews.count)
+        updated.brews.insert(pending.brew, at: index)
+        store.update(updated)
+        pendingDelete = nil
+    }
+
+    private func openRead(_ brew: Brew) {
+        let session = BrewSession(
+            card: live,
+            existing: brew,
+            mode: .edit,
+            start: .after,
+            setup: setup
+        )
+        session.opensRead = true
+        session.frozenCorrection = SuggestedCorrection.fallback(
+            from: brew,
+            card: live,
+            equipment: setup.equipment,
+            filterStock: setup.filterStock,
+            tasting: TastingIntent.confirmed(from: brew.notes)
+        )
+        flow = session
+    }
+
+    private func openAgain(from brew: Brew) {
+        let prepared = BrewPrefill.preparedAgain(from: brew, setup: setup)
+        let recipe = brew.recipeSnapshot.map(Recipe.init(snapshot:))
+        openFlow(
+            recipe: recipe,
+            existing: prepared.brew,
+            start: .dial,
+            lastApplication: prepared.application
         )
     }
 
     @ViewBuilder
     private var brewAndAsk: some View {
-        BrewList(
-            card: live,
-            suggestion: suggestion,
-            inYourTerms: forYourGrinderLine,
-            onSelect: { openFlow(existing: $0, mode: .edit, start: .after) },
-            onAdd: { openFlow() },
-            onUseRecipe: live.recipeSuggestion == nil ? nil : {
-                if let printed = live.recipeSuggestion {
-                    openFlow(recipe: RecipeRules.recipe(from: printed, card: live))
+        if live.recipeSuggestion != nil || suggestion != nil {
+            BrewRecipes(
+                card: live,
+                suggestion: suggestion,
+                inYourTerms: forYourGrinderLine,
+                onUseRecipe: live.recipeSuggestion == nil ? nil : {
+                    if let printed = live.recipeSuggestion {
+                        openFlow(recipe: RecipeRules.recipe(from: printed, card: live))
+                    }
+                },
+                onOpenSuggestion: { openedRecipe = $0.recipe },
+                onUseSuggestion: { use($0.recipe) },
+                onSetGrindRange: {
+                    if let grinder = setup.preferredGrinder(for: suggestion?.recipe.method) {
+                        rangeGrinder = grinder
+                    } else {
+                        showProfile = true
+                    }
                 }
-            },
-            onOpenSuggestion: { openedRecipe = $0.recipe },
-            onUseSuggestion: { use($0.recipe) },
-            onAgain: { brew in
-                let recipe = brew.recipeSnapshot.map(Recipe.init(snapshot:))
-                openFlow(recipe: recipe, existing: brew.again(), start: .kit)
-            },
-            onCompare: lotFlags.isOn(.brewCompare) ? { brewToCompare = $0 } : nil
+            )
+        }
+
+        TastingsBlock(
+            card: live,
+            tasted: tastings.tastings(forCard: live.id),
+            onSelectBrew: { openFlow(existing: $0, mode: .edit, start: .after) },
+            onAgain: { brew in openAgain(from: brew) },
+            onCompare: lotFlags.isOn(.brewCompare) ? { brewToCompare = $0 } : nil,
+            onDeleteBrew: { brew in deleteBrew(brew) },
+            onRead: { brew in openRead(brew) },
+            onOpenTasting: { openedTasting = $0 }
         )
+
+        if pendingDelete != nil {
+            Button("Undo") { restoreDeletedBrew() }
+                .catalogueLabel()
+                .padding(.top, 8)
+        }
 
         kitPrompt
 
         if flags.isOn(.ask) {
             Button { isAsking = true } label: {
-                Text("Ask about this coffee")
-                    .catalogueLabel()
+                HStack(spacing: 8) {
+                    CoffeeCupIcon(size: 14, color: Palette.primary)
+                    Text("Ask about this coffee")
+                        .font(Typography.label)
+                        .tracking(Typography.labelTracking)
+                        .textCase(.uppercase)
+                        .foregroundStyle(Palette.primary)
+                }
             }
             .buttonStyle(.plain)
             .padding(.top, 8)
@@ -146,6 +245,7 @@ struct CardDetailView: View {
     var body: some View {
         GeometryReader { proxy in
             let objectWidth = proxy.size.width * Motion.Object.widthFraction
+            let kohiWidth = max(120, proxy.size.width - 56)
 
             ScrollViewReader { proxy in
             ScrollView {
@@ -155,20 +255,19 @@ struct CardDetailView: View {
                         .padding(.top, 18)
 
                     VStack(spacing: 18) {
-                        CardObject(
+                        CardFaceStage(
                             card: live,
-                            width: objectWidth,
-                            variant: showingScan ? .scan : .poster
+                            scanWidth: objectWidth,
+                            kohiWidth: kohiWidth,
+                            look: looks.resolved(live),
+                            layout: looks.layout(for: live.id),
+                            mark: stamps.mark(for: live.id),
+                            ink: stamps.file(for: live.id),
+                            onFlip: { looks.setOverride($0, for: live.id) }
                         )
-                        .accessibilityLabel(showingScan || live.poster != .ready ? "Scan" : "Flyer")
-
-                        if live.poster == .ready {
-                            visualPicker
-                        }
                     }
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 52)
-                    .animation(Motion.snappy, value: showingScan)
 
                     VStack(alignment: .leading, spacing: 30) {
                         Text(cardTitle)
@@ -179,13 +278,11 @@ struct CardDetailView: View {
                             notes
                         }
 
-                        if lotFlags.isOn(.flavorWheel), !live.declaredFlavors.isEmpty {
+                        if !live.declaredFlavors.isEmpty {
                             onTheWheel
                         }
 
-                        CaptionBlock(card: live) {
-                            showMapPicker = true
-                        }
+                        CaptionBlock(card: live, placeTag: placeTag)
 
                         if !live.originalFields.isEmpty {
                             originalSection
@@ -194,7 +291,7 @@ struct CardDetailView: View {
                         brewAndAsk
 
                         if lotFlags.isOn(.cardProfile) {
-                            CardProfile(card: live)
+                            CardProfile(card: live, tasted: tastings.tastings(forCard: live.id))
                         }
 
                         if !live.attachments.isEmpty || isIngestingAttachment {
@@ -228,33 +325,32 @@ struct CardDetailView: View {
             HStack {
                 CatalogueBackButton(title: "COFFEES") { dismiss() }
                 Spacer()
+                Button { showFaceMenu = true } label: {
+                    Text(Copy.cards)
+                        .catalogueLabel()
+                }
+                .buttonStyle(.plain)
+                .touchTarget()
             }
             .padding(.horizontal, 16)
             .background(Palette.paper)
         }
         .haptic(.deleted, trigger: deleteTrigger)
-        .confirmationDialog("Open in", isPresented: $showMapPicker) {
-            if let place = live.place {
-                Button("Apple Maps") {
-                    let q = place.name.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
-                    let url = URL(string: "maps://?q=\(q)&ll=\(place.latitude),\(place.longitude)")!
-                    openURL(url)
-                }
-                Button("Google Maps") {
-                    let q = place.name.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
-                    let gm = URL(string: "comgooglemaps://?q=\(q)&center=\(place.latitude),\(place.longitude)")!
-                    let web = URL(string: "https://www.google.com/maps/search/?api=1&query=\(place.latitude),\(place.longitude)&query_place_id=\(q)")!
-                    if UIApplication.shared.canOpenURL(gm) {
-                        openURL(gm)
-                    } else {
-                        openURL(web)
-                    }
-                }
-                Button("Cancel", role: .cancel) {}
-            }
+        .fullScreenCover(isPresented: $showSymbolEditor) {
+            SymbolEditorView(card: live)
+                .appEnvironment(appEnvironment)
+        }
+        .confirmationDialog(Copy.cards, isPresented: $showFaceMenu, titleVisibility: .visible) {
+            Button(Copy.showTheScan) { looks.setOverride(.scan, for: live.id) }
+            Button(Copy.showTheKohiCard) { looks.setOverride(.kohi, for: live.id) }
+            Button("Cancel", role: .cancel) {}
         }
         .sheet(isPresented: $showProfile) {
             ProfileSheet()
+                .appEnvironment(appEnvironment)
+        }
+        .sheet(item: $rangeGrinder) { grinder in
+            EquipmentSheet(equipment: grinder)
                 .appEnvironment(appEnvironment)
         }
         .sheet(isPresented: $isAsking) {
@@ -263,6 +359,10 @@ struct CardDetailView: View {
         }
         .sheet(isPresented: $isEditing) {
             CardEditSheet(card: live, isNew: false) { store.update($0) }
+                .appEnvironment(appEnvironment)
+        }
+        .navigationDestination(item: $openedTasting) { tasting in
+            TastingDetailView(tastingID: tasting.id, opensCard: false)
                 .appEnvironment(appEnvironment)
         }
         .task {
@@ -287,9 +387,7 @@ struct CardDetailView: View {
             BrewFlowHost(
                 session: session,
                 onDismiss: { flow = nil },
-                onAgain: { seed in
-                    openFlow(existing: seed.again(), start: .kit)
-                },
+                onAgain: { seed in openAgain(from: seed) },
                 onDelete: session.mode == .edit ? {
                     var updated = live
                     updated.brews.removeAll { $0.id == session.brew.id }
@@ -305,9 +403,10 @@ struct CardDetailView: View {
                 reference: brew,
                 others: store.cards,
                 waters: setup.waterProfiles,
-                equipment: setup.equipment
+                equipment: setup.equipment,
+                filterStock: setup.filterStock
             ) { seed in
-                openFlow(existing: seed.again(), start: .kit)
+                openAgain(from: seed)
             }
             .appEnvironment(appEnvironment)
         }
@@ -327,27 +426,6 @@ struct CardDetailView: View {
                 var updated = live
                 updated.attachments.removeAll { $0.id == attachment.id }
                 store.update(updated)
-            }
-        }
-        .alert("Poster generation failed", isPresented: .init(
-            get: { posterError != nil },
-            set: { if !$0 { posterError = nil } }
-        )) {
-            Button("OK") { posterError = nil }
-        } message: {
-            Text(posterError ?? "")
-        }
-    }
-
-    /// Flyer or the original scan. The home grid keeps the flyer; the plate
-    /// here can flip so the archive image stays reachable.
-    private var visualPicker: some View {
-        HStack(spacing: 8) {
-            TagChip(text: "Flyer", isSelected: !showingScan) {
-                withAnimation(Motion.snappy) { showingScan = false }
-            }
-            TagChip(text: "Scan", isSelected: showingScan) {
-                withAnimation(Motion.snappy) { showingScan = true }
             }
         }
     }
@@ -487,13 +565,10 @@ struct CardDetailView: View {
                     .catalogueLabel()
                     .foregroundStyle(Palette.ink)
             }
-            if CardPoster.isAvailable {
-                Button { regeneratePoster() } label: {
-                    Text(live.poster == .pending ? "Generating…" : "Regenerate poster")
-                        .catalogueLabel()
-                        .foregroundStyle(Palette.ink)
-                }
-                .disabled(live.poster == .pending)
+            Button { showSymbolEditor = true } label: {
+                Text(Copy.symbol)
+                    .catalogueLabel()
+                    .foregroundStyle(Palette.ink)
             }
             Button {
                 deleteTrigger += 1
@@ -506,34 +581,6 @@ struct CardDetailView: View {
         }
         .buttonStyle(.plain)
         .padding(.top, 8)
-    }
-
-    private func regeneratePoster() {
-        let cardID = live.id
-        var updated = live
-        updated.poster = .pending
-        store.update(updated)
-        posterError = nil
-        print("[card-poster] regeneratePoster: set pending for \(cardID)")
-        Task {
-            let success = await Task.detached(priority: .utility) {
-                await CardPoster.generate(cardID: cardID)
-            }.value
-            print("[card-poster] regeneratePoster: generate returned \(success)")
-            guard var latest = store.card(id: cardID) else {
-                print("[card-poster] regeneratePoster: card not found in store!")
-                return
-            }
-            latest.poster = success ? .ready : .failed
-            store.update(latest)
-            print("[card-poster] regeneratePoster: store updated → \(latest.poster)")
-            if success {
-                ThumbnailCache.shared.invalidate(cardID)
-                ThumbnailCache.shared.warm(latest, buckets: ThumbnailCache.buckets)
-            } else {
-                posterError = "Generation failed. See console for '[card-poster]' logs."
-            }
-        }
     }
 
     // MARK: - Attachments

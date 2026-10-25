@@ -315,9 +315,10 @@ struct GrindConversionTests {
         let reference = try #require(ReferenceBase.grinder(id: "1zpresso-j-ultra"))
         let grinder = Equipment(reference: reference)
 
-        // The seeded base carries no unverified ranges, so there is nothing to
-        // fall back to — which is the gate working, not a bug.
-        #expect(GrindConversion.range(for: .v60, on: grinder) == nil)
+        // Nothing declared: the published chart fills in, and says so.
+        let published = GrindConversion.range(for: .v60, on: grinder)
+        #expect(published?.low == 270)
+        #expect(published?.high == 330)
 
         var declared = grinder
         declared.ranges = [GrindRange(method: .v60, low: 20, high: 26)]

@@ -6,6 +6,7 @@ struct BrewCompareSheet: View {
     var others: [CoffeeCard]
     var waters: [WaterProfile]
     var equipment: [Equipment]
+    var filterStock: [FilterStock]
     var onAgain: (Brew) -> Void
 
     @Environment(\.dismiss) private var dismiss
@@ -18,6 +19,7 @@ struct BrewCompareSheet: View {
         others: [CoffeeCard] = [],
         waters: [WaterProfile] = [],
         equipment: [Equipment] = [],
+        filterStock: [FilterStock] = [],
         onAgain: @escaping (Brew) -> Void = { _ in }
     ) {
         self.card = card
@@ -25,6 +27,7 @@ struct BrewCompareSheet: View {
         self.others = others
         self.waters = waters
         self.equipment = equipment
+        self.filterStock = filterStock
         self.onAgain = onAgain
         let previous = card.brews.first { $0.id != reference.id && $0.isComparable }
         _other = State(initialValue: previous)
@@ -106,7 +109,13 @@ struct BrewCompareSheet: View {
     }
 
     private func comparison(of other: Brew) -> some View {
-        let compared = BrewComparison.of(reference, against: other, waters: waters, equipment: equipment)
+        let compared = BrewComparison.of(
+            reference,
+            against: other,
+            waters: waters,
+            equipment: equipment,
+            filterStock: filterStock
+        )
         return VStack(alignment: .leading, spacing: 18) {
             HStack {
                 Spacer()
@@ -123,6 +132,12 @@ struct BrewCompareSheet: View {
                 seriesKey(Palette.primary, "A")
                 seriesKey(Palette.secondary, "B")
             }
+
+            PourCurve(
+                actual: reference.actualSteps,
+                planned: other.actualSteps,
+                rates: reference.pourRates
+            )
 
             VStack(spacing: 0) {
                 HStack(alignment: .firstTextBaseline, spacing: 12) {
@@ -160,9 +175,15 @@ struct BrewCompareSheet: View {
             flavorLine("Only that", compared.onlyB)
 
             if let sentence = compared.sentence {
-                Text(sentence)
-                    .font(Typography.body)
-                    .foregroundStyle(Palette.ink)
+                let changed = Set(compared.parameterDeltas.filter(\.changed).map(\.label))
+                let filterOnly = changed.subtracting(["Filter", "Time", "Flow"]).isEmpty && changed.contains("Filter")
+                InsightBlock(
+                    title: "Compare",
+                    bodyText: sentence,
+                    provenance: filterOnly
+                        ? "Derived from 2 brews · filter only"
+                        : "Derived from 2 brews"
+                )
             }
 
             HStack(spacing: 18) {

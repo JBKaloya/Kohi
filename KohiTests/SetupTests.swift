@@ -274,6 +274,8 @@ struct SetupTests {
                 ),
             ],
             defaultFilterId: UUID(uuidString: "EEEEEEEE-0000-0000-0000-000000000006")!,
+            size: "02",
+            acceptsFilterShapes: [.cone60],
             basketG: 18,
             pressureBar: 9,
             isGooseneck: true,
@@ -304,6 +306,20 @@ struct SetupTests {
         )
     }
 
+    private func fullFilterStock() -> FilterStock {
+        FilterStock(
+            id: UUID(uuidString: "EEEEEEEE-0000-0000-0000-000000000007")!,
+            modelId: "cafec-abaca",
+            customName: nil,
+            size: "02",
+            origin: "Japan",
+            shape: .cone60,
+            isDefaultFor: [UUID(uuidString: "EEEEEEEE-0000-0000-0000-000000000008")!],
+            createdAt: Date(timeIntervalSince1970: 1_000),
+            updatedAt: Date(timeIntervalSince1970: 2_000)
+        )
+    }
+
     @Test func equipmentSurvivesTheRowRoundTrip() {
         let original = fullEquipment()
         let restored = EquipmentRow(equipment: original, userID: UUID()).toEquipment()
@@ -316,6 +332,12 @@ struct SetupTests {
         #expect(restored == original)
     }
 
+    @Test func filterStockSurvivesTheRowRoundTrip() {
+        let original = fullFilterStock()
+        let restored = FilterStockRow(stock: original, userID: UUID()).toStock()
+        #expect(restored == original)
+    }
+
     /// The parity census: a property added to the model without a column and a
     /// mapping fails here rather than silently never reaching Supabase.
     @Test func equipmentPropertiesAreAllAccountedFor() {
@@ -324,6 +346,7 @@ struct SetupTests {
             "grinderRef", "brewerRef", "burrType", "burrMm", "adjustment", "stepsPerRotation",
             "makerMicronsPerStep", "ranges",
             "brewerType", "filterBrand", "filterShape", "filters", "defaultFilterId",
+            "size", "acceptsFilterShapes",
             "basketG", "pressureBar",
             "isGooseneck", "hasTemperatureControl",
             "resolutionG", "hasTimer",
@@ -342,6 +365,15 @@ struct SetupTests {
         ]
         let actual = Set(Mirror(reflecting: fullWater()).children.compactMap(\.label))
         #expect(actual.subtracting(mapped).isEmpty, "unmapped WaterProfile properties")
+    }
+
+    @Test func filterStockPropertiesAreAllAccountedFor() {
+        let mapped: Set<String> = [
+            "id", "modelId", "customName", "size", "origin", "shape",
+            "isDefaultFor", "createdAt", "updatedAt",
+        ]
+        let actual = Set(Mirror(reflecting: fullFilterStock()).children.compactMap(\.label))
+        #expect(actual.subtracting(mapped).isEmpty, "unmapped FilterStock properties")
     }
 
     // MARK: - Tolerant decoding

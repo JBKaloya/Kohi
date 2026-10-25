@@ -144,6 +144,11 @@ nonisolated extension WaterProfile {
     }
 }
 
+extension WaterProfile {
+    /// Tap stays put. Bottled, recipe and filtered water are chosen per cup.
+    var isFixedInstallation: Bool { source == .tap }
+}
+
 /// The SCA brewing-water targets (annexe C1, SCAA 2009). Shown as a hairline
 /// band under a value, never as a verdict: water outside the band still makes
 /// coffee, and the "filter light roast" trend deliberately sits below it on

@@ -14,6 +14,9 @@ nonisolated enum TextExtractor {
         /// Vertical position, 0 at the top. Used to keep reading order stable.
         let y: Double
         let x: Double
+        /// Normalized Vision rect, origin at the bottom left. Empty for a line
+        /// that was built without geometry.
+        var bounds: CGRect = .zero
     }
 
     /// Languages the reader is told to expect. Cards in this archive are
@@ -48,12 +51,17 @@ nonisolated enum TextExtractor {
         return best
     }
 
-    private static func read(_ image: CGImage) async -> [Line] {
+    /// Reads one image. Used by the stamp chain as the "no words left" gate.
+    static func read(image: CGImage) async -> [Line] {
         if #available(iOS 26, *) {
             return await readWithDocumentRequest(image: image)
         } else {
             return await readWithVNRecognizeText(image: image)
         }
+    }
+
+    private static func read(_ image: CGImage) async -> [Line] {
+        await read(image: image)
     }
 
     private static func rotate(
@@ -95,7 +103,12 @@ nonisolated enum TextExtractor {
                 guard !value.isEmpty else { continue }
                 let region = line.boundingRegion.boundingBox
                 result.append(
-                    Line(text: value, y: 1 - Double(region.origin.y), x: Double(region.origin.x))
+                    Line(
+                        text: value,
+                        y: 1 - Double(region.origin.y),
+                        x: Double(region.origin.x),
+                        bounds: region.cgRect
+                    )
                 )
             }
         }
@@ -132,7 +145,9 @@ nonisolated enum TextExtractor {
                     let text = candidate.string.trimmingCharacters(in: .whitespacesAndNewlines)
                     guard !text.isEmpty else { continue }
                     let box = observation.boundingBox
-                    lines.append(Line(text: text, y: 1 - Double(box.origin.y), x: Double(box.origin.x)))
+                    lines.append(
+                        Line(text: text, y: 1 - Double(box.origin.y), x: Double(box.origin.x), bounds: box)
+                    )
                 }
 
                 let sorted = lines.sorted {

@@ -22,7 +22,7 @@ struct AIFlagsTests {
         #expect(flags.isOn(.fieldExtract))
         #expect(flags.isOn(.recipeAdapt))
         #expect(flags.isOn(.cardVision))
-        #expect(flags.isOn(.poster))
+        #expect(flags.isOn(.aiFeedback))
     }
 
     @Test func theMasterSwitchTurnsThemAllOn() {
@@ -57,10 +57,10 @@ struct AIFlagsTests {
 
     @Test func aFeatureThatIsNotExperimentalCanStillBeRefused() {
         let flags = Self.flags()
-        flags.setOn(.poster, false)
+        flags.setOn(.cardVision, false)
 
-        #expect(!flags.isOn(.poster))
-        #expect(flags.reason(.poster) == "Off")
+        #expect(!flags.isOn(.cardVision))
+        #expect(flags.reason(.cardVision) == "Off")
     }
 
     @Test func choicesSurviveARelaunch() {

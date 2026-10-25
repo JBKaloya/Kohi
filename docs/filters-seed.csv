@@ -1,0 +1,55 @@
+id,brand,line,model,shape,sizes,fits,material,bleach,thickness_um,crepe,density,flow_class,notes,source,status
+hario-v60-white-jp-tabbed,Hario,V60,White · Made in Japan · tabbed,cone60,01;02;03,V60 01/02/03;Origami;Switch;Cafec Flower;Kono,paper-wood,bleached-TCF,206,one-side,medium,standard,Papier de référence ; les lots varient (intérieur lisse = plus lent). Rincer.,Gagné 2019 (mesures) ; japanesecoffeegear.com,mesuré / lots à vérifier
+hario-v60-white-tabless,Hario,V60,White · tabless,cone60,02,V60 02,paper-wood,bleached-TCF,242,one-side,medium,slow,Plus épais ; rare en rayon.,Gagné 2019,mesuré
+hario-v60-misarashi,Hario,V60,Misarashi · unbleached,cone60,01;02;03,V60 01/02/03;Origami;Switch,paper-wood,unbleached,203,one-side,medium,fast,5 ppm relargués à sec ; rincer 150 g d'eau chaude.,Gagné 2019,mesuré
+hario-v60-white-nl,Hario,V60,White · Made in Netherlands,cone60,02,V60 02,paper-wood,bleached-TCF,,one-side,high,very-slow,"Plus épais, colmatage et goût de papier rapportés.",driproast.com ; home-barista,à vérifier
+cafec-abaca,Cafec,Abaca,Abaca (AC1/AC4),cone60,1cup;4cup,V60 01/02;Cafec Flower;Origami,paper-abaca,gently-bleached,250,two-side,low,fast,"Crêpage double face, débit régulier.",Cafec ; Kohiraifu,constructeur
+cafec-abaca-plus,Cafec,Abaca+,Abaca+,cone60,1cup;4cup,V60 01/02;Cafec Flower;Origami,paper-abaca,gently-bleached,220,two-side,high,standard,Polyvalent ; référence du test MIM.,MIM Coffee Lab 2024 ; Kohiraifu,constructeur + test
+cafec-t92-light,Cafec,Roast profile,"T-92 / Light Roast (TH-1, LC)",cone60,1cup;4cup,V60 01/02;Cafec Flower,paper-abaca,gently-bleached,280,two-side,high,very-slow,"Le plus long (6,5 min sur medium roast, MIM) ; rapports de colmatage.",MIM Coffee Lab 2024 ; home-barista,test + à vérifier
+cafec-t90-medium,Cafec,Roast profile,"T-90 / Medium-Dark (TH-3, MC)",cone60,1cup;4cup,V60 01/02;Cafec Flower,paper-abaca,gently-bleached,220,two-side,medium,standard,Entre Sibarist FAST et Hario blanchi selon les utilisateurs.,MIM Coffee Lab 2024 ; cafecusa.com,test
+cafec-t83-dark,Cafec,Roast profile,"T-83 / Dark Roast (TH-2, DC)",cone60,1cup;4cup,V60 01/02;Cafec Flower,paper-abaca,gently-bleached,,two-side low,low,fast,"5,5 min (MIM) ; débit qui s'accélère en seconde moitié ; corps et sucrosité.",MIM Coffee Lab 2024 ; cafec-jp.com,test
+cafec-deep27,Cafec,Deep,Deep27,cone-deep,27,Cafec Deep 27,paper-abaca,gently-bleached,150,one-side,high,fast,Lit de café très profond.,Kohiraifu,constructeur
+sibarist-fast-cone,Sibarist,FAST,CONE FAST,cone60,S;M;L,V60 01/02/03;Switch;Origami;Chemex (L plié),paper-abaca,bleached-TCF,,,,very-fast,Marge de mouture : moudre plus fin sans sur-extraire ; quasi sans goût.,sibarist.coffee ; wild-kaffee.com ; beanbench.coffee,constructeur + revues
+sibarist-b3-cone,Sibarist,B3,CONE B3,cone60,S;M;L,V60 01/02/03;Switch;Origami,paper-abaca,bleached-TCF,,,high,standard,"Plus épais, peu poreux ; uniformité, sucrosité.",sibarist.coffee,constructeur
+sibarist-fast-flat,Sibarist,FAST,FLAT FAST,flatSmooth,S;M;L,Kalita Wave 155/185;Orea;April;B75,paper-abaca,bleached-TCF,,none,,depends-on-dripper,"Non plissé, colle aux parois, supprime le bypass ; Kalita verre ~20 % plus lente que céramique.",sibarist.coffee,constructeur
+sibarist-b3-flat,Sibarist,B3,FLAT B3,flatSmooth,S;M;L,Kalita Wave 155/185;Orea;April,paper-abaca,bleached-TCF,,none,high,depends-on-dripper,,sibarist.coffee,constructeur
+kalita-wave-155,Kalita,Wave,Wave 155 (KWF-155),wave,155,Kalita Wave 155;Origami S;B75;Orea (small),paper-wood,bleached-TCF,,wave,medium,standard,Plis larges ; référence flat bottom.,coffeeronin.ca ; Coffee Umami 2025,revues
+kalita-wave-185,Kalita,Wave,Wave 185 (KWF-185),wave,185,Kalita Wave 185;Origami M;April;Orea,paper-wood,bleached-TCF,,wave,medium,standard,,coffeeronin.ca,revues
+kalita-wave-brown,Kalita,Wave,Wave brown (unbleached),wave,155;185,Kalita Wave 155/185,paper-wood,unbleached,,wave,medium,standard,Rincer.,,à vérifier
+orea-wave,Orea,Wave,Orea wave filter,wave,155-like,Orea V3/V4;Origami;B75,paper-wood,bleached-TCF,,wave (plis serrés),high,standard,"Moins d'odeur de papier que Kalita ; plus lent sur Origami, identique sur B75.",coffeeronin.ca,revue
+orea-flat,Orea,Flat,Orea flat / Type G / Type C,flatSmooth,Orea,Orea V3/V4,paper-wood,bleached-TCF,,none,,standard,Répétabilité du drawdown variable (Coffee Umami).,Coffee Umami 2025,revue
+april-flat,April,April,April paper filter,wave,April,April Brewer,paper-wood,bleached-TCF,,wave,,standard,Qualité de papier jugée inférieure par Coffee Rōnin.,coffeeronin.ca,à vérifier
+origami-cone,Origami,Cone,Origami cone S/M,cone60,S;M,Origami S/M;V60 01/02,paper-wood,bleached-TCF,,,,standard,,,à vérifier
+origami-wave,Origami,Wave,Origami wave,wave,S;M,Origami S/M,paper-wood,bleached-TCF,,wave,,standard,,,à vérifier
+timemore-b75,Timemore,B75,B75 filter,wave,B75,Timemore B75;B75 Pro,paper-wood,bleached-TCF,,wave,,standard,,,à vérifier
+timemore-crystal-eye,Timemore,Crystal Eye,Crystal Eye cone,cone60,01;02,Timemore Crystal Eye;V60,paper-wood,bleached-TCF,,,,standard,,,à vérifier
+chemex-bonded-white,Chemex,Bonded,Bonded white (square / circle),chemex,3cup;6cup;8cup;10cup,Chemex,paper-wood,bleached-TCF,210,none,high,slow,Épais ; rincer ~4× plus qu'un V60.,Gagné 2019,mesuré
+chemex-bonded-natural,Chemex,Bonded,Bonded natural (unbleached),chemex,3cup;6cup;8cup;10cup,Chemex,paper-wood,unbleached,167,none,high,standard,Plus rapide que le blanchi dans les mesures.,Gagné 2019,mesuré
+melitta-1x2,Melitta,Original / Gourmet,1x2,melitta,1x2,Melitta 1x2;Clever Dripper;Bonavita,paper-wood-bamboo,bleached-TCF,,,,standard,Jusqu'à 60 % de bambou ; micro-perforations sur certaines gammes (plus de diterpènes).,Wikipedia ; PubMed 29735059,à vérifier
+melitta-1x4,Melitta,Original / Gourmet,1x4,melitta,1x4,Melitta 1x4;Clever Dripper (large),paper-wood-bamboo,bleached-TCF,,,,standard,,,à vérifier
+melitta-natural,Melitta,Natural brown,1x2 / 1x4 unbleached,melitta,1x2;1x4,Melitta,paper-wood-bamboo,unbleached,,,,standard,Rincer.,,à vérifier
+kono-meimon,Kono,Meimon,Kono cone,cone60,2cup;4cup,Kono Meimon;V60,paper-wood,bleached-TCF,,,,standard,,,à vérifier
+aeropress-paper,AeroPress,Paper,AeroPress micro-filter,disc,60mm,AeroPress;AeroPress Go;Clear,paper-wood,bleached-TCF,120,none,,fast,Très fin.,Gagné 2019,mesuré
+aeropress-xl-paper,AeroPress,Paper,AeroPress XL filter,disc,XL,AeroPress XL,paper-wood,bleached-TCF,,none,,fast,,,à vérifier
+aesir,Aesir (Aubade),Aesir,Aesir filter,disc,60mm,AeroPress,paper-wood,bleached-TCF,220,none,high,slow,Deux fois plus épais ; résiste aux chenaux et au colmatage ; compenser en pressant.,Gagné 2019,mesuré
+able-disk,Able,Disk,Disk fine / standard,disc,60mm,AeroPress,metal,,,,,very-fast,Huiles et fines passent ; corps ; sédiment.,,à vérifier
+fellow-prismo,Fellow,Prismo,Prismo metal filter,disc,60mm,AeroPress,metal,,,,,very-fast,Avec valve ; huiles passent.,,à vérifier
+coffee-sock,CoffeeSock,Cloth,Cloth V60,cloth,01;02,V60,cloth,,690,,,fast,Huiles partielles ; entretien.,Gagné 2019,mesuré
+nel-drip,Hario / divers,Nel,Nel drip cloth,cloth,1-2cup;3-4cup,Nel drip stand,cloth,,,,,fast,Corps ; garder humide.,,à vérifier
+hario-siphon-paper,Hario,Siphon,Siphon paper filter,disc,siphon,Hario siphon,paper-wood,unbleached,220,,,standard,,Gagné 2019,mesuré
+hario-siphon-cloth,Hario,Siphon,Siphon cloth,cloth,siphon,Hario siphon,cloth,,645,,,fast,,Gagné 2019,mesuré
+sibarist-espresso-hc,Sibarist,Espresso,High Cellulose,disc,50;53;55;57mm,Portafilter baskets,paper-cellulose,,,,,,Filtre de dessus de puck ; rendement et clarté.,sibarist.coffee ; wild-kaffee.com,constructeur
+sibarist-espresso-hm,Sibarist,Espresso,High Membrane,disc,50;53;55;57mm,Portafilter baskets,paper-membrane,,,,,,Structure synthétique régulière ; réduit l'astringence.,wild-kaffee.com,constructeur
+pulsar-paper,NextLevel,Pulsar,Pulsar paper filter,flatSmooth,Pulsar,NextLevel Pulsar,paper-wood,bleached-TCF,,none,,standard,No-bypass.,,à vérifier
+tricolate-paper,Tricolate,Tricolate,Tricolate filter,flatSmooth,Tricolate,Tricolate,paper-wood,bleached-TCF,,none,,standard,No-bypass.,,à vérifier
+kinto-paper,Kinto,SCS / OCT,Kinto filter,cone60,2cup;4cup,Kinto SCS;Kinto OCT,paper-wood,bleached-TCF,,,,standard,,,à vérifier
+batch-basket,générique,Basket,Batch brewer basket filter,basket,various,Moccamaster;batch brewers,paper-wood,bleached-TCF,,,,standard,,,à vérifier
+fellow-stagg-paper,Fellow,Stagg,Stagg X / XF paper filter,wave,X;XF,Fellow Stagg X;Fellow Stagg XF,paper-wood,bleached-TCF,,,,standard,Papier dédié Fellow ; les Kalita 185 sont souvent utilisés en substitut.,,à vérifier
+gabi-paper,Gabi,Gabi,Gabi Master A / B paper,cone60,02,Gabi Master A;Gabi B;V60 02,paper-wood,bleached-TCF,,,,standard,Gabi utilise des cônes 02 (V60 compatibles).,,à vérifier
+trinity-paper,Trinity,Trinity,Trinity Zero / One paper,dedicated,Trinity,Trinity Zero;Trinity One,paper-wood,bleached-TCF,,,,standard,Papier dédié.,,à vérifier
+ufo-paper,UFO,UFO,UFO 2.0 paper,dedicated,UFO,UFO Dripper 2.0;UFO Coffee Brewer,paper-wood,bleached-TCF,,,,standard,Papier dédié UFO 2.0 ; le premier UFO accepte des papiers compatibles (à vérifier).,,à vérifier
+pure-over-paper,Pure Over,Pure Over,Pure Over paper,dedicated,Pure Over,Pure Over,paper-wood,bleached-TCF,,,,standard,Papier spécifique.,,à vérifier
+cafflano-paper,Cafflano,Cafflano,Cafflano paper,dedicated,Cafflano,Cafflano,paper-wood,bleached-TCF,,,,standard,,,à vérifier
+lvl10-paper,NextLevel,LVL-10,LVL-10 paper,flatSmooth,LVL-10,NextLevel LVL-10,paper-wood,bleached-TCF,,,,standard,No-bypass.,,à vérifier
+simplify-paper,Simplify,Simplify,Simplify Brewer paper,flatSmooth,Simplify,Simplify Brewer,paper-wood,bleached-TCF,,,,standard,,,à vérifier
+kuju-pouch,Kuju,Pocket PourOver,Kuju single-serve pouch,dedicated,single,Kuju Coffee Brewer,paper-wood,bleached-TCF,,,,standard,"Sachet tout-en-un, café inclus.",,à vérifier

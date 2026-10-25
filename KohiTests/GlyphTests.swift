@@ -16,21 +16,23 @@ struct GlyphTests {
     }
 
     @Test func aFamilyMapsOntoABrewMethod() {
-        #expect(BrewerFamily.v60.method == .v60)
-        #expect(BrewerFamily.flat.method == .filter)
-        #expect(BrewerFamily.chemex.method == .filter)
-        #expect(BrewerFamily.immersionSwitch.method == .filter)
-        #expect(BrewerFamily.batch.method == .filter)
-        #expect(BrewerFamily.espresso.equipmentKind == .espressoMachine)
-        #expect(BrewerFamily.v60.equipmentKind == .brewer)
+        #expect(BrewerType.v60.method == .v60)
+        #expect(BrewerType.flat.method == .filter)
+        #expect(BrewerType.chemex.method == .filter)
+        #expect(BrewerType.immersionSwitch.method == .filter)
+        #expect(BrewerType.batch.method == .filter)
+        #expect(BrewerType.espresso.equipmentKind == .espressoMachine)
+        #expect(BrewerType.v60.equipmentKind == .brewer)
+        #expect(BrewerType.moka.family == .espresso)
+        #expect(BrewerType.aeropress.family == .immersion)
     }
 
     @Test func brewerTypeRoundTripsThroughTheFamily() {
-        for family in BrewerFamily.allCases {
-            #expect(BrewerFamily.parse(family.storageValue) == family)
+        for type in BrewerType.allCases {
+            #expect(BrewerType.parse(type.storageValue) == type)
         }
-        #expect(BrewerFamily.parse("Kalita Wave") == .flat)
-        #expect(BrewerFamily.parse("Hario Switch") == .immersionSwitch)
+        #expect(BrewerType.parse("Kalita Wave") == .flat)
+        #expect(BrewerType.parse("Hario Switch") == .immersionSwitch)
         #expect(EquipmentGlyph.forKit(.brewer, family: .v60) == .coneDripper)
         #expect(EquipmentGlyph.forKit(.kettle, family: nil) == .gooseneckKettle)
     }

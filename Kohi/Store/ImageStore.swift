@@ -13,10 +13,6 @@ nonisolated enum CardImageKind: Hashable, Sendable {
     case mask
     /// Downsampled render for the grid, at one of `ThumbnailCache.buckets`.
     case thumbnail(Int)
-    /// AI-generated stamp flyer, always 4:5 portrait.
-    case poster
-    /// Downsampled poster for the grid, at one of `ThumbnailCache.buckets`.
-    case posterThumbnail(Int)
     /// Flat image for an attachment linked to this card.
     case attachment(UUID)
     /// Downsampled thumbnail of an attachment.
@@ -28,8 +24,6 @@ nonisolated enum CardImageKind: Hashable, Sendable {
         case .flat: "flat.heic"
         case .mask: "mask.png"
         case .thumbnail(let size): "thumb-\(size)-v2.heic"
-        case .poster: "poster.heic"
-        case .posterThumbnail(let size): "poster-thumb-\(size)-v2.heic"
         case .attachment(let id): "attach-\(id.uuidString).heic"
         case .attachmentThumbnail(let id, let size): "attach-\(id.uuidString)-\(size).heic"
         }

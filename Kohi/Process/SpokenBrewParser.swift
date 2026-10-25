@@ -24,6 +24,12 @@ nonisolated enum SpokenBrewParser {
         var flavors: [String] = []
         var taste = TasteProfile()
         var agitation: Agitation?
+        var waterProfileId: UUID?
+        var waterName: String?
+        var filterStockId: UUID?
+        var filterName: String?
+        /// Pour / bloom / rinse masses said during the brew.
+        var spokenSteps: [SpokenStep] = []
         /// What was said, minus everything that was placed in a field. Empty
         /// when the whole phrase was understood.
         var leftover: String = ""
@@ -32,6 +38,8 @@ nonisolated enum SpokenBrewParser {
             dose == nil && water == nil && beverage == nil && seconds == nil
                 && temperature == nil && grind == nil && method == nil
                 && rating == nil && flavors.isEmpty && taste.isEmpty && agitation == nil
+                && waterProfileId == nil && filterStockId == nil
+                && waterName == nil && filterName == nil && spokenSteps.isEmpty
         }
 
         /// How much of the phrase found a home, 0 to 1. Under a half, the
@@ -39,7 +47,17 @@ nonisolated enum SpokenBrewParser {
         var confidence: Double = 0
     }
 
-    static func parse(_ transcript: String) -> Result {
+    struct SpokenStep: Equatable, Sendable {
+        var action: StepAction
+        var mass: Double?
+        var agitation: Agitation?
+    }
+
+    static func parse(
+        _ transcript: String,
+        waters: [WaterProfile] = [],
+        filters: [FilterStock] = []
+    ) -> Result {
         var result = Result()
         let text = normalize(transcript)
         var consumed: [Range<String.Index>] = []
@@ -54,6 +72,10 @@ nonisolated enum SpokenBrewParser {
             result.seconds = seconds
             take(range)
         }
+
+        let (steps, stepRanges) = spokenSteps(in: text, skipping: consumed)
+        result.spokenSteps = steps
+        consumed.append(contentsOf: stepRanges)
 
         if let (value, range) = quantity(in: text, units: ["g", "gram", "grams", "gramme", "grammes"],
                                          nouns: ["dose", "coffee", "in", "beans"]) {
@@ -109,13 +131,27 @@ nonisolated enum SpokenBrewParser {
         consumed.append(contentsOf: flavorRanges)
 
         result.leftover = remainder(of: text, minus: consumed)
+        if let hit = namedThing(in: result.leftover, waters: waters, filters: filters) {
+            result.waterProfileId = hit.waterId
+            result.waterName = hit.waterName
+            result.filterStockId = hit.filterId
+            result.filterName = hit.filterName
+            if let range = text.range(of: hit.matched, options: [.caseInsensitive, .diacriticInsensitive]) {
+                take(range)
+            }
+            result.leftover = remainder(of: text, minus: consumed)
+        }
         result.confidence = coverage(of: text, consumed: consumed)
         return result
     }
 
     /// Applies a parse to a brew, filling only what is empty. Dictation
     /// corrects nothing you typed yourself.
-    static func apply(_ result: Result, to brew: inout Brew) {
+    static func apply(
+        _ result: Result,
+        to brew: inout Brew,
+        appendLeftover: Bool = true
+    ) {
         if brew.dose == nil { brew.dose = result.dose }
         if brew.water == nil { brew.water = result.water }
         if brew.beverage == nil { brew.beverage = result.beverage }
@@ -127,6 +163,8 @@ nonisolated enum SpokenBrewParser {
         if brew.method == nil { brew.method = result.method }
         if brew.rating == nil { brew.rating = result.rating }
         if brew.agitation == nil { brew.agitation = result.agitation }
+        if brew.waterProfileID == nil { brew.waterProfileID = result.waterProfileId }
+        if brew.filterStockId == nil { brew.filterStockId = result.filterStockId }
         for axis in TasteAxis.allCases where brew.taste[axis] == nil {
             brew.taste[axis] = result.taste[axis]
         }
@@ -134,14 +172,48 @@ nonisolated enum SpokenBrewParser {
             let tag = FlavorMatcher.match(flavor).tags.first ?? FlavorTag(custom: flavor)
             if !brew.flavors.contains(tag) { brew.flavors.append(tag) }
         }
-        // Whatever was not understood is kept verbatim rather than dropped.
-        let leftover = result.leftover.trimmingCharacters(in: .whitespacesAndNewlines)
-        if !leftover.isEmpty {
-            brew.notes = brew.notes.isEmpty
-                ? leftover.capitalizedFirst
-                : brew.notes + "\n" + leftover.capitalizedFirst
+        applySpokenSteps(result.spokenSteps, to: &brew)
+        if appendLeftover {
+            let leftover = result.leftover.trimmingCharacters(in: .whitespacesAndNewlines)
+            if !leftover.isEmpty {
+                brew.notes = brew.notes.isEmpty
+                    ? leftover.capitalizedFirst
+                    : brew.notes + "\n" + leftover.capitalizedFirst
+            }
         }
-        brew.captureSource = .dictated
+        if brew.captureSource == nil { brew.captureSource = .dictated }
+    }
+
+    /// Timer keeps `at`. Narration overwrites mass and agitation on matching steps.
+    static func applySpokenSteps(_ spoken: [SpokenStep], to brew: inout Brew) {
+        guard !spoken.isEmpty else { return }
+        if brew.actualSteps.isEmpty {
+            brew.actualSteps = brew.plannedSteps.map { plan in
+                var step = plan
+                step.mass = plan.mass ?? plan.targetMass
+                return step
+            }
+        }
+        var used: Set<UUID> = []
+        for phrase in spoken {
+            let match = brew.actualSteps.firstIndex { step in
+                !used.contains(step.id) && step.action == phrase.action
+            } ?? brew.actualSteps.firstIndex { step in
+                !used.contains(step.id)
+            }
+            guard let match else { continue }
+            used.insert(brew.actualSteps[match].id)
+            let keptAt = brew.actualSteps[match].at
+            if let mass = phrase.mass {
+                brew.actualSteps[match].mass = mass
+                brew.actualSteps[match].skipped = false
+            }
+            if let agitation = phrase.agitation {
+                brew.actualSteps[match].agitation = agitation
+            }
+            brew.actualSteps[match].at = keptAt
+        }
+        brew.refreshPourRates()
     }
 
     // MARK: - Pieces
@@ -281,6 +353,47 @@ nonisolated enum SpokenBrewParser {
             return (Int(value * 60), match)
         }
         return nil
+    }
+
+    private static func spokenSteps(
+        in text: String,
+        skipping consumed: [Range<String.Index>]
+    ) -> ([SpokenStep], [Range<String.Index>]) {
+        let verbs: [(StepAction, String)] = [
+            (.preInfusion, "pre[- ]?infusion|preinfusion"),
+            (.rinse, "rinse|rincer|rinsed|rincage"),
+            (.bloom, "bloom|bloomed|fleur"),
+            (.pour, "pour|poured|verse|verser|versee"),
+            (.wait, "wait|waited|attendre"),
+            (.steep, "steep|steeped|infuse"),
+            (.press, "press|pressed|presser"),
+            (.shot, "shot"),
+            (.fill, "fill|filled|remplir"),
+        ]
+        var found: [(SpokenStep, Range<String.Index>)] = []
+        for (action, verbs) in verbs {
+            let pattern = #"\b(?:\#(verbs))(?:\s+(?:to|a|à))?(?:\s+(\d+(?:\.\d+)?))?(?:\s*(?:g|grams|grammes|gramme))?\b"#
+            var search = text.startIndex..<text.endIndex
+            while let match = text.range(of: pattern, options: .regularExpression, range: search) {
+                if consumed.contains(where: { $0.overlaps(match) })
+                    || found.contains(where: { $0.1.overlaps(match) })
+                {
+                    search = match.upperBound..<text.endIndex
+                    continue
+                }
+                let mass = firstNumber(in: String(text[match]))
+                let needsMass = action == .pour || action == .bloom || action == .rinse
+                    || action == .shot || action == .fill
+                if needsMass && mass == nil {
+                    search = match.upperBound..<text.endIndex
+                    continue
+                }
+                found.append((SpokenStep(action: action, mass: mass), match))
+                search = match.upperBound..<text.endIndex
+            }
+        }
+        found.sort { $0.1.lowerBound < $1.1.lowerBound }
+        return (found.map(\.0), found.map(\.1))
     }
 
     /// A number attached to a unit or to a noun that names the field. Both
@@ -480,6 +593,71 @@ nonisolated enum SpokenBrewParser {
         return nil
     }
 
+    private static func namedThing(
+        in leftover: String,
+        waters: [WaterProfile],
+        filters: [FilterStock]
+    ) -> (
+        matched: String,
+        waterId: UUID?,
+        waterName: String?,
+        filterId: UUID?,
+        filterName: String?
+    )? {
+        let hay = leftover.lowercased()
+        guard hay.count >= 3 else { return nil }
+
+        var waterTerms: [(String, WaterProfile)] = waters.flatMap { profile in
+            [profile.displayName, profile.name]
+                .map { $0.trimmingCharacters(in: .whitespaces) }
+                .filter { $0.count >= 3 }
+                .map { ($0, profile) }
+        }
+        for profile in waters where profile.source == .tap {
+            waterTerms.append(contentsOf: [("tap", profile), ("robinet", profile)])
+        }
+
+        var filterTerms: [(String, FilterStock)] = filters.flatMap { stock in
+            [stock.displayName, stock.customName, stock.model?.shortName, stock.model?.line, stock.model?.model]
+                .compactMap { $0?.trimmingCharacters(in: .whitespaces) }
+                .filter { $0.count >= 3 }
+                .map { ($0, stock) }
+        }
+        for model in ReferenceBase.filters {
+            if let owned = filters.first(where: { $0.modelId == model.id }) {
+                filterTerms.append((model.shortName, owned))
+            }
+        }
+
+        func best<T>(_ terms: [(String, T)]) -> (String, T)? {
+            terms
+                .map { ($0.0.lowercased(), $0.1) }
+                .filter { $0.0.count >= 3 && hay.contains($0.0) }
+                .max { $0.0.count < $1.0.count }
+        }
+
+        let water = best(waterTerms)
+        let filter = best(filterTerms)
+        var filterName: String?
+        if filter == nil {
+            filterName = ReferenceBase.filters
+                .map(\.shortName)
+                .filter { $0.count >= 3 && hay.contains($0.lowercased()) }
+                .max { $0.count < $1.count }
+        }
+        guard water != nil || filter != nil || filterName != nil else { return nil }
+        let matched = [water?.0, filter?.0, filterName?.lowercased()]
+            .compactMap { $0 }
+            .max { $0.count < $1.count } ?? leftover
+        return (
+            matched,
+            water?.1.id,
+            water?.1.displayName,
+            filter?.1.id,
+            filter?.1.displayName ?? filterName
+        )
+    }
+
     // MARK: - Text arithmetic
 
     private static func firstNumber(in text: String) -> Double? {
@@ -555,7 +733,7 @@ nonisolated enum SpokenBrewParser {
         .frenchPress: ["french press", "plunger", "cafetiere"],
         .moka: ["moka pot", "mocha pot"],
         .coldBrew: ["cold brew"],
-        .filter: ["batch", "drip"],
+        .filter: ["batch", "drip", "pour over", "hand brew"],
     ]
 
     private static let axisAliases: [TasteAxis: [String]] = [

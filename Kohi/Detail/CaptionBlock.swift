@@ -4,7 +4,7 @@ import SwiftUI
 /// between, no container of any kind.
 struct CaptionBlock: View {
     let card: CoffeeCard
-    var onPlaceTap: (() -> Void)?
+    var placeTag: String? = nil
 
     @Environment(\.openURL) private var openURL
 
@@ -35,7 +35,7 @@ struct CaptionBlock: View {
             Row(label: Copy.roastedOn, value: roastedValue),
             Row(label: "Score", value: scoreValue),
             Row(label: "Price", value: card.priceLine ?? ""),
-            Row(label: "Place", value: card.place?.summary ?? "", isTappable: hasPlace),
+            Row(label: "Place", value: placeValue, isTappable: hasPlace, url: card.place?.appleMapsURL),
         ]
         if let link = productLink {
             result.append(Row(label: "Link", value: link.host, isTappable: true, url: link.url))
@@ -48,6 +48,14 @@ struct CaptionBlock: View {
         }
         return result
             .filter { !$0.value.trimmingCharacters(in: .whitespaces).isEmpty }
+    }
+
+    private var placeValue: String {
+        guard var value = card.place?.summary, !value.isEmpty else { return "" }
+        if let placeTag, !placeTag.isEmpty {
+            value += " · \(placeTag)"
+        }
+        return value
     }
 
     /// Roast level and Agtron share a row: they say the same thing on two
@@ -105,11 +113,6 @@ struct CaptionBlock: View {
                         rowContent(row, tappable: true)
                     }
                     .buttonStyle(.plain)
-                } else if row.isTappable, let onPlaceTap {
-                    Button(action: onPlaceTap) {
-                        rowContent(row, tappable: true)
-                    }
-                    .buttonStyle(.plain)
                 } else {
                     rowContent(row)
                 }
@@ -128,8 +131,8 @@ struct CaptionBlock: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
             if tappable {
                 Image(systemName: "arrow.up.right")
-                    .font(.system(size: 9, weight: .semibold))
-                    .foregroundStyle(Palette.inkMuted)
+                    .font(.system(size: 11, weight: .semibold))
+                    .foregroundStyle(Palette.ink)
             }
         }
         .padding(.vertical, 11)

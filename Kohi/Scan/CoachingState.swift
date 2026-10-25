@@ -6,6 +6,9 @@ import Foundation
 nonisolated enum ScanTuning {
     /// Below this share of the frame the card is too small to read.
     static let minimumAreaFraction: CGFloat = 0.22
+    /// Library stills can sit further back than a live lock. Reject only a
+    /// fragment — below this, start review on the full frame instead.
+    static let minimumImportAreaFraction: CGFloat = 0.15
     /// Opposite edges may differ by this ratio before the angle is too steep.
     static let maximumSkew: CGFloat = 1.42
     /// Mean corner movement between frames, as a fraction of frame width.

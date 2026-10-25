@@ -1,237 +1,298 @@
 import SwiftUI
 
-/// Method, kettle, water, grinder — the kit the recipe path used to skip.
+/// Method family, dripper, grinder, filter — the kit, from the catalogue.
 struct BrewKitView: View {
     @Bindable var session: BrewSession
     var onBack: () -> Void
     var onClose: () -> Void
-    var onBrewNow: () -> Void
-    var onAlreadyBrewed: () -> Void
+    var onNext: () -> Void
 
     @Environment(SetupStore.self) private var setup
     @Environment(\.appEnvironment) private var appEnvironment
 
     @State private var tapCount = 0
-    @State private var showProfile = false
-    @State private var fieldFocused = false
+    @State private var picking: Picking?
+    @State private var addingKind: EquipmentKind?
+    @State private var addingFilter = false
+
+    private enum Picking: String, Identifiable {
+        case dripper, grinder, filter
+        var id: String { rawValue }
+    }
+
+    /// Always the cupboard that `brew.method` actually names. A free State
+    /// could sit on Espresso while the dripper was still a V60.
+    private var family: BrewerFamily {
+        BrewKit.tab(for: session.brew.method)
+    }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            header
-                .padding(.horizontal, 26)
-                .padding(.top, 14)
-
-            Text("With what?")
-                .font(Typography.question)
-                .foregroundStyle(Palette.ink)
-                .padding(.horizontal, 26)
-                .padding(.top, 28)
-
-            ScrollView {
-                VStack(alignment: .leading, spacing: 28) {
-                    methodSection
-                    kettleRow
-                    waterSection
-                    grindRow
-                    temperatureRow
-                    agitationRow
-                    filterRow
-                    Button("Edit kit") { showProfile = true }
-                        .catalogueLabel()
+        StepFlow(
+            step: session.progressIndex,
+            total: session.progressTotal,
+            question: Copy.withWhat,
+            onBack: onBack,
+            onClose: onClose,
+            nextTitle: "Next",
+            nextEnabled: true,
+            onNext: onNext
+        ) {
+            VStack(alignment: .leading, spacing: 28) {
+                if let applied = session.lastApplication {
+                    AppliedFromLastBlock(
+                        change: applied.change,
+                        onKeep: { session.keepLastApplication() },
+                        onUndo: { session.undoLastApplication() }
+                    )
                 }
-                .padding(.horizontal, 26)
-                .padding(.top, 22)
-                .padding(.bottom, 12)
-            }
-            .scrollIndicators(.hidden)
-            .scrollDismissesKeyboard(.interactively)
-            .fieldKeyboardClearance()
+                TabRail(
+                    tabs: BrewKit.journeyTabs,
+                    selection: Binding(
+                        get: { family },
+                        set: { applyFamily($0) }
+                    ),
+                    underline: .active,
+                    title: \.label
+                )
 
-            if !fieldFocused {
-                footer
-                    .padding(.horizontal, 26)
-                    .padding(.bottom, 28)
-                    .padding(.top, 12)
-                    .transition(.opacity.combined(with: .move(edge: .bottom)))
+                kitRow(
+                    title: family.kitTitle,
+                    value: activeBrewer?.displayName,
+                    empty: family == .espresso ? "Add a machine" : "Add a dripper"
+                ) { picking = .dripper }
+
+                kitRow(
+                    title: "Grinder",
+                    value: selectedGrinder?.displayName,
+                    empty: "Add a grinder"
+                ) { picking = .grinder }
+
+                filterRow
+                if !setup.accessories.isEmpty {
+                    accessoriesRow
+                }
             }
+            .padding(.bottom, 24)
         }
-        .background(Palette.paper.ignoresSafeArea())
-        .onPreferenceChange(FieldFocusPreference.self) { fieldFocused = $0 }
-        .animation(Motion.snappy, value: fieldFocused)
         .haptic(.tap, trigger: tapCount)
-        .sheet(isPresented: $showProfile) {
-            if let appEnvironment {
-                ProfileSheet().appEnvironment(appEnvironment)
+        .sheet(item: $picking) { target in
+            picker(for: target)
+        }
+        .sheet(item: $addingKind) { kind in
+            EquipmentSheet(kind: kind)
+                .appEnvironment(appEnvironment)
+        }
+        .sheet(isPresented: $addingFilter) {
+            FilterSheet(defaultFor: activeBrewer?.id) { created in
+                session.brew.filterStockId = created.id
+                session.brew.captureSource = .typed
             }
+            .appEnvironment(appEnvironment)
         }
     }
 
-    private var header: some View {
-        HStack(spacing: 12) {
-            Button(action: onBack) {
-                Image(systemName: "chevron.left")
-                    .font(.system(size: 10, weight: .semibold))
-                    .foregroundStyle(Palette.ink)
-                    .touchTarget()
-            }
-            .buttonStyle(.plain)
+    // MARK: - Accessories
 
-            HStack(spacing: 4) {
-                ForEach(0..<session.progressTotal, id: \.self) { index in
-                    Rectangle()
-                        .fill(index == 1 ? Palette.ink : Palette.hairline)
-                        .frame(width: 24, height: 1)
-                }
-            }
-            Spacer(minLength: 8)
-            Button(action: onClose) {
-                Image(systemName: "xmark")
-                    .font(.system(size: 10, weight: .semibold))
-                    .foregroundStyle(Palette.inkMuted)
-                    .touchTarget()
-            }
-            .buttonStyle(.plain)
-        }
-    }
-
-    private var footer: some View {
-        VStack(spacing: 12) {
-            if session.mode == .edit {
-                Button {
-                    session.alreadyBrewed()
-                } label: {
-                    Text("After")
-                        .font(Typography.label)
-                        .tracking(Typography.labelTracking)
-                        .textCase(.uppercase)
-                        .foregroundStyle(Palette.paper)
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 52)
-                        .background(Palette.ink, in: Capsule())
-                }
-                .buttonStyle(.plain)
-            } else {
-                Button(action: onBrewNow) {
-                    Text("Brew now")
-                        .font(Typography.label)
-                        .tracking(Typography.labelTracking)
-                        .textCase(.uppercase)
-                        .foregroundStyle(Palette.paper)
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 52)
-                        .background(Palette.ink, in: Capsule())
-                }
-                .buttonStyle(.plain)
-
-                Button("Already brewed", action: onAlreadyBrewed)
-                    .catalogueLabel()
-                    .frame(maxWidth: .infinity)
-                    .frame(minHeight: 44)
-            }
-        }
-    }
-
-    private var methodSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text("Method").catalogueLabel()
+    private var accessoriesRow: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("Accessories").catalogueLabel()
             FlowLayout {
-                ForEach(BrewMethod.allCases) { method in
-                    TagChip(
-                        text: method.label,
-                        isSelected: session.brew.method == method
-                    ) {
+                ForEach(setup.accessories) { item in
+                    let selected = session.brew.equipmentIDs.contains(item.id)
+                    TagChip(text: item.displayName, isSelected: selected) {
                         tapCount += 1
-                        let picked = session.brew.method == method ? nil : method
-                        session.apply(method: picked, setup: setup)
+                        if selected {
+                            session.brew.equipmentIDs.removeAll { $0 == item.id }
+                        } else {
+                            session.brew.equipmentIDs.append(item.id)
+                            session.brew.captureSource = .typed
+                        }
                     }
                 }
             }
         }
     }
 
+    private var filterRow: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            kitRow(
+                title: "Filter",
+                value: selectedFilter?.displayName,
+                empty: filterEmptyReason
+            ) { picking = .filter }
+            if let reason = filterReason {
+                Text(reason)
+                    .font(Typography.tag)
+                    .foregroundStyle(Palette.inkMuted)
+            }
+        }
+    }
+
+    private var filterEmptyReason: String {
+        if let brewer = activeBrewer, !brewer.takesPaper {
+            return "No paper for a \(brewer.displayName)"
+        }
+        return Copy.addThePaperYouUse
+    }
+
+    private var filterReason: String? {
+        if selectedFilter != nil { return nil }
+        if let brewer = activeBrewer, !brewer.takesPaper {
+            return "No paper for a \(brewer.displayName)"
+        }
+        return nil
+    }
+
+    private func kitRow(title: String, value: String?, empty: String, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            HStack(alignment: .firstTextBaseline, spacing: 12) {
+                Text(title).catalogueLabel()
+                    .frame(width: 74, alignment: .leading)
+                Text(value?.isEmpty == false ? value! : empty)
+                    .font(Typography.value)
+                    .foregroundStyle(value == nil ? Palette.inkMuted : Palette.ink)
+                    .lineLimit(1)
+                Spacer()
+                Text(Copy.change).catalogueLabel()
+            }
+            .frame(minHeight: 44)
+        }
+        .buttonStyle(.plain)
+    }
+
     @ViewBuilder
-    private var kettleRow: some View {
-        let kettles = setup.equipment(.kettle)
-        VStack(alignment: .leading, spacing: 12) {
-            Text("Kettle").catalogueLabel()
-            if kettles.isEmpty {
-                Text("Add a kettle in Setup")
-                    .font(Typography.tag)
-                    .foregroundStyle(Palette.inkMuted)
-            } else {
-                ChipToggles(
-                    items: kettles,
-                    label: \.displayName,
-                    isOn: { session.brew.equipmentIDs.contains($0.id) },
-                    toggle: toggleEquipment
-                )
-            }
-            let brewers = setup.equipment(.brewer)
-            if !brewers.isEmpty {
-                Text("Brewer").catalogueLabel()
-                    .padding(.top, 8)
-                ChipToggles(
-                    items: brewers,
-                    label: \.displayName,
-                    isOn: { session.brew.equipmentIDs.contains($0.id) },
-                    toggle: toggleEquipment
-                )
-            }
-        }
-    }
-
-    private var waterSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text("Water").catalogueLabel()
-            if setup.waterProfiles.isEmpty {
-                Text("Add water in Setup")
-                    .font(Typography.tag)
-                    .foregroundStyle(Palette.inkMuted)
-            } else {
-                ChipPicker(
-                    items: setup.waterProfiles,
-                    label: \.displayName,
-                    selection: Binding(
-                        get: { session.brew.waterProfileID.flatMap { setup.waterProfile(id: $0) } },
-                        set: { session.brew.waterProfileID = $0?.id }
-                    ),
-                    onPick: { tapCount += 1 }
-                )
-            }
-        }
-    }
-
-    private var grindRow: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text("Grind").catalogueLabel()
-            if setup.grinders.isEmpty {
-                Text("Add a grinder in Setup")
-                    .font(Typography.tag)
-                    .foregroundStyle(Palette.inkMuted)
-            } else {
-                ChipPicker(
-                    items: setup.grinders,
-                    label: \.displayName,
-                    selection: grinderBinding,
-                    allowsDeselect: false,
-                    onPick: { tapCount += 1 }
-                )
-                .frame(maxWidth: .infinity, alignment: .leading)
-            }
-            GrindRail(
-                setting: $session.brew.grind,
-                grinder: selectedGrinder,
-                method: session.brew.method,
-                onChange: { tapCount += 1 }
+    private func picker(for target: Picking) -> some View {
+        switch target {
+        case .dripper:
+            CatalogPicker(
+                title: family.kitTitle,
+                entries: dripperEntries,
+                selectedID: activeBrewer.map { CatalogID.kit($0.id) },
+                onPick: pickDripper,
+                onAddManually: {
+                    picking = nil
+                    addingKind = family == .espresso ? .espressoMachine : .brewer
+                }
             )
-            if let microns = session.brew.grind.micronsLabel(
-                grinder: selectedGrinder,
-                calibrations: setup.calibrations,
-                method: session.brew.method
-            ) {
-                DerivedValue(text: microns, empty: "")
+        case .grinder:
+            CatalogPicker(
+                title: "Grinder",
+                entries: grinderEntries,
+                selectedID: selectedGrinder.map { CatalogID.kit($0.id) },
+                onPick: pickGrinder,
+                onAddManually: {
+                    picking = nil
+                    addingKind = .grinder
+                }
+            )
+        case .filter:
+            CatalogPicker(
+                title: "Filter",
+                entries: filterEntries.items,
+                selectedID: selectedFilter.map { CatalogID.kit($0.id) },
+                unmatchedNote: filterEntries.unmatched ? Copy.noPaperMatched : filterReason,
+                confirmation: Copy.addedToYourPapers,
+                onPick: pickFilter,
+                onAddManually: {
+                    picking = nil
+                    addingFilter = true
+                }
+            )
+        }
+    }
+
+    private var dripperEntries: [CatalogEntry] {
+        let owned = setup.equipment.filter {
+            BrewKit.isCupboard($0.kind) && BrewKit.matches(family, $0)
+        }
+        var entries = owned.map { item in
+            CatalogEntry(
+                id: CatalogID.kit(item.id),
+                title: item.displayName,
+                subtitle: item.brewerKind?.label
+                    ?? BrewerType.parse(item.model)?.label
+                    ?? BrewerType.parse(item.displayName)?.label
+                    ?? family.label,
+                subfamily: item.brewerKind?.subfamily ?? family.label,
+                searchTerms: "\(item.brand) \(item.model) \(item.displayName)",
+                owned: true
+            )
+        }
+        let ownedRefs = Set(owned.compactMap(\.brewerRef))
+        if family == .espresso {
+            for item in ReferenceBase.kit where espressoCatalog(item) && !ownedRefs.contains(item.id) {
+                entries.append(item.catalogEntry(owned: false))
+            }
+        } else {
+            for brewer in ReferenceBase.brewers
+            where BrewKit.matches(family, brewer.dripperFamily.brewerType.family)
+                && !ownedRefs.contains(brewer.id)
+            {
+                entries.append(
+                    brewer.catalogEntry(owned: false, subtitle: brewer.dripperFamily.brewerType.label)
+                )
+            }
+            for item in ReferenceBase.kit
+            where item.kind == .brewer
+                && BrewKit.matches(family, item.family?.family)
+                && !ownedRefs.contains(item.id)
+                && ReferenceBase.brewer(id: item.id) == nil
+            {
+                entries.append(item.catalogEntry(owned: false))
             }
         }
+        return entries
+    }
+
+    private func espressoCatalog(_ item: ReferenceBase.Item) -> Bool {
+        item.kind == .espressoMachine || item.family?.family == .espresso
+    }
+
+    private var grinderEntries: [CatalogEntry] {
+        var entries = setup.grinders.map { item in
+            CatalogEntry(
+                id: CatalogID.kit(item.id),
+                title: item.displayName,
+                subtitle: item.adjustment?.label ?? "Grinder",
+                subfamily: item.isManual == true ? "Manual" : item.isManual == false ? "Electric" : (item.adjustment?.label ?? "Grinder"),
+                searchTerms: "\(item.brand) \(item.model)",
+                owned: true
+            )
+        }
+        let ownedRefs = Set(setup.grinders.compactMap(\.grinderRef))
+        for grinder in ReferenceBase.grinders where !ownedRefs.contains(grinder.id) {
+            var entry = grinder.catalogEntry(owned: false)
+            if let manual = grinder.isManual {
+                entry.subfamily = manual ? "Manual" : "Electric"
+            }
+            entries.append(entry)
+        }
+        return entries
+    }
+
+    private var filterEntries: (items: [CatalogEntry], unmatched: Bool) {
+        let result = FilterModel.filters(matching: activeBrewer)
+        let owned = setup.filterStock
+        var entries = owned.map { stock in
+            let fits = activeBrewer.map { FilterFit.compatible(stock, with: $0) } ?? true
+            return CatalogEntry(
+                id: CatalogID.kit(stock.id),
+                title: stock.displayName,
+                subtitle: fits ? (stock.shape?.label ?? "") : Copy.notForThisDripper,
+                subfamily: stock.shape?.label ?? "Paper",
+                searchTerms: stock.displayName,
+                owned: true
+            )
+        }
+        let ownedModels = Set(owned.compactMap(\.modelId))
+        for model in result.items where !ownedModels.contains(model.id) {
+            entries.append(model.catalogEntry(owned: false))
+        }
+        return (entries, result.unmatched)
+    }
+
+    private var activeBrewer: Equipment? {
+        BrewKit.activeBrewer(on: session.brew, in: setup)
     }
 
     private var selectedGrinder: Equipment? {
@@ -239,103 +300,101 @@ struct BrewKitView: View {
             ?? setup.preferredGrinder(for: session.brew.method)
     }
 
-    private var grinderBinding: Binding<Equipment?> {
-        Binding(
-            get: { selectedGrinder },
-            set: { pickGrinder($0) }
-        )
+    private var selectedFilter: FilterStock? {
+        session.brew.filterStockId.flatMap { setup.filterStock(id: $0) }
     }
 
-    private func pickGrinder(_ next: Equipment?) {
-        guard let next else {
-            session.brew.grind.grinderId = nil
+    private func applyFamily(_ family: BrewerFamily) {
+        tapCount += 1
+        session.apply(family: family, setup: setup)
+    }
+
+    private func pickDripper(_ entry: CatalogEntry) {
+        tapCount += 1
+        if let id = CatalogID.parseKit(entry.id), let item = setup.equipment(id: id) {
+            assignBrewer(item)
             return
         }
-        if let current = selectedGrinder,
-           current.id != next.id,
-           let value = session.brew.grind.value,
-           let method = session.brew.method,
-           let translated = GrindConversion.translate(
-               setting: value,
-               method: method,
-               from: current,
-               to: next,
-               calibrations: setup.calibrations
-           )
-        {
-            session.brew.grind = GrindSetting(
-                grinderId: next.id,
-                value: translated.setting,
-                raw: session.brew.grind.raw
+        if let reference = ReferenceBase.brewer(id: entry.id) {
+            let stored = setup.adopt(
+                Equipment(reference: reference),
+                asDefaultIfFirstFor: reference.dripperFamily.brewerType.method
             )
-        } else {
-            session.brew.grind.grinderId = next.id
+            assignBrewer(stored)
+            return
+        }
+        if let item = ReferenceBase.kit.first(where: { $0.id == entry.id }) {
+            let stored = setup.adopt(
+                Equipment(reference: item),
+                asDefaultIfFirstFor: item.family?.method ?? session.brew.method
+            )
+            assignBrewer(stored)
         }
     }
 
-    private var temperatureRow: some View {
-        NumberRow(
-            "Temp",
-            value: $session.brew.temperature,
-            unit: "°C",
-            placeholder: Placeholders.text(.brewTemperature),
-            labelWidth: 74,
-            hint: temperatureHint,
-            error: session.brew.temperature.flatMap(FieldCopy.boiling)
+    private func pickGrinder(_ entry: CatalogEntry) {
+        tapCount += 1
+        if let id = CatalogID.parseKit(entry.id), let item = setup.equipment(id: id) {
+            session.brew.grind.grinderId = item.id
+            session.brew.captureSource = .typed
+            return
+        }
+        if let reference = ReferenceBase.grinder(id: entry.id) {
+            let stored = setup.adopt(
+                Equipment(reference: reference),
+                asDefaultIfFirstFor: session.brew.method
+            )
+            session.brew.grind.grinderId = stored.id
+            session.brew.captureSource = .typed
+        }
+    }
+
+    private func pickFilter(_ entry: CatalogEntry) {
+        tapCount += 1
+        if let id = CatalogID.parseKit(entry.id), let stock = setup.filterStock(id: id) {
+            session.brew.filterStockId = stock.id
+            session.brew.captureSource = .typed
+            return
+        }
+        if let model = ReferenceBase.filters.first(where: { $0.id == entry.id }) {
+            let existing = setup.filterStock.first { $0.modelId == model.id }
+            let stock = existing ?? FilterStock(
+                modelId: model.id,
+                size: model.sizes.first ?? "",
+                shape: model.shape
+            )
+            if existing == nil { setup.add(stock, defaultFor: activeBrewer?.id) }
+            session.brew.filterStockId = stock.id
+            session.brew.captureSource = .typed
+        }
+    }
+
+    private func assignBrewer(_ item: Equipment) {
+        BrewKit.assign(
+            item,
+            to: &session.brew,
+            setup: setup,
+            card: session.card,
+            recipe: session.recipe
         )
     }
+}
 
-    private var temperatureHint: String? {
-        guard session.brew.temperature == nil, let method = session.brew.method else { return nil }
-        let band = RecipeRules.temperature(for: session.card.roastLevel, method: method)
-        let roast = session.card.roastLevel?.label.lowercased() ?? "unknown roast"
-        return "\(GrindRange.number(band.lowerBound))–\(GrindRange.number(band.upperBound)) °C for a \(roast) roast"
-    }
+struct AppliedFromLastBlock: View {
+    var change: String
+    var onKeep: () -> Void
+    var onUndo: () -> Void
 
-    private var agitationRow: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            Text("Agitation").catalogueLabel()
-            ChipPicker(
-                items: Array(Agitation.allCases),
-                label: \.label,
-                selection: $session.brew.agitation,
-                onPick: { tapCount += 1 }
-            )
-        }
-    }
-
-    private var filterRow: some View {
-        let filters = activeBrewer?.filters.filter { !$0.isEmpty } ?? []
-        return VStack(alignment: .leading, spacing: 10) {
-            Text("Filter").catalogueLabel()
-            if filters.isEmpty {
-                Text(activeBrewer == nil ? "Pick a brewer" : "Add filters in Profile")
-                    .font(Typography.tag)
-                    .foregroundStyle(Palette.inkMuted)
-            } else {
-                ChipPicker(
-                    items: filters,
-                    label: \.displayName,
-                    selection: Binding(
-                        get: { filters.first { $0.id == session.brew.filterId } },
-                        set: { session.brew.filterId = $0?.id }
-                    ),
-                    onPick: { tapCount += 1 }
-                )
+    var body: some View {
+        InsightBlock(
+            title: Copy.appliedFromLastBrew,
+            bodyText: change.capitalizedFirst,
+            provenance: "From the move you chose"
+        ) {
+            HStack(spacing: 18) {
+                Button("Keep", action: onKeep).catalogueLabel()
+                Button("Undo", action: onUndo).catalogueLabel()
             }
-        }
-    }
-
-    private var activeBrewer: Equipment? {
-        session.brew.equipmentIDs.compactMap { setup.equipment(id: $0) }.first { $0.kind == .brewer }
-    }
-
-    private func toggleEquipment(_ item: Equipment, on: Bool) {
-        tapCount += 1
-        if on {
-            session.brew.equipmentIDs.append(item.id)
-        } else {
-            session.brew.equipmentIDs.removeAll { $0 == item.id }
         }
     }
 }

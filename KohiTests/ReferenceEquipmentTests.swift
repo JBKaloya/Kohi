@@ -21,7 +21,7 @@ struct ReferenceEquipmentTests {
         for item in brewers {
             #expect(item.family != nil)
             if let family = item.family {
-                #expect(BrewerFamily.allCases.contains(family))
+                #expect(BrewerType.allCases.contains(family))
             }
         }
     }
@@ -32,7 +32,7 @@ struct ReferenceEquipmentTests {
     }
 
     @Test func theDripperSeedIsSearchable() {
-        #expect(ReferenceBase.brewers.count == 80)
+        #expect(ReferenceBase.brewers.count == 79)
         let origami = ReferenceBase.equipment(kind: .brewer, matching: "Origami")
         #expect(origami.contains { $0.brand == "Origami" })
     }

@@ -7,9 +7,18 @@ You rank three brew corrections. You are given the only moves you may use \
 explain each in one short clause. You must not invent a change that is not \
 in the allowed list. One variable per move.
 
+You are also given what the person wants next time (wishes, e.g. "less \
+bitterness", "more complexity"), a reading of the extraction (first-minute \
+flow in g/s and its band, bloom, pours, time, ratio, temperature, grind) and \
+of the coffee (process, roast level, days off roast, origin, altitude). For \
+each move, because is a short chain of 2 to 4 clauses tying the wish to the \
+extraction factors, then to the coffee factors, using only values you were \
+given. confidence is "high" when a measurement supports the move, "medium" \
+for established practice, "low" otherwise.
+
 Return JSON: reading (one sentence of what the cup said), target (what to \
-aim for), and moves: [{rank, variable, change, why, effect}]. change must \
-match an allowed change. Plain English, no marketing.`;
+aim for), and moves: [{rank, variable, change, why, because, confidence, \
+effect}]. change must match an allowed change. Plain English, no marketing.`;
 
 const SCHEMA = {
   type: "OBJECT",
@@ -25,9 +34,11 @@ const SCHEMA = {
           variable: { type: "STRING" },
           change: { type: "STRING" },
           why: { type: "STRING" },
+          because: { type: "ARRAY", items: { type: "STRING" } },
+          confidence: { type: "STRING", enum: ["high", "medium", "low"] },
           effect: { type: "OBJECT" },
         },
-        required: ["rank", "variable", "change", "why"],
+        required: ["rank", "variable", "change", "why", "because", "confidence"],
       },
     },
   },
@@ -47,7 +58,7 @@ Deno.serve(async (req) => {
   const apiKey = Deno.env.get("GEMINI_API_KEY");
   if (!apiKey) return json({ error: "GEMINI_API_KEY is not configured" }, 500);
 
-  let body: { readingHint?: string; comment?: string; allowed?: unknown };
+  let body: { readingHint?: string; comment?: string; recipeName?: string; actualSource?: string; pourRates?: unknown; deviations?: number; wishes?: string[]; reading?: unknown; allowed?: unknown };
   try {
     body = await req.json();
   } catch {
@@ -69,6 +80,9 @@ Deno.serve(async (req) => {
             { text: `Allowed moves: ${JSON.stringify(body.allowed)}` },
             { text: `Reading hint: ${body.readingHint ?? ""}` },
             { text: `Comment: ${body.comment ?? ""}` },
+            { text: `Recipe: ${body.recipeName ?? ""} · actualSource: ${body.actualSource ?? ""} · pourRates: ${JSON.stringify(body.pourRates ?? [])} · material deviations: ${body.deviations ?? 0}` },
+            { text: `Wishes: ${JSON.stringify(body.wishes ?? [])}` },
+            { text: `Reading: ${JSON.stringify(body.reading ?? {})}` },
           ],
         }],
         generationConfig: {

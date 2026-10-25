@@ -42,6 +42,8 @@ struct TasteRadar: View {
         }
         .overlay { labels }
         .frame(width: size, height: size)
+        .padding(.horizontal, 28)
+        .padding(.vertical, 16)
         .animation(Motion.quick, value: taste)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(taste.accessibilityLabel)

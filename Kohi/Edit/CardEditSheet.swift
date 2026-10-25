@@ -12,8 +12,9 @@ struct CardEditSheet: View {
     private let onDiscard: (() -> Void)?
 
     @Environment(RoasterStore.self) private var roasters
+    @Environment(PlaceIndex.self) private var places
+    @Environment(CardStore.self) private var cards
     @Environment(AccountStore.self) private var account
-    @Environment(LotFlags.self) private var lotFlags
     @Environment(\.appEnvironment) private var appEnvironment
     @Environment(\.dismiss) private var dismiss
     @State private var isReading = false
@@ -23,18 +24,18 @@ struct CardEditSheet: View {
     @State private var isScanningAttachment = false
     @State private var isIngestingAttachment = false
     @State private var attachmentReadingID: UUID?
+    @State private var nextAttachmentRole: CardAttachment.Role = .page
     /// The bag group starts closed, and opens itself when the scan found
     /// something in it.
     @State private var isAddingRoaster = false
+    @State private var isBrowsingRoasters = false
+    /// Set when Browse's "Add manually" is tapped, so the form opens once
+    /// the catalogue sheet has finished dismissing.
+    @State private var addRoasterAfterBrowse = false
+    /// The person agreed to remember that this café serves this roaster.
+    @State private var willRememberServe = false
     /// Non-nil starts an on-device translation of the CJK fields.
     @State private var translationConfig: TranslationSession.Configuration?
-    /// New cards only: generate the stamp flyer after save. Washed vs plain
-    /// scan is chosen earlier, on the review screen.
-    @State private var generateFlyer = true
-
-    @State private var dictation = Dictation()
-    @State private var dictatedTrigger = 0
-    @State private var notesBeforeDictation: String?
 
     /// What the scan turned up, once the read has finished. Only the two
     /// unhelpful cases are worth saying out loud.
@@ -76,10 +77,6 @@ struct CardEditSheet: View {
                         readNotice
                     }
 
-                    if isNew, CardPoster.isAvailable {
-                        flyerPicker
-                    }
-
                     FieldGroup(title: "Card") {
                         field("Coffee", text: $draft.name, placeholder: Placeholders.text(.cardCoffee), presence: .useful)
                         roasterField
@@ -107,9 +104,6 @@ struct CardEditSheet: View {
 
                     FieldGroup(title: "Tasting notes") {
                         TagField(tags: $draft.tastingNotes)
-                        if lotFlags.isOn(.flavorWheel) {
-                            matchToWheel
-                        }
                     }
 
                     FieldGroup(title: Copy.onTheBag) {
@@ -141,34 +135,20 @@ struct CardEditSheet: View {
                         if draft.isDecaf { decafMethodPicker }
                     }
 
-                    FieldGroup(title: "Brew method") {
-                        FlowLayout {
-                            ForEach(BrewMethod.allCases) { method in
-                                TagChip(text: method.label, isSelected: draft.brewMethod == method) {
-                                    draft.brewMethod = draft.brewMethod == method ? nil : method
-                                }
-                            }
-                        }
-                    }
-
                     if let recipe = draft.recipeSuggestion {
                         recipeSection(recipe)
                     }
 
-                    attachmentSection
-
-                    FieldGroup(title: Copy.boughtAt) {
-                        placeRow
-                        placeTypePicker
-                    }
+                    boughtAtSection
 
                     FieldGroup(title: Copy.noteToSelf) {
                         TextField(Placeholders.text(.cardNoteToSelf), text: $draft.personalNotes, axis: .vertical)
                             .font(Typography.body)
                             .lineLimit(3...8)
-                            .guessHighlight(trigger: dictatedTrigger, onUndo: undoDictation)
                         DictationField(text: $draft.personalNotes)
                     }
+
+                    attachmentSection
 
                     if let onDiscard {
                         Button {
@@ -197,8 +177,8 @@ struct CardEditSheet: View {
                         // A new card confirms itself by landing in the grid a
                         // moment later; a second haptic here steps on it.
                         if !isNew { saveTrigger += 1 }
-                        if isNew {
-                            draft.poster = generateFlyer && CardPoster.isAvailable ? .pending : .none
+                        if willRememberServe, let offer = serveOffer {
+                            places.remember(placeID: offer.placeID, roasterID: offer.roasterID)
                         }
                         matchRoasterIfObvious()
                         onSave(draft)
@@ -208,7 +188,19 @@ struct CardEditSheet: View {
                 }
             }
             .sheet(isPresented: $isSearchingPlace) {
-                PlaceSearchView(place: $draft.place)
+                PlaceSearchView(place: $draft.place, placeID: $draft.placeID)
+            }
+            .sheet(isPresented: $isBrowsingRoasters, onDismiss: {
+                if addRoasterAfterBrowse {
+                    addRoasterAfterBrowse = false
+                    isAddingRoaster = true
+                }
+            }) {
+                roasterBrowser
+            }
+            .onChange(of: draft.placeID) { _, newID in
+                willRememberServe = false
+                applyServedRoaster(newID)
             }
             .sheet(isPresented: $isAddingRoaster) {
                 RoasterSheet(name: draft.roaster) { created in
@@ -231,8 +223,6 @@ struct CardEditSheet: View {
         .tint(Palette.ink)
         .haptic(.saved, trigger: saveTrigger)
         .task { await prefill() }
-        // Dismissing the sheet mid-sentence must not leave the microphone on.
-        .onDisappear { dictation.cancel() }
         .translationTask(translationConfig) { session in
             if let translated = await FieldTranslator.translate(draft, using: session) {
                 withAnimation(Motion.snappy) { draft = translated }
@@ -300,20 +290,39 @@ struct CardEditSheet: View {
         VStack(alignment: .leading, spacing: 8) {
             field("Roaster", text: $draft.roaster, placeholder: Placeholders.text(.cardRoaster), presence: .useful)
 
+            Button(Copy.browse) { isBrowsingRoasters = true }
+                .font(Typography.tag)
+                .foregroundStyle(Palette.inkMuted)
+                .buttonStyle(.plain)
+
             if let linked = draft.roasterId.flatMap({ roasters.roaster(id: $0) }) {
-                HStack(spacing: 6) {
-                    Text(linked.summary)
-                        .font(Typography.tag)
-                        .foregroundStyle(Palette.inkMuted)
-                        .lineLimit(1)
-                    Button {
-                        draft.roasterId = nil
-                    } label: {
-                        Image(systemName: "xmark")
-                            .font(.system(size: 8, weight: .semibold))
+                VStack(alignment: .leading, spacing: 4) {
+                    HStack(spacing: 6) {
+                        Text(linked.summary)
+                            .font(Typography.tag)
+                            .foregroundStyle(Palette.inkMuted)
+                            .lineLimit(1)
+                        Button {
+                            draft.roasterId = nil
+                        } label: {
+                            Image(systemName: "xmark")
+                                .font(.system(size: 8, weight: .semibold))
+                                .foregroundStyle(Palette.inkMuted)
+                        }
+                        .buttonStyle(.plain)
+                    }
+                    if let provenance = roasters.provenance(of: linked) {
+                        Text(provenance)
+                            .font(Typography.tag)
                             .foregroundStyle(Palette.inkMuted)
                     }
-                    .buttonStyle(.plain)
+                }
+            } else if roasterIsEmpty, !servedHere.isEmpty {
+                Text(Copy.servedHere).catalogueLabel()
+                FlowLayout {
+                    ForEach(servedHere) { roaster in
+                        TagChip(text: roaster.name) { link(roaster) }
+                    }
                 }
             } else if !roasterSuggestions.isEmpty {
                 FlowLayout {
@@ -351,11 +360,76 @@ struct CardEditSheet: View {
         return roasters.match(name: name, country: "") == nil
     }
 
+    private var roasterIsEmpty: Bool {
+        draft.roaster.trimmingCharacters(in: .whitespaces).isEmpty && draft.roasterId == nil
+    }
+
+    /// Roasters the chosen place serves, when there is more than one to offer.
+    private var servedHere: [Roaster] {
+        guard let placeID = draft.placeID else { return [] }
+        let ids = places.servedRoasterIDs(for: placeID)
+        guard ids.count > 1 else { return [] }
+        return ids.compactMap { roasters.roaster(servedID: $0) }
+    }
+
+    /// FROM YOUR ARCHIVE, then every roaster, busiest Paris cafés first.
+    private var roasterCatalog: [CatalogEntry] {
+        let used = Set(cards.cards.compactMap(\.roasterId))
+        return roasters.roasters
+            .sorted { lhs, rhs in
+                let left = roasters.shopsServed(lhs)
+                let right = roasters.shopsServed(rhs)
+                if left != right { return left > right }
+                return lhs.name.localizedCompare(rhs.name) == .orderedAscending
+            }
+            .map { roaster in
+                let aliases = roasters.seedBySlug[roaster.seedID ?? ""]?.aliases ?? []
+                let terms = ([roaster.name, roaster.city, roaster.country] + aliases)
+                    .joined(separator: " ")
+                    .folding(options: [.diacriticInsensitive, .caseInsensitive], locale: nil)
+                let subtitle = [roaster.city, roaster.country]
+                    .filter { !$0.isEmpty }
+                    .joined(separator: ", ")
+                return CatalogEntry(
+                    id: roaster.id.uuidString,
+                    title: roaster.name,
+                    subtitle: subtitle,
+                    subfamily: "",
+                    searchTerms: terms,
+                    owned: used.contains(roaster.id)
+                )
+            }
+    }
+
+    private var placeTags: [String] {
+        guard let placeID = draft.placeID, let place = places.place(id: placeID) else {
+            if let name = draft.place?.name, let match = places.match(name: name), let tag = match.statusTag {
+                return [tag]
+            }
+            return []
+        }
+        var tags = [Copy.fromSpecialtyCoffeeParis(place.fetchedAt)]
+        if let tag = place.statusTag { tags.append(tag) }
+        return tags
+    }
+
+    /// A café with no known roaster, and a card that now has one.
+    private var serveOffer: (placeID: String, place: String, roasterID: String, roaster: String)? {
+        guard let placeID = draft.placeID,
+              let place = places.place(id: placeID),
+              places.servedRoasterIDs(for: placeID).isEmpty,
+              let linkedID = draft.roasterId,
+              let roaster = roasters.roaster(id: linkedID)
+        else { return nil }
+        return (placeID, place.name, roaster.seedID ?? roaster.id.uuidString, roaster.name)
+    }
+
     private func link(_ roaster: Roaster) {
         withAnimation(Motion.snappy) {
             draft.roasterId = roaster.id
             draft.roaster = roaster.name
         }
+        publishIfSeeded(roaster)
     }
 
     /// On save, link the card when the index knows exactly one roastery by
@@ -365,6 +439,69 @@ struct CardEditSheet: View {
         guard draft.roasterId == nil, !draft.roaster.isEmpty else { return }
         guard let match = roasters.match(name: draft.roaster, country: "") else { return }
         draft.roasterId = match.id
+        publishIfSeeded(match)
+    }
+
+    /// One served roaster fills the empty field. A roastery shop is typed as
+    /// one; every other Paris place is a café until someone says otherwise.
+    private func applyServedRoaster(_ placeID: String?) {
+        guard let placeID else { return }
+        if draft.placeType == nil {
+            draft.placeType = roasters.ownsShop(placeID) ? .roastery : .cafe
+        }
+        let served = places.servedRoasterIDs(for: placeID)
+        guard let servedID = PlaceRoasterFill.link(servedIDs: served, roasterIsEmpty: roasterIsEmpty),
+              let roaster = roasters.roaster(servedID: servedID) else { return }
+        link(roaster)
+    }
+
+    private func publishIfSeeded(_ roaster: Roaster) {
+        guard roaster.seedID != nil, roaster.createdBy == nil else { return }
+        roasters.publish(roaster.id)
+    }
+
+    private var boughtAtSection: some View {
+        FieldGroup(title: Copy.boughtAt) {
+            placeRow
+            if !placeTags.isEmpty {
+                Text(placeTags.joined(separator: " · "))
+                    .font(Typography.tag)
+                    .foregroundStyle(Palette.inkMuted)
+            }
+            if let offer = serveOffer {
+                Button {
+                    willRememberServe.toggle()
+                } label: {
+                    Text(rememberLabel(offer))
+                        .font(Typography.tag)
+                        .foregroundStyle(Palette.inkMuted)
+                }
+                .buttonStyle(.plain)
+            }
+            placeTypePicker
+        }
+    }
+
+    private func rememberLabel(_ offer: (placeID: String, place: String, roasterID: String, roaster: String)) -> String {
+        willRememberServe
+            ? Copy.willRememberServes(offer.place, offer.roaster)
+            : Copy.rememberServes(offer.place, offer.roaster)
+    }
+
+    private var roasterBrowser: some View {
+        CatalogPicker(
+            title: "Roaster",
+            entries: roasterCatalog,
+            selectedID: draft.roasterId?.uuidString,
+            confirmation: "",
+            ownedSectionTitle: Copy.fromYourArchive,
+            onPick: { entry in
+                guard let id = UUID(uuidString: entry.id),
+                      let roaster = roasters.roaster(id: id) else { return }
+                link(roaster)
+            },
+            onAddManually: { addRoasterAfterBrowse = true }
+        )
     }
 
     private var placeRow: some View {
@@ -379,28 +516,6 @@ struct CardEditSheet: View {
             }
         }
         .buttonStyle(.plain)
-    }
-
-    /// Scan stays on the shelf, or an AI flyer is generated after save.
-    /// Washed / not washed is the review-screen filter, not this choice.
-    private var flyerPicker: some View {
-        group("On the shelf") {
-            FlowLayout {
-                TagChip(text: "Scan", isSelected: !generateFlyer) {
-                    generateFlyer = false
-                }
-                TagChip(text: "AI flyer", isSelected: generateFlyer) {
-                    generateFlyer = true
-                }
-            }
-            Text(
-                generateFlyer
-                    ? "A 4:5 stamp flyer is generated after save. A couple of minutes."
-                    : "The scan — washed or not — stays on the home grid."
-            )
-            .font(Typography.tag)
-            .foregroundStyle(Palette.inkMuted)
-        }
     }
 
     private var readNotice: some View {
@@ -421,16 +536,7 @@ struct CardEditSheet: View {
     /// Sends the card image to the vision model on demand — for the scans the
     /// local read got wrong, or cards saved before the model existed.
     private var rescanButton: some View {
-        Button(action: rescanWithAI) {
-            HStack(spacing: 6) {
-                Image(systemName: "sparkles")
-                    .font(.system(size: 10, weight: .semibold))
-                Text("Read again with AI")
-                    .font(Typography.tag)
-            }
-            .foregroundStyle(Palette.ink)
-        }
-        .buttonStyle(.plain)
+        CoffeeIntelligenceButton(action: rescanWithAI)
     }
 
 
@@ -442,22 +548,6 @@ struct CardEditSheet: View {
         if let price = draft.priceLine { parts.append(price) }
         if draft.isDecaf { parts.append(draft.decafMethod?.label ?? "Decaf") }
         return parts.isEmpty ? nil : parts.prefix(2).joined(separator: " · ")
-    }
-
-    private var matchToWheel: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            let matched = draft.declaredFlavors
-            if !matched.isEmpty {
-                Text("On the wheel")
-                    .font(Typography.tag)
-                    .foregroundStyle(Palette.inkMuted)
-                FlowLayout {
-                    ForEach(matched) { tag in
-                        TagChip(text: tag.displayName, isSelected: false) {}
-                    }
-                }
-            }
-        }
     }
 
     private var productURLRow: some View {
@@ -487,14 +577,16 @@ struct CardEditSheet: View {
 
     private var roastLevelPicker: some View {
         group("Roast") {
-            FlowLayout {
-                ForEach(RoastLevel.allCases) { level in
-                    TagChip(text: level.label, isSelected: draft.roastLevel == level) {
-                        draft.roastLevel = draft.roastLevel == level ? nil : level
-                    }
-                }
-            }
+            RoastRail(level: $draft.roastLevel, onChange: applyRoast)
         }
+    }
+
+    private func applyRoast(_ next: RoastLevel?) {
+        let previous = draft.roastLevel
+        if draft.agtron == nil || draft.agtron == previous?.suggestedAgtron {
+            draft.agtron = next?.suggestedAgtron
+        }
+        draft.roastLevel = next
     }
 
     private var roastedOnRow: some View {
@@ -668,32 +760,6 @@ struct CardEditSheet: View {
         return parsed.linesRead < Self.cardLineFloor ? .notACard : .unreadable
     }
 
-    /// Dictating the note to self. Only the note: the fields above come off a
-    /// label, and reading them out loud is slower than scanning them.
-    private func toggleDictation() async {
-        guard dictation.isListening else {
-            await dictation.start()
-            return
-        }
-        let transcript = await dictation.stop()
-            .trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !transcript.isEmpty else { return }
-
-        notesBeforeDictation = draft.personalNotes
-        withAnimation(Motion.snappy) {
-            draft.personalNotes = draft.personalNotes.isEmpty
-                ? transcript.capitalizedFirst
-                : draft.personalNotes + "\n" + transcript.capitalizedFirst
-            dictatedTrigger += 1
-        }
-    }
-
-    private func undoDictation() {
-        guard let notesBeforeDictation else { return }
-        withAnimation(Motion.snappy) { draft.personalNotes = notesBeforeDictation }
-        self.notesBeforeDictation = nil
-    }
-
     private func merge(_ parsed: ParsedFields) {
         func fill(_ keyPath: WritableKeyPath<CoffeeCard, String>, _ value: String?) {
             guard let value, draft[keyPath: keyPath].isEmpty else { return }
@@ -756,7 +822,7 @@ struct CardEditSheet: View {
             if isIngestingAttachment {
                 HStack(spacing: 8) {
                     ProgressView().controlSize(.mini)
-                    Text("Adding page")
+                    Text(Copy.addingPage)
                         .catalogueLabel()
                 }
             }
@@ -764,14 +830,26 @@ struct CardEditSheet: View {
             AttachmentStrip(
                 cardID: draft.id,
                 attachments: draft.attachments,
-                onAdd: { isScanningAttachment = true },
+                title: Copy.theRestOfTheBag,
+                showsAddButton: false,
+                onAdd: { addAttachment(role: .page) },
                 onSelect: { attachment in
                     if let i = draft.attachments.firstIndex(where: { $0.id == attachment.id }) {
                         cycleRole(at: i)
                     }
                 }
             )
+
+            Button(Copy.scanBackLabel) { addAttachment(role: .bag) }
+                .catalogueLabel()
+            Button(Copy.scanRoasterRecipe) { addAttachment(role: .recipe) }
+                .catalogueLabel()
         }
+    }
+
+    private func addAttachment(role: CardAttachment.Role) {
+        nextAttachmentRole = role
+        isScanningAttachment = true
     }
 
     private func cycleRole(at index: Int) {
@@ -783,9 +861,10 @@ struct CardEditSheet: View {
 
     private func ingestAttachment(_ scan: ScanResult) async {
         do {
-            let attachment = try await Task.detached(priority: .userInitiated) {
+            var attachment = try await Task.detached(priority: .userInitiated) {
                 try await ImagePipeline.ingestAttachment(scan, cardID: draft.id)
             }.value
+            attachment.role = nextAttachmentRole
 
             withAnimation(Motion.snappy) {
                 draft.attachments.insert(attachment, at: 0)

@@ -1,3 +1,4 @@
+import CoreGraphics
 import Foundation
 
 /// Best-effort metadata read off a card. Every field is optional and every field
@@ -67,6 +68,9 @@ nonisolated struct ParsedFields: Sendable {
     /// all land here.
     var wantsVisionAssist: Bool {
         guard linesRead > 0 else { return false }
+        // Which fields are empty matters more than how many filled.
+        // Three weak fields with no name and no notes used to look "enough".
+        if name == nil, tastingNotes.isEmpty { return true }
         if sourceLanguage != nil { return filledCount < 5 }
         if linesRead < 4 { return true }
         return filledCount < 3
@@ -239,6 +243,21 @@ nonisolated enum FieldParser {
         ("カトゥーラ", "Caturra"),
     ]
 
+    /// The lexicons in the English the archive uses, for suggestions and for
+    /// reading a café menu. Not for parsing: that keeps the localised forms.
+    static var originNames: [String] { countries }
+    static let processNames = [
+        "Washed", "Natural", "Honey", "Anaerobic", "Semi-washed", "Wet hulled",
+        "Pulped natural", "Carbonic maceration",
+    ]
+    static var varietyNames: [String] {
+        var seen = Set<String>()
+        return varietyLexicon
+            .filter { $0.unicodeScalars.allSatisfy(\.isASCII) }
+            .map { $0.prefix(1).uppercased() + $0.dropFirst() }
+            .filter { seen.insert($0.lowercased().replacingOccurrences(of: " ", with: "").replacingOccurrences(of: "-", with: "")).inserted }
+    }
+
     /// Tokens that mark the producer on unlabeled cards.
     private static let producerHints = [
         "finca", "hacienda", "estate", "farm", "station", "coop", "cooperative", "fazenda",
@@ -292,7 +311,76 @@ nonisolated enum FieldParser {
 
         BagFieldParser.parse(texts, into: &fields)
         fields.recipe = RecipeParser.parse(texts)
+        if fields.roaster == nil, let seed = RoasterLineMatch.match(lines: texts) {
+            fields.roaster = seed.name
+        }
+        inferTitle(from: lines, texts: texts, into: &fields)
         return fields
+    }
+
+    /// The coffee's name is usually the largest line, not a labelled field.
+    /// A line only wins when it is clearly taller than the rest, and it never
+    /// steals the roaster, a country, or a one-word process.
+    private static func inferTitle(
+        from lines: [TextExtractor.Line],
+        texts: [String],
+        into fields: inout ParsedFields
+    ) {
+        guard fields.name == nil else { return }
+        let heights = lines.map(\.bounds.height).filter { $0 > 0.001 }
+        guard heights.count >= 2 else { return }
+        let sorted = heights.sorted()
+        let median = sorted[sorted.count / 2]
+        guard median > 0 else { return }
+        let roasterFold = fields.roaster.map(Roaster.fold) ?? ""
+
+        var eligible: [(text: String, height: CGFloat)] = []
+        for (index, line) in lines.enumerated() {
+            let height = line.bounds.height
+            guard height > 0.001 else { continue }
+            let text = index < texts.count ? texts[index] : normalize(line.text)
+            let words = text.split(separator: " ")
+            guard (1...5).contains(words.count) else { continue }
+            guard text.count <= 32 else { continue }
+            guard text.filter(\.isLetter).count >= 3 else { continue }
+            if isWeightOrPrice(text) { continue }
+            if text.filter({ $0 == "," }).count >= 2 { continue }
+            if isLabel(text) { continue }
+            if fields.tastingNotes.contains(where: { $0.caseInsensitiveCompare(text) == .orderedSame }) { continue }
+            if countries.contains(where: { $0.caseInsensitiveCompare(text) == .orderedSame }) { continue }
+            if words.count == 1, processLexicon.contains(where: { text.localizedCaseInsensitiveContains($0) }) {
+                continue
+            }
+            let folded = Roaster.fold(text)
+            if roasterFold.count >= 4, folded.contains(roasterFold) {
+                continue
+            }
+            eligible.append((text, height))
+        }
+        guard let best = eligible.max(by: { $0.height < $1.height }) else { return }
+        if let second = eligible.filter({ $0.text != best.text }).map(\.height).max() {
+            // Two lines of similar size: don't guess which is the name.
+            guard best.height >= second * 1.35 else { return }
+        } else {
+            // A weight can be the tallest line and still not be the name.
+            // Compare with the lines that are actually smaller.
+            let shorter = heights.filter { $0 < best.height * 0.98 }
+            guard !shorter.isEmpty else { return }
+            let baseline = shorter.sorted()[shorter.count / 2]
+            guard best.height >= baseline * 1.35 else { return }
+        }
+        fields.name = best.text
+    }
+
+    /// "250g" and "€18" are the biggest type on some bags, and they are not the coffee.
+    private static func isWeightOrPrice(_ text: String) -> Bool {
+        let compact = text.replacingOccurrences(of: " ", with: "").lowercased()
+        if compact.range(of: #"^\d+([.,]\d+)?(g|kg|oz|ml|cl|l)$"#, options: .regularExpression) != nil {
+            return true
+        }
+        if compact.contains("€") || compact.contains("$") || compact.contains("£") { return true }
+        let digits = compact.filter(\.isNumber).count
+        return digits > 0 && digits == compact.filter { $0.isNumber || $0 == "." || $0 == "," }.count
     }
 
     // MARK: - Normalisation

@@ -59,6 +59,7 @@ struct RecipeTests {
 
     @Test func waitAndCustomAreNamedForTheTimer() {
         #expect(StepAction.wait.label == "Wait")
+        #expect(StepAction.rinse.label == "Rinse")
         #expect(StepAction.custom.label == "Step")
         #expect(BrewStep(action: .custom, note: "Swirl the bed").actionLabel == "Swirl the bed")
         #expect(BrewStep(action: .custom).actionLabel == "Step")
@@ -243,6 +244,10 @@ struct RecipeTests {
             cardID: UUID(),
             brewID: UUID(),
             referenceID: "a1-v60-ultimate",
+            profileTags: ["fruity"],
+            authorGrinder: "Comandante C40",
+            autoAdvance: false,
+            rinseMassOverride: 600,
             createdAt: Date(timeIntervalSince1970: 1_000),
             updatedAt: Date(timeIntervalSince1970: 2_000)
         )
@@ -260,7 +265,7 @@ struct RecipeTests {
             "temperatureMax", "seconds", "grindLabel", "grindMicronsLow",
             "grindMicronsHigh", "steps", "source", "evidence", "attribution",
             "sourceURL", "notes", "cardID", "brewID", "referenceID",
-            "profileTags", "authorGrinder", "autoAdvance",
+            "profileTags", "authorGrinder", "autoAdvance", "advanceMode", "rinseMassOverride",
             "createdAt", "updatedAt",
         ]
         let actual = Set(Mirror(reflecting: fullRecipe()).children.compactMap(\.label))
@@ -269,7 +274,12 @@ struct RecipeTests {
 
     @Test func stepPropertiesAreAllAccountedFor() {
         let step = RecipeStep(at: 45, action: .pour, targetMass: 300, untilSeconds: 75, note: "swirl")
-        let mapped: Set<String> = ["id", "at", "action", "targetMass", "untilSeconds", "note"]
+        // `steps` is jsonb on RecipeRow, read and written whole, so every
+        // property here travels with it.
+        let mapped: Set<String> = [
+            "id", "at", "action", "targetMass", "untilSeconds", "note",
+            "agitation", "derived", "accessoryIDs", "cue",
+        ]
         let actual = Set(Mirror(reflecting: step).children.compactMap(\.label))
         #expect(actual.subtracting(mapped).isEmpty, "unmapped RecipeStep properties")
     }
@@ -288,11 +298,13 @@ struct RecipeTests {
         object.removeValue(forKey: "profile_tags")
         object.removeValue(forKey: "author_grinder")
         object.removeValue(forKey: "auto_advance")
+        object.removeValue(forKey: "rinse_mass_override")
         let restored = try JSONDecoder().decode(
             RecipeRow.self,
             from: try JSONSerialization.data(withJSONObject: object)
         ).toRecipe()
         #expect(restored.profileTags.isEmpty)
         #expect(restored.autoAdvance)
+        #expect(restored.rinseMassOverride == nil)
     }
 }

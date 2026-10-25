@@ -104,6 +104,8 @@ nonisolated final class FlavorWheel: Sendable {
     private let byID: [String: FlavorNode]
     private let bySynonym: [String: FlavorNode]
 
+    var isEmpty: Bool { nodes.isEmpty }
+
     var families: [FlavorNode] {
         nodes.filter { $0.level == 1 }.sorted { ($0.order ?? 99) < ($1.order ?? 99) }
     }
@@ -171,6 +173,42 @@ nonisolated final class FlavorWheel: Sendable {
         let decoder = JSONDecoder()
         decoder.keyDecodingStrategy = .convertFromSnakeCase
         return try decoder.decode(FlavorWheelDocument.self, from: data)
+    }
+
+    /// Walks to the level-1 family and returns its wheel colour, darkened so
+    /// it can be a title on paper. "Red Currant" resolves through Fruity.
+    func titleInk(forNote note: String) -> (Double, Double, Double)? {
+        let trimmed = note.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return nil }
+        let matched = FlavorMatcher.match(trimmed).tags.first { !$0.isCustom }
+        let node = matched.flatMap { self.node(id: $0.id) } ?? matchSynonym(trimmed)
+        guard let node else { return nil }
+        var current = node
+        var guardrail = 0
+        while current.level != 1, guardrail < 8 {
+            guardrail += 1
+            guard let parentID = current.parent, let parent = self.node(id: parentID) else { break }
+            current = parent
+        }
+        guard current.level == 1, let hex = current.color else { return nil }
+        return Self.darkened(Self.rgb(hex: hex))
+    }
+
+    private static func rgb(hex: String) -> (Double, Double, Double)? {
+        var text = hex.trimmingCharacters(in: .whitespaces)
+        if text.hasPrefix("#") { text.removeFirst() }
+        guard text.count == 6, let value = Int(text, radix: 16) else { return nil }
+        return (
+            Double((value >> 16) & 0xFF) / 255,
+            Double((value >> 8) & 0xFF) / 255,
+            Double(value & 0xFF) / 255
+        )
+    }
+
+    /// Wheel colours are meant as chips. A title needs them a step darker.
+    private static func darkened(_ color: (Double, Double, Double)?) -> (Double, Double, Double)? {
+        guard let color else { return nil }
+        return (color.0 * 0.62, color.1 * 0.62, color.2 * 0.62)
     }
 
     private static func resourceURL() -> URL? {

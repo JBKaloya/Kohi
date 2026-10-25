@@ -16,6 +16,12 @@ nonisolated struct Roaster: Identifiable, Codable, Hashable, Sendable {
     /// Who first created the entry. Nil for seeded rows.
     var createdBy: UUID?
     var updatedAt: Date
+    /// Slug in the bundled seed. Stays on the device: the shared table has no
+    /// column for it, and a pull must not wipe it. See `RoasterStore.merge`.
+    var seedID: String?
+    /// A person corrected this row. Their copy wins, and the provenance tag
+    /// switches to "from you".
+    var editedByUser: Bool
 
     init(
         id: UUID = UUID(),
@@ -25,7 +31,9 @@ nonisolated struct Roaster: Identifiable, Codable, Hashable, Sendable {
         website: String? = nil,
         instagram: String? = nil,
         createdBy: UUID? = nil,
-        updatedAt: Date = .now
+        updatedAt: Date = .now,
+        seedID: String? = nil,
+        editedByUser: Bool = false
     ) {
         self.id = id
         self.name = name
@@ -35,6 +43,22 @@ nonisolated struct Roaster: Identifiable, Codable, Hashable, Sendable {
         self.instagram = instagram
         self.createdBy = createdBy
         self.updatedAt = updatedAt
+        self.seedID = seedID
+        self.editedByUser = editedByUser
+    }
+
+    /// Host of `website`, without `www`. Instagram links are not a domain:
+    /// several roasters have nothing else, and instagram.com would collapse
+    /// them into one.
+    var websiteDomain: String? {
+        Self.domain(of: website)
+    }
+
+    static func domain(of website: String?) -> String? {
+        guard let website, let host = URL(string: website)?.host?.lowercased() else { return nil }
+        if host.contains("instagram.com") { return nil }
+        let stripped = host.hasPrefix("www.") ? String(host.dropFirst(4)) : host
+        return stripped.isEmpty ? nil : stripped
     }
 
     /// "Belleville Brûlerie · Paris, France".
@@ -60,7 +84,8 @@ nonisolated struct Roaster: Identifiable, Codable, Hashable, Sendable {
 
         let noise: Set<String> = [
             "roasters", "roaster", "roastery", "roasting", "coffee", "coffees",
-            "cafe", "brulerie", "torrefaction", "the", "co", "company", "and",
+            "cafe", "cafes", "brulerie", "torrefaction", "torrefacteur", "torrefacteurs",
+            "the", "co", "company", "and",
         ]
         let words = stripped
             .split(separator: " ")
@@ -84,5 +109,7 @@ nonisolated extension Roaster {
         instagram = try c.decodeIfPresent(String.self, forKey: .instagram)
         createdBy = try c.decodeIfPresent(UUID.self, forKey: .createdBy)
         updatedAt = try c.decodeIfPresent(Date.self, forKey: .updatedAt) ?? .now
+        seedID = try c.decodeIfPresent(String.self, forKey: .seedID)
+        editedByUser = try c.decodeIfPresent(Bool.self, forKey: .editedByUser) ?? false
     }
 }

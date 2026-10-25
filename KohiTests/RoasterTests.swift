@@ -13,7 +13,11 @@ struct RoasterTests {
     /// A store backed by a file nothing else touches, so tests neither read
     /// nor overwrite the real index.
     private func emptyStore() -> RoasterStore {
-        RoasterStore(files: JSONFileStore(filename: "roasters-test-\(UUID().uuidString).json"))
+        let name = UUID().uuidString
+        return RoasterStore(
+            files: JSONFileStore(filename: "roasters-test-\(name).json"),
+            seedStamp: JSONDocumentStore(filename: "roaster-seed-stamp-test-\(name).json")
+        )
     }
 
     @Test func spellingNoiseFoldsToTheSameKey() {
@@ -90,14 +94,21 @@ struct RoasterTests {
         #expect(restored == original)
     }
 
-    /// Same census contract as the cards: add a field and this fails until it
-    /// is mapped in `RoasterRow`.
+    /// Same census contract as the cards. `seedID` and `editedByUser` are
+    /// device-local on purpose: the shared row has no column for them, and
+    /// `merge` copies them back after a pull.
     @Test func roasterPropertiesAreAllAccountedFor() {
         #expect(
             SyncParityTests.properties(of: roaster("Belleville")) == [
                 "id", "name", "country", "city", "website", "instagram",
-                "createdBy", "updatedAt",
+                "createdBy", "updatedAt", "seedID", "editedByUser",
             ]
         )
+    }
+
+    @Test func frenchNoiseWordsFoldAway() {
+        #expect(roaster("Noir Torréfacteur").dedupeKey == roaster("Noir").dedupeKey)
+        #expect(roaster("Cafés Pfaff").dedupeKey == roaster("Pfaff").dedupeKey)
+        #expect(roaster("KB Coffee Roasters").dedupeKey == roaster("KB").dedupeKey)
     }
 }

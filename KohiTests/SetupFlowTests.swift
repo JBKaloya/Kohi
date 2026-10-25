@@ -15,7 +15,7 @@ struct SetupFlowTests {
 
     @Test func v60AGrinderAndTapFillTheKit() {
         let store = emptyStore()
-        let family = BrewerFamily.v60
+        let family = BrewerType.v60
         let brewer = Equipment(
             kind: family.equipmentKind,
             model: family.label,
@@ -43,7 +43,7 @@ struct SetupFlowTests {
 
     @Test func closingAfterTheFirstQuestionKeepsTheBrewer() {
         let store = emptyStore()
-        let brewer = Equipment(kind: .brewer, model: "V60", brewerType: BrewerFamily.v60.storageValue)
+        let brewer = Equipment(kind: .brewer, model: "V60", brewerType: BrewerType.v60.storageValue)
         store.add(brewer)
         store.setDefault(brewer, for: .v60, on: true)
 

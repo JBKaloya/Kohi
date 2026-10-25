@@ -1,3 +1,4 @@
+import CoreGraphics
 import Testing
 @testable import Kohi
 
@@ -345,6 +346,44 @@ struct FieldParserTests {
         #expect(parsed.sourceLanguage == "zh")
     }
 
+    @Test func theTallestLineBecomesTheNameAndTheSeedBecomesTheRoaster() {
+        let parsed = FieldParser.parse([
+            TextExtractor.Line(text: "KLOVER COFFEE PARIS", y: 0.1, x: 0.1, bounds: CGRect(x: 0.1, y: 0.8, width: 0.7, height: 0.05)),
+            TextExtractor.Line(text: "Nano Challa", y: 0.3, x: 0.1, bounds: CGRect(x: 0.1, y: 0.55, width: 0.6, height: 0.14)),
+            TextExtractor.Line(text: "Washed", y: 0.6, x: 0.1, bounds: CGRect(x: 0.1, y: 0.3, width: 0.3, height: 0.04)),
+        ])
+        #expect(parsed.roaster == "Klover")
+        #expect(parsed.name == "Nano Challa")
+    }
+
+    @Test func aWeightIsNotTheCoffeeName() {
+        let parsed = FieldParser.parse([
+            TextExtractor.Line(text: "250g", y: 0.1, x: 0.1, bounds: CGRect(x: 0.1, y: 0.8, width: 0.4, height: 0.16)),
+            TextExtractor.Line(text: "Nano Challa", y: 0.4, x: 0.1, bounds: CGRect(x: 0.1, y: 0.5, width: 0.6, height: 0.08)),
+            TextExtractor.Line(text: "Washed", y: 0.7, x: 0.1, bounds: CGRect(x: 0.1, y: 0.2, width: 0.3, height: 0.04)),
+        ])
+        #expect(parsed.name == "Nano Challa")
+    }
+
+    @Test func theWordOriginOnALabelIsNotTheRoaster() {
+        let parsed = FieldParser.parse(lines([
+            "Origin: Ethiopia",
+            "Process: Washed",
+            "Heirloom",
+        ]))
+        #expect(parsed.roaster != "Origin")
+    }
+
+    @Test func aRoasterLineIsNotUsedAsTheCoffeeName() {
+        let parsed = FieldParser.parse([
+            TextExtractor.Line(text: "Klover", y: 0.2, x: 0.1, bounds: CGRect(x: 0.1, y: 0.6, width: 0.5, height: 0.2)),
+            TextExtractor.Line(text: "Ethiopia", y: 0.5, x: 0.1, bounds: CGRect(x: 0.1, y: 0.3, width: 0.4, height: 0.04)),
+            TextExtractor.Line(text: "Washed", y: 0.7, x: 0.1, bounds: CGRect(x: 0.1, y: 0.1, width: 0.3, height: 0.03)),
+        ])
+        #expect(parsed.roaster == "Klover")
+        #expect(parsed.name == nil)
+    }
+
     // MARK: - Vision assist trigger
 
     @Test func weakParseWantsVisionAssist() {
@@ -355,6 +394,20 @@ struct FieldParserTests {
             "Golden Raisin", "Winey Blueberry", "Lemon Zest",
         ]))
         parsed.linesRead = 6
+        #expect(parsed.wantsVisionAssist)
+    }
+
+    @Test func threeFieldsWithoutANameOrNotesStillAskForVision() {
+        var parsed = FieldParser.parse(lines([
+            "Country: Kenya",
+            "Region: Nyeri",
+            "Process: Washed",
+            "Altitude: 1800",
+        ]))
+        parsed.linesRead = 4
+        #expect(parsed.name == nil)
+        #expect(parsed.tastingNotes.isEmpty)
+        #expect(parsed.filledCount >= 3)
         #expect(parsed.wantsVisionAssist)
     }
 

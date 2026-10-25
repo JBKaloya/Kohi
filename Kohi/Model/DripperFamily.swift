@@ -1,6 +1,6 @@
 import Foundation
 
-/// Geometry of a dripper, from the seed. Finer than `BrewerFamily`, which is
+/// Geometry of a dripper, from the seed. Finer than `BrewerType`, which is
 /// what a brew records.
 nonisolated enum DripperFamily: String, Codable, CaseIterable, Identifiable, Sendable {
     case cone
@@ -28,7 +28,7 @@ nonisolated enum DripperFamily: String, Codable, CaseIterable, Identifiable, Sen
         }
     }
 
-    var brewerFamily: BrewerFamily {
+    var brewerType: BrewerType {
         switch self {
         case .cone, .coneDeep: .v60
         case .flat, .flatCone, .flatNobypass, .noBypass: .flat

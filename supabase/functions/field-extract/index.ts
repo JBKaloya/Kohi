@@ -99,11 +99,76 @@ const LABEL_SCHEMA = {
   ],
 };
 
+const TRANSCRIPT_PROMPT = `\
+You correct spelling in a spoken brew note. Keep the speaker's language \
+(French or English) and the word order. Do not summarise, do not invent \
+coffee jargon they did not say, and do not change numbers.
+
+When a word is clearly a coffee term from the vocabulary, use that spelling \
+(V60, AeroPress, Moka, bloom, pour, rinse, Cafec, Hario, clicks). Leave \
+unknown words as they are. Return JSON { "text": "..." }.`;
+
+const TRANSCRIPT_SCHEMA = {
+  type: "OBJECT",
+  properties: { text: FIELD },
+  propertyOrdering: ["text"],
+};
+
+const MENU_PROMPT = `\
+You are reading the OCR text of a photographed café menu or chalkboard. List \
+each coffee on it, in the order it appears. Use only words present in the \
+text: never complete a name, a roaster or an origin from general knowledge. \
+A field that is not written is null. method is one of: Espresso, V60, \
+Kalita, Chemex, AeroPress, Batch, or null. price is the number printed next \
+to the coffee, with its currency code (EUR, USD, GBP, JPY, CHF), or null.`;
+
+const MENU_SCHEMA = {
+  type: "OBJECT",
+  properties: {
+    coffees: {
+      type: "ARRAY",
+      items: {
+        type: "OBJECT",
+        properties: {
+          name: FIELD,
+          roaster: FIELD,
+          country: FIELD,
+          process: FIELD,
+          variety: FIELD,
+          notes: { type: "ARRAY", items: { type: "STRING" } },
+          method: FIELD,
+          price: { type: "NUMBER", nullable: true },
+          currency: FIELD,
+        },
+        propertyOrdering: [
+          "name", "roaster", "country", "process", "variety",
+          "notes", "method", "price", "currency",
+        ],
+      },
+    },
+  },
+  propertyOrdering: ["coffees"],
+};
+
 function json(body: unknown, status = 200): Response {
   return new Response(JSON.stringify(body), {
     status,
     headers: { "Content-Type": "application/json" },
   });
+}
+
+function promptFor(kind: string): string {
+  if (kind === "label") return LABEL_PROMPT;
+  if (kind === "transcript") return TRANSCRIPT_PROMPT;
+  if (kind === "menu") return MENU_PROMPT;
+  return BREW_PROMPT;
+}
+
+function schemaFor(kind: string) {
+  if (kind === "label") return LABEL_SCHEMA;
+  if (kind === "transcript") return TRANSCRIPT_SCHEMA;
+  if (kind === "menu") return MENU_SCHEMA;
+  return BREW_SCHEMA;
 }
 
 Deno.serve(async (req) => {
@@ -113,7 +178,7 @@ Deno.serve(async (req) => {
   if (!apiKey) return json({ error: "GEMINI_API_KEY is not configured" }, 500);
 
   let body: {
-    kind?: "brew" | "label";
+    kind?: "brew" | "label" | "transcript" | "menu";
     transcript?: string;
     image?: string;
     mime?: string;
@@ -126,7 +191,7 @@ Deno.serve(async (req) => {
   }
 
   const kind = body.kind ?? (body.image ? "label" : "brew");
-  if (kind === "brew" && !body.transcript?.trim()) {
+  if ((kind === "brew" || kind === "transcript" || kind === "menu") && !body.transcript?.trim()) {
     return json({ error: "missing transcript" }, 400);
   }
   if (kind === "label" && !body.image) {
@@ -139,10 +204,13 @@ Deno.serve(async (req) => {
       inlineData: { mimeType: body.mime ?? "image/jpeg", data: body.image },
     });
   }
-  parts.push({ text: kind === "brew" ? BREW_PROMPT : LABEL_PROMPT });
+  parts.push({ text: promptFor(kind) });
   // What the app already knows, so the model does not contradict it.
-  if (body.context) parts.push({ text: `Context: ${body.context}` });
-  if (body.transcript) parts.push({ text: `Sentence: ${body.transcript}` });
+  if (body.context) parts.push({ text: `Vocabulary: ${body.context}` });
+  if (body.transcript) {
+    const label = kind === "menu" ? "Menu text" : "Sentence";
+    parts.push({ text: `${label}: ${body.transcript}` });
+  }
 
   const model = Deno.env.get("GEMINI_MODEL") ?? "gemini-3.6-flash";
   const started = Date.now();
@@ -156,7 +224,7 @@ Deno.serve(async (req) => {
         generationConfig: {
           temperature: 0,
           responseMimeType: "application/json",
-          responseSchema: kind === "brew" ? BREW_SCHEMA : LABEL_SCHEMA,
+          responseSchema: schemaFor(kind),
           thinkingConfig: { thinkingLevel: "low" },
         },
       }),

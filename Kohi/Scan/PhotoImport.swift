@@ -38,12 +38,19 @@ nonisolated enum PhotoImport {
                 observation.confidence >= ScanTuning.minimumConfidence
             else { return nil }
 
-            return Quad(
+            let quad = Quad(
                 topLeft: observation.topLeft.toImageCoordinates(size, origin: .upperLeft),
                 topRight: observation.topRight.toImageCoordinates(size, origin: .upperLeft),
                 bottomRight: observation.bottomRight.toImageCoordinates(size, origin: .upperLeft),
                 bottomLeft: observation.bottomLeft.toImageCoordinates(size, origin: .upperLeft)
             )
+            guard quad.areaFraction(in: size) >= ScanTuning.minimumImportAreaFraction,
+                  quad.skew <= ScanTuning.maximumSkew
+            else {
+                Log.app.notice("photo import: document too small or too skewed")
+                return nil
+            }
+            return quad
         } catch {
             Log.app.notice("photo import: no document detected (\(error))")
             return nil

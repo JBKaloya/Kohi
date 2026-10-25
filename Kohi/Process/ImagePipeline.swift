@@ -275,31 +275,4 @@ nonisolated enum ImagePipeline {
         }
         return image
     }
-
-    /// Renders and caches a poster thumbnail for one bucket. The poster has no
-    /// mask, so this is a straight downsample.
-    static func makePosterThumbnail(id: UUID, bucket: Int) -> CGImage? {
-        let url = ImageStore.shared.url(for: id, kind: .poster)
-        guard let image = ImageCodec.downsample(url, maxPixel: bucket) else { return nil }
-        if let data = ImageCodec.encodeHEIC(image, quality: 0.85) {
-            try? ImageStore.shared.write(data, for: id, kind: .posterThumbnail(bucket))
-        }
-        return image
-    }
-
-    /// Accepts a PNG or HEIC payload from generation or a cloud pull and writes
-    /// the local `poster.heic` archive file.
-    @discardableResult
-    static func installPoster(id: UUID, data: Data) -> Bool {
-        guard let image = ImageCodec.decode(data),
-              let heic = ImageCodec.encodeHEIC(image, quality: 0.9)
-        else { return false }
-        do {
-            try ImageStore.shared.write(heic, for: id, kind: .poster)
-            return true
-        } catch {
-            Log.app.error("install poster failed for \(id): \(error)")
-            return false
-        }
-    }
 }

@@ -1,0 +1,695 @@
+id,name,brand,address,postalCode,arrondissement,city,roasterIds,roasterNames,status,closedOn,siteScore,sourceUrl,fetchedAt
+crible,Crible,Crible,"75 Rue Buffon, 75005",75005,5,Paris,kb;drop-coffee-roasters,KB ; Drop Coffee Roasters,open,,S+,https://specialtycoffee.paris/shops/crible,2026-10-01
+silo,Silo,Silo,"87 Rue La Fayette, 75009",75009,9,Paris,,,open,,S+,https://specialtycoffee.paris/shops/silo,2026-10-01
+viahe-caphe,Viahe caphe,Viahe caphe,"16 Rue Daval, 75011",75011,11,Paris,drop-coffee-roasters,Drop Coffee Roasters,open,,S+,https://specialtycoffee.paris/shops/viahe-caphe,2026-10-01
+espeletia-cafe-coffee-roaster,Espeletia,Espeletia,"52 Rue Davy, 75017",75017,17,Paris,espeletia,Espeletia,open,,S+,https://specialtycoffee.paris/shops/espeletia-cafe-coffee-roaster,2026-10-01
+les-cremes,Les Crèmes,Les Crèmes,"82 Rue Marguerite de Rochechouart, 75009",75009,9,Paris,plural,Plural,open,,S+,https://specialtycoffee.paris/shops/les-cremes,2026-10-01
+station-service-batignolles,Station Service Batignolles,Station Service Batignolles,"3 Rue Brochant, 75017",75017,17,Paris,plume-cafe,Plume café,open,,S+,https://specialtycoffee.paris/shops/station-service-batignolles,2026-10-01
+santa-lyna,Santa Lyna,Santa Lyna,"96 Bd de Sébastopol, 75003",75003,3,Paris,coutume,Coutume,open,,S,https://specialtycoffee.paris/shops/santa-lyna,2026-10-01
+jozi-cafe,Jozi Café,Jozi Café,"67 Quai de la Tournelle, 75005",75005,5,Paris,jozi,Jozi,open,,S,https://specialtycoffee.paris/shops/jozi-cafe,2026-10-01
+synapse,Synapse,Synapse,"2 Rue du Fer à Moulin, 75005",75005,5,Paris,synapse,Synapse,open,,S,https://specialtycoffee.paris/shops/synapse,2026-10-01
+azur-cafe,Azur Café,Azur Café,"63 Rue de Ponthieu, 75008",75008,8,Paris,,,open,,S,https://specialtycoffee.paris/shops/azur-cafe,2026-10-01
+liperli,Liperli,Liperli,"33 Rue de Douai, 75009",75009,9,Paris,liperli,Liperli,open,,S,https://specialtycoffee.paris/shops/liperli,2026-10-01
+dalda-li,Dalda-Li,Dalda-Li,"23 Rue Marguerite de Rochechouart, 75009",75009,9,Paris,brulerie-de-varenne,Brûlerie de Varenne,open,,S,https://specialtycoffee.paris/shops/dalda-li,2026-10-01
+leandres,Léandrés,Léandrés,"78 Rue de Maubeuge, 75009",75009,9,Paris,,,open,,S,https://specialtycoffee.paris/shops/leandres,2026-10-01
+lawasi,Lawasi,Lawasi,"61 Rue du Faubourg Saint-Martin, 75010",75010,10,Paris,,,open,,S,https://specialtycoffee.paris/shops/lawasi,2026-10-01
+margo,Margo,Margo,"12 Av. Richerand, 75010",75010,10,Paris,plural,Plural,open,,S,https://specialtycoffee.paris/shops/margo,2026-10-01
+ruine,Ruine,Ruine,"2 Pass. du Jeu de Boules, 75011",75011,11,Paris,mokxa,Mokxa,open,,S,https://specialtycoffee.paris/shops/ruine,2026-10-01
+on-partage-cantine-cafeinee,On Partage,On Partage,"137 bis Rue de Charonne, 75011",75011,11,Paris,,,open,,S,https://specialtycoffee.paris/shops/on-partage-cantine-cafeinee,2026-10-01
+gamine-bakeshop,Gamine,Gamine,"181 Rue Marcadet, 75018",75018,18,Paris,tanat;canopi,Tanat ; Canopi,open,,S,https://specialtycoffee.paris/shops/gamine-bakeshop,2026-10-01
+bokbar,Bokbar,Bokbar,"72 Rue Julien Lacroix, 75020",75020,20,Paris,,,open,,S,https://specialtycoffee.paris/shops/bokbar,2026-10-01
+cafe-obrkof,Obrkof,Obrkof,"41 Bd Voltaire, 75011",75011,11,Paris,feve,Fève,open,,S,https://specialtycoffee.paris/shops/cafe-obrkof,2026-10-01
+comets-cafe-and-disques,COMETS,COMETS,"38 Rue Léon Frot, 75011",75011,11,Paris,placid,Placid,open,,S,https://specialtycoffee.paris/shops/comets-cafe-and-disques,2026-10-01
+le-maung,Le Maung,Le Maung,"51 Rue Greneta, 75002",75002,2,Paris,le-maung,Le Maung Coffee Roaster,open,,S,https://specialtycoffee.paris/shops/le-maung,2026-10-01
+coffee-specialty-coffee,Derissa Coffee,Derissa Coffee,"40 Rue Chapon, 75003",75003,3,Paris,coffee-specialty-coffee,Coffee Specialty Coffee,open,,S,https://specialtycoffee.paris/shops/coffee-specialty-coffee,2026-10-01
+flor-de-cafe,Flor de cafe,Flor de cafe,"27 Rue Monge, 75005",75005,5,Paris,,,open,,S,https://specialtycoffee.paris/shops/flor-de-cafe,2026-10-01
+terre-dazur,Terre d’Azur,Terre d’Azur,"10 Av. de Wagram, 75008",75008,8,Paris,,,open,,S,https://specialtycoffee.paris/shops/terre-dazur,2026-10-01
+caoufe,Caoufé,Caoufé,"67 Rue Marguerite de Rochechouart, 75009",75009,9,Paris,caoufe,Caoufé,open,,S,https://specialtycoffee.paris/shops/caoufe,2026-10-01
+cafe-tranquille,Café Tranquille,Café Tranquille,"147 Rue du Faubourg Saint-Denis, 75010",75010,10,Paris,,,open,,S,https://specialtycoffee.paris/shops/cafe-tranquille,2026-10-01
+los-andes-coffee,Los Andes - Rue de Crussol,Los Andes,"3 Rue de Crussol, 75011",75011,11,Paris,los-andes,Los Andes,open,,S,https://specialtycoffee.paris/shops/los-andes-coffee,2026-10-01
+buena-onda-ca-phe,Buena Onda Cà Phê,Buena Onda Cà Phê,"36 Rue Keller, 75011",75011,11,Paris,arbre-a-cafe;hanoi-corner,L'Arbre à Café ; Hanoï Corner,open,,S,https://specialtycoffee.paris/shops/buena-onda-ca-phe,2026-10-01
+nilo-coffee-and-brunch,Nilo,Nilo,"73 Ave Parmentier, 75011",75011,11,Paris,fathers,Father's,open,,S,https://specialtycoffee.paris/shops/nilo-coffee-and-brunch,2026-10-01
+monlam-cafe,Monlam Cafe,Monlam Cafe,"19 Rue Muller, 75018",75018,18,Paris,five-elephants,Five Elephants,open,,S,https://specialtycoffee.paris/shops/monlam-cafe,2026-10-01
+zaia,Zaïa,Zaïa,"81 Bd Sérurier, 75019",75019,19,Paris,plural,Plural,open,,S,https://specialtycoffee.paris/shops/zaia,2026-10-01
+cafe-vert,Café vert,Café vert,"46 Rue de Charenton, 75012",75012,12,Paris,,,open,,S,https://specialtycoffee.paris/shops/cafe-vert,2026-10-01
+coeur-coffee-roasters-rue-ravignan,Coeur Coffee - Rue Ravignan,Coeur Coffee,"6 Rue Ravignan, 75018",75018,18,Paris,coeur-coffee,Cœur Coffee,open,,S,https://specialtycoffee.paris/shops/coeur-coffee-roasters-rue-ravignan,2026-10-01
+kozy-rue-du-petit-pont,Kozy - Rue du Petit Pont,Kozy,"6 Rue du Petit Pont, 75005",75005,5,Paris,belleville-brulerie,Belleville Brûlerie,open,,S,https://specialtycoffee.paris/shops/kozy-rue-du-petit-pont,2026-10-01
+kafeibaie,Kafeibaie,Kafeibaie,"5 Rue Blondel, 75003",75003,3,Paris,tanat,Tanat,open,,S,https://specialtycoffee.paris/shops/kafeibaie,2026-10-01
+typica-filles-du-calvaire,Typica - Filles du Calvaire,Typica,"8 Rue des Filles du Calvaire, 75003",75003,3,Paris,feve,Fève,open,,S,https://specialtycoffee.paris/shops/typica-filles-du-calvaire,2026-10-01
+press-coffee,Press Coffee,Press Coffee,"19 Bd du Temple, 75003",75003,3,Paris,feve,Fève,open,,S,https://specialtycoffee.paris/shops/press-coffee,2026-10-01
+eclat,Éclat,Éclat,"59 Bd Beaumarchais, 75003",75003,3,Paris,coutume,Coutume,open,,S,https://specialtycoffee.paris/shops/eclat,2026-10-01
+le-peloton-cafe,Le Peloton,Le Peloton,"17 Rue du Pont Louis-Philippe, 75004",75004,4,Paris,coutume;belleville-brulerie;plural;ambicion,Coutume ; Belleville Brûlerie ; Plural ; Ambición,open,,S,https://specialtycoffee.paris/shops/le-peloton-cafe,2026-10-01
+phin-mi,Phin Mi,Phin Mi,"3 Rue des Boulangers, 75005",75005,5,Paris,phin-mi,Phin Mi,open,,S,https://specialtycoffee.paris/shops/phin-mi,2026-10-01
+kozy-bosquet,Kozy - Avenue Bosquet,Kozy,"79 Av. Bosquet, 75007",75007,7,Paris,belleville-brulerie,Belleville Brûlerie,open,,S,https://specialtycoffee.paris/shops/kozy-bosquet,2026-10-01
+matin-des-oliviers,Matin des Oliviers,Matin des Oliviers,"2 Rue de l'Échelle, 75001",75001,1,Paris,,,open,,S,https://specialtycoffee.paris/shops/matin-des-oliviers,2026-10-01
+bon-bouquet-cafe,Bon Bouquet Café,Bon Bouquet Café,"30 Rue Le Peletier, 75009",75009,9,Paris,coutume,Coutume,open,,S,https://specialtycoffee.paris/shops/bon-bouquet-cafe,2026-10-01
+kozy-rue-la-fayette,Kozy - Rue La Fayette,Kozy,"46 Rue La Fayette, 75009",75009,9,Paris,,,open,,S,https://specialtycoffee.paris/shops/kozy-rue-la-fayette,2026-10-01
+mon-loup,Mon Loup,Mon Loup,"12 Rue Manuel, 75009",75009,9,Paris,feve,Fève,open,,S,https://specialtycoffee.paris/shops/mon-loup,2026-10-01
+cafe-muller,café müller,café müller,"10 R. des Petites Écuries, 75010",75010,10,Paris,,,open,,S,https://specialtycoffee.paris/shops/cafe-muller,2026-10-01
+cafeinoman,Caféinoman,Caféinoman,"151 Rue Saint-Maur, 75011",75011,11,Paris,pfaff,Pfaff,open,,S,https://specialtycoffee.paris/shops/cafeinoman,2026-10-01
+two-doors-coffee-shop,Two Doors,Two Doors,"27 Rue Francœur, 75018",75018,18,Paris,,,open,,S,https://specialtycoffee.paris/shops/two-doors-coffee-shop,2026-10-01
+canopi-coffee,Canopi Coffee,Canopi Coffee,"8 Rue Saint-Jean, 75017",75017,17,Paris,canopi,Canopi,open,,S,https://specialtycoffee.paris/shops/canopi-coffee,2026-10-01
+ojjjo,OJJJO,OJJJO,"27 Rue Henri Chevreau, 75020",75020,20,Paris,mojo-coffee-club,Mojo Coffee Club,open,,S,https://specialtycoffee.paris/shops/ojjjo,2026-10-01
+the-kursaal,The Kursaal,The Kursaal,"53B Bd de Picpus, 75012",75012,12,Paris,hexagone,Hexagone,open,,S,https://specialtycoffee.paris/shops/the-kursaal,2026-10-01
+kophi-paris,KOPHI,KOPHI,"51 Rue Sedaine, 75011",75011,11,Paris,,,open,,S,https://specialtycoffee.paris/shops/kophi-paris,2026-10-01
+partage-cafe,Partage,Partage,"31 Rue Lecourbe, 75015",75015,15,Paris,,,open,,S,https://specialtycoffee.paris/shops/partage-cafe,2026-10-01
+casa-cafe,casa café,casa café,"103 bis Rue de Charenton, 75012",75012,12,Paris,mojo-coffee-club,Mojo Coffee Club,open,,S,https://specialtycoffee.paris/shops/casa-cafe,2026-10-01
+kott-cafe,Kott,Kott,"19 Rue Ternaux, 75011",75011,11,Paris,,,open,,S,https://specialtycoffee.paris/shops/kott-cafe,2026-10-01
+kozy-rue-de-la-vieuville,Kozy - Rue la Vieuville,Kozy,"5 bis Rue la Vieuville, 75018",75018,18,Paris,belleville-brulerie,Belleville Brûlerie,open,,S,https://specialtycoffee.paris/shops/kozy-rue-de-la-vieuville,2026-10-01
+shiba-cafe-rue-des-colontaires,Shiba café - Rue des Volontaires,Shiba café,"3 Rue des Volontaires, 75015",75015,15,Paris,,,open,,S,https://specialtycoffee.paris/shops/shiba-cafe-rue-des-colontaires,2026-10-01
+noa-cafe,NOA café,NOA café,"6 Rue Melingue, 75019",75019,19,Paris,feve,Fève,open,,S,https://specialtycoffee.paris/shops/noa-cafe,2026-10-01
+o-coffee,O Coffee,O Coffee,"23 Rue de Lourmel, 75015",75015,15,Paris,,,open,,S,https://specialtycoffee.paris/shops/o-coffee,2026-10-01
+aux-arts-etc-cafe-galerie-dart,Aux Arts Etc...,Aux Arts Etc...,"15 Quai de Montebello, 75005",75005,5,Paris,tanat,Tanat,open,,S,https://specialtycoffee.paris/shops/aux-arts-etc-cafe-galerie-dart,2026-10-01
+san-carlo-coffee-shop,San Carlo,San Carlo,"257 Rue St Denis, 75002",75002,2,Paris,hausbrandt,Hausbrandt,open,,S,https://specialtycoffee.paris/shops/san-carlo-coffee-shop,2026-10-01
+minicafe-ile-saint-louis,Minicafé - Île Saint-Louis,Minicafé,"1 Rue des Deux Ponts, 75004",75004,4,Paris,,,open,,S,https://specialtycoffee.paris/shops/minicafe-ile-saint-louis,2026-10-01
+big-shot-coffee,Big Shot coffee,Big Shot coffee,"64 Rue Saint-Honoré, 75001",75001,1,Paris,feve,Fève,open,,S,https://specialtycoffee.paris/shops/big-shot-coffee,2026-10-01
+chez-louis-paris,Chez Louis Paris,Chez Louis Paris,"1 Rue des Prouvaires, 75001",75001,1,Paris,feve,Fève,open,,S,https://specialtycoffee.paris/shops/chez-louis-paris,2026-10-01
+apapacho-cafe,Apapacho Café,Apapacho Café,"25 Bd Poissonnière, 75002",75002,2,Paris,certified,Certified,open,,S,https://specialtycoffee.paris/shops/apapacho-cafe,2026-10-01
+barista-gallery,Barista Gallery,Barista Gallery,"15 R. Quincampoix, 75004",75004,4,Paris,terrah,Terrah,open,,S,https://specialtycoffee.paris/shops/barista-gallery,2026-10-01
+liv,Liv,Liv,"44 Bd Henri IV, 75004",75004,4,Paris,manhattan-coffee-roasters,Manhattan Coffee Roasters,open,,S,https://specialtycoffee.paris/shops/liv,2026-10-01
+braun-notes-saint-michel,Braun Notes - Saint Michel,Braun Notes,"2 Bd Saint-Michel, 75005",75005,5,Paris,,,open,,S,https://specialtycoffee.paris/shops/braun-notes-saint-michel,2026-10-01
+bleuet,Bleuet,Bleuet,"19 Rue de Bucarest, 75008",75008,8,Paris,tanat,Tanat,open,,S,https://specialtycoffee.paris/shops/bleuet,2026-10-01
+blondie-rue-saint-georges,Blondie - Rue Saint-Georges,Blondie,"40 Rue Saint-Georges, 75009",75009,9,Paris,blondie,Blondie,open,,S,https://specialtycoffee.paris/shops/blondie-rue-saint-georges,2026-10-01
+slowe-wellness-house,Slowe Wellness House,Slowe Wellness House,"30 Rue d'Enghien, 75010",75010,10,Paris,,,open,,S,https://specialtycoffee.paris/shops/slowe-wellness-house,2026-10-01
+perlant,Perlant,Perlant,"13 Rue Marie et Louise, 75010",75010,10,Paris,shokunin,Shokunin,open,,S,https://specialtycoffee.paris/shops/perlant,2026-10-01
+clove,Clove,Clove,"14 Rue Chappe, 75018",75018,18,Paris,dak;datura,Dak ; Datura,open,,S,https://specialtycoffee.paris/shops/clove,2026-10-01
+saint-barista-coffee,Saint Barista Coffee,Saint Barista Coffee,"41 Rue Popincourt, 75011",75011,11,Paris,dak,Dak,open,,S,https://specialtycoffee.paris/shops/saint-barista-coffee,2026-10-01
+lactem-rue-croix-des-petits-champs,Lactem - Rue Croix des Petits Champs,Lactem,"38 Rue Croix des Petits Champs, 75001",75001,1,Paris,feve,Fève,open,,S,https://specialtycoffee.paris/shops/lactem-rue-croix-des-petits-champs,2026-10-01
+my-fermentation,MY Fermentation,MY Fermentation,"3 Rue Saint-Bon, 75004",75004,4,Paris,feve;people-possession,Fève ; People Possession,open,,S,https://specialtycoffee.paris/shops/my-fermentation,2026-10-01
+atti-cafe,Atti Café,Atti Café,"3 Rue de Mulhouse, 75002",75002,2,Paris,,,open,,S,https://specialtycoffee.paris/shops/atti-cafe,2026-10-01
+larbre-a-cafe-rue-du-nil,L'Arbre à Café - Rue du Nil,L'Arbre à Café,"10 Rue du Nil, 75002",75002,2,Paris,arbre-a-cafe,L'Arbre à Café,open,,S,https://specialtycoffee.paris/shops/larbre-a-cafe-rue-du-nil,2026-10-01
+substance-cafe,Substance Café,Substance Café,"30 Rue Dussoubs, 75002",75002,2,Paris,,,open,,S,https://specialtycoffee.paris/shops/substance-cafe,2026-10-01
+tanat-archives,Tanat - Archives,Tanat,"96 Rue des Archives, 75003",75003,3,Paris,tanat,Tanat,open,,S,https://specialtycoffee.paris/shops/tanat-archives,2026-10-01
+fringe,Fringe,Fringe,"106 Rue de Turenne, 75003",75003,3,Paris,,,open,,S,https://specialtycoffee.paris/shops/fringe,2026-10-01
+boot-cafe,Boot Café,Boot Café,"19 Rue du Pont aux Choux, 75003",75003,3,Paris,la-cabra,La Cabra,open,,S,https://specialtycoffee.paris/shops/boot-cafe,2026-10-01
+djoong-saint-paul,Đoòng - Saint-Paul,Đoòng,"8 Rue Saint-Paul, 75004",75004,4,Paris,,,open,,S,https://specialtycoffee.paris/shops/djoong-saint-paul,2026-10-01
+yellow-tucan,Yellow Tucan,Yellow Tucan,"20 Rue des Tournelles, 75004",75004,4,Paris,yellow-tucan,Yellow Tucan,open,,S,https://specialtycoffee.paris/shops/yellow-tucan,2026-10-01
+cafe-dauteur,Café d’Auteur,Café d’Auteur,"39 Rue Mazarine, 75006",75006,6,Paris,cafe-dauteur,Café D'auteur,open,,S,https://specialtycoffee.paris/shops/cafe-dauteur,2026-10-01
+zia,Zia,Zia,"22 Av. de Tourville, 75007",75007,7,Paris,coutume,Coutume,open,,S,https://specialtycoffee.paris/shops/zia,2026-10-01
+noir-rue-de-grenelle,Noir - Rue de Grenelle,Noir,"184 Rue de Grenelle, 75007",75007,7,Paris,noir,Noir,open,,S,https://specialtycoffee.paris/shops/noir-rue-de-grenelle,2026-10-01
+papillote,Papillote,Papillote,"15 Rue Chaptal, 75009",75009,9,Paris,tanat,Tanat,open,,S,https://specialtycoffee.paris/shops/papillote,2026-10-01
+komorebi,Komorebi,Komorebi,"56 Rue Catherine de la Rochefoucauld, 75009",75009,9,Paris,cafe-kaldi,Café Kaldi,open,,S,https://specialtycoffee.paris/shops/komorebi,2026-10-01
+stella-cafe,Stella Café,Stella Café,"13 Rue Saint-Lazare, 75009",75009,9,Paris,terres-de-cafe,Terres de café,open,,S,https://specialtycoffee.paris/shops/stella-cafe,2026-10-01
+larbre-a-cafe-rue-des-martyrs,L'Arbre à Café - Rue des Martyrs,L'Arbre à Café,"35 R. des Martyrs, 75009",75009,9,Paris,arbre-a-cafe,L'Arbre à Café,open,,S,https://specialtycoffee.paris/shops/larbre-a-cafe-rue-des-martyrs,2026-10-01
+lactem-rue-du-faubourg-montmartre,Lactem - Rue du Faubourg Montmartre,Lactem,"58 Rue du Faubourg Montmartre, 75009",75009,9,Paris,feve,Fève,open,,S,https://specialtycoffee.paris/shops/lactem-rue-du-faubourg-montmartre,2026-10-01
+vingt23,Vingt23,Vingt23,"23 Rue d'Hauteville, 75010",75010,10,Paris,,,open,,S,https://specialtycoffee.paris/shops/vingt23,2026-10-01
+residence-kann,Residence Kann,Residence Kann,"28 Rue des Vinaigriers, 75010",75010,10,Paris,feve;alba,Fève ; Alba,open,,S,https://specialtycoffee.paris/shops/residence-kann,2026-10-01
+radiodays,Radiodays,Radiodays,"15 Rue Alibert, 75010",75010,10,Paris,kb,KB,open,,S,https://specialtycoffee.paris/shops/radiodays,2026-10-01
+the-beans-on-fire-rue-des-trois-freres,The Beans on Fire - Rue des Trois Frères,The Beans on Fire,"61 Rue des Trois Frères, 75018",75018,18,Paris,the-beans-on-fire,The Beans on Fire,open,,S,https://specialtycoffee.paris/shops/the-beans-on-fire-rue-des-trois-freres,2026-10-01
+sylon-de-montmartre,Sylon de Montmartre,Sylon de Montmartre,"4bis Rue Piemontesi, 75018",75018,18,Paris,ground-state,Ground State,open,,S,https://specialtycoffee.paris/shops/sylon-de-montmartre,2026-10-01
+larbre-a-cafe-oberkampf,L'Arbre à Café - Rue Oberkampf,L'Arbre à Café,"61 Rue Oberkampf, 75011",75011,11,Paris,arbre-a-cafe,L'Arbre à Café,open,,S,https://specialtycoffee.paris/shops/larbre-a-cafe-oberkampf,2026-10-01
+inform-cafe-rue-des-acacias,Inform Café - Rue des Acacias,Inform Café,"25 Rue des Acacias, 75017",75017,17,Paris,coutume,Coutume,open,,S,https://specialtycoffee.paris/shops/inform-cafe-rue-des-acacias,2026-10-01
+early-bird,Early Bird,Early Bird,"marché Beauvau, Pl. d'Aligre, 75012",75012,12,Paris,,,open,,S,https://specialtycoffee.paris/shops/early-bird,2026-10-01
+noeud,Noeud,Noeud,"41 Rue Violet, 75015",75015,15,Paris,friedhats;datura;manhattan-coffee-roasters,Friedhats ; Datura ; Manhattan Coffee Roasters,open,,S,https://specialtycoffee.paris/shops/noeud,2026-10-01
+la-main-noire,La Main Noire,La Main Noire,"12 Rue Cavallotti, 75018",75018,18,Paris,coeur-coffee,Cœur Coffee,open,,S,https://specialtycoffee.paris/shops/la-main-noire,2026-10-01
+miliki-paris,Miliki,Miliki,"8 Rue Levert, 75020",75020,20,Paris,tanat,Tanat,open,,S,https://specialtycoffee.paris/shops/miliki-paris,2026-10-01
+coffee-shop-de-mathieu,Coffee Shop de Mathieu,Coffee Shop de Mathieu,"86 Bd de Grenelle, 75015",75015,15,Paris,,,open,,S,https://specialtycoffee.paris/shops/coffee-shop-de-mathieu,2026-10-01
+plural-cafe,Plural Café,Plural Café,"17 Rue Julien Lacroix, 75020",75020,20,Paris,plural,Plural,open,,S,https://specialtycoffee.paris/shops/plural-cafe,2026-10-01
+57-grains-coffee-shop,57 grains,57 grains,"57 Rue du Mont-Cenis, 75018",75018,18,Paris,tanat,Tanat,open,,S,https://specialtycoffee.paris/shops/57-grains-coffee-shop,2026-10-01
+candle-kids-coffee,Candle Kids Coffee,Candle Kids Coffee,"107 Rue des Couronnes, 75020",75020,20,Paris,,,open,,S,https://specialtycoffee.paris/shops/candle-kids-coffee,2026-10-01
+panas-cafe,Panas café,Panas café,"8 Rue Paul Bert, 75011",75011,11,Paris,,,open,,S,https://specialtycoffee.paris/shops/panas-cafe,2026-10-01
+caphette,Caphette,Caphette,"3 Rue Neuve Popincourt, 75011",75011,11,Paris,mojo-coffee-club,Mojo Coffee Club,open,,S,https://specialtycoffee.paris/shops/caphette,2026-10-01
+keen-je-cafe-cantine,Keen Jé,Keen Jé,"95 Rue du Chemin Vert, 75011",75011,11,Paris,terrah,Terrah,open,,S,https://specialtycoffee.paris/shops/keen-je-cafe-cantine,2026-10-01
+aka-coffee-shop,AKA,AKA,"25 Rue Mouton-Duvernet, 75014",75014,14,Paris,feve,Fève,open,,S,https://specialtycoffee.paris/shops/aka-coffee-shop,2026-10-01
+koko-coffee-shop,KOKO Café,KOKO Café,"14 Quai de la Loire, 75019",75019,19,Paris,mokxa,Mokxa,open,,S,https://specialtycoffee.paris/shops/koko-coffee-shop,2026-10-01
+oh-my-cappuccino,Oh My Cappuccino,Oh My Cappuccino,"3 Rue Sadi Lecointe, 75019",75019,19,Paris,kb;muda,KB ; Muda,open,,S,https://specialtycoffee.paris/shops/oh-my-cappuccino,2026-10-01
+cafe-marlette-pigalle,Marlette - Pigalle,Marlette,"51 R. des Martyrs, 75009",75009,9,Paris,belleville-brulerie,Belleville Brûlerie,open,,S,https://specialtycoffee.paris/shops/cafe-marlette-pigalle,2026-10-01
+kozy-rue-des-martyrs,Kozy - Rue des Martyrs,Kozy,"54 R. des Martyrs, 75009",75009,9,Paris,belleville-brulerie,Belleville Brûlerie,open,,S,https://specialtycoffee.paris/shops/kozy-rue-des-martyrs,2026-10-01
+joho,Jōhō,Jōhō,"14 Rue des Écouffes, 75004",75004,4,Paris,,,open,,A+,https://specialtycoffee.paris/shops/joho,2026-10-01
+trombone-coffee-shop,Trombone,Trombone,"69 Rue des Haies 75020, 75020",75020,20,Paris,arbre-a-cafe,L'Arbre à Café,open,,A+,https://specialtycoffee.paris/shops/trombone-coffee-shop,2026-10-01
+stuffburn-bc,Stuffburn BC,Stuffburn BC,"94 Rue de Richelieu, 75002",75002,2,Paris,belleville-brulerie,Belleville Brûlerie,open,,A+,https://specialtycoffee.paris/shops/stuffburn-bc,2026-10-01
+kalany-mya,Kalany Mya,Kalany Mya,"8 Pass. du Grand Cerf, 75002",75002,2,Paris,gramgram,GramGram,open,,A+,https://specialtycoffee.paris/shops/kalany-mya,2026-10-01
+grave,GRAVE,GRAVE,"34 Rue des Gravilliers, 75003",75003,3,Paris,cayo,Cayo Coffee Roasters,open,,A+,https://specialtycoffee.paris/shops/grave,2026-10-01
+tiba,TIBA,TIBA,"51 Rue Charlot, 75003",75003,3,Paris,,,open,,A+,https://specialtycoffee.paris/shops/tiba,2026-10-01
+unthaitled,Unthaitled.,Unthaitled.,"8 Rue Charles-François Dupuis, 75003",75003,3,Paris,roots,Roots,open,,A+,https://specialtycoffee.paris/shops/unthaitled,2026-10-01
+the-coffee-rue-saint-gilles,The Coffee - Rue Saint-Gilles,The Coffee,"2 Rue Saint-Gilles, 75003",75003,3,Paris,the-coffee,The Coffee,open,,A+,https://specialtycoffee.paris/shops/the-coffee-rue-saint-gilles,2026-10-01
+background-coffee,Background coffee,Background coffee,"338 Rue Saint-Jacques, 75005",75005,5,Paris,prolog,Prolog,open,,A+,https://specialtycoffee.paris/shops/background-coffee,2026-10-01
+le-bon-moment,Le bon moment,Le bon moment,"24 Rue des Bernardins, 75005",75005,5,Paris,,,open,,A+,https://specialtycoffee.paris/shops/le-bon-moment,2026-10-01
+buddy-buddy,BUDDY BUDDY,BUDDY BUDDY,"15 Rue de Marseille, 75010",75010,10,Paris,buddy-buddy,Buddy Buddy,open,,A+,https://specialtycoffee.paris/shops/buddy-buddy,2026-10-01
+graines,Graines,Graines,"3 bis Rue de Vaugirard, 75006",75006,6,Paris,coutume,Coutume,open,,A+,https://specialtycoffee.paris/shops/graines,2026-10-01
+terres-de-cafe-saint-germain-des-pres,Terres de Café - Saint-Germain-des-Prés,Terres de Café,"4 Rue de Bourbon le Château, 75006",75006,6,Paris,terres-de-cafe,Terres de café,open,,A+,https://specialtycoffee.paris/shops/terres-de-cafe-saint-germain-des-pres,2026-10-01
+blondie-rue-louis-murat,Blondie - Rue Louis Murat,Blondie,"4 Rue Louis Murat, 75008",75008,8,Paris,blondie,Blondie,open,,A+,https://specialtycoffee.paris/shops/blondie-rue-louis-murat,2026-10-01
+los-andes-rue-notre-dame-de-lorette,Los Andes - Rue Notre Dame de Lorette,Los Andes,"48 Rue Notre Dame de Lorette, 75009",75009,9,Paris,los-andes,Los Andes,open,,A+,https://specialtycoffee.paris/shops/los-andes-rue-notre-dame-de-lorette,2026-10-01
+shigure,Shigure,Shigure,"27 Rue Clauzel, 75009",75009,9,Paris,tanat,Tanat,open,,A+,https://specialtycoffee.paris/shops/shigure,2026-10-01
+sezam-cafe,Sezam Café,Sezam Café,"21 Rue Marguerite de Rochechouart, 75009",75009,9,Paris,coutume,Coutume,open,,A+,https://specialtycoffee.paris/shops/sezam-cafe,2026-10-01
+convos,Convos,Convos,"3 Rue Sainte-Foy, 75002",75002,2,Paris,tanat,Tanat,open,,A+,https://specialtycoffee.paris/shops/convos,2026-10-01
+5-pailles,5 Pailles,5 Pailles,"79 Rue du Faubourg Saint-Denis, 75010",75010,10,Paris,shokunin,Shokunin,open,,A+,https://specialtycoffee.paris/shops/5-pailles,2026-10-01
+efkeria,εfkeria,εfkeria,"2 Rue de Paradis, 75010",75010,10,Paris,plural,Plural,open,,A+,https://specialtycoffee.paris/shops/efkeria,2026-10-01
+the-beans-on-fire-boulevard-de-strasbourg,The Beans on Fire - Boulevard de Strasbourg,The Beans on Fire,"14 Boulevard de Strasbourg, 75010",75010,10,Paris,the-beans-on-fire,The Beans on Fire,open,,A+,https://specialtycoffee.paris/shops/the-beans-on-fire-boulevard-de-strasbourg,2026-10-01
+blondie-rue-du-chateau-deau,Blondie - Rue du Château d'Eau,Blondie,"27 Rue du Château d'Eau, 75010",75010,10,Paris,blondie,Blondie,open,,A+,https://specialtycoffee.paris/shops/blondie-rue-du-chateau-deau,2026-10-01
+keo-ca-phe-viet,Kẹo cà phê Việt,Kẹo cà phê Việt,"61 Rue de Lancry, 75010",75010,10,Paris,viahe-caphe,Viahe caphe,temp,,A+,https://specialtycoffee.paris/shops/keo-ca-phe-viet,2026-10-01
+cafe-la-lune-verte,Café La Lune Verte,Café La Lune Verte,"60 Rue de la Fontaine au Roi, 75011",75011,11,Paris,cafe-la-lune-verte,Café La Lune Verte,open,,A+,https://specialtycoffee.paris/shops/cafe-la-lune-verte,2026-10-01
+coffee-ya,Coffee Ya,Coffee Ya,"25 Bd Voltaire, 75011",75011,11,Paris,kb;friedhats,KB ; Friedhats,open,,A+,https://specialtycoffee.paris/shops/coffee-ya,2026-10-01
+cafe-marlette-montmartre,Marlette - Montmartre,Marlette,"45 Rue des Abbesses, 75018",75018,18,Paris,belleville-brulerie,Belleville Brûlerie,open,,A+,https://specialtycoffee.paris/shops/cafe-marlette-montmartre,2026-10-01
+kozy-rue-saint-martin,Kozy - Rue Saint-Martin,Kozy,"133 Rue Saint-Martin, 75004",75004,4,Paris,belleville-brulerie,Belleville Brûlerie,open,,A+,https://specialtycoffee.paris/shops/kozy-rue-saint-martin,2026-10-01
+binie-cafe-and-traiteur,Binie,Binie,"57 Rue Condorcet, 75009",75009,9,Paris,arbre-a-cafe,L'Arbre à Café,open,,A+,https://specialtycoffee.paris/shops/binie-cafe-and-traiteur,2026-10-01
+dahu-cafe-and-atelier-velo,DAHU – Café & Atelier Vélo,DAHU,"42 Rue Cauchy, 75015",75015,15,Paris,,,open,,A+,https://specialtycoffee.paris/shops/dahu-cafe-and-atelier-velo,2026-10-01
+magic-carpet-cafe,Magic Carpet Café,Magic Carpet Café,"5 Bis R. de Prague, 75012",75012,12,Paris,,,open,,A+,https://specialtycoffee.paris/shops/magic-carpet-cafe,2026-10-01
+tarmac-torrefaction,Tarmac,Tarmac,"123 Rue de Charenton, 75012",75012,12,Paris,,,open,,A+,https://specialtycoffee.paris/shops/tarmac-torrefaction,2026-10-01
+klover-coffee-showroom,Klover Coffee Showroom,Klover Coffee Showroom,"6 Rue Merlin, 75011",75011,11,Paris,klover,Klover,open,,A+,https://specialtycoffee.paris/shops/klover-coffee-showroom,2026-10-01
+galicafe-coffee-shop-and-food,Galicafé,Galicafé,"8 Rue Eugène Sue, 75018",75018,18,Paris,mojo-coffee-club,Mojo Coffee Club,open,,A+,https://specialtycoffee.paris/shops/galicafe-coffee-shop-and-food,2026-10-01
+vague-coffee,Vague,Vague,"76 Rue Boursault, 75017",75017,17,Paris,anana,ANÄNA,open,,A+,https://specialtycoffee.paris/shops/vague-coffee,2026-10-01
+bel-horizon-coffee-roasters,Bel Horizon Coffee Roasters,Bel Horizon Coffee Roasters,"26 Bd Garibaldi, 75015",75015,15,Paris,bel-horizon-coffee-roaster,Bel Horizon Coffee Roaster,open,,A+,https://specialtycoffee.paris/shops/bel-horizon-coffee-roasters,2026-10-01
+seven-heaven-coffee-lunch-brunch,Seven Heaven,Seven Heaven,"17 Rue de la Forge Royale, 75011",75011,11,Paris,,,open,,A+,https://specialtycoffee.paris/shops/seven-heaven-coffee-lunch-brunch,2026-10-01
+hoa-ca-phe-coffee-shop,Hoa Cà Phê,Hoa Cà Phê,"52 Rue du Chemin Vert, 75011",75011,11,Paris,tanat,Tanat,open,,A+,https://specialtycoffee.paris/shops/hoa-ca-phe-coffee-shop,2026-10-01
+noir-rue-des-trois-freres,Noir - Rue des Trois Frères,Noir,"6 Rue des Trois Frères, 75018",75018,18,Paris,noir,Noir,open,,A+,https://specialtycoffee.paris/shops/noir-rue-des-trois-freres,2026-10-01
+automne-cafe,Automne café,Automne café,"81 Rue Sedaine, 75011",75011,11,Paris,mojo-coffee-club,Mojo Coffee Club,open,,A+,https://specialtycoffee.paris/shops/automne-cafe,2026-10-01
+pasa-dena,Pasa Dena,Pasa Dena,"19 Rue des Écouffes, 75004",75004,4,Paris,mojo-coffee-club,Mojo Coffee Club,open,,A+,https://specialtycoffee.paris/shops/pasa-dena,2026-10-01
+chanceux-st-maur,Chanceux - Rue Saint-Maur,Chanceux,"57 Rue Saint-Maur, 75011",75011,11,Paris,muda,Muda,open,,A+,https://specialtycoffee.paris/shops/chanceux-st-maur,2026-10-01
+helens-book,Helen's Book,Helen's Book,"8B Rue Claude Bernard, 75005",75005,5,Paris,,,open,,A+,https://specialtycoffee.paris/shops/helens-book,2026-10-01
+cafe-inn,Café Inn,Café Inn,"31 Pl. du Marché Saint-Honoré, 75001",75001,1,Paris,feve,Fève,open,,A+,https://specialtycoffee.paris/shops/cafe-inn,2026-10-01
+rems-coffee-shop,Rem's - Rue de Mulhouse,Rem's,"3 Rue de Mulhouse, 75002",75002,2,Paris,loutsa,Loutsa,open,,A+,https://specialtycoffee.paris/shops/rems-coffee-shop,2026-10-01
+huddle-coffee,Huddle Coffee,Huddle Coffee,"61 Rue Notre Dame de Nazareth, 75003",75003,3,Paris,friedhats;datura;people-possession,Friedhats ; Datura ; People Possession,open,,A+,https://specialtycoffee.paris/shops/huddle-coffee,2026-10-01
+sample-cafe,SAMPLE CAFE,SAMPLE CAFE,"5 Rue Notre Dame de Nazareth, 75003",75003,3,Paris,feve,Fève,open,,A+,https://specialtycoffee.paris/shops/sample-cafe,2026-10-01
+pontochoux,Pontochoux,Pontochoux,"18 Rue du Pont aux Choux, 75003",75003,3,Paris,,,open,,A+,https://specialtycoffee.paris/shops/pontochoux,2026-10-01
+terres-de-cafe-blancs-manteaux,Terres de Café - Blancs Manteaux,Terres de Café,"36 Rue des Blancs Manteaux, 75004",75004,4,Paris,terres-de-cafe,Terres de café,open,,A+,https://specialtycoffee.paris/shops/terres-de-cafe-blancs-manteaux,2026-10-01
+8litheque,8lithèque,8lithèque,"3 Rue Victor Considérant, 75014",75014,14,Paris,brulerie-folie-mericourt,Brûlerie de la Folie-Méricourt,open,,A+,https://specialtycoffee.paris/shops/8litheque,2026-10-01
+le-bone-appart,Le Bone Appart,Le Bone Appart,"9 Rue de Birague, 75004",75004,4,Paris,,,open,,A+,https://specialtycoffee.paris/shops/le-bone-appart,2026-10-01
+cofftea-shop,Cofftea Shop,Cofftea Shop,"8 Rue Berthollet, 75005",75005,5,Paris,ivan-alfaro,Ivan Alfaro,open,,A+,https://specialtycoffee.paris/shops/cofftea-shop,2026-10-01
+the-coffee-rue-mazarine,The Coffee - Rue Mazarine,The Coffee,"33 Rue Mazarine, 75006",75006,6,Paris,the-coffee,The Coffee,open,,A+,https://specialtycoffee.paris/shops/the-coffee-rue-mazarine,2026-10-01
+torre-tour-maubourg,Torré - Tour-Maubourg,Torré,"15 Bd de la Tour-Maubourg, 75007",75007,7,Paris,torre,Torré,open,,A+,https://specialtycoffee.paris/shops/torre-tour-maubourg,2026-10-01
+cafe-pigalle,Café Pigalle,Café Pigalle,"7 Rue Frochot, 75009",75009,9,Paris,lomi,Lomi,open,,A+,https://specialtycoffee.paris/shops/cafe-pigalle,2026-10-01
+loutsa-passage-jouffroy,Loutsa - Passage Jouffroy,Loutsa,"35 Pass. Jouffroy, 75009",75009,9,Paris,loutsa,Loutsa,open,,A+,https://specialtycoffee.paris/shops/loutsa-passage-jouffroy,2026-10-01
+noir-rue-richer,Noir - Rue Richer,Noir,"33 Rue Richer, 75009",75009,9,Paris,noir,Noir,open,,A+,https://specialtycoffee.paris/shops/noir-rue-richer,2026-10-01
+cafe-rumi,Café Rumi,Café Rumi,"266 Rue du Faubourg Saint-Honoré, 75008",75008,8,Paris,mojo-coffee-club;onxy,Mojo Coffee Club ; Onyx,open,,A+,https://specialtycoffee.paris/shops/cafe-rumi,2026-10-01
+nest,Nest,Nest,"9 Rue Villédo, 75001",75001,1,Paris,,,open,,A+,https://specialtycoffee.paris/shops/nest,2026-10-01
+cesar-y-georgette,Cesar y Georgette,Cesar y Georgette,"20 Rue Molière, 75001",75001,1,Paris,lomi;coutume;terres-de-cafe,Lomi ; Coutume ; Terres de café,open,,A+,https://specialtycoffee.paris/shops/cesar-y-georgette,2026-10-01
+merlo-caffe,Merlo caffè,Merlo caffè,"57 Rue de Turenne, 75003",75003,3,Paris,feve,Fève,open,,A+,https://specialtycoffee.paris/shops/merlo-caffe,2026-10-01
+bakea,Bakea,Bakea,"3 Rue de Lancry, 75010",75010,10,Paris,feve,Fève,open,,A+,https://specialtycoffee.paris/shops/bakea,2026-10-01
+steel,Steel,Steel,"58 Rue de la Fontaine au Roi, 75011",75011,11,Paris,ten-belles,Ten Belles,open,,A+,https://specialtycoffee.paris/shops/steel,2026-10-01
+the-hood,The Hood,The Hood,"80 Rue Jean-Pierre Timbaud, 75011",75011,11,Paris,,,open,,A+,https://specialtycoffee.paris/shops/the-hood,2026-10-01
+ronnie-bakery,Ronnie Bakery,Ronnie Bakery,"34 Rue Notre Dame de Lorette, 75009",75009,9,Paris,feve,Fève,open,,A+,https://specialtycoffee.paris/shops/ronnie-bakery,2026-10-01
+torre-rue-yvonne-le-tac,Torré - Rue Yvonne le Tac,Torré,"6 Rue Yvonne le Tac, 75018",75018,18,Paris,torre,Torré,open,,A+,https://specialtycoffee.paris/shops/torre-rue-yvonne-le-tac,2026-10-01
+dialogues-coffee,Dialogues,Dialogues,"192 Rue de Grenelle, 75007",75007,7,Paris,tanat;people-possession,Tanat ; People Possession,open,,A+,https://specialtycoffee.paris/shops/dialogues-coffee,2026-10-01
+bagarre-coffee-club-speciality-coffee,Bagarre Coffee Club,Bagarre Coffee Club,"90 Bd Richard-Lenoir, 75011",75011,11,Paris,tanat;people-possession,Tanat ; People Possession,open,,A+,https://specialtycoffee.paris/shops/bagarre-coffee-club-speciality-coffee,2026-10-01
+broken-biscuits,Broken Biscuits,Broken Biscuits,"18 Rue du Faubourg Poissonnière, 75010",75010,10,Paris,belleville-brulerie,Belleville Brûlerie,open,,A+,https://specialtycoffee.paris/shops/broken-biscuits,2026-10-01
+seda-seda,SEDA SEDA,SEDA SEDA,"79 Rue Saint-Maur, 75011",75011,11,Paris,mokxa,Mokxa,open,,A+,https://specialtycoffee.paris/shops/seda-seda,2026-10-01
+loree-cafe,L’Orée Café,L’Orée Café,"75 Rue Oberkampf, 75011",75011,11,Paris,arbre-a-cafe,L'Arbre à Café,open,,A+,https://specialtycoffee.paris/shops/loree-cafe,2026-10-01
+dreamin-man-rue-perree,Dreamin' Man - Rue Perrée,Dreamin' Man,"12 Rue Perrée, 75003",75003,3,Paris,,,open,,,https://specialtycoffee.paris/shops/dreamin-man-rue-perree,2026-10-01
+cafe-aimee,Café Aimée,Café Aimée,"60 Rue Bayen, 75017",75017,17,Paris,feve,Fève,open,,A+,https://specialtycoffee.paris/shops/cafe-aimee,2026-10-01
+coutume-rue-de-passy,Coutume - Rue de Passy,Coutume,"78 Rue de Passy, 75016",75016,16,Paris,coutume,Coutume,open,,A+,https://specialtycoffee.paris/shops/coutume-rue-de-passy,2026-10-01
+sands-coffee,Sands Coffee,Sands Coffee,"4 Rue des Apennins, 75017",75017,17,Paris,,,open,,A+,https://specialtycoffee.paris/shops/sands-coffee,2026-10-01
+broomi,broomi,broomi,"92 Rue la Condamine, 75017",75017,17,Paris,,,open,,A+,https://specialtycoffee.paris/shops/broomi,2026-10-01
+les-fanes,Les Fanés,Les Fanés,"109 Rue de la Réunion, 75020",75020,20,Paris,lomi,Lomi,open,,A+,https://specialtycoffee.paris/shops/les-fanes,2026-10-01
+buna-bet-coffee-shop,Buna Bet,Buna Bet,"102 Rue de Meaux, 75019",75019,19,Paris,cafe-366,Café 366,open,,A+,https://specialtycoffee.paris/shops/buna-bet-coffee-shop,2026-10-01
+koni-coffee-shop,KONI. - Rue de Belleville,KONI.,"70 Rue de Belleville, 75020",75020,20,Paris,the-beans-on-fire,The Beans on Fire,open,,A+,https://specialtycoffee.paris/shops/koni-coffee-shop,2026-10-01
+shekamou,Shekamou,Shekamou,"42 Rue des Entrepreneurs, 75015",75015,15,Paris,terres-de-cafe,Terres de café,open,,A+,https://specialtycoffee.paris/shops/shekamou,2026-10-01
+comptoir-binder,Comptoir Binder,Comptoir Binder,"14 Rue Sophie Germain, 75014",75014,14,Paris,plural,Plural,open,,A+,https://specialtycoffee.paris/shops/comptoir-binder,2026-10-01
+bambin-cafe,Bambin,Bambin,"40 R. de Tourtille, 75020",75020,20,Paris,mojo-coffee-club,Mojo Coffee Club,open,,A+,https://specialtycoffee.paris/shops/bambin-cafe,2026-10-01
+kafkaf-rue-keller,Kafkaf - Rue Keller,Kafkaf,"7 Rue Keller, 75011",75011,11,Paris,coutume,Coutume,open,,A+,https://specialtycoffee.paris/shops/kafkaf-rue-keller,2026-10-01
+poesie-coffee,Poésie,Poésie,"10 Pass. Thiéré, 75011",75011,11,Paris,,,open,,A+,https://specialtycoffee.paris/shops/poesie-coffee,2026-10-01
+loutsa-torrefacteur-paris-marche-des-ternes,Loutsa - Rue Lebon,Loutsa,"11 Rue Lebon, 75017",75017,17,Paris,loutsa,Loutsa,open,,A+,https://specialtycoffee.paris/shops/loutsa-torrefacteur-paris-marche-des-ternes,2026-10-01
+epicentre-coffee-shop,Epicentre,Epicentre,"37 Quai de la Seine, 75019",75019,19,Paris,,,open,,A+,https://specialtycoffee.paris/shops/epicentre-coffee-shop,2026-10-01
+praesens-coffee-shop-and-restaurant,Praesens,Praesens,"62 Rue du Faubourg Saint-Martin, 75010",75010,10,Paris,feve,Fève,open,,A+,https://specialtycoffee.paris/shops/praesens-coffee-shop-and-restaurant,2026-10-01
+the-coffee-rue-gonnet,The Coffee - Rue Gonnet,The Coffee,"10 Rue Gonnet, 75011",75011,11,Paris,the-coffee,The Coffee,open,,A+,https://specialtycoffee.paris/shops/the-coffee-rue-gonnet,2026-10-01
+belleville-brulerie-paris,Belleville Brûlerie,Belleville Brûlerie,"14b Rue Lally-Tollendal, 75019",75019,19,Paris,belleville-brulerie,Belleville Brûlerie,open,,A+,https://specialtycoffee.paris/shops/belleville-brulerie-paris,2026-10-01
+kozy-rue-cler,Kozy - Rue Cler,Kozy,"55 Rue Cler, 75007",75007,7,Paris,belleville-brulerie,Belleville Brûlerie,open,,A+,https://specialtycoffee.paris/shops/kozy-rue-cler,2026-10-01
+hug-bingsu-coffee,HUG Bingsu Coffee,HUG Bingsu Coffee,"55 Bd de Sébastopol, Angle, Rue de la Grande Truanderie, 75001",75001,1,Paris,muda,Muda,open,,A+,https://specialtycoffee.paris/shops/hug-bingsu-coffee,2026-10-01
+tanat-victoria,Tanat - Victoria,Tanat,"22 Av. Victoria, 75001",75001,1,Paris,tanat,Tanat,open,,A+,https://specialtycoffee.paris/shops/tanat-victoria,2026-10-01
+matamata-coffee,Matamata Coffee,Matamata Coffee,"58 Rue d'Argout, 75002",75002,2,Paris,,,open,,A+,https://specialtycoffee.paris/shops/matamata-coffee,2026-10-01
+kiji-montorgueil,Kiji - Montorgueil,Kiji,"15 Rue Tiquetonne, 75002",75002,2,Paris,,,open,,,https://specialtycoffee.paris/shops/kiji-montorgueil,2026-10-01
+cuvee-noire-chatelet,Cuvée Noire - Châtelet,Cuvée Noire,"42 Rue Rambuteau, 75003",75003,3,Paris,cuvee-noire,Cuvée Noire,open,,A+,https://specialtycoffee.paris/shops/cuvee-noire-chatelet,2026-10-01
+laize-sainte-avoye,Laïzé Sainte-Avoye,Laïzé Sainte-Avoye,"62 Rue du Temple, 75003",75003,3,Paris,,,open,,A+,https://specialtycoffee.paris/shops/laize-sainte-avoye,2026-10-01
+cafe-abel,Café Abel,Café Abel,"2 Rue de l'Hôtel Saint-Paul, 75004",75004,4,Paris,,,open,,A+,https://specialtycoffee.paris/shops/cafe-abel,2026-10-01
+juni-coffee,Juni,Juni,"18 Rue Saint-Antoine, 75004",75004,4,Paris,wide-awake,Wide Awake,open,,A+,https://specialtycoffee.paris/shops/juni-coffee,2026-10-01
+frappe,Frappé,Frappé,"20 Rue Monge, 75005",75005,5,Paris,father-carpenter,Father Carpenter,open,,A+,https://specialtycoffee.paris/shops/frappe,2026-10-01
+galata-bakery-and-coffee,Galata Bakery & Coffee,Galata Bakery & Coffee,"61 Rue du Cardinal Lemoine, 75005",75005,5,Paris,,,open,,A+,https://specialtycoffee.paris/shops/galata-bakery-and-coffee,2026-10-01
+bonjour-jacob-rue-dauphine,Bonjour Jacob - Rue Dauphine,Bonjour Jacob,"30 Rue Dauphine, 75006",75006,6,Paris,feve,Fève,open,,A+,https://specialtycoffee.paris/shops/bonjour-jacob-rue-dauphine,2026-10-01
+cafe-joyeux-rue-paul-cezanne,Café Joyeux - Rue Paul Cézanne,Café Joyeux,"5 Rue Paul Cézanne, 75008",75008,8,Paris,cafe-joyeux,Café Joyeux,open,,A+,https://specialtycoffee.paris/shops/cafe-joyeux-rue-paul-cezanne,2026-10-01
+noir-boulevard-haussman,Noir - Boulevard Haussman,Noir,"120 Bd Haussmann, 75008",75008,8,Paris,noir,Noir,open,,A+,https://specialtycoffee.paris/shops/noir-boulevard-haussman,2026-10-01
+sayly,Sayly,Sayly,"50 Rue du Rocher, 75008",75008,8,Paris,lomi,Lomi,open,,A+,https://specialtycoffee.paris/shops/sayly,2026-10-01
+bknk-or-book-nook,BKNK | Book Nook,BKNK | Book Nook,"11 Rue Blanche, 75009",75009,9,Paris,coutume,Coutume,open,,A+,https://specialtycoffee.paris/shops/bknk-or-book-nook,2026-10-01
+cafe-shin-rue-des-petites-ecuries,CAFÉ SHIN - Rue des Petites Écuries,CAFÉ SHIN,"47 R. des Petites Écuries, 75010",75010,10,Paris,lomi,Lomi,open,,A+,https://specialtycoffee.paris/shops/cafe-shin-rue-des-petites-ecuries,2026-10-01
+contretemps,Contretemps,Contretemps,"12 Rue d'Hauteville, 75010",75010,10,Paris,feve,Fève,temp,,A+,https://specialtycoffee.paris/shops/contretemps,2026-10-01
+white-paris-10,White - Paris 10,White,"50 Rue du Faubourg Saint-Denis, 75010",75010,10,Paris,,,open,,A+,https://specialtycoffee.paris/shops/white-paris-10,2026-10-01
+cafe-dose-faubourg-st-denis,Dose - Rue du Faubourg Saint-Denis,Dose,"68 Rue du Faubourg Saint-Denis, 75010",75010,10,Paris,dose,Dose,open,,A+,https://specialtycoffee.paris/shops/cafe-dose-faubourg-st-denis,2026-10-01
+oni-coffee-shop,ONI Coffee Shop,ONI Coffee Shop,"10 Bd Saint-Martin, 75010",75010,10,Paris,,,open,,A+,https://specialtycoffee.paris/shops/oni-coffee-shop,2026-10-01
+bonjour-jacob-rue-yves-toudic,Bonjour Jacob - Rue Yves Toudic,Bonjour Jacob,"28 Rue Yves Toudic, 75010",75010,10,Paris,friedhats,Friedhats,open,,A+,https://specialtycoffee.paris/shops/bonjour-jacob-rue-yves-toudic,2026-10-01
+la-maison-du-barista-bar-a-cafe-and-boutique,La Maison du Barista,La Maison du Barista,"17 Rue Beaurepaire, 75010",75010,10,Paris,la-maison-du-barista,La Maison du Barista,open,,A+,https://specialtycoffee.paris/shops/la-maison-du-barista-bar-a-cafe-and-boutique,2026-10-01
+buna,Buna,Buna,"65 Rue Bichat, 75010",75010,10,Paris,buna-origin-of-coffee,Buna - Origin of Coffee,open,,A+,https://specialtycoffee.paris/shops/buna,2026-10-01
+amulette,Amulette,Amulette,"8 Rue Sainte-Marthe, 75010",75010,10,Paris,plural,Plural,open,,A+,https://specialtycoffee.paris/shops/amulette,2026-10-01
+kafe,Kafé,Kafé,"12 Rue Martel, 75010",75010,10,Paris,feve,Fève,open,,A+,https://specialtycoffee.paris/shops/kafe,2026-10-01
+the-sunny-side,The Sunny Side,The Sunny Side,"79 Quai de Valmy, 75010",75010,10,Paris,plural,Plural,open,,A+,https://specialtycoffee.paris/shops/the-sunny-side,2026-10-01
+bonne,Bønne,Bønne,"56 Rue Labat, 75018",75018,18,Paris,supreme-roastworks,Supreme Roastworks,open,,A+,https://specialtycoffee.paris/shops/bonne,2026-10-01
+ilik-coffee,Ilik Coffee,Ilik Coffee,"43 Rue Volta, 75003",75003,3,Paris,,,open,,A+,https://specialtycoffee.paris/shops/ilik-coffee,2026-10-01
+tempo,Tempo,Tempo,"2 Rue du Général Renault, 75011",75011,11,Paris,feve,Fève,open,,A+,https://specialtycoffee.paris/shops/tempo,2026-10-01
+kumquat-cafe-paris,Kumquat Café,Kumquat Café,"71 Rue Saint-Maur, 75011",75011,11,Paris,tinto,Tinto,open,,A+,https://specialtycoffee.paris/shops/kumquat-cafe-paris,2026-10-01
+tronche-cafe,Tronche,Tronche,"8 Rue Froment, 75011",75011,11,Paris,feve;tanat,Fève ; Tanat,open,,A+,https://specialtycoffee.paris/shops/tronche-cafe,2026-10-01
+unreve,@unrêve,@unrêve,"28 Ave Parmentier, 75011",75011,11,Paris,arbre-a-cafe,L'Arbre à Café,open,,A+,https://specialtycoffee.paris/shops/unreve,2026-10-01
+combo-cafe,Combo Café,Combo Café,"41 Rue Championnet, 75018",75018,18,Paris,tanat,Tanat,open,,A+,https://specialtycoffee.paris/shops/combo-cafe,2026-10-01
+latte-club-bastille,LATTE CLUB - Rue du Faubourg Saint-Antoine,LATTE CLUB,"50 Rue du Faubourg Saint-Antoine, 75012",75012,12,Paris,mokxa,Mokxa,open,,A+,https://specialtycoffee.paris/shops/latte-club-bastille,2026-10-01
+cafe-lune,Café Lune,Café Lune,"57 Rue de Ménilmontant, 75020",75020,20,Paris,dak,Dak,open,,A+,https://specialtycoffee.paris/shops/cafe-lune,2026-10-01
+aroma-caffe,AROMA CAFFÈ,AROMA CAFFÈ,"61 Av. du Maine, 75014",75014,14,Paris,lomi,Lomi,open,,A+,https://specialtycoffee.paris/shops/aroma-caffe,2026-10-01
+agria-coffee-shop,Agria,Agria,"171 Bd Voltaire, 75011",75011,11,Paris,coutume,Coutume,open,,A+,https://specialtycoffee.paris/shops/agria-coffee-shop,2026-10-01
+terrah-or-coffee-shop-and-roasters,Terrah,Terrah,"26 Rue Oberkampf, 75011",75011,11,Paris,,,open,,A+,https://specialtycoffee.paris/shops/terrah-or-coffee-shop-and-roasters,2026-10-01
+simple-coffee,Simple Coffee,Simple Coffee,"78 R. des Martyrs, 75018",75018,18,Paris,,,open,,A+,https://specialtycoffee.paris/shops/simple-coffee,2026-10-01
+helene-et-madeleine,Hélène et Madeleine,Hélène et Madeleine,"36 Rue Saint-Sébastien, 75011",75011,11,Paris,,,open,,A+,https://specialtycoffee.paris/shops/helene-et-madeleine,2026-10-01
+011-cafe,011,011,"78 Rue des Amandiers, 75020",75020,20,Paris,,,open,,A+,https://specialtycoffee.paris/shops/011-cafe,2026-10-01
+nadine-coffee-shop,Nadine Coffee shop,Nadine Coffee shop,"16 Rue de Trétaigne, 75018",75018,18,Paris,ten-belles,Ten Belles,open,,A+,https://specialtycoffee.paris/shops/nadine-coffee-shop,2026-10-01
+naughtee-cafe,Nau(gh)tēe Café,Nau(gh)tēe Café,"22 Rue Royer-Collard, 75005",75005,5,Paris,mojo-coffee-club,Mojo Coffee Club,open,,A+,https://specialtycoffee.paris/shops/naughtee-cafe,2026-10-01
+tanat-chateau-deau,Tanat - Rue du Château d'Eau,Tanat,"36 Rue du Château d'Eau, 75010",75010,10,Paris,tanat,Tanat,open,,A+,https://specialtycoffee.paris/shops/tanat-chateau-deau,2026-10-01
+coeur-coffee-roasters-rue-daunou,Coeur Coffee - Rue Daunou,Coeur Coffee,"16 Rue Daunou, 75002",75002,2,Paris,coeur-coffee,Cœur Coffee,open,,A+,https://specialtycoffee.paris/shops/coeur-coffee-roasters-rue-daunou,2026-10-01
+cafe-dantan,JOGUI,JOGUI,"36 Rue de la Lune, 75002",75002,2,Paris,,,open,,A+,https://specialtycoffee.paris/shops/cafe-dantan,2026-10-01
+contrastes-paris,Contrastes Paris,Contrastes Paris,"38 Rue Greneta, 75002",75002,2,Paris,,,open,,A+,https://specialtycoffee.paris/shops/contrastes-paris,2026-10-01
+blackbird-coffee,BlackBird Coffee,BlackBird Coffee,"77 Rue du Temple, 75003",75003,3,Paris,,,open,,A+,https://specialtycoffee.paris/shops/blackbird-coffee,2026-10-01
+maison-phe,Maison Phê,Maison Phê,"19 Rue Ferdinand Duval, 75004",75004,4,Paris,hanoi-corner,Hanoï Corner,open,,A+,https://specialtycoffee.paris/shops/maison-phe,2026-10-01
+escocafe,Escocafé,Escocafé,"8 Rue d'Ormesson, 75004",75004,4,Paris,escocafe,Escocafé,temp,,A+,https://specialtycoffee.paris/shops/escocafe,2026-10-01
+the-coffee-rue-du-cardinal-lemoine,The Coffee - Rue du Cardinal Lemoine,The Coffee,"77 Rue du Cardinal Lemoine, 75005",75005,5,Paris,the-coffee,The Coffee,open,,A+,https://specialtycoffee.paris/shops/the-coffee-rue-du-cardinal-lemoine,2026-10-01
+biboune,Biboune,Biboune,"105 Rue du Cherche-Midi, 75006",75006,6,Paris,feve,Fève,open,,A+,https://specialtycoffee.paris/shops/biboune,2026-10-01
+ugraine,u.graine,u.graine,"5 Rue Littré, 75006",75006,6,Paris,,,open,,A+,https://specialtycoffee.paris/shops/ugraine,2026-10-01
+judy-rue-de-fleurus,Judy - Rue de Fleurus,Judy,"18 Rue de Fleurus, 75006",75006,6,Paris,coutume,Coutume,open,,A+,https://specialtycoffee.paris/shops/judy-rue-de-fleurus,2026-10-01
+parallel-coffee,Parallel Coffee,Parallel Coffee,"3 Rue de la Renaissance, 75008",75008,8,Paris,,,open,,A+,https://specialtycoffee.paris/shops/parallel-coffee,2026-10-01
+nichee,Nichée,Nichée,"5 Rue de Vienne, 75008",75008,8,Paris,,,open,,A+,https://specialtycoffee.paris/shops/nichee,2026-10-01
+petrin-cafe,Pétrin Café,Pétrin Café,"11 Rue Mansart, 75009",75009,9,Paris,lomi,Lomi,open,,A+,https://specialtycoffee.paris/shops/petrin-cafe,2026-10-01
+la-compagnie-du-cafe,La Compagnie du Café,La Compagnie du Café,"19 Rue Notre Dame de Lorette, 75009",75009,9,Paris,la-compagnie-du-cafe,La Compagnie du Café,open,,A+,https://specialtycoffee.paris/shops/la-compagnie-du-cafe,2026-10-01
+jovia,JOVIA,JOVIA,"5 Rue Bourdaloue, 75009",75009,9,Paris,,,open,,A+,https://specialtycoffee.paris/shops/jovia,2026-10-01
+jims-corner,Jim's Corner,Jim's Corner,"127 Rue du Faubourg Poissonnière, 75009",75009,9,Paris,allpress,Allpress,open,,A+,https://specialtycoffee.paris/shops/jims-corner,2026-10-01
+momus,Momus,Momus,"44 R. des Martyrs, 75009",75009,9,Paris,momus,Momus,open,,A+,https://specialtycoffee.paris/shops/momus,2026-10-01
+yeuz,Yeüz,Yeüz,"24 R. des Petites Écuries, 75010",75010,10,Paris,azeria,Azeria,open,,A+,https://specialtycoffee.paris/shops/yeuz,2026-10-01
+kah,KAH,KAH,"28 Rue Bichat, 75010",75010,10,Paris,tanat,Tanat,open,,A+,https://specialtycoffee.paris/shops/kah,2026-10-01
+legacy-coffee,LEGACY COFFEE,LEGACY COFFEE,"68 Av. Claude Vellefaux, 75010",75010,10,Paris,,,open,,A+,https://specialtycoffee.paris/shops/legacy-coffee,2026-10-01
+cafe-vasily,Café Vasily,Café Vasily,"82 Av. Mozart, 75016",75016,16,Paris,,,open,,A+,https://specialtycoffee.paris/shops/cafe-vasily,2026-10-01
+un-ami,Un Ami,Un Ami,"95 Rue Didot, 75014",75014,14,Paris,,,open,,A+,https://specialtycoffee.paris/shops/un-ami,2026-10-01
+frnchlovebread,Frnchlovebread,Frnchlovebread,"182 Rue de Charenton, 75012",75012,12,Paris,,,open,,A+,https://specialtycoffee.paris/shops/frnchlovebread,2026-10-01
+terres-de-cafe-daguerre,Terres de Café - Rue Daguerre,Terres de Café,"32 Rue Daguerre, 75014",75014,14,Paris,terres-de-cafe,Terres de café,open,,A+,https://specialtycoffee.paris/shops/terres-de-cafe-daguerre,2026-10-01
+cafe-cayo,Café Cayo,Café Cayo,"9 Rue du Chevaleret, 75013",75013,13,Paris,cayo,Cayo Coffee Roasters,open,,A+,https://specialtycoffee.paris/shops/cafe-cayo,2026-10-01
+cuvee-noire-bastille-coffee-shop,Cuvée Noire - Rue de la Roquette,Cuvée Noire,"8 Rue de la Roquette, 75011",75011,11,Paris,cuvee-noire,Cuvée Noire,open,,A+,https://specialtycoffee.paris/shops/cuvee-noire-bastille-coffee-shop,2026-10-01
+del-carmen-cafe,Del Carmen Café,Del Carmen Café,"49 Rue Saint-Sébastien, 75011",75011,11,Paris,belleville-brulerie;plural,Belleville Brûlerie ; Plural,open,,A+,https://specialtycoffee.paris/shops/del-carmen-cafe,2026-10-01
+harvest,Harvest.,Harvest.,"65 Rue de la Roquette, 75011",75011,11,Paris,,,open,,A+,https://specialtycoffee.paris/shops/harvest,2026-10-01
+calin-matin,Câlin Matin,Câlin Matin,"9 Rue Auguste Laurent, 75011",75011,11,Paris,,,open,,A+,https://specialtycoffee.paris/shops/calin-matin,2026-10-01
+cafe-caractere,Caractère,Caractère,"2 Rue des Taillandiers, 75011",75011,11,Paris,,,open,,A+,https://specialtycoffee.paris/shops/cafe-caractere,2026-10-01
+loud-coffee-shop,Loud Coffee,Loud Coffee,"176 Rue de Charenton, 75012",75012,12,Paris,dak,Dak,open,,A+,https://specialtycoffee.paris/shops/loud-coffee-shop,2026-10-01
+boris-rue-lepic,Boris - Rue Lepic,Boris,"28 Rue Lepic, 75018",75018,18,Paris,lomi,Lomi,open,,A+,https://specialtycoffee.paris/shops/boris-rue-lepic,2026-10-01
+the-coffee-saint-lazare,The Coffee - Rue d'Amsterdam,The Coffee,"66 Rue d'Amsterdam, 75009",75009,9,Paris,the-coffee,The Coffee,open,,A+,https://specialtycoffee.paris/shops/the-coffee-saint-lazare,2026-10-01
+manie-avenue-victor-hugo,Manie - Avenue Victor Hugo,Manie,"114 Av. Victor Hugo, 75016",75016,16,Paris,,,open,,A+,https://specialtycoffee.paris/shops/manie-avenue-victor-hugo,2026-10-01
+luciko-cafe,LUCIKO,LUCIKO,"31 Rue Boissy d'Anglas, 75008",75008,8,Paris,,,open,,A+,https://specialtycoffee.paris/shops/luciko-cafe,2026-10-01
+the-coffee-martyrs,The Coffee - Rue des Martyrs,The Coffee,"70 R. des Martyrs, 75009",75009,9,Paris,the-coffee,The Coffee,open,,A+,https://specialtycoffee.paris/shops/the-coffee-martyrs,2026-10-01
+dom-cafe,Dom Café,Dom Café,"58 Rue Saint-Dominique, 75007",75007,7,Paris,83,83+,open,,A+,https://specialtycoffee.paris/shops/dom-cafe,2026-10-01
+nau-cafe,NĀU Café,NĀU Café,"11 bis Rue Jacques Cœur, 75004",75004,4,Paris,,,open,,A+,https://specialtycoffee.paris/shops/nau-cafe,2026-10-01
+pompom-coffee,Pompom Coffee,Pompom Coffee,"40 Rue Sedaine, 75011",75011,11,Paris,,,open,,A+,https://specialtycoffee.paris/shops/pompom-coffee,2026-10-01
+geurimi,Geurimi,Geurimi,"11 Rue des Écouffes, 75004",75004,4,Paris,,,open,,A+,https://specialtycoffee.paris/shops/geurimi,2026-10-01
+kissaba-irasshai,Kissaba - iRASSHAi,Kissaba,"40 Rue du Louvre, 75001",75001,1,Paris,arbre-a-cafe;weekenders-coffee,L'Arbre à Café ; Weekenders Coffee,open,,A+,https://specialtycoffee.paris/shops/kissaba-irasshai,2026-10-01
+io-cafe,I.O Café,I.O Café,"16 Rue Dupetit-Thouars, 75003",75003,3,Paris,la-cabra,La Cabra,open,,A+,https://specialtycoffee.paris/shops/io-cafe,2026-10-01
+cortado,Cortado,Cortado,"31 Rue Charlot, 75003",75003,3,Paris,nomad,Nomad,open,,A+,https://specialtycoffee.paris/shops/cortado,2026-10-01
+la-boutique-caron,La Boutique Caron,La Boutique Caron,"32 Rue Notre Dame de Nazareth, 75003",75003,3,Paris,,,open,,A+,https://specialtycoffee.paris/shops/la-boutique-caron,2026-10-01
+we-love-coffee,We Love Coffee,We Love Coffee,"52 Rue Pascal, 75013",75013,13,Paris,feve,Fève,open,,A+,https://specialtycoffee.paris/shops/we-love-coffee,2026-10-01
+certified-cafe-beaupassage,Certified Café - Beaupassage,Certified Café,"83P Rue du Bac, 75007",75007,7,Paris,certified,Certified,open,,A+,https://specialtycoffee.paris/shops/certified-cafe-beaupassage,2026-10-01
+larbre-a-cafe-le-bon-marche,L'Arbre à Café - Le Bon Marché,L'Arbre à Café,"38 Rue de Sèvres, 75007",75007,7,Paris,arbre-a-cafe,L'Arbre à Café,open,,A+,https://specialtycoffee.paris/shops/larbre-a-cafe-le-bon-marche,2026-10-01
+shiba-cafe-madeleine,Shiba café - Madeleine,Shiba café,"1 Rue Greffulhe, 75008",75008,8,Paris,,,open,,A+,https://specialtycoffee.paris/shops/shiba-cafe-madeleine,2026-10-01
+seamer,Seamer,Seamer,"37 Rue Saint-Georges, 75009",75009,9,Paris,friedhats;right-side,Friedhats ; Right Side,open,,A+,https://specialtycoffee.paris/shops/seamer,2026-10-01
+tilila,Tilila,Tilila,"34 Rue Condorcet, 75009",75009,9,Paris,,,open,,A+,https://specialtycoffee.paris/shops/tilila,2026-10-01
+kape,KAPÉ,KAPÉ,"17 Rue de Malte, 75011",75011,11,Paris,feve;kape-de-filipina,Fève ; Kape de Filipina,open,,A+,https://specialtycoffee.paris/shops/kape,2026-10-01
+foret-foret,Forêt Forêt,Forêt Forêt,"64 Rue des Tournelles, 75003",75003,3,Paris,tribute;aery;apollons-gold,Tribute ; Aery ; Apollon's Gold,open,,A+,https://specialtycoffee.paris/shops/foret-foret,2026-10-01
+tactile,Tactile,Tactile,"164 Av. Ledru Rollin, 75011",75011,11,Paris,prodigal-coffee;saint-romain-coffee,Prodigal Coffee ; Saint Romain Coffee,open,,A+,https://specialtycoffee.paris/shops/tactile,2026-10-01
+maya,MAYA,MAYA,"21 Rue Custine, 75018",75018,18,Paris,,,open,,A+,https://specialtycoffee.paris/shops/maya,2026-10-01
+coeur-healthy-epicerie,COEUR,COEUR,"18 Rue du Général Guilhem, 75011",75011,11,Paris,,,open,,A+,https://specialtycoffee.paris/shops/coeur-healthy-epicerie,2026-10-01
+anaya-coffee,Anaya Coffee,Anaya Coffee,"63 Ave Parmentier, 75011",75011,11,Paris,arbre-a-cafe,L'Arbre à Café,open,,A+,https://specialtycoffee.paris/shops/anaya-coffee,2026-10-01
+caua-coffee,CAUA,CAUA,"10 Bd des Filles du Calvaire, 75011",75011,11,Paris,tanat,Tanat,open,,A+,https://specialtycoffee.paris/shops/caua-coffee,2026-10-01
+ici-coffee,ICI,ICI,"49 Rue Daguerre, 75014",75014,14,Paris,,,open,,A+,https://specialtycoffee.paris/shops/ici-coffee,2026-10-01
+junction,Junction,Junction,"101 Rue de Charonne, 75011",75011,11,Paris,dak,Dak,open,,A+,https://specialtycoffee.paris/shops/junction,2026-10-01
+sisters-coffee,Sister's Coffee,Sister's Coffee,"17 Rue Boulard, 75014",75014,14,Paris,,,open,,A+,https://specialtycoffee.paris/shops/sisters-coffee,2026-10-01
+news-and-coffee,News & Coffee,News & Coffee,"kiosque de presse NEWS & COFFEE, 128 Bd Voltaire, 75011",75011,11,Paris,,,open,,A+,https://specialtycoffee.paris/shops/news-and-coffee,2026-10-01
+proost-coffee-shop-et-bar-a-madeleines,Proost - Rue Popincourt,Proost,"38 Rue Popincourt, 75011",75011,11,Paris,dose,Dose,open,,A+,https://specialtycoffee.paris/shops/proost-coffee-shop-et-bar-a-madeleines,2026-10-01
+onoul,ONOUL,ONOUL,"8 Rue Gramme, 75015",75015,15,Paris,lodeur-de-la-brulerie-lob,L'Odeur de la Brûlerie - LOB,open,,A+,https://specialtycoffee.paris/shops/onoul,2026-10-01
+one-sip-coffee,One Sip Coffee,One Sip Coffee,"11 Rue Camille Desmoulins, 75011",75011,11,Paris,,,open,,A+,https://specialtycoffee.paris/shops/one-sip-coffee,2026-10-01
+terres-de-cafe-17,Terres de Café - Rue des Batignolles,Terres de Café,"33 Rue des Batignolles, 75017",75017,17,Paris,terres-de-cafe,Terres de café,open,,A+,https://specialtycoffee.paris/shops/terres-de-cafe-17,2026-10-01
+emm-cafe,emm… café,emm… café,"51 Rue Amelot, 75011",75011,11,Paris,,,open,,A+,https://specialtycoffee.paris/shops/emm-cafe,2026-10-01
+polygone-coffee-club,Polygone Coffee Club,Polygone Coffee Club,"84 Rue du Chemin Vert, 75011",75011,11,Paris,,,open,,A+,https://specialtycoffee.paris/shops/polygone-coffee-club,2026-10-01
+chanceux-bastille,Chanceux - Rue St Sabin,Chanceux,"67 Rue St Sabin, 75011",75011,11,Paris,muda,Muda,open,,A+,https://specialtycoffee.paris/shops/chanceux-bastille,2026-10-01
+sound-and-coffee,Sound and Coffee,Sound and Coffee,"48 Pass. des Panoramas, 75002",75002,2,Paris,,,open,,A+,https://specialtycoffee.paris/shops/sound-and-coffee,2026-10-01
+peak,PEAK,PEAK,"218 Rue du Faubourg Saint-Martin, 75010",75010,10,Paris,,,open,,A+,https://specialtycoffee.paris/shops/peak,2026-10-01
+vieyen,VieYên,VieYên,"43 Rue de l'Arbre Sec, 75001",75001,1,Paris,tanat,Tanat,open,,A+,https://specialtycoffee.paris/shops/vieyen,2026-10-01
+kalve-caumartin,Kalve - Rue Caumartin,Kalve,"6 Rue de Caumartin, 75009",75009,9,Paris,kalve,Kalve,open,,A+,https://specialtycoffee.paris/shops/kalve-caumartin,2026-10-01
+inform-cafe-rue-orsel,Inform Café - Rue d'Orsel,Inform Café,"27 Rue d'Orsel, 75018",75018,18,Paris,coutume,Coutume,open,,A+,https://specialtycoffee.paris/shops/inform-cafe-rue-orsel,2026-10-01
+bordel,Bordel,Bordel,"5 Rue Sorbier, 75020",75020,20,Paris,,,open,,A+,https://specialtycoffee.paris/shops/bordel,2026-10-01
+koffessa,Koffessa,Koffessa,"87 Rue d'Hauteville, 75010",75010,10,Paris,loutsa,Loutsa,open,,A+,https://specialtycoffee.paris/shops/koffessa,2026-10-01
+mee-cafe,Mee café,Mee café,"8 Rue d'Argenteuil, 75001",75001,1,Paris,,,open,,A+,https://specialtycoffee.paris/shops/mee-cafe,2026-10-01
+terres-de-cafe-saint-honore,Terres de Café - Saint Honoré,Terres de Café,"150 Rue Saint-Honoré, 75001",75001,1,Paris,terres-de-cafe,Terres de café,open,,A,https://specialtycoffee.paris/shops/terres-de-cafe-saint-honore,2026-10-01
+cafe-nuances-rue-danielle-casanova,Café Nuances - Rue Danielle Casanova,Café Nuances,"25 Rue Danielle Casanova, 75001",75001,1,Paris,cafe-nuances,Café Nuances,open,,A,https://specialtycoffee.paris/shops/cafe-nuances-rue-danielle-casanova,2026-10-01
+shukery-coffee-and-matcha,Shukery Coffee & Matcha,Shukery Coffee & Matcha,"18 Av. de l'Opéra, 75001",75001,1,Paris,coutume,Coutume,open,,A,https://specialtycoffee.paris/shops/shukery-coffee-and-matcha,2026-10-01
+cafe-berry,Café Berry,Café Berry,"10 Rue Chapon, 75003",75003,3,Paris,dak,Dak,open,,A,https://specialtycoffee.paris/shops/cafe-berry,2026-10-01
+fcc,FCC - Flâneur Coffee Club,FCC,"21 Rue Étienne Marcel, 75001",75001,1,Paris,feve,Fève,open,,A,https://specialtycoffee.paris/shops/fcc,2026-10-01
+melane,Melané,Melané,"11bis Rue Vauquelin, 75005",75005,5,Paris,arbre-a-cafe,L'Arbre à Café,open,,A,https://specialtycoffee.paris/shops/melane,2026-10-01
+strada,Strada,Strada,"24 Rue Monge, 75005",75005,5,Paris,feve;cime,Fève ; Cime,open,,A,https://specialtycoffee.paris/shops/strada,2026-10-01
+larbre-a-cafe-odeon,L'Arbre à Café - Odéon,L'Arbre à Café,"15 Carr de l'Odéon, 75006",75006,6,Paris,arbre-a-cafe,L'Arbre à Café,open,,A,https://specialtycoffee.paris/shops/larbre-a-cafe-odeon,2026-10-01
+cafe-du-clown,Café du Clown,Café du Clown,"6 Rue Lobineau, 75006",75006,6,Paris,arbre-a-cafe;friedhats,L'Arbre à Café ; Friedhats,open,,A,https://specialtycoffee.paris/shops/cafe-du-clown,2026-10-01
+judy-rue-jean-jacques-rousseau,Judy - Rue Jean-Jacques Rousseau,Judy,"14 Rue Jean-Jacques Rousseau, 75001",75001,1,Paris,coutume,Coutume,open,,A,https://specialtycoffee.paris/shops/judy-rue-jean-jacques-rousseau,2026-10-01
+petibon-rue-cler,Petibon - Rue Cler,Petibon,"47 Rue Cler, 75007",75007,7,Paris,,,open,,A,https://specialtycoffee.paris/shops/petibon-rue-cler,2026-10-01
+base-coffee,Base Coffee,Base Coffee,"4 Rue du Dragon, 75006",75006,6,Paris,base-coffee,Base Coffee,open,,A,https://specialtycoffee.paris/shops/base-coffee,2026-10-01
+olysse,OLYSSE,OLYSSE,"90 Rue de Monceau, 75008",75008,8,Paris,espeletia,Espeletia,open,,A,https://specialtycoffee.paris/shops/olysse,2026-10-01
+la-petite-bleue,La Petite Bleue,La Petite Bleue,"13 Rue Auber, 75009",75009,9,Paris,,,open,,A,https://specialtycoffee.paris/shops/la-petite-bleue,2026-10-01
+torre-rue-la-fayette,Torré - Rue La Fayette,Torré,"52 Rue La Fayette, 75009",75009,9,Paris,torre,Torré,open,,A,https://specialtycoffee.paris/shops/torre-rue-la-fayette,2026-10-01
+coutume-rue-du-faubourg-poissonniere,Coutume - Rue du Faubourg Poissonnière,Coutume,"63 Rue du Faubourg Poissonnière, 75009",75009,9,Paris,coutume,Coutume,open,,A,https://specialtycoffee.paris/shops/coutume-rue-du-faubourg-poissonniere,2026-10-01
+clode,Clode - Rue du Four,Clode,"50 Rue du Four, 75006",75006,6,Paris,,,open,,A,https://specialtycoffee.paris/shops/clode,2026-10-01
+republique-of-coffee,République of Coffee,République of Coffee,"2 Bd Saint-Martin, 75010",75010,10,Paris,,,open,,A,https://specialtycoffee.paris/shops/republique-of-coffee,2026-10-01
+ten-belles-rue-de-la-grange-aux-belles,Ten Belles - Rue de la Grange aux Belles,Ten Belles,"10 Rue de la Grange aux Belles, 75010",75010,10,Paris,ten-belles,Ten Belles,open,,A,https://specialtycoffee.paris/shops/ten-belles-rue-de-la-grange-aux-belles,2026-10-01
+cafe-dose-paris-lamarck,Dose - Rue Lamarck,Dose,"74 Rue Lamarck, 75018",75018,18,Paris,dose,Dose,open,,A,https://specialtycoffee.paris/shops/cafe-dose-paris-lamarck,2026-10-01
+co-coffee-and-craft,Co. coffee & craft,Co. coffee & craft,"25 Rue de Sambre-et-Meuse, 75010",75010,10,Paris,mojo-coffee-club,Mojo Coffee Club,open,,A,https://specialtycoffee.paris/shops/co-coffee-and-craft,2026-10-01
+crema-cafe-montmartre,CREMA,CREMA,"20 Rue Durantin, 75018",75018,18,Paris,mojo-coffee-club,Mojo Coffee Club,open,,A,https://specialtycoffee.paris/shops/crema-cafe-montmartre,2026-10-01
+lam,LÂM,LÂM,"24 Rue Notre Dame de Nazareth, 75003",75003,3,Paris,,,open,,A,https://specialtycoffee.paris/shops/lam,2026-10-01
+creem-coffee-shop,Creem,Creem,"16 Rue Saint-Antoine, 75004",75004,4,Paris,,,open,,A,https://specialtycoffee.paris/shops/creem-coffee-shop,2026-10-01
+cafe-du-cycliste-paris,Café du Cycliste,Café du Cycliste,"15 Rue Saint-Fiacre, 75002",75002,2,Paris,,,open,,A,https://specialtycoffee.paris/shops/cafe-du-cycliste-paris,2026-10-01
+daark,DAARK³,DAARK³,"50 Rue de Turenne, 75003",75003,3,Paris,tanat;dak,Tanat ; Dak,open,,A,https://specialtycoffee.paris/shops/daark,2026-10-01
+cypher-coffee-shop,Cypher,Cypher,"49 Av. Gambetta, 75020",75020,20,Paris,mokxa,Mokxa,open,,A,https://specialtycoffee.paris/shops/cypher-coffee-shop,2026-10-01
+cafe-fluo-paris,Fluo,Fluo,"86 Rue Lemercier, 75017",75017,17,Paris,belleville-brulerie,Belleville Brûlerie,open,,A,https://specialtycoffee.paris/shops/cafe-fluo-paris,2026-10-01
+cafe-dose-batignolles,Dose - Place du Dr Félix Lobligeois,Dose,"82 Place du Dr Félix Lobligeois, 75017",75017,17,Paris,dose,Dose,open,,A,https://specialtycoffee.paris/shops/cafe-dose-batignolles,2026-10-01
+kawaa-daumesnil,kawaa Daumesnil,kawaa Daumesnil,"24 Av. Daumesnil, 75012",75012,12,Paris,,,open,,A,https://specialtycoffee.paris/shops/kawaa-daumesnil,2026-10-01
+hexagone-cafe,Hexagone Café,Hexagone Café,"121 Rue du Château, 75014",75014,14,Paris,hexagone,Hexagone,open,,A,https://specialtycoffee.paris/shops/hexagone-cafe,2026-10-01
+good-news-coffee-shop,Good News Coffee Shop,Good News Coffee Shop,"27 bis Rue Mademoiselle, 75015",75015,15,Paris,,,open,,A,https://specialtycoffee.paris/shops/good-news-coffee-shop,2026-10-01
+back-in-black,Back in Black,Back in Black,"25 Rue Amelot, 75011",75011,11,Paris,kb,KB,open,,A,https://specialtycoffee.paris/shops/back-in-black,2026-10-01
+lomi,Lomi,Lomi,"3 ter Rue Marcadet, 75018",75018,18,Paris,lomi,Lomi,open,,A,https://specialtycoffee.paris/shops/lomi,2026-10-01
+crumbles,Crumbles,Crumbles,"3 Rue Pierre Fontaine, 75009",75009,9,Paris,tanat,Tanat,open,,A,https://specialtycoffee.paris/shops/crumbles,2026-10-01
+lithium-cafe,Lithium,Lithium,"6 Rue Saint-Blaise, 75020",75020,20,Paris,ten-belles,Ten Belles,open,,A,https://specialtycoffee.paris/shops/lithium-cafe,2026-10-01
+noir-rue-gustave-courbet,Noir - Rue Gustave Courbet,Noir,"32 Rue Gustave Courbet, 75116",75116,16,Paris,noir,Noir,open,,A,https://specialtycoffee.paris/shops/noir-rue-gustave-courbet,2026-10-01
+the-beans-on-fire-general-blaise,The Beans on Fire - Général Blaise,The Beans on Fire,"Boutique & Atelier à l'angle, RDC, 7 Rue du Général Blaise, 75011",75011,11,Paris,the-beans-on-fire,The Beans on Fire,open,,A,https://specialtycoffee.paris/shops/the-beans-on-fire-general-blaise,2026-10-01
+core-paris,CORE,CORE,"5 Rue du Pas de la Mule, 75004",75004,4,Paris,,,open,,A,https://specialtycoffee.paris/shops/core-paris,2026-10-01
+moka-nova,Moka Nova,Moka Nova,"78 Rue du Faubourg Saint-Antoine, 75012",75012,12,Paris,,,open,,A,https://specialtycoffee.paris/shops/moka-nova,2026-10-01
+pola,pola,pola,"104 Rue Saint-Maur, 75011",75011,11,Paris,tanat,Tanat,open,,A,https://specialtycoffee.paris/shops/pola,2026-10-01
+mmmcafe,Mmm...café,Mmm...café,"40 Rue de Prony, 75017",75017,17,Paris,,,open,,A,https://specialtycoffee.paris/shops/mmmcafe,2026-10-01
+immersion-vendome-brunch-and-coffee,Immersion - Rue Danielle Casanova,Immersion,"23 Rue Danielle Casanova, 75001",75001,1,Paris,belleville-brulerie,Belleville Brûlerie,open,,A,https://specialtycoffee.paris/shops/immersion-vendome-brunch-and-coffee,2026-10-01
+immersion-republique-brunch-and-coffee,Immersion - Rue Lucien Sampaix,Immersion,"8 Rue Lucien Sampaix 8-10, 75010",75010,10,Paris,belleville-brulerie,Belleville Brûlerie,open,,A,https://specialtycoffee.paris/shops/immersion-republique-brunch-and-coffee,2026-10-01
+le-phin-cafe,Le Phin,Le Phin,"18 Rue de la Cerisaie, 75004",75004,4,Paris,friedhats;manhattan-coffee-roasters,Friedhats ; Manhattan Coffee Roasters,open,,A,https://specialtycoffee.paris/shops/le-phin-cafe,2026-10-01
+certified-cafe-panorama,Certified Café - Panorama,Certified Café,"44-47 Pass. des Panoramas, 75002",75002,2,Paris,certified,Certified,open,,A,https://specialtycoffee.paris/shops/certified-cafe-panorama,2026-10-01
+paolina-caffe,Paolina Caffè - Rue d'Aboukir,Paolina Caffè,"77 Rue d'Aboukir, 75002",75002,2,Paris,,,open,,A,https://specialtycoffee.paris/shops/paolina-caffe,2026-10-01
+bcoffee,BCoffee,BCoffee,"5 Rue des Écouffes, 75004",75004,4,Paris,feve,Fève,open,,A,https://specialtycoffee.paris/shops/bcoffee,2026-10-01
+city-of-light-rue-malher,City of Light - Rue Malher,City of Light,"3 Rue Malher, 75004",75004,4,Paris,city-of-light,City of Light,open,,A,https://specialtycoffee.paris/shops/city-of-light-rue-malher,2026-10-01
+loutsa-rue-de-bazeilles,Loutsa - Rue de Bazeilles,Loutsa,"1 Rue de Bazeilles, 75005",75005,5,Paris,loutsa,Loutsa,open,,A,https://specialtycoffee.paris/shops/loutsa-rue-de-bazeilles,2026-10-01
+chez,CHĒZ - Rue de Seine,CHĒZ,"76 Rue de Seine, 75006",75006,6,Paris,feve,Fève,open,,A,https://specialtycoffee.paris/shops/chez,2026-10-01
+moka,Moka - Rue du Colisée,Moka,"11 Rue du Colisée, 75008",75008,8,Paris,,,open,,A,https://specialtycoffee.paris/shops/moka,2026-10-01
+coutume-hotel-mathis,Coutume - Hôtel Mathis,Coutume,"3 Rue de Ponthieu, 75008",75008,8,Paris,coutume,Coutume,open,,A,https://specialtycoffee.paris/shops/coutume-hotel-mathis,2026-10-01
+noir-coffee-shop-and-torrefacteur,Noir - Coffee Shop & Torréfacteur,Noir,"1 Rue Bourdaloue, 75009",75009,9,Paris,noir,Noir,open,,A,https://specialtycoffee.paris/shops/noir-coffee-shop-and-torrefacteur,2026-10-01
+cafe-pli-temple,Café Pli - Temple,Café Pli,"38 Rue du Faubourg du Temple, 75011",75011,11,Paris,lomi,Lomi,open,,A,https://specialtycoffee.paris/shops/cafe-pli-temple,2026-10-01
+moi-paris,MOI,MOI,"2 rue dupetit-thouars, 1 Rue de la Corderie, 75003",75003,3,Paris,,,open,,A,https://specialtycoffee.paris/shops/moi-paris,2026-10-01
+passion-cafe,Passion Café,Passion Café,"46 Rue Damrémont, 75018",75018,18,Paris,,,open,,A,https://specialtycoffee.paris/shops/passion-cafe,2026-10-01
+octave-batignolles,Octave,Octave,"32 Rue Lemercier, 75017",75017,17,Paris,plural,Plural,open,,A,https://specialtycoffee.paris/shops/octave-batignolles,2026-10-01
+city-of-light-boissy-danglas,City of Light - Rue Boissy d'Anglas,City of Light,"41 Rue Boissy d'Anglas, 75008",75008,8,Paris,city-of-light,City of Light,open,,A,https://specialtycoffee.paris/shops/city-of-light-boissy-danglas,2026-10-01
+oats-coffee,Oats Coffee,Oats Coffee,"34 Rue Sainte-Anne, 75001",75001,1,Paris,oats-coffee,Oats Coffee,open,,A,https://specialtycoffee.paris/shops/oats-coffee,2026-10-01
+cercer-deli,cercer deli,cercer deli,"5 Rue Charles-François Dupuis, 75003",75003,3,Paris,,,open,,A,https://specialtycoffee.paris/shops/cercer-deli,2026-10-01
+feyma,Feyma,Feyma,"183 Rue Marcadet, 75018",75018,18,Paris,lomi,Lomi,open,,A,https://specialtycoffee.paris/shops/feyma,2026-10-01
+gula,Gula,Gula,"125 Av. Ledru Rollin, 75011",75011,11,Paris,,,open,,A,https://specialtycoffee.paris/shops/gula,2026-10-01
+kawaa-lumiere,kawaa Lumière,kawaa Lumière,"40 Av. des Terroirs de France, 75012",75012,12,Paris,,,open,,A,https://specialtycoffee.paris/shops/kawaa-lumiere,2026-10-01
+creacafe-by-lou,Créa'Café,Créa'Café,"45 Av. Gambetta, 75020",75020,20,Paris,esperanza,Esperanza,open,,A,https://specialtycoffee.paris/shops/creacafe-by-lou,2026-10-01
+artsy-coffee,Artsy Coffee,Artsy Coffee,"54 Rue Custine, 75018",75018,18,Paris,olas,Ola’s,open,,A,https://specialtycoffee.paris/shops/artsy-coffee,2026-10-01
+bleu-coffee-shop,Bleu,Bleu,"80 Rue de l'Ouest, 75014",75014,14,Paris,muwad,Muwad,open,,A,https://specialtycoffee.paris/shops/bleu-coffee-shop,2026-10-01
+extraction-coffee,Extraction Coffee - Rue Amelot,Extraction Coffee,"29 Rue Amelot, 75011",75011,11,Paris,,,open,,A,https://specialtycoffee.paris/shops/extraction-coffee,2026-10-01
+moon-coffee-shop,Moon Coffee Shop,Moon Coffee Shop,"253 Bd Voltaire, 75011",75011,11,Paris,mokxa,Mokxa,open,,A,https://specialtycoffee.paris/shops/moon-coffee-shop,2026-10-01
+kalve-desaix,Kalve - Rue Desaix,Kalve,"40 Rue Desaix, 75015",75015,15,Paris,kalve,Kalve,open,,A,https://specialtycoffee.paris/shops/kalve-desaix,2026-10-01
+delit-le-cafe,Délit. Le Café,Délit. Le Café,"21 Rue de la Terrasse, 75017",75017,17,Paris,belleville-brulerie,Belleville Brûlerie,open,,A,https://specialtycoffee.paris/shops/delit-le-cafe,2026-10-01
+the-coffee-rue-de-vaugirard,The Coffee - Rue de Vaugirard,The Coffee,"Île de, 309 Rue de Vaugirard, 75015",75015,15,Paris,the-coffee,The Coffee,open,,A,https://specialtycoffee.paris/shops/the-coffee-rue-de-vaugirard,2026-10-01
+coffee-arts-paris,Coffee Arts Paris,Coffee Arts Paris,"25 Bd du Temple, 75003",75003,3,Paris,belleville-brulerie,Belleville Brûlerie,open,,A,https://specialtycoffee.paris/shops/coffee-arts-paris,2026-10-01
+chapter,Chapter,Chapter,"40 Rue Custine, 75018",75018,18,Paris,plural,Plural,open,,A,https://specialtycoffee.paris/shops/chapter,2026-10-01
+june,June,June,"13 bis Rue Pradier, 75019",75019,19,Paris,,,open,,A,https://specialtycoffee.paris/shops/june,2026-10-01
+sip,S!P,S!P,"39 Rue Pergolèse, 75116",75116,16,Paris,,,open,,A,https://specialtycoffee.paris/shops/sip,2026-10-01
+koni-rue-du-faubourg-saint-denis,Koni. - Rue du Faubourg Saint-Denis,Koni.,"85 Rue du Faubourg Saint-Denis, 75010",75010,10,Paris,the-beans-on-fire,The Beans on Fire,open,,A,https://specialtycoffee.paris/shops/koni-rue-du-faubourg-saint-denis,2026-10-01
+storm-cycling-club,Storm Cycling Club,Storm Cycling Club,"27 Bis Rue du Cardinal Lemoine, 75005",75005,5,Paris,,,open,,A,https://specialtycoffee.paris/shops/storm-cycling-club,2026-10-01
+latte-club-rue-reaumur,LATTE CLUB - Rue Réaumur,LATTE CLUB,"8 Rue Réaumur, 75003",75003,3,Paris,,,open,,A,https://specialtycoffee.paris/shops/latte-club-rue-reaumur,2026-10-01
+tam-cafe,Tam Café,Tam Café,"59 Rue Marguerite de Rochechouart, 75009",75009,9,Paris,hanoi-corner,Hanoï Corner,open,,A,https://specialtycoffee.paris/shops/tam-cafe,2026-10-01
+le-23,Le 23,Le 23,"23 Rue des Sablons, 75016",75016,16,Paris,,,open,,A,https://specialtycoffee.paris/shops/le-23,2026-10-01
+cafe-ode,Cafe ODE,Cafe ODE,"6 Rue du Cygne, 75001",75001,1,Paris,lomi,Lomi,open,,A,https://specialtycoffee.paris/shops/cafe-ode,2026-10-01
+lancaster-le-cafe,Lancaster Le Café,Lancaster Le Café,"4 Rue des Pyramides, 75001",75001,1,Paris,,,open,,A,https://specialtycoffee.paris/shops/lancaster-le-cafe,2026-10-01
+noir-saint-augustin,Noir - Saint Augustin,Noir,"15 Rue Saint-Augustin, 75002",75002,2,Paris,noir,Noir,open,,A,https://specialtycoffee.paris/shops/noir-saint-augustin,2026-10-01
+immersion-sentier,Immersion - Rue Montmartre,Immersion,"106 Rue Montmartre, 75002",75002,2,Paris,belleville-brulerie,Belleville Brûlerie,open,,A,https://specialtycoffee.paris/shops/immersion-sentier,2026-10-01
+ha-noi-1988-flowers-and-archives,Hà Nội 1988 Flowers and Archives,Hà Nội 1988 Flowers and Archives,"51 Rue des Archives, 75003",75003,3,Paris,,,open,,A,https://specialtycoffee.paris/shops/ha-noi-1988-flowers-and-archives,2026-10-01
+white-coffee-paris-3,White - Paris 3,White,"56 Rue de Turenne, 75003",75003,3,Paris,,,open,,A,https://specialtycoffee.paris/shops/white-coffee-paris-3,2026-10-01
+noir-ile-saint-louis,Noir - Île Saint Louis,Noir,"63 Rue Saint-Louis en l'Île, 75004",75004,4,Paris,noir,Noir,open,,A,https://specialtycoffee.paris/shops/noir-ile-saint-louis,2026-10-01
+noir-rue-de-clery,Noir - Rue de Cléry,Noir,"44 Rue de Cléry, 75002",75002,2,Paris,noir,Noir,open,,A,https://specialtycoffee.paris/shops/noir-rue-de-clery,2026-10-01
+cafe-shin-palais-royal,Café SHIN - Palais Royal,Café SHIN,"28 Bis Rue de Richelieu, 75001",75001,1,Paris,,,open,,A,https://specialtycoffee.paris/shops/cafe-shin-palais-royal,2026-10-01
+nuance,Nuance,Nuance,"16 Rue Linné, 75005",75005,5,Paris,feve,Fève,open,,A,https://specialtycoffee.paris/shops/nuance,2026-10-01
+le-renard-cafe-by-tomo,Le Renard Café by Tomo,Le Renard Café by Tomo,"57 Rue du Cardinal Lemoine, 75005",75005,5,Paris,,,open,,A,https://specialtycoffee.paris/shops/le-renard-cafe-by-tomo,2026-10-01
+raf,Raf,Raf,"61 Rue de Vaugirard, 75006",75006,6,Paris,coutume;tanat,Coutume ; Tanat,open,,A,https://specialtycoffee.paris/shops/raf,2026-10-01
+noir-rue-de-luynes,Noir - Rue de Luynes,Noir,"9 Rue de Luynes, 75007",75007,7,Paris,noir,Noir,open,,A,https://specialtycoffee.paris/shops/noir-rue-de-luynes,2026-10-01
+terres-de-cafe-bourdonnais,Terres de Café - Bourdonnais,Terres de Café,"67 Av. de la Bourdonnais, 75007",75007,7,Paris,terres-de-cafe,Terres de café,open,,A,https://specialtycoffee.paris/shops/terres-de-cafe-bourdonnais,2026-10-01
+cuvee-noire-madeleine,Cuvée Noire - Madeleine,Cuvée Noire,"2 Rue de Caumartin, 75009",75009,9,Paris,cuvee-noire,Cuvée Noire,open,,A,https://specialtycoffee.paris/shops/cuvee-noire-madeleine,2026-10-01
+joro-kaffe,Jöro Kaffé,Jöro Kaffé,"15 Rue Jean-Baptiste Pigalle, 75009",75009,9,Paris,dose,Dose,open,,A,https://specialtycoffee.paris/shops/joro-kaffe,2026-10-01
+cafe-soucoupe-rue-du-faubourg-poissonniere,Soucoupe - Rue du Faubourg Poissonnière,Soucoupe,"33 Rue du Faubourg Poissonnière, 75009",75009,9,Paris,,,open,,A,https://specialtycoffee.paris/shops/cafe-soucoupe-rue-du-faubourg-poissonniere,2026-10-01
+babarista-coffee-shop,Babarista Coffee Shop,Babarista Coffee Shop,"53 Rue de Chabrol, 75010",75010,10,Paris,tanat,Tanat,open,,,https://specialtycoffee.paris/shops/babarista-coffee-shop,2026-10-01
+immersion-montmartre-brunch-and-coffee,Immersion - Rue des Martyrs,Immersion,"93 R. des Martyrs, 75018",75018,18,Paris,belleville-brulerie,Belleville Brûlerie,open,,A,https://specialtycoffee.paris/shops/immersion-montmartre-brunch-and-coffee,2026-10-01
+rems-coffee-rue-des-rosiers,Rem's - Rue des Rosiers,Rem's,"30 Rue des Rosiers, 75004",75004,4,Paris,lomi,Lomi,open,,A,https://specialtycoffee.paris/shops/rems-coffee-rue-des-rosiers,2026-10-01
+dac-coffee-shop,DAC,DAC,"30 Rue de Lagny, 75020",75020,20,Paris,belleville-brulerie,Belleville Brûlerie,open,,A,https://specialtycoffee.paris/shops/dac-coffee-shop,2026-10-01
+cong-caphe,Công Câphê,Công Câphê,"18 Rue Volney, 75001",75001,1,Paris,cong,Công,open,,A,https://specialtycoffee.paris/shops/cong-caphe,2026-10-01
+blu,Blu,Blu,"35 Bd des Capucines, 75002",75002,2,Paris,terrah,Terrah,open,,A,https://specialtycoffee.paris/shops/blu,2026-10-01
+my-homie-paris,My Homie,My Homie,"51 Rue Saint-Maur, 75011",75011,11,Paris,ajour,Ajour,open,,A,https://specialtycoffee.paris/shops/my-homie-paris,2026-10-01
+athena-art-cafe,Athena Art Café,Athena Art Café,"3 Rue Claude Chahu, 75116",75116,16,Paris,,,open,,A,https://specialtycoffee.paris/shops/athena-art-cafe,2026-10-01
+vibes-coffee-and-kitchen,Vibes,Vibes,"32B Rue Poncelet, 75017",75017,17,Paris,,,open,,A,https://specialtycoffee.paris/shops/vibes-coffee-and-kitchen,2026-10-01
+ten-belles-rue-breguet,Ten Belles - Rue Bréguet,Ten Belles,"17-19 R. Bréguet, 75011",75011,11,Paris,ten-belles,Ten Belles,open,,A,https://specialtycoffee.paris/shops/ten-belles-rue-breguet,2026-10-01
+fauna,FAUNA,FAUNA,"12 Rue Oberkampf, 75011",75011,11,Paris,,,open,,A,https://specialtycoffee.paris/shops/fauna,2026-10-01
+sipp-coffee-paris,Sipp,Sipp,"8 Rue Bréa, 75006",75006,6,Paris,dak,Dak,open,,A,https://specialtycoffee.paris/shops/sipp-coffee-paris,2026-10-01
+another-coffee-shop,Another,Another,"5 Cité du Wauxhall, 75010",75010,10,Paris,feve,Fève,open,,A,https://specialtycoffee.paris/shops/another-coffee-shop,2026-10-01
+cafe-home,Café Home,Café Home,"28 Rue du Sentier, 75002",75002,2,Paris,,,open,,A,https://specialtycoffee.paris/shops/cafe-home,2026-10-01
+chez-coffeeandco,CHĒZ - Rue Réaumur,CHĒZ,"115 Rue Réaumur, 75002",75002,2,Paris,feve,Fève,open,,,https://specialtycoffee.paris/shops/chez-coffeeandco,2026-10-01
+blondie-rue-du-bac,Blondie - Rue du Bac,Blondie,"14 Rue du Bac, 75007",75007,7,Paris,blondie,Blondie,open,,A,https://specialtycoffee.paris/shops/blondie-rue-du-bac,2026-10-01
+kind-yoga,Kind Yoga,Kind Yoga,"41 Rue Beauregard, 75002",75002,2,Paris,belleville-brulerie,Belleville Brûlerie,open,,A,https://specialtycoffee.paris/shops/kind-yoga,2026-10-01
+foam-coffee,FOAM,FOAM,"10 bis Bd de Bonne Nouvelle, 75010",75010,10,Paris,,,open,,A,https://specialtycoffee.paris/shops/foam-coffee,2026-10-01
+toto-coffee,ToTo,ToTo,"39 Rue François Miron, 75004",75004,4,Paris,,,open,,A,https://specialtycoffee.paris/shops/toto-coffee,2026-10-01
+plaine-cafe,Plaine Café - Saint Lazare,Plaine Café,"accès au Métro dans la Rotonde / Salle des piliers, 16 Pl. du Havre Niveau -1, 75009",75009,9,Paris,plaine-cafe,Plaine Café,open,,A,https://specialtycoffee.paris/shops/plaine-cafe,2026-10-01
+volume-coffee,Volume Coffee,Volume Coffee,"58 Rue la Bruyère, 75009",75009,9,Paris,,,open,,A,https://specialtycoffee.paris/shops/volume-coffee,2026-10-01
+moka-rue-la-fayette,Moka - Rue La Fayette,Moka,"8 Rue La Fayette, 75009",75009,9,Paris,,,open,,A,https://specialtycoffee.paris/shops/moka-rue-la-fayette,2026-10-01
+cafe-pimpin-rue-guy-moquet,Café Pimpin - Rue Guy Môquet,Café Pimpin,"7 Rue Guy Môquet, 75017",75017,17,Paris,lomi,Lomi,open,,A,https://specialtycoffee.paris/shops/cafe-pimpin-rue-guy-moquet,2026-10-01
+heaf,heaf,heaf,"15 Rue Tronchet, 75008",75008,8,Paris,lomi,Lomi,open,,A,https://specialtycoffee.paris/shops/heaf,2026-10-01
+boris-boulangerie,Boris - Rue Caulaincourt,Boris,"48 Rue Caulaincourt, 75018",75018,18,Paris,lomi,Lomi,open,,A,https://specialtycoffee.paris/shops/boris-boulangerie,2026-10-01
+saint-pearl-sorbonne,Saint Pearl - Rue St Jacques,Saint Pearl,"42 Rue St Jacques, 75005",75005,5,Paris,belleville-brulerie,Belleville Brûlerie,open,,A,https://specialtycoffee.paris/shops/saint-pearl-sorbonne,2026-10-01
+extraction-coffee-rue-lamarck,Extraction Coffee - Rue Lamarck,Extraction Coffee,"67 Rue Lamarck, 75018",75018,18,Paris,,,open,,A,https://specialtycoffee.paris/shops/extraction-coffee-rue-lamarck,2026-10-01
+corner-coffee,Corner Coffee,Corner Coffee,"72 Rue Riquet, 75018",75018,18,Paris,,,open,,A,https://specialtycoffee.paris/shops/corner-coffee,2026-10-01
+les-betises-coffee,Les bêtises,Les bêtises,"135 Rue Oberkampf, 75011",75011,11,Paris,kb,KB,open,,,https://specialtycoffee.paris/shops/les-betises-coffee,2026-10-01
+motors-coffee,Motors Coffee,Motors Coffee,"7 Rue des Halles, 75001",75001,1,Paris,,,open,,A,https://specialtycoffee.paris/shops/motors-coffee,2026-10-01
+laize-palais-royal,Laïzé - Palais Royal,Laïzé,"8 Rue de Valois, 75001",75001,1,Paris,assembly,Assembly,open,,A,https://specialtycoffee.paris/shops/laize-palais-royal,2026-10-01
+cuvee-noire-petits-carreaux,Cuvée Noire - Petits Carreaux,Cuvée Noire,"78 Rue d'Aboukir, 75002",75002,2,Paris,cuvee-noire,Cuvée Noire,open,,A,https://specialtycoffee.paris/shops/cuvee-noire-petits-carreaux,2026-10-01
+tanat-tiquetonne,Tanat - Tiquetonne,Tanat,"46 Rue Tiquetonne, 75002",75002,2,Paris,tanat,Tanat,open,,A,https://specialtycoffee.paris/shops/tanat-tiquetonne,2026-10-01
+nami,Nami,Nami,"145 Rue St Denis, 75002",75002,2,Paris,feve;kb,Fève ; KB,open,,A,https://specialtycoffee.paris/shops/nami,2026-10-01
+partisan-cafe-artisanal,Partisan Café Artisanal,Partisan Café Artisanal,"36 R. de Turbigo, 75003",75003,3,Paris,partisan,Partisan,open,,A,https://specialtycoffee.paris/shops/partisan-cafe-artisanal,2026-10-01
+moonlight-cafe,Moonlight café,Moonlight café,"27 Rue des Gravilliers, 75003",75003,3,Paris,feve,Fève,open,,A,https://specialtycoffee.paris/shops/moonlight-cafe,2026-10-01
+la-cafeotheque,La Caféothèque,La Caféothèque,"52 Rue de l'Hôtel de ville, 75004",75004,4,Paris,la-cafeotheque,La Caféothèque,open,,A,https://specialtycoffee.paris/shops/la-cafeotheque,2026-10-01
+percent-drdbicd-oberkampf,% ΔRΔBICΔ - Oberkampf,% ΔRΔBICΔ,"26 Bd des Filles du Calvaire, 75003",75003,3,Paris,,,open,,A,https://specialtycoffee.paris/shops/percent-drdbicd-oberkampf,2026-10-01
+boma,Boma,Boma,"48 Rue de la Montagne Ste Geneviève, 75005",75005,5,Paris,terres-de-cafe;sinombre,Terres de café ; Sinombre,open,,A,https://specialtycoffee.paris/shops/boma,2026-10-01
+cafe-dalbodree,Café Dalbodrée,Café Dalbodrée,"48 Bd Saint-Germain, 75005",75005,5,Paris,,,open,,A,https://specialtycoffee.paris/shops/cafe-dalbodree,2026-10-01
+graines-du-jour,Graines du Jour,Graines du Jour,"110 Rue Mouffetard, 75005",75005,5,Paris,,,open,,A,https://specialtycoffee.paris/shops/graines-du-jour,2026-10-01
+petibon-rue-du-4-septembre,Petibon - Rue du 4 Septembre,Petibon,"24 Rue du 4 septembre, 75002",75002,2,Paris,,,open,,A,https://specialtycoffee.paris/shops/petibon-rue-du-4-septembre,2026-10-01
+pat,PAT,PAT,"55 Rue d'Assas, 75006",75006,6,Paris,lomi,Lomi,open,,A,https://specialtycoffee.paris/shops/pat,2026-10-01
+coutume-rue-de-babylone,Coutume - Rue de Babylone,Coutume,"47 Rue de Babylone, 75007",75007,7,Paris,coutume,Coutume,open,,A,https://specialtycoffee.paris/shops/coutume-rue-de-babylone,2026-10-01
+bake-and-blend,Bake & Blend,Bake & Blend,"39 Av. Rapp, 75007",75007,7,Paris,brulerie-des-gobelins,Brûlerie des Gobelins,open,,A,https://specialtycoffee.paris/shops/bake-and-blend,2026-10-01
+primitives,Primitives,Primitives,"40 Rue François 1er, 75008",75008,8,Paris,tanat,Tanat,open,,A,https://specialtycoffee.paris/shops/primitives,2026-10-01
+cafe-fino,Café Fino,Café Fino,"59 Rue des Mathurins, 75008",75008,8,Paris,,,open,,A,https://specialtycoffee.paris/shops/cafe-fino,2026-10-01
+mokha,Mokha,Mokha,"4 Rue de Castellane, 75008",75008,8,Paris,,,open,,A,https://specialtycoffee.paris/shops/mokha,2026-10-01
+approach,Approach,Approach,"19 Rue d'Antin, 75002",75002,2,Paris,ten-belles;assembly,Ten Belles ; Assembly,open,,A,https://specialtycoffee.paris/shops/approach,2026-10-01
+naad-coffee,Naad Coffee,Naad Coffee,"26 Bd Jules Ferry, 75011",75011,11,Paris,naad-coffee,Naad Coffee,open,,A,https://specialtycoffee.paris/shops/naad-coffee,2026-10-01
+manie-rue-des-archives,Manie - Rue des Archives,Manie,"17 Rue des Archives, 75004",75004,4,Paris,,,open,,A,https://specialtycoffee.paris/shops/manie-rue-des-archives,2026-10-01
+pag,PAG,PAG,"187 Rue St Denis, 75002",75002,2,Paris,terres-de-cafe,Terres de café,open,,A,https://specialtycoffee.paris/shops/pag,2026-10-01
+noir-rue-legendre,Noir - Rue Legendre,Noir,"25 Rue Legendre, 75017",75017,17,Paris,noir,Noir,open,,A,https://specialtycoffee.paris/shops/noir-rue-legendre,2026-10-01
+mara-cafe-and-brunch,MARA,MARA,"23 Rue de la Folie Méricourt, 75011",75011,11,Paris,plural,Plural,open,,A,https://specialtycoffee.paris/shops/mara-cafe-and-brunch,2026-10-01
+borderline-cafe,Borderline Café,Borderline Café,"5 Rue Marsoulan, 75012",75012,12,Paris,araku,Araku,open,,A,https://specialtycoffee.paris/shops/borderline-cafe,2026-10-01
+pontochoux-cafe,Pontochoux Café,Pontochoux Café,"18 Rue du Pont aux Choux, 75003",75003,3,Paris,coffee-collective,Coffee Collective,open,,A,https://specialtycoffee.paris/shops/pontochoux-cafe,2026-10-01
+torre-boulevard-de-courcelles,Torré - Boulevard de Courcelles,Torré,"106 Bd de Courcelles, 75017",75017,17,Paris,torre,Torré,open,,A,https://specialtycoffee.paris/shops/torre-boulevard-de-courcelles,2026-10-01
+the-coffee-boulevard-de-grenelle,The Coffee - Boulevard de Grenelle,The Coffee,"138 Bd de Grenelle, 75015",75015,15,Paris,the-coffee,The Coffee,open,,A,https://specialtycoffee.paris/shops/the-coffee-boulevard-de-grenelle,2026-10-01
+cuvee-noire-saint-michel-coffee-shop,Cuvée Noire - Boulevard Saint-Michel,Cuvée Noire,"22 Bd Saint-Michel, 75006",75006,6,Paris,cuvee-noire,Cuvée Noire,open,,A,https://specialtycoffee.paris/shops/cuvee-noire-saint-michel-coffee-shop,2026-10-01
+haikara-kissa-coffee,Haikara Kissa,Haikara Kissa,"7 Rue du Grand Prieuré, 75011",75011,11,Paris,feve,Fève,open,,A,https://specialtycoffee.paris/shops/haikara-kissa-coffee,2026-10-01
+yian,Y'IAN,Y'IAN,"43 Rue de la Gare de Reuilly, 75012",75012,12,Paris,,,open,,A,https://specialtycoffee.paris/shops/yian,2026-10-01
+parcelle-cafe,Parcelle,Parcelle,"95 Bd du Montparnasse, 75006",75006,6,Paris,arbre-a-cafe,L'Arbre à Café,open,,,https://specialtycoffee.paris/shops/parcelle-cafe,2026-10-01
+archipelago,Archipelago,Archipelago,"11 Rue Louise Weiss, 75013",75013,13,Paris,yunma,Yunma,open,,,https://specialtycoffee.paris/shops/archipelago,2026-10-01
+terres-de-cafe-tiquetonne,Terres de Café - Tiquetonne,Terres de Café,"56 Rue Tiquetonne, 75002",75002,2,Paris,terres-de-cafe,Terres de café,open,,A,https://specialtycoffee.paris/shops/terres-de-cafe-tiquetonne,2026-10-01
+vestiges,Vestiges,Vestiges,"30 Rue Chapon, 75003",75003,3,Paris,arbre-a-cafe,L'Arbre à Café,open,,A,https://specialtycoffee.paris/shops/vestiges,2026-10-01
+the-coffee-rue-des-gravilliers,The Coffee - Rue des Gravilliers,The Coffee,"40 Rue des Gravilliers, 75003",75003,3,Paris,the-coffee,The Coffee,open,,A,https://specialtycoffee.paris/shops/the-coffee-rue-des-gravilliers,2026-10-01
+noir-rue-des-blancs-manteaux,Noir - Rue des Blancs Manteaux,Noir,"9 Rue des Blancs Manteaux, 75004",75004,4,Paris,noir,Noir,open,,A,https://specialtycoffee.paris/shops/noir-rue-des-blancs-manteaux,2026-10-01
+arabica-le-marais,% ΔRΔBICΔ - Le Marais,% ΔRΔBICΔ,"17 Rue des Francs Bourgeois, 75004",75004,4,Paris,,,open,,A,https://specialtycoffee.paris/shops/arabica-le-marais,2026-10-01
+the-coffee-rue-de-la-sorbonne,The Coffee - Rue de la Sorbonne,The Coffee,"8 Rue de la Sorbonne, 75005",75005,5,Paris,the-coffee,The Coffee,open,,A,https://specialtycoffee.paris/shops/the-coffee-rue-de-la-sorbonne,2026-10-01
+lets,LETS,LETS,"81 Rue d'Amsterdam, 75008",75008,8,Paris,,,open,,A,https://specialtycoffee.paris/shops/lets,2026-10-01
+cuvee-noire-saint-lazare,Cuvée Noire - Saint-Lazare,Cuvée Noire,"96 Rue Saint-Lazare, 75009",75009,9,Paris,cuvee-noire,Cuvée Noire,open,,A,https://specialtycoffee.paris/shops/cuvee-noire-saint-lazare,2026-10-01
+ikebanart,Ikebanart,Ikebanart,"75010 20 Rue d'Hauteville, 75010",75010,10,Paris,dose,Dose,open,,A,https://specialtycoffee.paris/shops/ikebanart,2026-10-01
+resilience,Résilience,Résilience,"135 Rue Lamarck, 75018",75018,18,Paris,,,open,,A,https://specialtycoffee.paris/shops/resilience,2026-10-01
+taxiphone,Taxiphone,Taxiphone,"36 Rue de la Goutte d'Or, 75018",75018,18,Paris,tanat,Tanat,open,,A,https://specialtycoffee.paris/shops/taxiphone,2026-10-01
+othman-cafe-and-holistic-boutique,Othman,Othman,"3 Av. du Père Lachaise, 75020",75020,20,Paris,lomi,Lomi,open,,A,https://specialtycoffee.paris/shops/othman-cafe-and-holistic-boutique,2026-10-01
+babarista-rue-dussoubs,Babarista - Rue Dussoubs,Babarista,"10 Rue Dussoubs, 75002",75002,2,Paris,tanat,Tanat,open,,,https://specialtycoffee.paris/shops/babarista-rue-dussoubs,2026-10-01
+the-coffee-rue-delambre,The Coffee - Rue Delambre,The Coffee,"28 Rue Delambre, 75014",75014,14,Paris,the-coffee,The Coffee,open,,A,https://specialtycoffee.paris/shops/the-coffee-rue-delambre,2026-10-01
+glow-up-studio-and-coffee,Glow Up Studio And Coffee,Glow Up Studio And Coffee,"46 Bd Henri IV, 75004",75004,4,Paris,,,open,,A,https://specialtycoffee.paris/shops/glow-up-studio-and-coffee,2026-10-01
+un-nuage-de-lait,Un Nuage de Lait,Un Nuage de Lait,"2 Rue Primatice, 75013",75013,13,Paris,,,open,,A,https://specialtycoffee.paris/shops/un-nuage-de-lait,2026-10-01
+le-pazari,Le Pazari,Le Pazari,"94 Bd Voltaire, 75011",75011,11,Paris,mokxa,Mokxa,open,,A,https://specialtycoffee.paris/shops/le-pazari,2026-10-01
+the-coffee-rue-saint-honore,The Coffee - Rue Saint Honoré,The Coffee,"97 Rue Saint-Honoré, 75001",75001,1,Paris,the-coffee,The Coffee,open,,A,https://specialtycoffee.paris/shops/the-coffee-rue-saint-honore,2026-10-01
+influence-cafe,Influence Café,Influence Café,"7 Rue Notre Dame de Nazareth, 75003",75003,3,Paris,,,open,,A,https://specialtycoffee.paris/shops/influence-cafe,2026-10-01
+sapiens-cafe,Sapiens Café,Sapiens Café,"38 Rue Sibuet, 75012",75012,12,Paris,lomi,Lomi,open,,A,https://specialtycoffee.paris/shops/sapiens-cafe,2026-10-01
+cafe-nuances-rue-de-la-tremoille,Café Nuances - Rue de la Tremoille,Café Nuances,"10 Rue de la Tremoille, 75008",75008,8,Paris,cafe-nuances,Café Nuances,open,,A,https://specialtycoffee.paris/shops/cafe-nuances-rue-de-la-tremoille,2026-10-01
+noir-rue-du-boccador,Noir - Rue du Boccador,Noir,"22 Rue du Boccador, 75008",75008,8,Paris,noir,Noir,open,,,https://specialtycoffee.paris/shops/noir-rue-du-boccador,2026-10-01
+cafe-detours,Café Détours,Café Détours,"18 Rue du Chemin Vert, 75011",75011,11,Paris,dose;mokxa,Dose ; Mokxa,open,,A,https://specialtycoffee.paris/shops/cafe-detours,2026-10-01
+proost,Proost - Rue des Halles,Proost,"5 Rue des Halles, 75001",75001,1,Paris,dose,Dose,open,,A,https://specialtycoffee.paris/shops/proost,2026-10-01
+calibre,Calibré,Calibré,"15 Rue Jean-Jacques Rousseau, 75001",75001,1,Paris,la-cabra,La Cabra,open,,A,https://specialtycoffee.paris/shops/calibre,2026-10-01
+kure-bazaar,Kure Bazaar - Café de Spécialité,Kure Bazaar,"165 Rue Saint-Honoré, 75001",75001,1,Paris,,,open,,,https://specialtycoffee.paris/shops/kure-bazaar,2026-10-01
+cafe-maa,Café Maa,Café Maa,"33 Rue du Sommerard, 75005",75005,5,Paris,tanat;frukt,Tanat ; Frukt,open,,A,https://specialtycoffee.paris/shops/cafe-maa,2026-10-01
+lilebrairie-and-co,L’îlebrairie & Co.,L’îlebrairie & Co.,"5 Rue de Condé, 75006",75006,6,Paris,gramgram,GramGram,open,,A,https://specialtycoffee.paris/shops/lilebrairie-and-co,2026-10-01
+judy-rue-de-bearn,Judy - Rue de Béarn,Judy,"2 Rue de Béarn, 75003",75003,3,Paris,coutume,Coutume,open,,A,https://specialtycoffee.paris/shops/judy-rue-de-bearn,2026-10-01
+spiced,SPICED,SPICED,"34 Bis Rue Vignon, 75009",75009,9,Paris,mojo-coffee-club,Mojo Coffee Club,open,,A,https://specialtycoffee.paris/shops/spiced,2026-10-01
+kb-cafeshop,KB CaféShop,KB CaféShop,"53 Av. Trudaine, 75009",75009,9,Paris,kb,KB,open,,A,https://specialtycoffee.paris/shops/kb-cafeshop,2026-10-01
+paris-dabang,PARISDABANG,PARISDABANG,"6 Rue de la Folie Méricourt, 75011",75011,11,Paris,the-beans-on-fire,The Beans on Fire,open,,A,https://specialtycoffee.paris/shops/paris-dabang,2026-10-01
+terres-de-cafe-boulevard-beaumarchais,Terres de Café - Boulevard Beaumarchais,Terres de Café,"23 Bd Beaumarchais, 75003",75003,3,Paris,terres-de-cafe,Terres de café,open,,A,https://specialtycoffee.paris/shops/terres-de-cafe-boulevard-beaumarchais,2026-10-01
+casa-rossa,Casa Rossa,Casa Rossa,"20 Rue de l'Espérance, 75013",75013,13,Paris,lomi,Lomi,open,,A,https://specialtycoffee.paris/shops/casa-rossa,2026-10-01
+koro-cafe,KoRo Café,KoRo Café,"65 R. de Lévis, 75017",75017,17,Paris,lomi,Lomi,open,,A,https://specialtycoffee.paris/shops/koro-cafe,2026-10-01
+joy-x-beck,JOY X BECK,JOY X BECK,"10 Rue de la Bidassoa, 75020",75020,20,Paris,,,open,,A,https://specialtycoffee.paris/shops/joy-x-beck,2026-10-01
+noir-rue-soufflot,Noir - Rue Soufflot,Noir,"3 Rue Soufflot, 75005",75005,5,Paris,noir,Noir,open,,A,https://specialtycoffee.paris/shops/noir-rue-soufflot,2026-10-01
+araku-coffee-rue-ferdinant-flocon,Araku - Rue Ferdinand Flocon,Araku,"2 Rue Ferdinand Flocon, 75018",75018,18,Paris,araku,Araku,open,,A,https://specialtycoffee.paris/shops/araku-coffee-rue-ferdinant-flocon,2026-10-01
+anma-coffee,Anma Coffee,Anma Coffee,"42 Bd de Magenta, 75010",75010,10,Paris,mojo-coffee-club,Mojo Coffee Club,open,,A,https://specialtycoffee.paris/shops/anma-coffee,2026-10-01
+mw-paris-coffee-and-matcha,MW Paris,MW Paris,"40 Rue Saint-Jacques, 75005",75005,5,Paris,lomi,Lomi,open,,A,https://specialtycoffee.paris/shops/mw-paris-coffee-and-matcha,2026-10-01
+moka-rue-de-ponthieu,Moka - Rue de Ponthieu,Moka,"44 Rue de Ponthieu, 75008",75008,8,Paris,,,open,,A,https://specialtycoffee.paris/shops/moka-rue-de-ponthieu,2026-10-01
+cuppa-gallery,Cuppa Gallery,Cuppa Gallery,"86 Rue de l'Université, 75007",75007,7,Paris,,,open,,A,https://specialtycoffee.paris/shops/cuppa-gallery,2026-10-01
+immersion-tour-eiffel-brunch-and-coffee,Immersion - Avenue de la Bourdonnais,Immersion,"83 Av. de la Bourdonnais, 75007",75007,7,Paris,belleville-brulerie,Belleville Brûlerie,open,,A,https://specialtycoffee.paris/shops/immersion-tour-eiffel-brunch-and-coffee,2026-10-01
+araku-coffee,Araku - Rue de Bretagne,Araku,"14 Rue de Bretagne, 75003",75003,3,Paris,araku,Araku,open,,B+,https://specialtycoffee.paris/shops/araku-coffee,2026-10-01
+araku-coffee-rue-de-prague,Araku - Rue de Prague,Araku,"8 Rue de Prague, 75012",75012,12,Paris,araku,Araku,open,,B+,https://specialtycoffee.paris/shops/araku-coffee-rue-de-prague,2026-10-01
+cafe-jirisan,Café Jirisan,Café Jirisan,"2 Rue de Marivaux, 75002",75002,2,Paris,illy,Illy,open,,B+,https://specialtycoffee.paris/shops/cafe-jirisan,2026-10-01
+good-news-rue-montmartre,Goodnews - Rue Montmartre,Goodnews,"94 Rue Montmartre, 75002",75002,2,Paris,,,open,,B+,https://specialtycoffee.paris/shops/good-news-rue-montmartre,2026-10-01
+the-coffee-rue-la-feuillade,The Coffee - Rue la Feuillade,The Coffee,"7 Rue la Feuillade, 75001",75001,1,Paris,the-coffee,The Coffee,open,,B+,https://specialtycoffee.paris/shops/the-coffee-rue-la-feuillade,2026-10-01
+brown,BROWN,BROWN,"7 Rue de la Verrerie, 75004",75004,4,Paris,,,open,,B+,https://specialtycoffee.paris/shops/brown,2026-10-01
+the-coffee-quai-de-la-tournelle,The Coffee - Quai de la Tournelle,The Coffee,"Quai de la Tournelle 61, 75005",75005,5,Paris,the-coffee,The Coffee,open,,B+,https://specialtycoffee.paris/shops/the-coffee-quai-de-la-tournelle,2026-10-01
+ten-belles-rue-du-cherche-midi,Ten Belles - Rue du Cherche-Midi,Ten Belles,"53 Rue du Cherche-Midi, 75006",75006,6,Paris,ten-belles,Ten Belles,open,,B+,https://specialtycoffee.paris/shops/ten-belles-rue-du-cherche-midi,2026-10-01
+cafe-la-procure-x-coutume,Café La Procure x Coutume,Café La Procure x Coutume,"3 Rue de Mézières, 75006",75006,6,Paris,coutume,Coutume,open,,B+,https://specialtycoffee.paris/shops/cafe-la-procure-x-coutume,2026-10-01
+un-grain-decale,Un Grain Décalé,Un Grain Décalé,"3 Rue Vavin, 75006",75006,6,Paris,un-grain-decale,Un Grain Décalé,open,,B+,https://specialtycoffee.paris/shops/un-grain-decale,2026-10-01
+maison-fleuret,Maison Fleuret,Maison Fleuret,"30 Rue des Saints-Pères, 75006",75006,6,Paris,,,open,,B+,https://specialtycoffee.paris/shops/maison-fleuret,2026-10-01
+noir-rue-de-londres,Noir - Rue de Londres,Noir,"42 Rue de Londres, 75008",75008,8,Paris,noir,Noir,open,,B+,https://specialtycoffee.paris/shops/noir-rue-de-londres,2026-10-01
+cult,CULT,CULT,"13 Rue La Fayette, 75009",75009,9,Paris,,,open,,B+,https://specialtycoffee.paris/shops/cult,2026-10-01
+cafe-maison-mariel,Café Maison Mariel,Café Maison Mariel,"36 R. des Petites Écuries, 75010",75010,10,Paris,sierra,Sierra,open,,B+,https://specialtycoffee.paris/shops/cafe-maison-mariel,2026-10-01
+the-coffee-rue-yvonne-le-tac,The Coffee - Rue Yvonne le Tac,The Coffee,"19 Rue Yvonne le Tac, 75018",75018,18,Paris,the-coffee,The Coffee,open,,B+,https://specialtycoffee.paris/shops/the-coffee-rue-yvonne-le-tac,2026-10-01
+quartz-cafe,Quartz Cafe,Quartz Cafe,"36 Rue de Bellechasse, 75007",75007,7,Paris,partisan,Partisan,open,,,https://specialtycoffee.paris/shops/quartz-cafe,2026-10-01
+the-monocle-cafe-and-shop,The Monocle Café & Shop,The Monocle Café & Shop,"16 Rue Bachaumont, 75002",75002,2,Paris,ten-belles,Ten Belles,open,,B+,https://specialtycoffee.paris/shops/the-monocle-cafe-and-shop,2026-10-01
+stop-81,stōp 81,stōp 81,"18 Rue Pastourelle, 75003",75003,3,Paris,,,open,,B+,https://specialtycoffee.paris/shops/stop-81,2026-10-01
+lattein-coffee,Lattein,Lattein,"1 Rue du Général-de-Castelnau, 75015",75015,15,Paris,arbre-a-cafe,L'Arbre à Café,open,,B+,https://specialtycoffee.paris/shops/lattein-coffee,2026-10-01
+jana-coffee-club,JANA Coffee Club,JANA Coffee Club,"69 Rue Greneta, 75002",75002,2,Paris,,,open,,B+,https://specialtycoffee.paris/shops/jana-coffee-club,2026-10-01
+folie-store-coffee-shop,Folie Store,Folie Store,"5 Rue de la Folie Méricourt, 75011",75011,11,Paris,illy,Illy,open,,B+,https://specialtycoffee.paris/shops/folie-store-coffee-shop,2026-10-01
+atome-coffee-shop,Atome Coffee Shop,Atome Coffee Shop,"20 Av. Mozart, 75016",75016,16,Paris,plural,Plural,open,,B+,https://specialtycoffee.paris/shops/atome-coffee-shop,2026-10-01
+lalla-coffee,Lalla Coffee,Lalla Coffee,"72 Rue Crozatier, 75012",75012,12,Paris,,,open,,B+,https://specialtycoffee.paris/shops/lalla-coffee,2026-10-01
+cafe-pimpin-rue-des-panoyaux,Café Pimpin - Rue des Panoyaux,Café Pimpin,"17 Rue des Panoyaux, 75020",75020,20,Paris,lomi,Lomi,open,,B+,https://specialtycoffee.paris/shops/cafe-pimpin-rue-des-panoyaux,2026-10-01
+le-cafe-sumeria,Le Café Sumeria,Le Café Sumeria,"171 Rue du Faubourg Saint-Antoine, 75011",75011,11,Paris,,,open,,B+,https://specialtycoffee.paris/shops/le-cafe-sumeria,2026-10-01
+cone-coffee-shop,Cône,Cône,"19 Quai des Grands Augustins, 75006",75006,6,Paris,,,open,,B+,https://specialtycoffee.paris/shops/cone-coffee-shop,2026-10-01
+the-coffee-rue-pierre-demours,The Coffee - Rue Pierre Demours,The Coffee,"61 Rue Pierre Demours, 75017",75017,17,Paris,the-coffee,The Coffee,open,,B+,https://specialtycoffee.paris/shops/the-coffee-rue-pierre-demours,2026-10-01
+pause-nuage,Pause Nuage,Pause Nuage,"99 Rue Monge, 75005",75005,5,Paris,,,open,,B+,https://specialtycoffee.paris/shops/pause-nuage,2026-10-01
+jade-matcha-gallery,Jade Matcha Gallery,Jade Matcha Gallery,"36 Rue Saint-Sulpice, 75006",75006,6,Paris,mojo-coffee-club,Mojo Coffee Club,open,,B+,https://specialtycoffee.paris/shops/jade-matcha-gallery,2026-10-01
+cuvee-noire-martyrs,Cuvée Noire - Rue des Martyrs,Cuvée Noire,"60 R. des Martyrs, 75009",75009,9,Paris,cuvee-noire,Cuvée Noire,open,,B+,https://specialtycoffee.paris/shops/cuvee-noire-martyrs,2026-10-01
+josette-coffee,Josette,Josette,"73 Rue Montorgueil, 75002",75002,2,Paris,lomi,Lomi,open,,B+,https://specialtycoffee.paris/shops/josette-coffee,2026-10-01
+cafe-pepees,Café Pépées,Café Pépées,"33 Rue de l'Ouest, 75014",75014,14,Paris,esperanza,Esperanza,open,,B+,https://specialtycoffee.paris/shops/cafe-pepees,2026-10-01
+cafe-kodomo,Café Kodomo,Café Kodomo,"6 Rue Deguerry, 75011",75011,11,Paris,,,open,,B+,https://specialtycoffee.paris/shops/cafe-kodomo,2026-10-01
+kafkaf-rue-de-trevise,Kafkaf - Rue de Trévise,Kafkaf,"29 Rue de Trévise, 75009",75009,9,Paris,coutume,Coutume,open,,B+,https://specialtycoffee.paris/shops/kafkaf-rue-de-trevise,2026-10-01
+kafkaf-rue-saint-martin,Kafkaf - Rue Saint-Martin,Kafkaf,"203bis Rue Saint-Martin, 75003",75003,3,Paris,coutume,Coutume,open,,B+,https://specialtycoffee.paris/shops/kafkaf-rue-saint-martin,2026-10-01
+acafe,A/CAFÉ,A/CAFÉ,"176 Rue de Rivoli, 75001",75001,1,Paris,,,open,,B+,https://specialtycoffee.paris/shops/acafe,2026-10-01
+casa-zur-cafe-cantine-latino,Casa Zur,Casa Zur,"15 Rue Vignon, 75008",75008,8,Paris,,,open,,B+,https://specialtycoffee.paris/shops/casa-zur-cafe-cantine-latino,2026-10-01
+araku-coffee-rue-soufflot,Araku - Rue Soufflot,Araku,"18 Rue Soufflot, 75005",75005,5,Paris,araku,Araku,open,,B+,https://specialtycoffee.paris/shops/araku-coffee-rue-soufflot,2026-10-01
+kiji-opera,Kiji - Opéra,Kiji,"5 Rue Gaillon, 75002",75002,2,Paris,,,open,,B+,https://specialtycoffee.paris/shops/kiji-opera,2026-10-01
+the-coffee-rue-saint-placide,The Coffee - Rue Saint-Placide,The Coffee,"Rue Saint-Placide 50, 75006",75006,6,Paris,the-coffee,The Coffee,open,,B+,https://specialtycoffee.paris/shops/the-coffee-rue-saint-placide,2026-10-01
+the-coffee-rue-saint-dominique,The Coffee - Rue Saint Dominique,The Coffee,"73 Rue Saint-Dominique, 75007",75007,7,Paris,the-coffee,The Coffee,open,,B+,https://specialtycoffee.paris/shops/the-coffee-rue-saint-dominique,2026-10-01
+kis-keep-it-secret,KIS - Keep it secret,KIS,"65 Rue de Bretagne, 75003",75003,3,Paris,arbre-a-cafe,L'Arbre à Café,open,,B+,https://specialtycoffee.paris/shops/kis-keep-it-secret,2026-10-01
+a-droyte,A-Droyte,A-Droyte,"14 Rue Froissart, 75003",75003,3,Paris,tanat,Tanat,open,,B+,https://specialtycoffee.paris/shops/a-droyte,2026-10-01
+maison-amat,Maison Amat,Maison Amat,"1 Cité d'Hauteville, 75010",75010,10,Paris,mojo-coffee-club,Mojo Coffee Club,open,,B+,https://specialtycoffee.paris/shops/maison-amat,2026-10-01
+off-campus,off-campus,off-campus,"18 Bd Voltaire, 75011",75011,11,Paris,,,open,,B+,https://specialtycoffee.paris/shops/off-campus,2026-10-01
+dreamin-man-rue-amelot,Dreamin' Man - Rue Amelot,Dreamin' Man,"140 Rue Amelot, 75011",75011,11,Paris,,,open,,B+,https://specialtycoffee.paris/shops/dreamin-man-rue-amelot,2026-10-01
+ginie,Ginie,Ginie,"24 Rue de Babylone, 75007",75007,7,Paris,terres-de-cafe,Terres de café,open,,B+,https://specialtycoffee.paris/shops/ginie,2026-10-01
+caffe-doppio,doppio,doppio,"64 Rue Oberkampf, 75011",75011,11,Paris,,,open,,B+,https://specialtycoffee.paris/shops/caffe-doppio,2026-10-01
+cafe-la,Café Là,Café Là,"19 Rue Ramey, 75018",75018,18,Paris,kb;tisserie,KB ; Tisserie,open,,B+,https://specialtycoffee.paris/shops/cafe-la,2026-10-01
+ooops,ooops,ooops,"33 Av. de Suffren, 75007",75007,7,Paris,,,open,,B+,https://specialtycoffee.paris/shops/ooops,2026-10-01
+nume,nume.,nume.,"68 Rue Didot, 75014",75014,14,Paris,,,open,,,https://specialtycoffee.paris/shops/nume,2026-10-01
+days,DAYS,DAYS,"2 Rue Saint-Sauveur, 75002",75002,2,Paris,arbre-a-cafe,L'Arbre à Café,temp,,B+,https://specialtycoffee.paris/shops/days,2026-10-01
+mimi,Mimi,Mimi,"31 Rue de Richelieu, 75001",75001,1,Paris,lomi,Lomi,open,,B+,https://specialtycoffee.paris/shops/mimi,2026-10-01
+saint-pearl-jardin-du-luxembourg,Saint Pearl - Rue de Médicis,Saint Pearl,"13 Rue de Médicis, 75006",75006,6,Paris,belleville-brulerie,Belleville Brûlerie,open,,B+,https://specialtycoffee.paris/shops/saint-pearl-jardin-du-luxembourg,2026-10-01
+cafe-kitsune-opera,Café Kitsuné - Opéra,Café Kitsuné,"32 Av. de l'Opéra, 75002",75002,2,Paris,cafe-kitsune,Café Kitsuné,open,,B+,https://specialtycoffee.paris/shops/cafe-kitsune-opera,2026-10-01
+the-coffee-poissonniere,The Coffee - Poissonnière,The Coffee,"21 Bd Poissonnière, 75002",75002,2,Paris,the-coffee,The Coffee,temp,,B+,https://specialtycoffee.paris/shops/the-coffee-poissonniere,2026-10-01
+recto-verso,RECTO VERSO,RECTO VERSO,"6 Rue Portefoin, 75003",75003,3,Paris,fuglen,Fuglen,open,,B+,https://specialtycoffee.paris/shops/recto-verso,2026-10-01
+safe-concept,SAFE Concept,SAFE Concept,"11 Rue Commines, 75003",75003,3,Paris,,,open,,B+,https://specialtycoffee.paris/shops/safe-concept,2026-10-01
+terres-de-cafe-rambuteau,Terres de Café - Rambuteau,Terres de Café,"14 Rue Rambuteau, 75003",75003,3,Paris,terres-de-cafe,Terres de café,open,,B+,https://specialtycoffee.paris/shops/terres-de-cafe-rambuteau,2026-10-01
+noir-rue-saint-florentin,Noir - Rue Saint-Florentin,Noir,"8 Rue Saint-Florentin, 75001",75001,1,Paris,noir,Noir,open,,B+,https://specialtycoffee.paris/shops/noir-rue-saint-florentin,2026-10-01
+saint-pearl-saint-germain,Saint Pearl - Rue des Saints-Pères,Saint Pearl,"38 Rue des Saints-Pères, 75007",75007,7,Paris,belleville-brulerie,Belleville Brûlerie,open,,B+,https://specialtycoffee.paris/shops/saint-pearl-saint-germain,2026-10-01
+goodnews-rue-du-bac,GoodNews - Rue du Bac,GoodNews,"26 Rue du Bac, 75007",75007,7,Paris,,,open,,B+,https://specialtycoffee.paris/shops/goodnews-rue-du-bac,2026-10-01
+fidele,Fidèle,Fidèle,"259 Rue St Denis, 75002",75002,2,Paris,lomi,Lomi,open,,B+,https://specialtycoffee.paris/shops/fidele,2026-10-01
+dayclub,DAYCLUB,DAYCLUB,"12 Rue Cadet, 75009",75009,9,Paris,lomi,Lomi,open,,B+,https://specialtycoffee.paris/shops/dayclub,2026-10-01
+cafe-pimpin-rue-ramey,Café Pimpin - Rue Ramey,Café Pimpin,"64 Rue Ramey, 75018",75018,18,Paris,lomi,Lomi,open,,B+,https://specialtycoffee.paris/shops/cafe-pimpin-rue-ramey,2026-10-01
+toasty,Toasty,Toasty,"5 Rue d'Aboukir, 75002",75002,2,Paris,lomi,Lomi,open,,B+,https://specialtycoffee.paris/shops/toasty,2026-10-01
+noho-louvres,NOHO,NOHO,"44 Rue du Louvre, 75001",75001,1,Paris,,,open,,B+,https://specialtycoffee.paris/shops/noho-louvres,2026-10-01
+goodnews-victor-hugo,GoodNews - Avenue Victor Hugo,GoodNews,"82 Av. Victor Hugo, 75016",75016,16,Paris,,,open,,B+,https://specialtycoffee.paris/shops/goodnews-victor-hugo,2026-10-01
+mardi,Mardi,Mardi,"29 Rue de la Villette, 75019",75019,19,Paris,datura,Datura,open,,B+,https://specialtycoffee.paris/shops/mardi,2026-10-01
+chaize,Chaize,Chaize,"24 Bd de Ménilmontant, 75020",75020,20,Paris,,,open,,B+,https://specialtycoffee.paris/shops/chaize,2026-10-01
+cafe-dose-paris-jules-joffrin,Dose - Rue Ordener,Dose,"96 Rue Ordener, 75018",75018,18,Paris,dose,Dose,open,,B+,https://specialtycoffee.paris/shops/cafe-dose-paris-jules-joffrin,2026-10-01
+chez-coffeeand-brunch,CHĒZ - Rue de Sévigné,CHĒZ,"38 Rue de Sévigné, 75003",75003,3,Paris,feve,Fève,open,,B+,https://specialtycoffee.paris/shops/chez-coffeeand-brunch,2026-10-01
+saenz,Sàenz,Sàenz,"60 Av. Simon Bolivar, 75019",75019,19,Paris,belleville-brulerie,Belleville Brûlerie,open,,,https://specialtycoffee.paris/shops/saenz,2026-10-01
+plaine-cafe-or-torrefacteur-de-cafe-de-specialite-printemps,Plaine Café - Printemps,Plaine Café,"Printemps Beauté, 61 Rue de Caumartin Maison 3ème étage, 75009",75009,9,Paris,plaine-cafe,Plaine Café,open,,,https://specialtycoffee.paris/shops/plaine-cafe-or-torrefacteur-de-cafe-de-specialite-printemps,2026-10-01
+minicafe-rue-des-barres,Minicafé - Rue des Barres,Minicafé,"10 Rue des Barres, 75004",75004,4,Paris,friedhats,Friedhats,open,,B+,https://specialtycoffee.paris/shops/minicafe-rue-des-barres,2026-10-01
+goodnews-rue-de-4-septembre,GoodNews - Rue de 4 Septembre,GoodNews,"24 Rue du 4 septembre, 75002",75002,2,Paris,,,open,,B+,https://specialtycoffee.paris/shops/goodnews-rue-de-4-septembre,2026-10-01
+cafe-bogato,Café Bogato,Café Bogato,"5 Rue Saint-Merri, 75004",75004,4,Paris,lomi,Lomi,open,,B+,https://specialtycoffee.paris/shops/cafe-bogato,2026-10-01
+la-patate-douce,La Patate Douce,La Patate Douce,"3 Rue Borda, 75003",75003,3,Paris,,,open,,B+,https://specialtycoffee.paris/shops/la-patate-douce,2026-10-01
+chorok,Chorok,Chorok,"8 Rue de Ventadour, 75001",75001,1,Paris,,,open,,B+,https://specialtycoffee.paris/shops/chorok,2026-10-01
+paolina-caffe-marais,Paolina Caffè - Rue de Turenne,Paolina Caffè,"42 Rue de Turenne, 75003",75003,3,Paris,,,open,,B+,https://specialtycoffee.paris/shops/paolina-caffe-marais,2026-10-01
+umami-matcha-cafe,Umami Matcha Café - Rue Béranger,Umami Matcha Café,"22 Rue Béranger, 75003",75003,3,Paris,coutume,Coutume,open,,B+,https://specialtycoffee.paris/shops/umami-matcha-cafe,2026-10-01
+inform-coffe-shop,Inform café,Inform café,"11 bis Rue Georges Berger, 75017",75017,17,Paris,coutume,Coutume,open,,B+,https://specialtycoffee.paris/shops/inform-coffe-shop,2026-10-01
+salted-boy,Salted Boy,Salted Boy,"4 Rue Réaumur, 75003",75003,3,Paris,,,open,,B+,https://specialtycoffee.paris/shops/salted-boy,2026-10-01
+in-the-box-espace-de-deconnexion-digitale,In The Box,In The Box,"25 Rue Keller, 75011",75011,11,Paris,lomi,Lomi,open,,,https://specialtycoffee.paris/shops/in-the-box-espace-de-deconnexion-digitale,2026-10-01
+gratitude-shoman,Gratitude Shōman,Gratitude Shōman,"56 Rue de Seine, 75006",75006,6,Paris,,,open,,B+,https://specialtycoffee.paris/shops/gratitude-shoman,2026-10-01
+copains-le-studio-montorgueil,Copains Le Studio - Montorgueil,Copains Le Studio,"62 Rue Montorgueil, 75002",75002,2,Paris,,,open,,B+,https://specialtycoffee.paris/shops/copains-le-studio-montorgueil,2026-10-01
+mousse,Mousse,Mousse,"37 Rue des Archives, 75004",75004,4,Paris,coutume,Coutume,open,,B+,https://specialtycoffee.paris/shops/mousse,2026-10-01
+benchy,Benchy,Benchy,"50 Rue du Cherche-Midi, 75006",75006,6,Paris,right-side,Right Side,open,,B+,https://specialtycoffee.paris/shops/benchy,2026-10-01
+codys,Cody's,Cody's,"51 Rue de Grenelle, 75007",75007,7,Paris,,,open,,B+,https://specialtycoffee.paris/shops/codys,2026-10-01
+cafe-gizele,Café Gizèle,Café Gizèle,"16 Rue de Bagnolet, 75020",75020,20,Paris,,,open,,B+,https://specialtycoffee.paris/shops/cafe-gizele,2026-10-01
+noir-avenue-mozart,Noir - Avenue Mozart,Noir,"5 Av. Mozart, 75016",75016,16,Paris,noir,Noir,open,,B+,https://specialtycoffee.paris/shops/noir-avenue-mozart,2026-10-01
+le-cafe-en-rouje,Le Café en Rouje,Le Café en Rouje,"11 bis Rue Bachaumont, 75002",75002,2,Paris,,,open,,,https://specialtycoffee.paris/shops/le-cafe-en-rouje,2026-10-01
+noir-rue-monge,Noir - Rue Monge,Noir,"29 bis Rue Monge, 75005",75005,5,Paris,noir,Noir,open,,B+,https://specialtycoffee.paris/shops/noir-rue-monge,2026-10-01
+goodnews-rue-de-la-pepiniere,Goodnews - Rue de la Pépinière,Goodnews,"2 Rue de la Pépinière, 75008",75008,8,Paris,,,open,,B+,https://specialtycoffee.paris/shops/goodnews-rue-de-la-pepiniere,2026-10-01
+kun-cafe,Kun,Kun,"68 Rue La Fayette, 75009",75009,9,Paris,lomi,Lomi,open,,B+,https://specialtycoffee.paris/shops/kun-cafe,2026-10-01
+mood-coffee,Mood Coffee,Mood Coffee,"66 Av. Kléber, 75116",75116,16,Paris,,,open,,B+,https://specialtycoffee.paris/shops/mood-coffee,2026-10-01
+ice-and-coffee,Ice & Coffee,Ice & Coffee,"32 Rue d'Orsel, 75018",75018,18,Paris,terres-de-cafe,Terres de café,open,,B+,https://specialtycoffee.paris/shops/ice-and-coffee,2026-10-01
+noir-avenue-kleber,Noir - Avenue Kléber,Noir,"104 Av. Kléber, 75116",75116,16,Paris,noir,Noir,open,,B+,https://specialtycoffee.paris/shops/noir-avenue-kleber,2026-10-01
+noir-rue-de-passy,Noir - Rue de Passy,Noir,"1 Rue de Passy, 75016",75016,16,Paris,noir,Noir,open,,B+,https://specialtycoffee.paris/shops/noir-rue-de-passy,2026-10-01
+cafe-madam,Café Madam,Café Madam,"150 Rue St Denis, 75002",75002,2,Paris,,,open,,B+,https://specialtycoffee.paris/shops/cafe-madam,2026-10-01
+chanceux,Chanceux - Rue Galande,Chanceux,"63 Rue Galande, 75005",75005,5,Paris,muda,Muda,open,,B+,https://specialtycoffee.paris/shops/chanceux,2026-10-01
+jmzz-cafe,JMZZ,JMZZ,"28 Rue du Caire, 75002",75002,2,Paris,lomi,Lomi,open,,,https://specialtycoffee.paris/shops/jmzz-cafe,2026-10-01
+le-floor,Le Floor,Le Floor,"42 Rue Notre Dame des Victoires, 75002",75002,2,Paris,,,open,,B+,https://specialtycoffee.paris/shops/le-floor,2026-10-01
+cafe-nuances-marais,Café Nuances - Marais,Café Nuances,"51 Rue des Francs Bourgeois, 75004",75004,4,Paris,cafe-nuances,Café Nuances,open,,B+,https://specialtycoffee.paris/shops/cafe-nuances-marais,2026-10-01
+goodnews-rue-la-fayette,Goodnews - Rue La Fayette,Goodnews,"24 Rue La Fayette, 75009",75009,9,Paris,,,open,,B+,https://specialtycoffee.paris/shops/goodnews-rue-la-fayette,2026-10-01
+merci-noir,Merci Noir,Merci Noir,"111 Bd Beaumarchais, 75003",75003,3,Paris,noir,Noir,open,,B+,https://specialtycoffee.paris/shops/merci-noir,2026-10-01
+andco,AndCo,AndCo,"96 Quai de Jemmapes, 75010",75010,10,Paris,feve,Fève,open,,B+,https://specialtycoffee.paris/shops/andco,2026-10-01
+capturism-studio-x-cafe,Capturism Studio,Capturism Studio,"5 Rue Mabillon, 75006",75006,6,Paris,lomi,Lomi,open,,B+,https://specialtycoffee.paris/shops/capturism-studio-x-cafe,2026-10-01
+umami-matcha-cafe-to-go,Umami Matcha - Rue Pierre Demours,Umami Matcha,"5 Rue Pierre Demours, 75017",75017,17,Paris,coutume,Coutume,open,,B+,https://specialtycoffee.paris/shops/umami-matcha-cafe-to-go,2026-10-01
+goodnews-saint-dominique,GoodNews Saint-Dominique,GoodNews Saint-Dominique,"70 Rue Saint-Dominique, 75007",75007,7,Paris,,,open,,,https://specialtycoffee.paris/shops/goodnews-saint-dominique,2026-10-01
+goodnews-saint-germain,GoodNews - Saint Germain,GoodNews,"115 Bd Saint-Germain, 75006",75006,6,Paris,,,open,,B,https://specialtycoffee.paris/shops/goodnews-saint-germain,2026-10-01
+cafe-nuances-saint-germain-des-pres,Café Nuances - Saint Germain des Prés,Café Nuances,"22 Rue du Vieux Colombier, 75006",75006,6,Paris,cafe-nuances,Café Nuances,open,,B,https://specialtycoffee.paris/shops/cafe-nuances-saint-germain-des-pres,2026-10-01
+cafe-pli-parmentier,Café Pli - Parmentier,Café Pli,"141 Ave Parmentier, 75010",75010,10,Paris,,,open,,B,https://specialtycoffee.paris/shops/cafe-pli-parmentier,2026-10-01
+coffee-island-rue-de-steinkerque,Coffee Island - Rue de Steinkerque,Coffee Island,"3 Rue de Steinkerque, 75018",75018,18,Paris,,,open,,B,https://specialtycoffee.paris/shops/coffee-island-rue-de-steinkerque,2026-10-01
+le-pont-traverse-paris-6,Le Pont Traversé,Le Pont Traversé,"62 Rue de Vaugirard, 75006",75006,6,Paris,,,open,,B,https://specialtycoffee.paris/shops/le-pont-traverse-paris-6,2026-10-01
+skene,Skéné,Skéné,"21 Rue du Vieux Colombier, 75006",75006,6,Paris,brulerie-des-gobelins,Brûlerie des Gobelins,open,,B,https://specialtycoffee.paris/shops/skene,2026-10-01
+cafe-moco,Café Moco,Café Moco,"177 bis Bd Voltaire 177bis, 75011",75011,11,Paris,,,open,,B,https://specialtycoffee.paris/shops/cafe-moco,2026-10-01
+cuvee-noire-faubourg-saint-antoine-coffee-shop,Cuvée Noire - Faubourg Saint-Antoine - Coffee Shop,Cuvée Noire,"106 Rue du Faubourg Saint-Antoine, 75012",75012,12,Paris,,,open,,,https://specialtycoffee.paris/shops/cuvee-noire-faubourg-saint-antoine-coffee-shop,2026-10-01
+cafe-fairly,Café Fairly,Café Fairly,"45 Rue Montorgueil, 75002",75002,2,Paris,canal-street-roaster,Canal Street Roaster,open,,,https://specialtycoffee.paris/shops/cafe-fairly,2026-10-01
+cafe-george,Café George,Café George,"20 Rue du Cherche-Midi, 75006",75006,6,Paris,,,open,,B,https://specialtycoffee.paris/shops/cafe-george,2026-10-01
+cuvee-noire-colisee-coffee-shop,Cuvée Noire - Colisée - Coffee Shop,Cuvée Noire,"19 Rue du Colisée, 75008",75008,8,Paris,,,open,,,https://specialtycoffee.paris/shops/cuvee-noire-colisee-coffee-shop,2026-10-01
+white-coffee-paris-9,WHITE Coffee - Paris 9,WHITE Coffee,"27 R. des Martyrs, 75009",75009,9,Paris,,,open,,,https://specialtycoffee.paris/shops/white-coffee-paris-9,2026-10-01
+cafe-707,Café 707,Café 707,"34 Rue de la Montagne Ste Geneviève, 75005",75005,5,Paris,,,open,,,https://specialtycoffee.paris/shops/cafe-707,2026-10-01
+kintaro-cafe,Kintaro café,Kintaro café,"15 Rue Gaillon, 75002",75002,2,Paris,,,open,,B,https://specialtycoffee.paris/shops/kintaro-cafe,2026-10-01
+saint-pearl-wilson,Saint Pearl - Av. du Président Wilson,Saint Pearl,"1 Av. du Président Wilson, 75116",75116,16,Paris,belleville-brulerie,Belleville Brûlerie,open,,B,https://specialtycoffee.paris/shops/saint-pearl-wilson,2026-10-01
+goodnews-saint-michel,GoodNews Saint-Michel,GoodNews Saint-Michel,"13 Bd Saint-Michel, 75005",75005,5,Paris,,,open,,,https://specialtycoffee.paris/shops/goodnews-saint-michel,2026-10-01
+wani,wani,wani,"7 ter Rue Saint-Placide, 75006",75006,6,Paris,parlor-coffee,Parlor Coffee,open,,B,https://specialtycoffee.paris/shops/wani,2026-10-01
+goodnews-cafe-chaussee-dantin,Goodnews - Rue de la Chaussée D'antin,Goodnews,"45 Rue de la Chau. d'Antin, 75009",75009,9,Paris,,,open,,B,https://specialtycoffee.paris/shops/goodnews-cafe-chaussee-dantin,2026-10-01
+copains-rue-des-abbesses,Copains - Rue des Abbesses,Copains,"8 Rue des Abbesses, 75018",75018,18,Paris,,,open,,B,https://specialtycoffee.paris/shops/copains-rue-des-abbesses,2026-10-01
+clode-coffee-shop-paris-12,Clode - Rue de Lyon,Clode,"6 Bis Rue de Lyon, 75012",75012,12,Paris,,,open,,,https://specialtycoffee.paris/shops/clode-coffee-shop-paris-12,2026-10-01
+cafe-rencontre,café rencontre,café rencontre,"6 bis Rue Pache, 75011",75011,11,Paris,,,open,,,https://specialtycoffee.paris/shops/cafe-rencontre,2026-10-01
+copains-le-studio-rue-yves-toudic,Copains Le Studio - Rue Yves Toudic,Copains Le Studio,"22 Rue Yves Toudic, 75010",75010,10,Paris,,,open,,B,https://specialtycoffee.paris/shops/copains-le-studio-rue-yves-toudic,2026-10-01
+dreamin-man-rue-coquilliere,Dreamin Man' - Rue Coquillière,Dreamin Man',"31 Rue Coquillière, 75001",75001,1,Paris,,,open,,B,https://specialtycoffee.paris/shops/dreamin-man-rue-coquilliere,2026-10-01
+goodnews-boetie,GoodNews Boetie,GoodNews Boetie,"5 Rue La Boétie, 75008",75008,8,Paris,,,open,,,https://specialtycoffee.paris/shops/goodnews-boetie,2026-10-01
+cafe-kitsune-vertbois,Café Kitsuné Vertbois,Café Kitsuné Vertbois,"30 Rue du Vertbois, 75003",75003,3,Paris,,,open,,,https://specialtycoffee.paris/shops/cafe-kitsune-vertbois,2026-10-01
+cafe-papeterie,Café Papeterie,Café Papeterie,"4 Rue des Petits Pères, 75002",75002,2,Paris,,,open,,,https://specialtycoffee.paris/shops/cafe-papeterie,2026-10-01
+used-book-cafe,Used-book Café,Used-book Café,"111 Bd Beaumarchais, 75003",75003,3,Paris,,,open,,B,https://specialtycoffee.paris/shops/used-book-cafe,2026-10-01
+copains-rue-des-rosiers,Copains - Rue des Rosiers,Copains,"36 Rue des Rosiers, 75004",75004,4,Paris,,,open,,B,https://specialtycoffee.paris/shops/copains-rue-des-rosiers,2026-10-01
+wiolette,Wiolette,Wiolette,"31 Rue du Four, 75006",75006,6,Paris,,,open,,B,https://specialtycoffee.paris/shops/wiolette,2026-10-01
+niwa,Niwa,Niwa,"56 Rue Vaneau, 75007",75007,7,Paris,parlor-coffee,Parlor Coffee,open,,B,https://specialtycoffee.paris/shops/niwa,2026-10-01
+goodnews-rue-du-four,GoodNews Rue du Four,GoodNews Rue du Four,"22 Rue du Four, 75006",75006,6,Paris,,,open,,,https://specialtycoffee.paris/shops/goodnews-rue-du-four,2026-10-01
+ralphs-coffee,Ralph's Coffee,Ralph's Coffee,"173 Bd Saint-Germain, 75006",75006,6,Paris,,,open,,C+,https://specialtycoffee.paris/shops/ralphs-coffee,2026-10-01
+kabane,Kabane,Kabane,"23 Rue Faidherbe, 75011",75011,11,Paris,,,open,,C+,https://specialtycoffee.paris/shops/kabane,2026-10-01
+goodnews-boulevard-de-la-madeleine,Goodnews - Boulevard de la Madeleine,Goodnews,"7 Bd de la Madeleine, 75001",75001,1,Paris,,,open,,C+,https://specialtycoffee.paris/shops/goodnews-boulevard-de-la-madeleine,2026-10-01
+goodnews-rambuteau,GoodNews Rambuteau,GoodNews Rambuteau,"4 Rue Rambuteau, 75003",75003,3,Paris,,,open,,,https://specialtycoffee.paris/shops/goodnews-rambuteau,2026-10-01
+cafe-kitsune-louvre,Café Kitsuné - Louvre,Café Kitsuné,"2 Pl. André Malraux, 75001",75001,1,Paris,cafe-kitsune,Café Kitsuné,open,,C+,https://specialtycoffee.paris/shops/cafe-kitsune-louvre,2026-10-01
+coutume-galeries-lafayette,Coutume - Galeries Lafayette,Coutume,"Magasin Coupole, 40 Bd Haussmann 2ème étage, 75009",75009,9,Paris,coutume,Coutume,open,,C+,https://specialtycoffee.paris/shops/coutume-galeries-lafayette,2026-10-01
+goodnews-cafe,GoodNews Cafe,GoodNews Cafe,"25 Rue Danielle Casanova, 75001",75001,1,Paris,,,open,,,https://specialtycoffee.paris/shops/goodnews-cafe,2026-10-01
+goodnews-cafe-poissonniere,GoodNews Cafe Poissonnière,GoodNews Cafe Poissonnière,"20 Bd Poissonnière, 75009",75009,9,Paris,,,open,,,https://specialtycoffee.paris/shops/goodnews-cafe-poissonniere,2026-10-01
+goodnews-opera,Goodnews Opéra,Goodnews Opéra,"14 Av. de l'Opéra, 75001",75001,1,Paris,,,open,,,https://specialtycoffee.paris/shops/goodnews-opera,2026-10-01
+coffee-faubourg,Coffee Faubourg,Coffee Faubourg,"67 Rue du Faubourg Montmartre, 75009",75009,9,Paris,,,closed,2026-08,,https://specialtycoffee.paris/shops/coffee-faubourg,2026-10-01
+bing-sutt,BING SUTT,BING SUTT,"22 Rue Béranger, 75003",75003,3,Paris,rum-baba,Rum Baba,closed,2026-08,,https://specialtycoffee.paris/shops/bing-sutt,2026-10-01
+artesano,Artesano,Artesano,"3 Rue Saint-Paul, 75004",75004,4,Paris,artesano,Artesano,closed,2026-07,,https://specialtycoffee.paris/shops/artesano,2026-10-01
+coutume-x-julhes,Coutume x Julhès,Coutume x Julhès,"56 Rue du Faubourg Saint-Denis, 75010",75010,10,Paris,coutume,Coutume,closed,2026-07,,https://specialtycoffee.paris/shops/coutume-x-julhes,2026-10-01
+the-coffee-cite-du-wauxhall,The Coffee - Cité du Wauxhall,The Coffee,"5 Cité du Wauxhall, 75010",75010,10,Paris,the-coffee,The Coffee,closed,2026-06,,https://specialtycoffee.paris/shops/the-coffee-cite-du-wauxhall,2026-10-01
+medinas,Medina's,Medina's,"5 Rue Bréa, 75006",75006,6,Paris,hexagone,Hexagone,closed,2026-06,,https://specialtycoffee.paris/shops/medinas,2026-10-01
+onisuko-rue-du-vieux-colombier,Onisuko - Rue du Vieux Colombier,Onisuko,"13 Rue du Vieux Colombier, 75006",75006,6,Paris,,,closed,2026-05,,https://specialtycoffee.paris/shops/onisuko-rue-du-vieux-colombier,2026-10-01
+boem,BOEM,BOEM,"32 Rue des Vinaigriers, 75010",75010,10,Paris,ditta-artigianale,Ditta Artigianale,closed,2026-05,,https://specialtycoffee.paris/shops/boem,2026-10-01
+roll-in-rue-de-clery,Roll in - Rue de Cléry,Roll in,"60 Rue de Cléry, 75002",75002,2,Paris,,,closed,2026-05,,https://specialtycoffee.paris/shops/roll-in-rue-de-clery,2026-10-01
+brouillon,Brouillon,Brouillon,"42 Bd de Magenta, 75010",75010,10,Paris,feve,Fève,closed,2026-05,,https://specialtycoffee.paris/shops/brouillon,2026-10-01
+onisuko-rue-de-turenne,Onisuko - Rue de Turenne,Onisuko,"25 Rue de Turenne, 75004",75004,4,Paris,,,closed,2026-05,,https://specialtycoffee.paris/shops/onisuko-rue-de-turenne,2026-10-01
+kaffa-koffee-oberkampf,KAFFA KOFFEE Oberkampf,KAFFA KOFFEE Oberkampf,"104 Rue Oberkampf, 75011",75011,11,Paris,,,closed,2026-05,,https://specialtycoffee.paris/shops/kaffa-koffee-oberkampf,2026-10-01
+typica-specialty-coffee-chemin-vert,TYPICA SPECIALTY COFFEE CHEMIN VERT,TYPICA SPECIALTY COFFEE CHEMIN VERT,"84 Rue du Chemin Vert, 75011",75011,11,Paris,,,closed,2026-05,,https://specialtycoffee.paris/shops/typica-specialty-coffee-chemin-vert,2026-10-01
+the-cafe-next-door,THE Café NEXT DOOR,THE Café NEXT DOOR,"8 Rue Beaurepaire, 75010",75010,10,Paris,mojo-coffee-club,Mojo Coffee Club,closed,2026-05,,https://specialtycoffee.paris/shops/the-cafe-next-door,2026-10-01
+jaco,Jaco,Jaco,"9 Rue Jacques Cœur, 75004",75004,4,Paris,feve;muda,Fève ; Muda,closed,2026-02,,https://specialtycoffee.paris/shops/jaco,2026-10-01

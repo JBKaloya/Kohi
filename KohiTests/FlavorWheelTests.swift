@@ -53,6 +53,7 @@ struct FlavorWheelTests {
     }
 
     @Test func sharedLoadsTheSameWheel() {
+        #expect(!FlavorWheel.shared.isEmpty)
         #expect(FlavorWheel.shared.nodes.count == 111)
         #expect(FlavorWheel.shared.families.count == 9)
         #expect(FlavorWheel.shared.quick.count == 42)

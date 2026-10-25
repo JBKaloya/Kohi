@@ -21,7 +21,7 @@ struct BrewLiveActivityWidget: Widget {
                         .lineLimit(1)
                 }
                 DynamicIslandExpandedRegion(.trailing) {
-                    Text(timer(context.state.startedAt))
+                    timer(context.state.startedAt)
                         .monospacedDigit()
                         .font(.caption)
                 }
@@ -38,7 +38,7 @@ struct BrewLiveActivityWidget: Widget {
                     .font(.caption2)
                     .monospacedDigit()
             } compactTrailing: {
-                Text(timer(context.state.startedAt))
+                timer(context.state.startedAt)
                     .font(.caption2)
                     .monospacedDigit()
             } minimal: {
@@ -61,11 +61,16 @@ struct BrewLiveActivityWidget: Widget {
                         .foregroundStyle(inkMuted)
                 }
                 Spacer()
-                Text(timer(context.state.startedAt))
+                timer(context.state.startedAt)
                     .font(.title3.monospacedDigit())
             }
             Text(context.state.stepLabel)
                 .font(.subheadline)
+            if context.state.isRecording {
+                Text("Recording")
+                    .font(.caption)
+                    .foregroundStyle(inkMuted)
+            }
             massLine(context.state)
             stepBar(context.state)
         }

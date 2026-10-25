@@ -12,6 +12,9 @@ nonisolated struct CoffeeCard: Identifiable, Codable, Hashable, Sendable {
     /// text stays authoritative for display, so an unmatched card reads the same.
     var roasterId: UUID?
     var place: Place?
+    /// Slug of a bundled Paris place, when the card was bought or drunk there.
+    /// Nil for a MapKit pin or a place typed by hand.
+    var placeID: String?
     /// Roastery, café, shop or online. Nil until someone says.
     var placeType: PlaceType?
     var country: String
@@ -50,9 +53,35 @@ nonisolated struct CoffeeCard: Identifiable, Codable, Hashable, Sendable {
     /// Extraction log: every brew of this card, newest first.
     var brews: [Brew]
 
+    /// Times this coffee was drunk. Newest first. A home tasting points at a
+    /// brew; it does not copy one. Cards filed before tastings exist decode
+    /// as an empty list.
+    var tastings: [Tasting]
+
     /// The most recent brew by date, regardless of array order.
     var lastBrew: Brew? {
         brews.max { $0.date < $1.date }
+    }
+
+    /// Tastings that carry a score. Brew ratings are a different question.
+    var ratedTastings: [Tasting] {
+        tastings.filter { $0.rating != nil }
+    }
+
+    /// Mean of the tasting ratings, and how many there were. Nil when none
+    /// of the tastings were scored, even if the brews were.
+    var tastingScore: (average: Double, count: Int)? {
+        let ratings = ratedTastings.compactMap(\.rating)
+        guard !ratings.isEmpty else { return nil }
+        let total = ratings.reduce(0, +)
+        return (Double(total) / Double(ratings.count), ratings.count)
+    }
+
+    /// "4.0 · 3 tastings". Nil when nothing was scored.
+    var tastingScoreLine: String? {
+        guard let tastingScore else { return nil }
+        let noun = tastingScore.count == 1 ? "tasting" : "tastings"
+        return String(format: "%.1f", tastingScore.average) + " · \(tastingScore.count) \(noun)"
     }
 
     /// Linked pages, recipes, or documents. Newest first.
@@ -116,8 +145,9 @@ nonisolated struct CoffeeCard: Identifiable, Codable, Hashable, Sendable {
     /// kept untouched, so this is what a reprocess would need to know.
     var enhanced: Bool
 
-    /// Lifecycle of the AI-generated poster image. The scan stays the archive;
-    /// the poster is a square stamp-on-parchment variant for the grid.
+    /// Retired flyer lifecycle, kept so `cards.json` and the Postgres
+    /// `poster` column still decode. Generation is gone; see
+    /// `docs/ai-poster-retired.md`.
     var poster: PosterState
 
     init(
@@ -126,6 +156,7 @@ nonisolated struct CoffeeCard: Identifiable, Codable, Hashable, Sendable {
         roaster: String = "",
         roasterId: UUID? = nil,
         place: Place? = nil,
+        placeID: String? = nil,
         placeType: PlaceType? = nil,
         country: String = "",
         region: String = "",
@@ -137,6 +168,7 @@ nonisolated struct CoffeeCard: Identifiable, Codable, Hashable, Sendable {
         brewMethod: BrewMethod? = nil,
         personalNotes: String = "",
         brews: [Brew] = [],
+        tastings: [Tasting] = [],
         attachments: [CardAttachment] = [],
         species: BeanSpecies = .arabica,
         isDecaf: Bool = false,
@@ -170,6 +202,7 @@ nonisolated struct CoffeeCard: Identifiable, Codable, Hashable, Sendable {
         self.roaster = roaster
         self.roasterId = roasterId
         self.place = place
+        self.placeID = placeID
         self.placeType = placeType
         self.country = country
         self.region = region
@@ -181,6 +214,7 @@ nonisolated struct CoffeeCard: Identifiable, Codable, Hashable, Sendable {
         self.brewMethod = brewMethod
         self.personalNotes = personalNotes
         self.brews = brews
+        self.tastings = tastings
         self.attachments = attachments
         self.species = species
         self.isDecaf = isDecaf
@@ -307,6 +341,7 @@ nonisolated extension CoffeeCard {
         roaster = try c.decodeIfPresent(String.self, forKey: .roaster) ?? ""
         roasterId = try c.decodeIfPresent(UUID.self, forKey: .roasterId)
         place = try c.decodeIfPresent(Place.self, forKey: .place)
+        placeID = try c.decodeIfPresent(String.self, forKey: .placeID)
         placeType = try c.decodeIfPresent(PlaceType.self, forKey: .placeType)
         country = try c.decodeIfPresent(String.self, forKey: .country) ?? ""
         region = try c.decodeIfPresent(String.self, forKey: .region) ?? ""
@@ -319,6 +354,10 @@ nonisolated extension CoffeeCard {
         personalNotes = try c.decodeIfPresent(String.self, forKey: .personalNotes) ?? ""
         brews = (try c.decodeIfPresent([Brew].self, forKey: .brews) ?? [])
             .sorted { $0.date > $1.date }
+        // One malformed legacy tasting costs that tasting, never the card.
+        tastings = (try? c.decodeIfPresent([Lossy<Tasting>].self, forKey: .tastings))?
+            .compactMap(\.value)
+            .sorted { $0.date > $1.date } ?? []
         attachments = try c.decodeIfPresent([CardAttachment].self, forKey: .attachments) ?? []
         species = try c.decodeIfPresent(BeanSpecies.self, forKey: .species) ?? .arabica
         isDecaf = try c.decodeIfPresent(Bool.self, forKey: .isDecaf) ?? false
@@ -347,4 +386,21 @@ nonisolated extension CoffeeCard {
         enhanced = try c.decodeIfPresent(Bool.self, forKey: .enhanced) ?? false
         poster = try c.decodeIfPresent(PosterState.self, forKey: .poster) ?? .none
     }
+}
+
+/// One element of a list that decodes to nil instead of failing the list.
+nonisolated struct Lossy<Value: Decodable & Sendable>: Decodable, Sendable {
+    let value: Value?
+
+    init(from decoder: any Decoder) throws {
+        value = try? Value(from: decoder)
+    }
+}
+
+/// Retired flyer lifecycle. The column and the local archive still carry it.
+nonisolated enum PosterState: String, Codable, Hashable, Sendable {
+    case none
+    case pending
+    case ready
+    case failed
 }

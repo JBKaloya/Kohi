@@ -60,6 +60,7 @@ struct DevBrief4SnapshotTests {
                 card: CoffeeCard(name: "Chelbesa"),
                 recipe: recipe,
                 brew: recipe.seededBrew(),
+                voiceNote: BrewVoiceNote(),
                 onFinish: { _ in },
                 onCancel: {},
                 startsRunning: false
@@ -141,7 +142,7 @@ struct DevBrief4SnapshotTests {
         )
         SnapshotSupport.image(
             of: BrewJourneySupport.wrap(
-                BrewScopeView(session: session, onClose: {}, onNext: {}),
+                BrewScopeView(session: session, onBack: {}, onClose: {}, onNext: {}),
                 setup: setup
             ),
             height: 720,
@@ -164,13 +165,37 @@ struct DevBrief4SnapshotTests {
                     session: session,
                     onBack: {},
                     onClose: {},
+                    onNext: {}
+                ),
+                setup: setup
+            ),
+            height: 980,
+            named: "kit"
+        )
+    }
+
+    @Test func brewDialShowsGrindAndTemp() {
+        let setup = BrewJourneySupport.setup()
+        let session = BrewSession(
+            card: BrewJourneySupport.card(agitation: nil),
+            recipe: ReferenceBase.recipe(referenceID: "a1-v60-ultimate"),
+            size: .twoCups,
+            start: .dial,
+            setup: setup
+        )
+        SnapshotSupport.image(
+            of: BrewJourneySupport.wrap(
+                BrewDialView(
+                    session: session,
+                    onBack: {},
+                    onClose: {},
                     onBrewNow: {},
                     onAlreadyBrewed: {}
                 ),
                 setup: setup
             ),
             height: 980,
-            named: "kit"
+            named: "dial"
         )
     }
 

@@ -10,6 +10,7 @@ struct SayItLabel: View {
     let isListening: Bool
     let transcript: String
     var prompt: String = "Dictate"
+    var listeningPrompt: String = "Listening — tap to stop"
     var hint: String?
     let action: () -> Void
 
@@ -25,7 +26,7 @@ struct SayItLabel: View {
                         .scaleEffect(breathing ? 1.15 : 1)
                         .opacity(breathing ? 0.55 : 1)
 
-                    Text(isListening ? "Listening — tap to stop" : prompt)
+                    Text(isListening ? listeningPrompt : prompt)
                         .catalogueLabel()
                 }
             }

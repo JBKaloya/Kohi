@@ -24,23 +24,27 @@ nonisolated struct NextTime: Hashable, Sendable, Identifiable {
         case water
         case steps
         case dripper
-        /// Nothing to change in the recipe — the answer is technique.
+        case rinse
+        case filter
         case technique
+        case record
 
-        /// The order the PRD fixes: grind, then ratio, then temperature, then
-        /// time, then agitation, then water. A rule further down the list only
-        /// fires when nothing above it does.
+        /// Softest first: save what you did, rinse, filter, agitation, temperature, grind, ratio,
+        /// time, steps, water, dripper, technique.
         var priority: Int {
             switch self {
-            case .grind: 0
-            case .ratio: 1
-            case .temperature: 2
-            case .time: 3
-            case .agitation: 4
-            case .water: 5
-            case .steps: 6
-            case .dripper: 7
-            case .technique: 8
+            case .record: -1
+            case .rinse: 0
+            case .filter: 1
+            case .agitation: 2
+            case .temperature: 3
+            case .grind: 4
+            case .ratio: 5
+            case .time: 6
+            case .steps: 7
+            case .water: 8
+            case .dripper: 9
+            case .technique: 10
             }
         }
     }
@@ -56,14 +60,42 @@ nonisolated enum BrewDiagnosis {
     /// nothing. Silence is a valid answer: a coffee you liked and scored
     /// "right" on every axis does not need advice.
     static func nextTime(for brew: Brew) -> NextTime? {
-        candidates(for: brew)
+        (candidates(for: brew) + filterMoves(for: brew, brewer: nil, stock: []))
             .min { $0.variable.priority < $1.variable.priority }
     }
 
     /// Every rule that fires, in no particular order. Exposed for the tests and
     /// for the "why" sheet; the app only ever shows the first by priority.
-    static func candidates(for brew: Brew) -> [NextTime] {
+    static func candidates(
+        for brew: Brew,
+        tasting: [TastingIntent] = [],
+        card: CoffeeCard? = nil
+    ) -> [NextTime] {
         var found: [NextTime] = []
+
+        if brew.actualSource == .none, !brew.plannedSteps.isEmpty {
+            found.append(NextTime(
+                change: Copy.saveWhatYouDid,
+                reason: "this brew followed a default sequence",
+                variable: .record,
+                direction: 0,
+                evidence: .unverified
+            ))
+        }
+
+        if let firstMinute = firstMinuteMove(for: brew, card: card) {
+            found.append(firstMinute)
+        }
+
+        for rate in brew.pourRates where rate.gPerS >= 6 && brew.bitterness > 0 {
+            found.append(NextTime(
+                change: "Pour slower (under 6 g/s)",
+                reason: "\(rate.tag) is a fast pour",
+                variable: .agitation,
+                direction: -1,
+                evidence: .practice
+            ))
+        }
 
         let acidity = brew.acidity
         let bitterness = brew.bitterness
@@ -160,6 +192,9 @@ nonisolated enum BrewDiagnosis {
             ))
         }
 
+        found.append(contentsOf: TastingIntent.moves(of: tasting))
+        found.append(contentsOf: complexityMoves(for: brew, card: card))
+
         if body > 0 {
             found.append(NextTime(
                 change: longerRatio(for: brew),
@@ -185,10 +220,89 @@ nonisolated enum BrewDiagnosis {
 
     /// Every move the model may pick from: G7 candidates, step moves, and a
     /// dripper swap when two drippers are in the kit.
-    static func admissibleSet(for brew: Brew, equipment: [Equipment] = []) -> [NextTime] {
-        var found = candidates(for: brew)
+    static func admissibleSet(
+        for brew: Brew,
+        equipment: [Equipment] = [],
+        filterStock: [FilterStock] = [],
+        tasting: [TastingIntent] = [],
+        card: CoffeeCard? = nil
+    ) -> [NextTime] {
+        var found = candidates(for: brew, tasting: tasting, card: card)
         found.append(contentsOf: stepMoves(for: brew))
         found.append(contentsOf: dripperMoves(for: brew, equipment: equipment))
+        let brewer = brew.equipmentIDs.compactMap { id in equipment.first { $0.id == id } }
+            .first { $0.kind == .brewer }
+        found.append(contentsOf: filterMoves(for: brew, brewer: brewer, stock: filterStock))
+        return found
+    }
+
+    /// The fast-pour rule, narrowed to the first minute. A washed or
+    /// developed coffee goes bitter from early agitation before the grind is
+    /// the problem, so the move keeps the grind and slows the start.
+    static func firstMinuteMove(for brew: Brew, card: CoffeeCard?) -> NextTime? {
+        guard brew.bitterness > 0, let card else { return nil }
+        let reading = ExtractionReading.read(brew, card: card)
+        guard let flow = reading.firstMinuteFlow, flow >= 6,
+              reading.isWashed || reading.isMediumOrDarker else { return nil }
+        return NextTime(
+            change: "pour slower in the first minute, same grind",
+            reason: "bitter after a fast start: \(reading.bitternessChain)",
+            variable: .agitation,
+            direction: -1,
+            evidence: .practice
+        )
+    }
+
+    /// More complexity is only advised with something to stand on: a measured
+    /// extraction below the band, a cup scored low on clarity, or a better
+    /// brew of the same coffee that differs in one setting. Otherwise there is
+    /// nothing to say, and the screen says so.
+    static func complexityMoves(for brew: Brew, card: CoffeeCard?) -> [NextTime] {
+        guard brew.complexity == 1 else { return [] }
+        var found: [NextTime] = []
+
+        if let yield = brew.extractionYield, yield < 18 {
+            found.append(NextTime(
+                change: "grind finer",
+                reason: "more complexity wanted, and extraction measured at \(GrindRange.number(yield)) %, below the usual band",
+                variable: .grind,
+                direction: -1,
+                evidence: .verified
+            ))
+        }
+
+        if let clarity = brew.taste.values[.clarity], clarity <= 4, brew.method != .espresso {
+            found.append(NextTime(
+                change: longerRatio(for: brew),
+                reason: "more complexity wanted, and clarity scored \(clarity) of 10 — a longer ratio opens the cup",
+                variable: .ratio,
+                direction: 1,
+                evidence: .partial
+            ))
+        }
+
+        if let card, let rating = brew.rating {
+            let better = card.brews
+                .filter { $0.id != brew.id && ($0.rating ?? 0) > rating && $0.method == brew.method }
+                .max { ($0.rating ?? 0) < ($1.rating ?? 0) }
+            if let better, let theirs = better.temperature, let ours = brew.temperature, abs(theirs - ours) >= 2 {
+                found.append(NextTime(
+                    change: theirs > ours ? "hotter water, \(GrindRange.number(theirs)) °C" : "cooler water, \(GrindRange.number(theirs)) °C",
+                    reason: "your \(better.rating ?? 0)-dot brew of this coffee ran at \(GrindRange.number(theirs)) °C",
+                    variable: .temperature,
+                    direction: theirs > ours ? 1 : -1,
+                    evidence: .partial
+                ))
+            } else if let better, let theirs = setting(in: better.grind), let ours = setting(in: brew.grind), theirs != ours {
+                found.append(NextTime(
+                    change: theirs < ours ? "grind finer" : "grind coarser",
+                    reason: "your \(better.rating ?? 0)-dot brew of this coffee ground at \(GrindRange.number(theirs))",
+                    variable: .grind,
+                    direction: theirs < ours ? -1 : 1,
+                    evidence: .partial
+                ))
+            }
+        }
         return found
     }
 
@@ -271,6 +385,110 @@ nonisolated enum BrewDiagnosis {
                 evidence: .practice
             ))
         }
+        return found
+    }
+
+    /// Filter and rinse moves. Named papers only appear when the user owns
+    /// one of the target class for this brewer.
+    static func filterMoves(
+        for brew: Brew,
+        brewer: Equipment?,
+        stock: [FilterStock]
+    ) -> [NextTime] {
+        var found: [NextTime] = []
+        let papery = brew.flavors.contains { tag in
+            let hay = (tag.id + " " + tag.displayName).lowercased()
+            return hay.contains("papery") || hay.contains("cardboard")
+        }
+        let rinseStep = brew.steps.first { $0.action == .rinse }
+        let rinseUnder: Bool = {
+            guard let rinseStep else { return false }
+            if rinseStep.skipped { return true }
+            guard let target = rinseStep.targetMass, let mass = rinseStep.mass else { return false }
+            return mass + 1 < target
+        }()
+        if papery || rinseUnder {
+            let grams = brewer.flatMap { RinseRule.mass(for: stock.first { $0.id == brew.filterStockId }, brewer: $0) }
+            let label = grams.map { "Rinse more (\(GrindRange.number($0)) g hot)" } ?? "\(Copy.rinseMore) (150 g hot)"
+            found.append(NextTime(
+                change: label,
+                reason: papery ? "papery or cardboard in the cup" : "the rinse was skipped or short",
+                variable: .rinse,
+                direction: 1,
+                evidence: .practice
+            ))
+        }
+
+        guard let brewer else { return found }
+        let owned = stock.filter { FilterFit.compatible($0, with: brewer) }
+        let current = brew.filterStockId.flatMap { id in owned.first { $0.id == id } }
+        let currentRank = current?.model?.flowClass?.rank
+        let target = brew.recipeSnapshot?.seconds ?? brew.seconds
+        let drawdown = brew.seconds
+
+        if let drawdown, let target, target > 0,
+           Double(drawdown) > Double(target) * 1.25,
+           brew.bitterness > 0,
+           let faster = owned
+            .filter({ ($0.model?.flowClass?.rank ?? 99) < (currentRank ?? 99) })
+            .min(by: { ($0.model?.flowClass?.rank ?? 99) < ($1.model?.flowClass?.rank ?? 99) })
+        {
+            found.append(NextTime(
+                change: "\(faster.displayName) — faster paper, same grind: shorter contact",
+                reason: "drawdown overshot the recipe and bitterness is high",
+                variable: .filter,
+                direction: -1,
+                evidence: .practice
+            ))
+        }
+
+        if let drawdown, let target, target > 0,
+           Double(drawdown) < Double(target) * 0.75,
+           brew.acidity > 0,
+           let slower = owned
+            .filter({ ($0.model?.flowClass?.rank ?? -1) > (currentRank ?? -1) })
+            .max(by: { ($0.model?.flowClass?.rank ?? -1) < ($1.model?.flowClass?.rank ?? -1) })
+        {
+            found.append(NextTime(
+                change: "\(slower.displayName) — slower paper",
+                reason: "drawdown finished early and acidity is high",
+                variable: .filter,
+                direction: 1,
+                evidence: .practice
+            ))
+        }
+
+        let currentIsMesh = current?.isPaper == false
+            || current?.resolvedShape == .cloth
+            || current?.model?.material == .metal
+            || current?.model?.material == .cloth
+        let clarity = brew.taste[.clarity] ?? TasteProfile.midDefault
+        if currentIsMesh, clarity <= TasteProfile.lowThreshold,
+           let paper = owned.first(where: { $0.isPaper })
+        {
+            found.append(NextTime(
+                change: "\(paper.displayName) — paper filter for clarity",
+                reason: "metal or cloth lets fines through",
+                variable: .filter,
+                direction: 0,
+                evidence: .practice
+            ))
+        }
+
+        if brew.body < 0, clarity >= 7,
+           let slower = owned
+            .filter({ ($0.model?.flowClass?.rank ?? -1) > (currentRank ?? 2) || ($0.model?.thicknessUm ?? 0) > (current?.model?.thicknessUm ?? 0) })
+            .max(by: { ($0.model?.flowClass?.rank ?? 0) < ($1.model?.flowClass?.rank ?? 0) })
+        {
+            found.append(NextTime(
+                change: "\(slower.displayName) — slower or thicker paper",
+                reason: "clarity is already there; the cup needs more body",
+                variable: .filter,
+                direction: 1,
+                evidence: .practice
+            ))
+        }
+
         return found
     }
 
@@ -367,7 +585,7 @@ nonisolated enum BrewDiagnosis {
             equipmentIDs: brew.equipmentIDs,
             waterProfileID: brew.waterProfileID,
             agitation: brew.agitation,
-            filterId: brew.filterId,
+            filterStockId: brew.filterStockId,
             captureSource: .prefilled
         )
 
@@ -387,7 +605,7 @@ nonisolated enum BrewDiagnosis {
             draft.seconds = brew.seconds.map {
                 max($0 + suggestion.direction * 10, 5)
             }
-        case .agitation, .water, .technique, .steps, .dripper:
+        case .agitation, .water, .technique, .steps, .dripper, .rinse, .filter, .record:
             // Nothing numeric to move; the note carries it.
             break
         }

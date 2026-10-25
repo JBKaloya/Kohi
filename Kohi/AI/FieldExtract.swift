@@ -211,6 +211,153 @@ nonisolated enum FieldExtract {
         }
     }
 
+    /// What the model made of a café menu's OCR text: one entry per coffee.
+    struct Menu: Decodable, Sendable {
+        struct Coffee: Decodable, Sendable {
+            var name: String?
+            var roaster: String?
+            var country: String?
+            var process: String?
+            var variety: String?
+            var notes: [String]?
+            var method: String?
+            var price: Double?
+            var currency: String?
+        }
+
+        var coffees: [Coffee]?
+
+        /// Every value starts as read; `MenuParser.grounded` downgrades what
+        /// the OCR text does not support.
+        func asCandidates() -> [MenuCandidate] {
+            (coffees ?? []).enumerated().compactMap { index, coffee in
+                var fields: [MenuField] = []
+                func add(_ kind: MenuField.Kind, _ value: String?) {
+                    if let value = value?.trimmed { fields.append(MenuField(kind: kind, value: value, confidence: .read)) }
+                }
+                add(.name, coffee.name)
+                guard !fields.isEmpty else { return nil }
+                add(.roaster, coffee.roaster)
+                add(.country, coffee.country)
+                add(.process, coffee.process)
+                add(.variety, coffee.variety)
+                add(.notes, coffee.notes?.joined(separator: ", "))
+                add(.method, coffee.method)
+                if let price = coffee.price, price > 0, let currency = coffee.currency?.trimmed {
+                    add(.price, CupPrice(amount: Decimal(price), currency: currency).formatted)
+                }
+                return MenuCandidate(id: index, fields: fields)
+            }
+        }
+    }
+
+    /// Reads a menu from its OCR lines. Text only: the photo stays on the
+    /// phone.
+    @MainActor
+    static func menu(
+        lines: [String],
+        flags: AIFlags,
+        events: AIEventLog
+    ) async -> Outcome<[MenuCandidate]>? {
+        let text = lines.joined(separator: "\n").trimmingCharacters(in: .whitespacesAndNewlines)
+        guard flags.isOn(.menuExtract), !text.isEmpty, let client = SupabaseConfig.current else { return nil }
+
+        struct Payload: Encodable {
+            let kind = "menu"
+            let transcript: String
+        }
+
+        let started = Date.now
+        do {
+            let envelope: Envelope<Menu> = try await client.functions.invoke(
+                "field-extract",
+                options: FunctionInvokeOptions(body: Payload(transcript: text))
+            )
+            let id = events.record(AIEvent(
+                feature: .menuExtract,
+                model: envelope.model,
+                inputTokens: envelope.inputTokens,
+                outputTokens: envelope.outputTokens,
+                latencyMs: envelope.latencyMs ?? elapsed(since: started)
+            ))
+            return Outcome(value: envelope.fields.asCandidates(), eventID: id)
+        } catch {
+            events.record(AIEvent(
+                feature: .menuExtract,
+                model: "unknown",
+                latencyMs: elapsed(since: started),
+                accepted: false,
+                failure: "\(error)"
+            ))
+            Log.app.notice("menu extract failed, keeping the local read (\(error))")
+            return nil
+        }
+    }
+
+    /// Spelling only. The on-device grammar has already filled the fields;
+    /// this rewrites the leftover sentence with the coffee words in context.
+    struct Tidied: Decodable, Sendable {
+        var text: String?
+    }
+
+    @MainActor
+    static func tidy(
+        transcript: String,
+        terms: [String],
+        flags: AIFlags,
+        events: AIEventLog
+    ) async -> String? {
+        let spoken = transcript.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard flags.isOn(.fieldExtract), !spoken.isEmpty, let client = SupabaseConfig.current else {
+            return nil
+        }
+        let key = cacheKey(transcript: spoken, terms: terms)
+        if let cached = AICallCache.transcript(for: key) { return cached }
+
+        struct Payload: Encodable {
+            let kind = "transcript"
+            let transcript: String
+            let context: String
+        }
+
+        let started = Date.now
+        do {
+            let envelope: Envelope<Tidied> = try await client.functions.invoke(
+                "field-extract",
+                options: FunctionInvokeOptions(
+                    body: Payload(
+                        transcript: spoken,
+                        context: terms.prefix(24).joined(separator: ", ")
+                    )
+                )
+            )
+            events.record(AIEvent(
+                feature: .fieldExtract,
+                model: envelope.model,
+                inputTokens: envelope.inputTokens,
+                outputTokens: envelope.outputTokens,
+                latencyMs: envelope.latencyMs ?? elapsed(since: started)
+            ))
+            guard let text = envelope.fields.text?.trimmed else { return nil }
+            AICallCache.storeTranscript(text, for: key)
+            return text
+        } catch {
+            events.record(AIEvent(
+                feature: .fieldExtract,
+                model: "unknown",
+                latencyMs: elapsed(since: started),
+                accepted: false,
+                failure: "\(error)"
+            ))
+            Log.app.notice("transcript tidy failed, keeping the local rewrite (\(error))")
+            return nil
+        }
+    }
+
+    private static func cacheKey(transcript: String, terms: [String]) -> String {
+        "\(transcript)|\(terms.prefix(24).joined(separator: ","))"
+    }
+
     static func elapsed(since start: Date) -> Int {
         Int(Date.now.timeIntervalSince(start) * 1000)
     }

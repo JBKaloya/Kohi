@@ -17,7 +17,7 @@ struct AskSheet: View {
     @State private var question = ""
     @State private var answer: Ask.Answer?
     @State private var isAsking = false
-    @State private var failed = false
+    @State private var failure: Ask.Failure?
     @FocusState private var isFocused: Bool
 
     var body: some View {
@@ -32,9 +32,9 @@ struct AskSheet: View {
                     }
 
                     if let answer { answerBlock(answer) }
-                    if failed { failureBlock }
+                    if let failure { failureBlock(failure) }
 
-                    if answer == nil, !isAsking, !failed { examples }
+                    if answer == nil, !isAsking, failure == nil { examples }
                 }
                 .padding(.horizontal, 26)
                 .padding(.top, 18)
@@ -111,8 +111,8 @@ struct AskSheet: View {
         return "SOURCE: KNOWLEDGE BASE"
     }
 
-    private var failureBlock: some View {
-        Text("No answer came back. Check the connection and try again.")
+    private func failureBlock(_ failure: Ask.Failure) -> some View {
+        Text(failure.message)
             .font(Typography.tag)
             .foregroundStyle(Palette.inkMuted)
     }
@@ -142,13 +142,19 @@ struct AskSheet: View {
     private func ask() {
         guard let text = question.trimmed, !isAsking else { return }
         isAsking = true
-        failed = false
+        failure = nil
         answer = nil
         Task {
             let result = await Ask.answer(to: text, topic: topic, flags: flags, events: events)
             withAnimation(Motion.snappy) {
-                answer = result
-                failed = result == nil
+                switch result {
+                case .success(let value):
+                    answer = value
+                    failure = nil
+                case .failure(let reason):
+                    answer = nil
+                    failure = reason
+                }
                 isAsking = false
             }
         }

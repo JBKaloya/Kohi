@@ -10,15 +10,40 @@ struct SetupFlowSheet: View {
     @Environment(\.dismiss) private var dismiss
 
     @State private var stage: Stage
-    @State private var selectedFamilies: [BrewerFamily] = []
-    @State private var grinderQuery = ""
+    @State private var selectedFamilies: [BrewerType] = []
+    @State private var pickingGrinder = false
     @State private var pickedGrinder: ReferenceBase.Grinder?
     @State private var customBrand = ""
     @State private var customModel = ""
     @State private var waterChoice: WaterSource?
     @State private var bottled: ReferenceBase.Water?
     @State private var additive: ReferenceBase.MineralProduct?
+    @State private var paperChoice: PaperChoice?
     @State private var appeared = false
+
+    private enum PaperChoice: String, CaseIterable, Identifiable {
+        case brand
+        case abaca
+        case other
+
+        var id: String { rawValue }
+
+        var label: String {
+            switch self {
+            case .brand: "The dripper's paper"
+            case .abaca: "Cafec Abaca"
+            case .other: "Other"
+            }
+        }
+
+        func brandLabel(for families: [BrewerType]) -> String {
+            if families.contains(.v60) || families.contains(.immersionSwitch) { return "Hario" }
+            if families.contains(.flat) { return "Kalita" }
+            if families.contains(.chemex) { return "Chemex" }
+            if families.contains(.aeropress) { return "AeroPress" }
+            return "The dripper's paper"
+        }
+    }
 
     private enum Stage: Int {
         case entry
@@ -36,8 +61,26 @@ struct SetupFlowSheet: View {
         }
     }
 
+    /// Opens one question directly. Used by the parcours export, not by the app.
+    enum ExportStage {
+        case entry
+        case brew
+        case grind
+        case water
+    }
+
     init(kitIsEmpty: Bool) {
         _stage = State(initialValue: kitIsEmpty ? .entry : .brew)
+    }
+
+    init(exportStage: ExportStage) {
+        let stage: Stage = switch exportStage {
+        case .entry: .entry
+        case .brew: .brew
+        case .grind: .grind
+        case .water: .water
+        }
+        _stage = State(initialValue: stage)
     }
 
     var body: some View {
@@ -200,19 +243,40 @@ struct SetupFlowSheet: View {
 
     private var brewStep: some View {
         let columns = [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())]
-        return LazyVGrid(columns: columns, spacing: 18) {
-            ForEach(BrewerFamily.allCases) { family in
-                let on = selectedFamilies.contains(family)
-                StepChoice(
-                    glyph: family.glyph,
-                    label: family.label,
-                    isSelected: on
-                ) {
-                    withAnimation(Motion.quick) {
-                        if let index = selectedFamilies.firstIndex(of: family) {
-                            selectedFamilies.remove(at: index)
-                        } else {
-                            selectedFamilies.append(family)
+        let paperFamilies = selectedFamilies.filter(\.usesInterchangeableFilter)
+        return VStack(alignment: .leading, spacing: 22) {
+            LazyVGrid(columns: columns, spacing: 18) {
+                ForEach(BrewerType.allCases) { family in
+                    let on = selectedFamilies.contains(family)
+                    StepChoice(
+                        glyph: family.glyph,
+                        label: family.label,
+                        isSelected: on
+                    ) {
+                        withAnimation(Motion.quick) {
+                            if let index = selectedFamilies.firstIndex(of: family) {
+                                selectedFamilies.remove(at: index)
+                            } else {
+                                selectedFamilies.append(family)
+                            }
+                            if paperFamilies.isEmpty { paperChoice = nil }
+                        }
+                    }
+                }
+            }
+            if !paperFamilies.isEmpty {
+                VStack(alignment: .leading, spacing: 10) {
+                    Text(Copy.whichPaper).catalogueLabel()
+                    FlowLayout {
+                        ForEach(PaperChoice.allCases) { choice in
+                            TagChip(
+                                text: choice == .brand
+                                    ? choice.brandLabel(for: paperFamilies)
+                                    : choice.label,
+                                isSelected: paperChoice == choice
+                            ) {
+                                paperChoice = paperChoice == choice ? nil : choice
+                            }
                         }
                     }
                 }
@@ -224,23 +288,22 @@ struct SetupFlowSheet: View {
 
     private var grindStep: some View {
         VStack(alignment: .leading, spacing: 16) {
-            TextRow(label: "Search", text: $grinderQuery, placeholder: Placeholders.text(.grinderBrand))
-
-            LazyVStack(spacing: 0) {
-                ForEach(ReferenceBase.grinders(matching: grinderQuery)) { reference in
-                    KitRow(item: Equipment(reference: reference), isSelected: pickedGrinder?.id == reference.id, onTap: {
-                        pickedGrinder = reference
-                        customBrand = ""
-                        customModel = ""
-                    })
-                    .opacity(pickedGrinder?.id == reference.id ? 1 : 0.72)
+            Button { pickingGrinder = true } label: {
+                HStack {
+                    Text(pickedGrinder.map { [$0.brand, $0.model].filter { !$0.isEmpty }.joined(separator: " ") } ?? "Choose a grinder")
+                        .font(Typography.value)
+                        .foregroundStyle(pickedGrinder == nil ? Palette.inkMuted : Palette.ink)
+                    Spacer()
+                    Text(Copy.change).catalogueLabel()
                 }
+                .frame(minHeight: 44)
             }
+            .buttonStyle(.plain)
 
             Button {
                 pickedGrinder = nil
             } label: {
-                Text("Custom")
+                Text("Add manually")
                     .catalogueLabel()
             }
             .buttonStyle(.plain)
@@ -249,6 +312,23 @@ struct SetupFlowSheet: View {
                 TextRow(label: "Brand", text: $customBrand, placeholder: Placeholders.text(.grinderBrand), presence: .useful)
                 TextRow(label: "Model", text: $customModel, placeholder: Placeholders.text(.grinderModel), presence: .useful)
             }
+        }
+        .sheet(isPresented: $pickingGrinder) {
+            CatalogPicker(
+                title: "Grinder",
+                entries: ReferenceBase.grinders.map { $0.catalogEntry(owned: false) },
+                selectedID: pickedGrinder?.id,
+                onPick: { entry in
+                    pickedGrinder = ReferenceBase.grinders.first { $0.id == entry.id }
+                    customBrand = ""
+                    customModel = ""
+                    pickingGrinder = false
+                },
+                onAddManually: {
+                    pickingGrinder = false
+                    pickedGrinder = nil
+                }
+            )
         }
     }
 
@@ -346,7 +426,37 @@ struct SetupFlowSheet: View {
             }
             setup.add(item)
             setup.setDefault(item, for: family.method, on: true)
+            commitPaper(for: item, family: family)
         }
+    }
+
+    private func commitPaper(for brewer: Equipment, family: BrewerType) {
+        guard family.usesInterchangeableFilter, let paperChoice, paperChoice != .other else { return }
+        let modelId: String?
+        let size: String
+        switch (paperChoice, family) {
+        case (.abaca, _):
+            modelId = "cafec-abaca"
+            size = family == .flat ? "185" : "4cup"
+        case (.brand, .flat):
+            modelId = "kalita-wave-185"
+            size = "185"
+        case (.brand, .chemex):
+            modelId = "chemex-bonded-white"
+            size = "6cup"
+        case (.brand, .aeropress):
+            modelId = "aeropress-paper"
+            size = "60mm"
+        default:
+            modelId = "hario-v60-white-jp-tabbed"
+            size = "02"
+        }
+        let stock = FilterStock(
+            modelId: modelId,
+            size: size,
+            shape: ReferenceBase.filters.first { $0.id == modelId }?.shape
+        )
+        setup.add(stock, defaultFor: brewer.id)
     }
 
     private func commitGrinder() {

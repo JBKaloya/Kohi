@@ -1,0 +1,614 @@
+[
+  {
+    "grinderKey": "comandante-c40-mk4-nitro-blade",
+    "method": "pourOver",
+    "min": 18.0,
+    "max": 35.0,
+    "basis": "published",
+    "sourceUrl": "https://comandantegrinder.com/pages/faq",
+    "sourceLabel": "Comandante FAQ"
+  },
+  {
+    "grinderKey": "comandante-c40-mk4-nitro-blade",
+    "method": "espresso",
+    "min": 7.0,
+    "max": 13.0,
+    "basis": "published",
+    "sourceUrl": "https://comandantegrinder.com/pages/faq",
+    "sourceLabel": "Comandante FAQ"
+  },
+  {
+    "grinderKey": "comandante-c40-mk4-nitro-blade",
+    "method": "frenchPress",
+    "min": 25.0,
+    "max": 35.0,
+    "basis": "published",
+    "sourceUrl": "https://comandantegrinder.com/pages/faq",
+    "sourceLabel": "Comandante FAQ"
+  },
+  {
+    "grinderKey": "comandante-c40-mk3-nitro-blade",
+    "method": "pourOver",
+    "min": 18.0,
+    "max": 35.0,
+    "basis": "published",
+    "sourceUrl": "https://comandantegrinder.com/pages/faq",
+    "sourceLabel": "Comandante FAQ"
+  },
+  {
+    "grinderKey": "comandante-c40-mk3-nitro-blade",
+    "method": "espresso",
+    "min": 7.0,
+    "max": 13.0,
+    "basis": "published",
+    "sourceUrl": "https://comandantegrinder.com/pages/faq",
+    "sourceLabel": "Comandante FAQ"
+  },
+  {
+    "grinderKey": "comandante-c40-mk3-nitro-blade",
+    "method": "frenchPress",
+    "min": 25.0,
+    "max": 35.0,
+    "basis": "published",
+    "sourceUrl": "https://comandantegrinder.com/pages/faq",
+    "sourceLabel": "Comandante FAQ"
+  },
+  {
+    "grinderKey": "1zpresso-k-ultra",
+    "method": "pourOver",
+    "min": 80.0,
+    "max": 90.0,
+    "basis": "published",
+    "sourceUrl": "https://1zpresso.coffee/wp-content/uploads/2023/03/K-Ultra-Grind-Setting-Reference-20230327.jpg",
+    "sourceLabel": "1Zpresso chart"
+  },
+  {
+    "grinderKey": "1zpresso-k-ultra",
+    "method": "espresso",
+    "min": 30.0,
+    "max": 45.0,
+    "basis": "published",
+    "sourceUrl": "https://1zpresso.coffee/wp-content/uploads/2023/03/K-Ultra-Grind-Setting-Reference-20230327.jpg",
+    "sourceLabel": "1Zpresso chart"
+  },
+  {
+    "grinderKey": "1zpresso-k-ultra",
+    "method": "frenchPress",
+    "min": 90.0,
+    "max": 100.0,
+    "basis": "published",
+    "sourceUrl": "https://1zpresso.coffee/wp-content/uploads/2023/03/K-Ultra-Grind-Setting-Reference-20230327.jpg",
+    "sourceLabel": "1Zpresso chart"
+  },
+  {
+    "grinderKey": "1zpresso-k-ultra",
+    "method": "aeropress",
+    "min": 50.0,
+    "max": 70.0,
+    "basis": "published",
+    "sourceUrl": "https://1zpresso.coffee/wp-content/uploads/2023/03/K-Ultra-Grind-Setting-Reference-20230327.jpg",
+    "sourceLabel": "1Zpresso chart"
+  },
+  {
+    "grinderKey": "1zpresso-j-ultra",
+    "method": "pourOver",
+    "min": 270.0,
+    "max": 330.0,
+    "basis": "published",
+    "sourceUrl": "https://1zpresso.coffee/wp-content/uploads/2023/11/J-Ultra-Grind-setting-reference-20231103-en.jpg",
+    "sourceLabel": "1Zpresso chart"
+  },
+  {
+    "grinderKey": "1zpresso-j-ultra",
+    "method": "espresso",
+    "min": 100.0,
+    "max": 170.0,
+    "basis": "published",
+    "sourceUrl": "https://1zpresso.coffee/wp-content/uploads/2023/11/J-Ultra-Grind-setting-reference-20231103-en.jpg",
+    "sourceLabel": "1Zpresso chart"
+  },
+  {
+    "grinderKey": "1zpresso-j-ultra",
+    "method": "frenchPress",
+    "min": 400.0,
+    "max": 440.0,
+    "basis": "published",
+    "sourceUrl": "https://1zpresso.coffee/wp-content/uploads/2023/11/J-Ultra-Grind-setting-reference-20231103-en.jpg",
+    "sourceLabel": "1Zpresso chart"
+  },
+  {
+    "grinderKey": "1zpresso-j-ultra",
+    "method": "aeropress",
+    "min": 200.0,
+    "max": 270.0,
+    "basis": "published",
+    "sourceUrl": "https://1zpresso.coffee/wp-content/uploads/2023/11/J-Ultra-Grind-setting-reference-20231103-en.jpg",
+    "sourceLabel": "1Zpresso chart"
+  },
+  {
+    "grinderKey": "1zpresso-x-ultra",
+    "method": "pourOver",
+    "min": 120.0,
+    "max": 160.0,
+    "basis": "published",
+    "sourceUrl": "https://1zpresso.coffee/wp-content/uploads/2023/08/X-Ultra-Grind-setting-reference-20230802.jpg",
+    "sourceLabel": "1Zpresso chart"
+  },
+  {
+    "grinderKey": "1zpresso-x-ultra",
+    "method": "espresso",
+    "min": 40.0,
+    "max": 70.0,
+    "basis": "published",
+    "sourceUrl": "https://1zpresso.coffee/wp-content/uploads/2023/08/X-Ultra-Grind-setting-reference-20230802.jpg",
+    "sourceLabel": "1Zpresso chart"
+  },
+  {
+    "grinderKey": "1zpresso-x-ultra",
+    "method": "frenchPress",
+    "min": 160.0,
+    "max": 190.0,
+    "basis": "published",
+    "sourceUrl": "https://1zpresso.coffee/wp-content/uploads/2023/08/X-Ultra-Grind-setting-reference-20230802.jpg",
+    "sourceLabel": "1Zpresso chart"
+  },
+  {
+    "grinderKey": "1zpresso-x-ultra",
+    "method": "aeropress",
+    "min": 70.0,
+    "max": 110.0,
+    "basis": "published",
+    "sourceUrl": "https://1zpresso.coffee/wp-content/uploads/2023/08/X-Ultra-Grind-setting-reference-20230802.jpg",
+    "sourceLabel": "1Zpresso chart"
+  },
+  {
+    "grinderKey": "1zpresso-zp6-special",
+    "method": "pourOver",
+    "min": 40.0,
+    "max": 50.0,
+    "basis": "published",
+    "sourceUrl": "https://1zpresso.coffee/wp-content/uploads/2022/10/ZP6-special-Grind-Setting-Reference-20221031.jpg",
+    "sourceLabel": "1Zpresso chart"
+  },
+  {
+    "grinderKey": "1zpresso-zp6-special",
+    "method": "frenchPress",
+    "min": 50.0,
+    "max": 60.0,
+    "basis": "published",
+    "sourceUrl": "https://1zpresso.coffee/wp-content/uploads/2022/10/ZP6-special-Grind-Setting-Reference-20221031.jpg",
+    "sourceLabel": "1Zpresso chart"
+  },
+  {
+    "grinderKey": "1zpresso-q",
+    "method": "pourOver",
+    "min": 54.0,
+    "max": 96.0,
+    "basis": "published",
+    "sourceUrl": "https://1zpresso.coffee/wp-content/uploads/2026/04/grind-setting_q_en_20260423.jpg",
+    "sourceLabel": "1Zpresso chart"
+  },
+  {
+    "grinderKey": "1zpresso-q",
+    "method": "frenchPress",
+    "min": 78.0,
+    "max": 114.0,
+    "basis": "published",
+    "sourceUrl": "https://1zpresso.coffee/wp-content/uploads/2026/04/grind-setting_q_en_20260423.jpg",
+    "sourceLabel": "1Zpresso chart"
+  },
+  {
+    "grinderKey": "1zpresso-q",
+    "method": "aeropress",
+    "min": 36.0,
+    "max": 60.0,
+    "basis": "published",
+    "sourceUrl": "https://1zpresso.coffee/wp-content/uploads/2026/04/grind-setting_q_en_20260423.jpg",
+    "sourceLabel": "1Zpresso chart"
+  },
+  {
+    "grinderKey": "1zpresso-q2",
+    "method": "pourOver",
+    "min": 54.0,
+    "max": 96.0,
+    "basis": "published",
+    "sourceUrl": "https://1zpresso.coffee/wp-content/uploads/2026/04/grind-setting_q_en_20260423.jpg",
+    "sourceLabel": "1Zpresso chart"
+  },
+  {
+    "grinderKey": "1zpresso-q2",
+    "method": "frenchPress",
+    "min": 78.0,
+    "max": 114.0,
+    "basis": "published",
+    "sourceUrl": "https://1zpresso.coffee/wp-content/uploads/2026/04/grind-setting_q_en_20260423.jpg",
+    "sourceLabel": "1Zpresso chart"
+  },
+  {
+    "grinderKey": "1zpresso-q2",
+    "method": "aeropress",
+    "min": 36.0,
+    "max": 60.0,
+    "basis": "published",
+    "sourceUrl": "https://1zpresso.coffee/wp-content/uploads/2026/04/grind-setting_q_en_20260423.jpg",
+    "sourceLabel": "1Zpresso chart"
+  },
+  {
+    "grinderKey": "1zpresso-q-air",
+    "method": "pourOver",
+    "min": 54.0,
+    "max": 96.0,
+    "basis": "published",
+    "sourceUrl": "https://1zpresso.coffee/wp-content/uploads/2026/04/grind-setting_q_en_20260423.jpg",
+    "sourceLabel": "1Zpresso chart"
+  },
+  {
+    "grinderKey": "1zpresso-q-air",
+    "method": "frenchPress",
+    "min": 78.0,
+    "max": 114.0,
+    "basis": "published",
+    "sourceUrl": "https://1zpresso.coffee/wp-content/uploads/2026/04/grind-setting_q_en_20260423.jpg",
+    "sourceLabel": "1Zpresso chart"
+  },
+  {
+    "grinderKey": "1zpresso-q-air",
+    "method": "aeropress",
+    "min": 36.0,
+    "max": 60.0,
+    "basis": "published",
+    "sourceUrl": "https://1zpresso.coffee/wp-content/uploads/2026/04/grind-setting_q_en_20260423.jpg",
+    "sourceLabel": "1Zpresso chart"
+  },
+  {
+    "grinderKey": "1zpresso-jx-pro",
+    "method": "pourOver",
+    "min": 128.0,
+    "max": 176.0,
+    "basis": "published",
+    "sourceUrl": "https://1zpresso.coffee/wp-content/uploads/2020/09/JX-Pro-Grind-Setting-Reference-20200909.jpg",
+    "sourceLabel": "1Zpresso chart"
+  },
+  {
+    "grinderKey": "1zpresso-jx-pro",
+    "method": "espresso",
+    "min": 48.0,
+    "max": 64.0,
+    "basis": "published",
+    "sourceUrl": "https://1zpresso.coffee/wp-content/uploads/2020/09/JX-Pro-Grind-Setting-Reference-20200909.jpg",
+    "sourceLabel": "1Zpresso chart"
+  },
+  {
+    "grinderKey": "1zpresso-jx-pro",
+    "method": "frenchPress",
+    "min": 168.0,
+    "max": 200.0,
+    "basis": "published",
+    "sourceUrl": "https://1zpresso.coffee/wp-content/uploads/2020/09/JX-Pro-Grind-Setting-Reference-20200909.jpg",
+    "sourceLabel": "1Zpresso chart"
+  },
+  {
+    "grinderKey": "1zpresso-jx-pro",
+    "method": "aeropress",
+    "min": 96.0,
+    "max": 120.0,
+    "basis": "published",
+    "sourceUrl": "https://1zpresso.coffee/wp-content/uploads/2020/09/JX-Pro-Grind-Setting-Reference-20200909.jpg",
+    "sourceLabel": "1Zpresso chart"
+  },
+  {
+    "grinderKey": "timemore-s3",
+    "method": "pourOver",
+    "min": 50.0,
+    "max": 80.0,
+    "basis": "published",
+    "sourceUrl": "https://www.timemore.com/products/timemore-manual-coffee-grinder-chestnut-s3",
+    "sourceLabel": "timemore.com"
+  },
+  {
+    "grinderKey": "timemore-s3",
+    "method": "espresso",
+    "min": 1.0,
+    "max": 15.0,
+    "basis": "published",
+    "sourceUrl": "https://www.timemore.com/products/timemore-manual-coffee-grinder-chestnut-s3",
+    "sourceLabel": "timemore.com"
+  },
+  {
+    "grinderKey": "timemore-s3",
+    "method": "frenchPress",
+    "min": 80.0,
+    "max": 90.0,
+    "basis": "published",
+    "sourceUrl": "https://www.timemore.com/products/timemore-manual-coffee-grinder-chestnut-s3",
+    "sourceLabel": "timemore.com"
+  },
+  {
+    "grinderKey": "baratza-encore",
+    "method": "pourOver",
+    "min": 15.0,
+    "max": 15.0,
+    "basis": "published",
+    "sourceUrl": "https://assets.breville.com/ZCG485/manual-encore-en-v4-3-120122.pdf",
+    "sourceLabel": "Baratza manual"
+  },
+  {
+    "grinderKey": "baratza-encore",
+    "method": "espresso",
+    "min": 8.0,
+    "max": 8.0,
+    "basis": "published",
+    "sourceUrl": "https://assets.breville.com/ZCG485/manual-encore-en-v4-3-120122.pdf",
+    "sourceLabel": "Baratza manual"
+  },
+  {
+    "grinderKey": "baratza-encore",
+    "method": "frenchPress",
+    "min": 28.0,
+    "max": 28.0,
+    "basis": "published",
+    "sourceUrl": "https://assets.breville.com/ZCG485/manual-encore-en-v4-3-120122.pdf",
+    "sourceLabel": "Baratza manual"
+  },
+  {
+    "grinderKey": "baratza-encore",
+    "method": "aeropress",
+    "min": 12.0,
+    "max": 12.0,
+    "basis": "published",
+    "sourceUrl": "https://assets.breville.com/ZCG485/manual-encore-en-v4-3-120122.pdf",
+    "sourceLabel": "Baratza manual"
+  },
+  {
+    "grinderKey": "baratza-encore-esp",
+    "method": "pourOver",
+    "min": 25.0,
+    "max": 25.0,
+    "basis": "published",
+    "sourceUrl": "https://assets.breville.com/ZCG495/manual-encoreesp-v1-0-en-010923.pdf",
+    "sourceLabel": "Baratza manual"
+  },
+  {
+    "grinderKey": "baratza-encore-esp",
+    "method": "espresso",
+    "min": 15.0,
+    "max": 15.0,
+    "basis": "published",
+    "sourceUrl": "https://assets.breville.com/ZCG495/manual-encoreesp-v1-0-en-010923.pdf",
+    "sourceLabel": "Baratza manual"
+  },
+  {
+    "grinderKey": "baratza-encore-esp",
+    "method": "frenchPress",
+    "min": 32.0,
+    "max": 32.0,
+    "basis": "published",
+    "sourceUrl": "https://assets.breville.com/ZCG495/manual-encoreesp-v1-0-en-010923.pdf",
+    "sourceLabel": "Baratza manual"
+  },
+  {
+    "grinderKey": "baratza-encore-esp",
+    "method": "aeropress",
+    "min": 22.0,
+    "max": 22.0,
+    "basis": "published",
+    "sourceUrl": "https://assets.breville.com/ZCG495/manual-encoreesp-v1-0-en-010923.pdf",
+    "sourceLabel": "Baratza manual"
+  },
+  {
+    "grinderKey": "baratza-virtuoso",
+    "method": "pourOver",
+    "min": 15.0,
+    "max": 15.0,
+    "basis": "published",
+    "sourceUrl": "https://assets.breville.com/ZCG587/manual-virtuosoplus-en-v1-6.pdf",
+    "sourceLabel": "Baratza manual"
+  },
+  {
+    "grinderKey": "baratza-virtuoso",
+    "method": "espresso",
+    "min": 8.0,
+    "max": 8.0,
+    "basis": "published",
+    "sourceUrl": "https://assets.breville.com/ZCG587/manual-virtuosoplus-en-v1-6.pdf",
+    "sourceLabel": "Baratza manual"
+  },
+  {
+    "grinderKey": "baratza-virtuoso",
+    "method": "frenchPress",
+    "min": 28.0,
+    "max": 28.0,
+    "basis": "published",
+    "sourceUrl": "https://assets.breville.com/ZCG587/manual-virtuosoplus-en-v1-6.pdf",
+    "sourceLabel": "Baratza manual"
+  },
+  {
+    "grinderKey": "baratza-virtuoso",
+    "method": "aeropress",
+    "min": 12.0,
+    "max": 12.0,
+    "basis": "published",
+    "sourceUrl": "https://assets.breville.com/ZCG587/manual-virtuosoplus-en-v1-6.pdf",
+    "sourceLabel": "Baratza manual"
+  },
+  {
+    "grinderKey": "fellow-ode-gen-2",
+    "method": "pourOver",
+    "min": 4.0,
+    "max": 8.0,
+    "basis": "published",
+    "sourceUrl": "https://help.fellowproducts.com/hc/article_attachments/9962224975259",
+    "sourceLabel": "Fellow chart"
+  },
+  {
+    "grinderKey": "fellow-ode-gen-2",
+    "method": "frenchPress",
+    "min": 8.0,
+    "max": 10.0,
+    "basis": "published",
+    "sourceUrl": "https://help.fellowproducts.com/hc/article_attachments/9962224975259",
+    "sourceLabel": "Fellow chart"
+  },
+  {
+    "grinderKey": "fellow-ode-gen-2",
+    "method": "aeropress",
+    "min": 3.0,
+    "max": 6.0,
+    "basis": "published",
+    "sourceUrl": "https://help.fellowproducts.com/hc/article_attachments/9962224975259",
+    "sourceLabel": "Fellow chart"
+  },
+  {
+    "grinderKey": "niche-zero",
+    "method": "pourOver",
+    "min": 35.0,
+    "max": 45.0,
+    "basis": "published",
+    "sourceUrl": "https://www.nichecoffee.co.uk/blogs/exploring-coffee/the-ultimate-grind-size-guide-for-niche-grinders",
+    "sourceLabel": "Niche guide"
+  },
+  {
+    "grinderKey": "niche-zero",
+    "method": "espresso",
+    "min": 5.0,
+    "max": 20.0,
+    "basis": "published",
+    "sourceUrl": "https://www.nichecoffee.co.uk/blogs/exploring-coffee/the-ultimate-grind-size-guide-for-niche-grinders",
+    "sourceLabel": "Niche guide"
+  },
+  {
+    "grinderKey": "niche-zero",
+    "method": "frenchPress",
+    "min": 45.0,
+    "max": 50.0,
+    "basis": "published",
+    "sourceUrl": "https://www.nichecoffee.co.uk/blogs/exploring-coffee/the-ultimate-grind-size-guide-for-niche-grinders",
+    "sourceLabel": "Niche guide"
+  },
+  {
+    "grinderKey": "niche-zero",
+    "method": "aeropress",
+    "min": 30.0,
+    "max": 35.0,
+    "basis": "published",
+    "sourceUrl": "https://www.nichecoffee.co.uk/blogs/exploring-coffee/the-ultimate-grind-size-guide-for-niche-grinders",
+    "sourceLabel": "Niche guide"
+  },
+  {
+    "grinderKey": "mahlkonig-x54",
+    "method": "pourOver",
+    "min": 15.0,
+    "max": 25.0,
+    "basis": "published",
+    "sourceUrl": "https://downloads.mahlkoenig.de/Service/Mahlkoenig_X54_Allround_Home_Grinder_Original_instruction_manual_EN.pdf",
+    "sourceLabel": "Mahlk\u00f6nig manual"
+  },
+  {
+    "grinderKey": "mahlkonig-x54",
+    "method": "espresso",
+    "min": 1.0,
+    "max": 5.0,
+    "basis": "published",
+    "sourceUrl": "https://downloads.mahlkoenig.de/Service/Mahlkoenig_X54_Allround_Home_Grinder_Original_instruction_manual_EN.pdf",
+    "sourceLabel": "Mahlk\u00f6nig manual"
+  },
+  {
+    "grinderKey": "mahlkonig-x54",
+    "method": "frenchPress",
+    "min": 25.0,
+    "max": 35.0,
+    "basis": "published",
+    "sourceUrl": "https://downloads.mahlkoenig.de/Service/Mahlkoenig_X54_Allround_Home_Grinder_Original_instruction_manual_EN.pdf",
+    "sourceLabel": "Mahlk\u00f6nig manual"
+  },
+  {
+    "grinderKey": "wilfa-uniform",
+    "method": "pourOver",
+    "min": 14.0,
+    "max": 28.0,
+    "basis": "published",
+    "sourceUrl": "https://wilfa.com/pages/uniform-wsfb-use",
+    "sourceLabel": "wilfa.com"
+  },
+  {
+    "grinderKey": "wilfa-uniform",
+    "method": "espresso",
+    "min": 3.0,
+    "max": 7.0,
+    "basis": "published",
+    "sourceUrl": "https://wilfa.com/pages/uniform-wsfb-use",
+    "sourceLabel": "wilfa.com"
+  },
+  {
+    "grinderKey": "wilfa-uniform",
+    "method": "frenchPress",
+    "min": 30.0,
+    "max": 38.0,
+    "basis": "published",
+    "sourceUrl": "https://wilfa.com/pages/uniform-wsfb-use",
+    "sourceLabel": "wilfa.com"
+  },
+  {
+    "grinderKey": "wilfa-uniform",
+    "method": "aeropress",
+    "min": 14.0,
+    "max": 26.0,
+    "basis": "published",
+    "sourceUrl": "https://wilfa.com/pages/uniform-wsfb-use",
+    "sourceLabel": "wilfa.com"
+  },
+  {
+    "grinderKey": "fellow-ode-gen-1",
+    "method": "pourOver",
+    "min": 2,
+    "max": 5,
+    "basis": "published",
+    "sourceUrl": "https://help.fellowproducts.com/hc/article_attachments/9962224975259",
+    "sourceLabel": "Fellow chart"
+  },
+  {
+    "grinderKey": "fellow-ode-gen-1",
+    "method": "frenchPress",
+    "min": 6,
+    "max": 10,
+    "basis": "published",
+    "sourceUrl": "https://help.fellowproducts.com/hc/article_attachments/9962224975259",
+    "sourceLabel": "Fellow chart"
+  },
+  {
+    "grinderKey": "niche-duo",
+    "method": "espresso",
+    "min": 0,
+    "max": 10,
+    "basis": "published",
+    "sourceUrl": "https://www.nichecoffee.co.uk/blogs/exploring-coffee/the-ultimate-grind-size-guide-for-niche-grinders",
+    "sourceLabel": "Niche guide"
+  },
+  {
+    "grinderKey": "niche-duo",
+    "method": "pourOver",
+    "min": 30,
+    "max": 45,
+    "basis": "published",
+    "sourceUrl": "https://www.nichecoffee.co.uk/blogs/exploring-coffee/the-ultimate-grind-size-guide-for-niche-grinders",
+    "sourceLabel": "Niche guide"
+  },
+  {
+    "grinderKey": "comandante-c40-mk4-nitro-blade",
+    "method": "moka",
+    "min": 14,
+    "max": 20,
+    "basis": "published",
+    "sourceUrl": "https://comandantegrinder.com/pages/faq",
+    "sourceLabel": "Comandante FAQ"
+  },
+  {
+    "grinderKey": "comandante-c40-mk3-nitro-blade",
+    "method": "moka",
+    "min": 14,
+    "max": 20,
+    "basis": "published",
+    "sourceUrl": "https://comandantegrinder.com/pages/faq",
+    "sourceLabel": "Comandante FAQ"
+  }
+]

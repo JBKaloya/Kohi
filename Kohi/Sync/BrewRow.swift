@@ -17,6 +17,7 @@ struct BrewRow: Codable, Sendable {
     var grind_grinder_id: UUID?
     var grind_value: Double?
     var grind_raw: String?
+    var grind_position: Int?
     var temperature: Double?
 
     var tds: Double?
@@ -31,7 +32,11 @@ struct BrewRow: Codable, Sendable {
     var agitation: String?
     var filter_id: UUID?
     var steps: [BrewStep]
+    var planned_steps: [BrewStep]?
+    var actual_source: String?
     var flow_gs: Double?
+    var recipe_name: String?
+    var pour_rates: [PourRate]?
     var taste: TasteProfile
     var legacy_taste: [String: Int]?
     var flavors: [String]
@@ -42,6 +47,7 @@ struct BrewRow: Codable, Sendable {
     var acidity: Int
     var bitterness: Int
     var body: Int
+    var complexity: Int?
 
     var notes: String
 
@@ -59,6 +65,7 @@ struct BrewRow: Codable, Sendable {
         self.grind_grinder_id = brew.grind.grinderId
         self.grind_value = brew.grind.value
         self.grind_raw = brew.grind.raw
+        self.grind_position = brew.grind.position
         self.temperature = brew.temperature
         self.tds = brew.tds
         self.rating = brew.rating
@@ -69,9 +76,13 @@ struct BrewRow: Codable, Sendable {
         self.equipment_ids = brew.equipmentIDs
         self.water_profile_id = brew.waterProfileID
         self.agitation = brew.agitation?.rawValue
-        self.filter_id = brew.filterId
+        self.filter_id = brew.filterStockId
         self.steps = brew.steps
+        self.planned_steps = brew.plannedSteps
+        self.actual_source = brew.actualSource.rawValue
         self.flow_gs = brew.flowGs
+        self.recipe_name = brew.recipeName
+        self.pour_rates = brew.pourRates
         self.taste = brew.taste
         self.legacy_taste = brew.legacyTaste
         self.flavors = brew.flavors.map(\.id)
@@ -81,6 +92,7 @@ struct BrewRow: Codable, Sendable {
         self.acidity = brew.acidity
         self.bitterness = brew.bitterness
         self.body = brew.body
+        self.complexity = brew.complexity
         self.notes = brew.notes
     }
 
@@ -88,7 +100,8 @@ struct BrewRow: Codable, Sendable {
         let setting = GrindSetting(
             grinderId: grind_grinder_id,
             value: grind_value,
-            raw: grind_raw ?? (grind.isEmpty ? nil : grind)
+            raw: grind_raw ?? (grind.isEmpty ? nil : grind),
+            position: grind_position
         )
         let tags: [FlavorTag]
         if let flavor_tags, !flavor_tags.isEmpty {
@@ -116,9 +129,14 @@ struct BrewRow: Codable, Sendable {
             equipmentIDs: equipment_ids,
             waterProfileID: water_profile_id,
             agitation: agitation.flatMap(Agitation.init(rawValue:)),
-            filterId: filter_id,
+            filterStockId: filter_id,
             steps: steps,
+            plannedSteps: planned_steps ?? [],
+            actualSource: actual_source.flatMap(ActualSource.init(rawValue:))
+                ?? (steps.isEmpty ? .none : .timer),
             flowGs: flow_gs,
+            recipeName: recipe_name,
+            pourRates: pour_rates ?? [],
             taste: taste,
             legacyTaste: legacy_taste,
             flavors: tags,
@@ -128,6 +146,7 @@ struct BrewRow: Codable, Sendable {
             acidity: acidity,
             bitterness: bitterness,
             body: body,
+            complexity: complexity,
             notes: notes
         )
     }

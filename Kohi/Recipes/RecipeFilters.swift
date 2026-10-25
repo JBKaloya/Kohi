@@ -18,7 +18,7 @@ nonisolated enum RoastBand: String, CaseIterable, Identifiable, Sendable {
 
     func matches(_ level: RoastLevel?) -> Bool {
         switch self {
-        case .light: level == .light || level == .mediumLight
+        case .light: level == .superLight || level == .light || level == .mediumLight
         case .medium: level == .medium
         case .dark: level == .mediumDark || level == .dark
         }
@@ -42,7 +42,7 @@ nonisolated enum RecipeMineSource: String, CaseIterable, Identifiable, Sendable 
 
     func matches(_ recipe: Recipe) -> Bool {
         switch self {
-        case .fromBrew: recipe.source == .mine && recipe.brewID != nil
+        case .fromBrew: recipe.source == .express || (recipe.source == .mine && recipe.brewID != nil)
         case .savedFromReference: recipe.source == .reference || recipe.referenceID != nil
         case .adapted: recipe.source == .adapted
         }

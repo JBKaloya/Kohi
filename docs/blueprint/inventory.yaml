@@ -1,0 +1,323 @@
+file:
+  name: Kohi Blueprint
+  key: kjMp5JEMr5xmZXlC3QYNEv
+  url: https://www.figma.com/design/kjMp5JEMr5xmZXlC3QYNEv
+  lastSyncedAt: 2026-09-19
+  lastSyncedGitSha: 03c448a
+  sync: 1
+  device: { width: 393, height: 852 }
+
+pages:
+  - { id: "0:1", name: "00 Cover" }
+  - { id: "1:24", name: "01 Tokens" }
+  - { id: "1:25", name: "02 Sitemap" }
+  - { id: "1:26", name: "03 Parcours" }
+  - { id: "1:27", name: "04 First coffee" }
+  - { id: "1:28", name: "05 Archive" }
+  - { id: "1:29", name: "06 Brew" }
+  - { id: "1:30", name: "07 Recipes" }
+  - { id: "1:31", name: "08 Profile" }
+  - { id: "6:751", name: "09 Prototype" }
+
+components:
+  - { id: "2:30", name: Chrome/Chip }
+  - { id: "2:33", name: Chrome/Row }
+  - { id: "2:37", name: Chrome/Nav }
+  - { id: "2:43", name: Chrome/Tabs }
+  - { id: "2:49", name: Chrome/FAB Scan }
+  - { id: "2:53", name: Chrome/FAB Cup }
+  - { id: "2:58", name: Chrome/Card object }
+
+variables:
+  paper: "VariableID:1:13"
+  paperShade: "VariableID:1:14"
+  ink: "VariableID:1:15"
+  inkMuted: "VariableID:1:16"
+  hairline: "VariableID:1:17"
+  scanBackdrop: "VariableID:1:18"
+  compareA: "VariableID:1:19"
+  compareB: "VariableID:1:20"
+  spacePage: "VariableID:1:21"
+  spaceRow: "VariableID:1:22"
+  labelCol: "VariableID:1:23"
+
+screens:
+  - id: empty-archive
+    figmaNodeId: "5:4"
+    page: "04 First coffee"
+    presentation: root
+    journeys: [J1, J2]
+    source:
+      - Kohi/Grid/EmptyStateView.swift
+      - Kohi/Grid/GridScreen.swift
+  - id: scan-coaching
+    figmaNodeId: "5:29"
+    page: "04 First coffee"
+    presentation: fullScreenCover
+    journeys: [J2, J5]
+    source:
+      - Kohi/Scan/ScanScreen.swift
+  - id: scan-denied
+    figmaNodeId: "5:40"
+    page: "04 First coffee"
+    presentation: fullScreenCover
+    journeys: [J2]
+    source:
+      - Kohi/Scan/ScanScreen.swift
+  - id: scan-review
+    figmaNodeId: "5:50"
+    page: "04 First coffee"
+    presentation: fullScreenCover
+    journeys: [J2, J5]
+    source:
+      - Kohi/Scan/ScanReviewScreen.swift
+  - id: new-card
+    figmaNodeId: "5:63"
+    page: "04 First coffee"
+    presentation: sheet
+    journeys: [J2]
+    source:
+      - Kohi/Edit/CardEditSheet.swift
+      - Kohi/App/RootView.swift
+  - id: setup-entry
+    figmaNodeId: "5:94"
+    page: "04 First coffee"
+    presentation: sheet
+    journeys: [J3]
+    source:
+      - Kohi/Setup/SetupFlowSheet.swift
+  - id: setup-brew
+    figmaNodeId: "5:110"
+    page: "04 First coffee"
+    presentation: sheet
+    journeys: [J3]
+    source:
+      - Kohi/Setup/SetupFlowSheet.swift
+  - id: setup-grind
+    figmaNodeId: "5:143"
+    page: "04 First coffee"
+    presentation: sheet
+    journeys: [J3]
+    source:
+      - Kohi/Setup/SetupFlowSheet.swift
+  - id: setup-water
+    figmaNodeId: "5:160"
+    page: "04 First coffee"
+    presentation: sheet
+    journeys: [J3]
+    source:
+      - Kohi/Setup/SetupFlowSheet.swift
+  - id: grid-3col
+    figmaNodeId: "6:4"
+    page: "05 Archive"
+    presentation: root
+    journeys: [J2, J4]
+    source:
+      - Kohi/Grid/GridScreen.swift
+  - id: grid-search
+    figmaNodeId: "6:63"
+    page: "05 Archive"
+    presentation: root
+    journeys: [J4]
+    source:
+      - Kohi/Grid/GridScreen.swift
+  - id: card-detail
+    figmaNodeId: "6:111"
+    page: "05 Archive"
+    presentation: push
+    journeys: [J4, J6, J8]
+    source:
+      - Kohi/Detail/CardDetailView.swift
+  - id: card-edit
+    figmaNodeId: "6:153"
+    page: "05 Archive"
+    presentation: sheet
+    journeys: [J4]
+    source:
+      - Kohi/Edit/CardEditSheet.swift
+  - id: place-search
+    figmaNodeId: "6:186"
+    page: "05 Archive"
+    presentation: sheet
+    journeys: [J4]
+    source:
+      - Kohi/Edit/PlaceSearchView.swift
+  - id: add-roaster
+    figmaNodeId: "6:204"
+    page: "05 Archive"
+    presentation: sheet
+    journeys: [J4]
+    source:
+      - Kohi/Edit/RoasterSheet.swift
+  - id: attachment
+    figmaNodeId: "6:229"
+    page: "05 Archive"
+    presentation: sheet
+    journeys: [J5]
+    source:
+      - Kohi/Detail/AttachmentDetailSheet.swift
+  - id: brew-scope
+    figmaNodeId: "6:242"
+    page: "06 Brew"
+    presentation: fullScreenCover
+    journeys: [J6, J7]
+    source:
+      - Kohi/Recipes/BrewScopeView.swift
+      - Kohi/Recipes/BrewFlowHost.swift
+  - id: brew-kit
+    figmaNodeId: "6:279"
+    page: "06 Brew"
+    presentation: fullScreenCover
+    journeys: [J6, J8]
+    source:
+      - Kohi/Recipes/BrewKitView.swift
+  - id: brew-dial
+    figmaNodeId: "6:306"
+    page: "06 Brew"
+    presentation: fullScreenCover
+    journeys: [J6]
+    source:
+      - Kohi/Recipes/BrewDialView.swift
+  - id: brew-dial-no-grinder
+    figmaNodeId: "6:343"
+    page: "06 Brew"
+    presentation: fullScreenCover
+    journeys: [J6]
+    flags: [no-grinder]
+    source:
+      - Kohi/Recipes/BrewDialView.swift
+  - id: guided-brew
+    figmaNodeId: "6:362"
+    page: "06 Brew"
+    presentation: fullScreenCover
+    journeys: [J6]
+    source:
+      - Kohi/Recipes/GuidedBrewView.swift
+  - id: brew-after
+    figmaNodeId: "6:373"
+    page: "06 Brew"
+    presentation: fullScreenCover
+    journeys: [J6, J8]
+    source:
+      - Kohi/Recipes/AfterBrewSheet.swift
+  - id: brew-compare
+    figmaNodeId: "6:407"
+    page: "06 Brew"
+    presentation: sheet
+    journeys: [J8]
+    flags: [brewCompare]
+    source:
+      - Kohi/Edit/BrewCompareSheet.swift
+  - id: recipes-suggested
+    figmaNodeId: "6:425"
+    page: "07 Recipes"
+    presentation: root
+    journeys: [J7, J9]
+    source:
+      - Kohi/Recipes/RecipesScreen.swift
+  - id: recipes-pros
+    figmaNodeId: "6:467"
+    page: "07 Recipes"
+    presentation: root
+    journeys: [J9]
+    source:
+      - Kohi/Recipes/RecipesScreen.swift
+  - id: recipes-mine-empty
+    figmaNodeId: "6:504"
+    page: "07 Recipes"
+    presentation: root
+    journeys: [J9]
+    source:
+      - Kohi/Recipes/RecipesScreen.swift
+  - id: recipe-filters
+    figmaNodeId: "6:534"
+    page: "07 Recipes"
+    presentation: sheet
+    journeys: [J9]
+    source:
+      - Kohi/Recipes/RecipeFilters.swift
+  - id: recipe-detail
+    figmaNodeId: "6:556"
+    page: "07 Recipes"
+    presentation: sheet
+    journeys: [J7, J9]
+    source:
+      - Kohi/Recipes/RecipeDetailSheet.swift
+  - id: coffee-picker
+    figmaNodeId: "6:580"
+    page: "07 Recipes"
+    presentation: sheet
+    journeys: [J7]
+    source:
+      - Kohi/Recipes/RecipeDetailSheet.swift
+  - id: ask-sheet
+    figmaNodeId: "6:598"
+    page: "07 Recipes"
+    presentation: sheet
+    journeys: [J11]
+    flags: [ask]
+    source:
+      - Kohi/AI/AskSheet.swift
+  - id: profile-kit
+    figmaNodeId: "6:611"
+    page: "08 Profile"
+    presentation: sheet
+    journeys: [J10]
+    source:
+      - Kohi/Setup/ProfileSheet.swift
+  - id: equipment-sheet
+    figmaNodeId: "6:651"
+    page: "08 Profile"
+    presentation: sheet
+    journeys: [J10]
+    source:
+      - Kohi/Setup/EquipmentSheet.swift
+  - id: filter-sheet
+    figmaNodeId: "6:673"
+    page: "08 Profile"
+    presentation: sheet
+    journeys: [J10]
+    source:
+      - Kohi/Setup/FilterSheet.swift
+  - id: water-sheet
+    figmaNodeId: "6:692"
+    page: "08 Profile"
+    presentation: sheet
+    journeys: [J10]
+    source:
+      - Kohi/Setup/WaterSheet.swift
+  - id: grind-converter
+    figmaNodeId: "6:714"
+    page: "08 Profile"
+    presentation: sheet
+    journeys: [J10]
+    source:
+      - Kohi/Setup/GrindConverterSheet.swift
+  - id: account-sheet
+    figmaNodeId: "6:730"
+    page: "08 Profile"
+    presentation: sheet
+    journeys: [J11]
+    source:
+      - Kohi/Sync/AccountSheet.swift
+
+journeys:
+  J1: Premier lancement
+  J2: Scanner une carte
+  J3: Setup kit
+  J4: Ouvrir / éditer une carte
+  J5: Pièces jointes
+  J6: Log a brew
+  J7: Brew depuis Recipes
+  J8: Deuxième café
+  J9: Explorer Recipes
+  J10: Profile / kit
+  J11: Ask · Account · Intents
+
+prototype:
+  page: "09 Prototype"
+  flows:
+    - name: J2 Scan a card
+      start: "6:752"
+    - name: J6 Log a brew
+      start: "6:912"

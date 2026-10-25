@@ -1,0 +1,3207 @@
+[
+  {
+    "slug": "feve",
+    "name": "Fève",
+    "country": "France",
+    "city": "",
+    "website": "https://feveparis.com",
+    "instagram": null,
+    "parisShopsServed": 41,
+    "ownShopIDs": [],
+    "aliases": [],
+    "sources": [
+      "specialtyCoffeeParis"
+    ],
+    "status": "à vérifier (specialtycoffee.paris)",
+    "note": "",
+    "fetchedAt": "2026-10-01"
+  },
+  {
+    "slug": "lomi",
+    "name": "Lomi",
+    "country": "France",
+    "city": "Paris",
+    "website": "https://lomi.cafe",
+    "instagram": null,
+    "parisShopsServed": 34,
+    "ownShopIDs": [
+      "lomi"
+    ],
+    "aliases": [],
+    "sources": [
+      "specialtyCoffeeParis",
+      "annexeD"
+    ],
+    "status": "partiel (deux sources)",
+    "note": "",
+    "fetchedAt": "2026-10-01"
+  },
+  {
+    "slug": "coutume",
+    "name": "Coutume",
+    "country": "France",
+    "city": "Paris",
+    "website": "https://www.coutumecafe.com",
+    "instagram": null,
+    "parisShopsServed": 31,
+    "ownShopIDs": [
+      "cafe-la-procure-x-coutume",
+      "coutume-x-julhes",
+      "coutume-rue-de-passy",
+      "coutume-rue-du-faubourg-poissonniere",
+      "coutume-hotel-mathis",
+      "coutume-rue-de-babylone",
+      "coutume-galeries-lafayette"
+    ],
+    "aliases": [],
+    "sources": [
+      "specialtyCoffeeParis",
+      "annexeD"
+    ],
+    "status": "partiel (deux sources)",
+    "note": "",
+    "fetchedAt": "2026-10-01"
+  },
+  {
+    "slug": "tanat",
+    "name": "Tanat",
+    "country": "France",
+    "city": "Paris",
+    "website": "https://tanat.coffee",
+    "instagram": null,
+    "parisShopsServed": 31,
+    "ownShopIDs": [
+      "tanat-archives",
+      "tanat-victoria",
+      "tanat-chateau-deau",
+      "tanat-tiquetonne"
+    ],
+    "aliases": [
+      "Tanat (ex-Kawa)"
+    ],
+    "sources": [
+      "specialtyCoffeeParis",
+      "annexeD"
+    ],
+    "status": "partiel (deux sources)",
+    "note": "",
+    "fetchedAt": "2026-10-01"
+  },
+  {
+    "slug": "belleville-brulerie",
+    "name": "Belleville Brûlerie",
+    "country": "France",
+    "city": "Paris",
+    "website": "https://cafesbelleville.com",
+    "instagram": null,
+    "parisShopsServed": 28,
+    "ownShopIDs": [
+      "belleville-brulerie-paris"
+    ],
+    "aliases": [],
+    "sources": [
+      "specialtyCoffeeParis",
+      "annexeD"
+    ],
+    "status": "partiel (deux sources)",
+    "note": "",
+    "fetchedAt": "2026-10-01"
+  },
+  {
+    "slug": "noir",
+    "name": "Noir",
+    "country": "France",
+    "city": "Paris",
+    "website": "https://noircoffeeshop.com",
+    "instagram": null,
+    "parisShopsServed": 21,
+    "ownShopIDs": [
+      "noir-rue-de-grenelle",
+      "noir-rue-des-trois-freres",
+      "noir-rue-richer",
+      "noir-boulevard-haussman",
+      "noir-rue-gustave-courbet",
+      "noir-coffee-shop-and-torrefacteur",
+      "noir-saint-augustin",
+      "noir-ile-saint-louis",
+      "noir-rue-de-clery",
+      "noir-rue-de-luynes",
+      "noir-rue-legendre",
+      "noir-rue-des-blancs-manteaux",
+      "noir-rue-du-boccador",
+      "noir-rue-soufflot",
+      "noir-rue-de-londres",
+      "noir-rue-saint-florentin",
+      "noir-avenue-mozart",
+      "noir-rue-monge",
+      "noir-avenue-kleber",
+      "noir-rue-de-passy"
+    ],
+    "aliases": [
+      "Noir Torréfacteur"
+    ],
+    "sources": [
+      "specialtyCoffeeParis",
+      "annexeD"
+    ],
+    "status": "partiel (deux sources)",
+    "note": "",
+    "fetchedAt": "2026-10-01"
+  },
+  {
+    "slug": "the-coffee",
+    "name": "The Coffee",
+    "country": "Brazil",
+    "city": "Paris",
+    "website": "https://thecoffee.jp",
+    "instagram": null,
+    "parisShopsServed": 20,
+    "ownShopIDs": [
+      "the-coffee-rue-saint-gilles",
+      "the-coffee-rue-mazarine",
+      "the-coffee-rue-gonnet",
+      "the-coffee-rue-du-cardinal-lemoine",
+      "the-coffee-saint-lazare",
+      "the-coffee-martyrs",
+      "the-coffee-rue-de-vaugirard",
+      "the-coffee-boulevard-de-grenelle",
+      "the-coffee-rue-des-gravilliers",
+      "the-coffee-rue-de-la-sorbonne",
+      "the-coffee-rue-delambre",
+      "the-coffee-rue-saint-honore",
+      "the-coffee-rue-la-feuillade",
+      "the-coffee-quai-de-la-tournelle",
+      "the-coffee-rue-yvonne-le-tac",
+      "the-coffee-rue-pierre-demours",
+      "the-coffee-rue-saint-placide",
+      "the-coffee-rue-saint-dominique",
+      "the-coffee-poissonniere",
+      "the-coffee-cite-du-wauxhall"
+    ],
+    "aliases": [],
+    "sources": [
+      "specialtyCoffeeParis"
+    ],
+    "status": "à vérifier (specialtycoffee.paris)",
+    "note": "chaîne (The Coffee, origine brésilienne) — spécialité à confirmer",
+    "fetchedAt": "2026-10-01"
+  },
+  {
+    "slug": "arbre-a-cafe",
+    "name": "L'Arbre à Café",
+    "country": "France",
+    "city": "Paris",
+    "website": "https://www.larbreacafe.com",
+    "instagram": null,
+    "parisShopsServed": 19,
+    "ownShopIDs": [
+      "larbre-a-cafe-rue-du-nil",
+      "larbre-a-cafe-rue-des-martyrs",
+      "larbre-a-cafe-oberkampf",
+      "larbre-a-cafe-le-bon-marche",
+      "larbre-a-cafe-odeon"
+    ],
+    "aliases": [],
+    "sources": [
+      "specialtyCoffeeParis",
+      "annexeD"
+    ],
+    "status": "partiel (deux sources)",
+    "note": "",
+    "fetchedAt": "2026-10-01"
+  },
+  {
+    "slug": "terres-de-cafe",
+    "name": "Terres de café",
+    "country": "France",
+    "city": "Paris",
+    "website": "https://www.terresdecafe.com/fr",
+    "instagram": null,
+    "parisShopsServed": 16,
+    "ownShopIDs": [
+      "terres-de-cafe-saint-germain-des-pres",
+      "terres-de-cafe-blancs-manteaux",
+      "terres-de-cafe-daguerre",
+      "terres-de-cafe-17",
+      "terres-de-cafe-saint-honore",
+      "terres-de-cafe-bourdonnais",
+      "terres-de-cafe-tiquetonne",
+      "terres-de-cafe-boulevard-beaumarchais",
+      "terres-de-cafe-rambuteau"
+    ],
+    "aliases": [
+      "Terres de Café"
+    ],
+    "sources": [
+      "specialtyCoffeeParis",
+      "annexeD"
+    ],
+    "status": "partiel (deux sources)",
+    "note": "",
+    "fetchedAt": "2026-10-01"
+  },
+  {
+    "slug": "mojo-coffee-club",
+    "name": "Mojo Coffee Club",
+    "country": "France",
+    "city": "",
+    "website": "https://www.mojocoffeeclub.com",
+    "instagram": null,
+    "parisShopsServed": 16,
+    "ownShopIDs": [],
+    "aliases": [],
+    "sources": [
+      "specialtyCoffeeParis"
+    ],
+    "status": "à vérifier (specialtycoffee.paris)",
+    "note": "",
+    "fetchedAt": "2026-10-01"
+  },
+  {
+    "slug": "plural",
+    "name": "Plural",
+    "country": "France",
+    "city": "",
+    "website": "https://www.pluralcafe.fr",
+    "instagram": null,
+    "parisShopsServed": 14,
+    "ownShopIDs": [],
+    "aliases": [],
+    "sources": [
+      "specialtyCoffeeParis"
+    ],
+    "status": "à vérifier (specialtycoffee.paris)",
+    "note": "",
+    "fetchedAt": "2026-10-01"
+  },
+  {
+    "slug": "dose",
+    "name": "Dose",
+    "country": "France",
+    "city": "Paris",
+    "website": "https://dose.paris",
+    "instagram": null,
+    "parisShopsServed": 9,
+    "ownShopIDs": [
+      "cafe-dose-faubourg-st-denis",
+      "cafe-dose-paris-lamarck",
+      "cafe-dose-batignolles",
+      "cafe-dose-paris-jules-joffrin"
+    ],
+    "aliases": [],
+    "sources": [
+      "specialtyCoffeeParis"
+    ],
+    "status": "à vérifier (specialtycoffee.paris)",
+    "note": "",
+    "fetchedAt": "2026-10-01"
+  },
+  {
+    "slug": "kb",
+    "name": "KB",
+    "country": "France",
+    "city": "Paris",
+    "website": "https://kbcoffeeroasters.com",
+    "instagram": null,
+    "parisShopsServed": 9,
+    "ownShopIDs": [
+      "kb-cafeshop"
+    ],
+    "aliases": [
+      "KB Coffee Roasters"
+    ],
+    "sources": [
+      "specialtyCoffeeParis",
+      "annexeD"
+    ],
+    "status": "partiel (deux sources)",
+    "note": "",
+    "fetchedAt": "2026-10-01"
+  },
+  {
+    "slug": "ten-belles",
+    "name": "Ten Belles",
+    "country": "France",
+    "city": "Paris",
+    "website": "https://www.tenbelles.com",
+    "instagram": null,
+    "parisShopsServed": 8,
+    "ownShopIDs": [
+      "ten-belles-rue-de-la-grange-aux-belles",
+      "ten-belles-rue-breguet",
+      "ten-belles-rue-du-cherche-midi"
+    ],
+    "aliases": [],
+    "sources": [
+      "specialtyCoffeeParis",
+      "annexeD"
+    ],
+    "status": "partiel (deux sources)",
+    "note": "",
+    "fetchedAt": "2026-10-01"
+  },
+  {
+    "slug": "friedhats",
+    "name": "Friedhats",
+    "country": "Netherlands",
+    "city": "Amsterdam",
+    "website": "https://friedhats.com",
+    "instagram": null,
+    "parisShopsServed": 8,
+    "ownShopIDs": [],
+    "aliases": [],
+    "sources": [
+      "specialtyCoffeeParis",
+      "annexeD"
+    ],
+    "status": "partiel (deux sources)",
+    "note": "",
+    "fetchedAt": "2026-10-01"
+  },
+  {
+    "slug": "mokxa",
+    "name": "Mokxa",
+    "country": "France",
+    "city": "Lyon",
+    "website": "https://www.cafemokxa.com",
+    "instagram": null,
+    "parisShopsServed": 8,
+    "ownShopIDs": [],
+    "aliases": [],
+    "sources": [
+      "specialtyCoffeeParis",
+      "annexeD"
+    ],
+    "status": "partiel (deux sources)",
+    "note": "",
+    "fetchedAt": "2026-10-01"
+  },
+  {
+    "slug": "dak",
+    "name": "Dak",
+    "country": "Netherlands",
+    "city": "Amsterdam",
+    "website": "https://www.dakcoffeeroasters.com",
+    "instagram": null,
+    "parisShopsServed": 8,
+    "ownShopIDs": [],
+    "aliases": [
+      "DAK"
+    ],
+    "sources": [
+      "specialtyCoffeeParis",
+      "annexeD"
+    ],
+    "status": "partiel (deux sources)",
+    "note": "",
+    "fetchedAt": "2026-10-01"
+  },
+  {
+    "slug": "cuvee-noire",
+    "name": "Cuvée Noire",
+    "country": "France",
+    "city": "Paris",
+    "website": "https://cuveenoire.com",
+    "instagram": null,
+    "parisShopsServed": 7,
+    "ownShopIDs": [
+      "cuvee-noire-chatelet",
+      "cuvee-noire-bastille-coffee-shop",
+      "cuvee-noire-madeleine",
+      "cuvee-noire-petits-carreaux",
+      "cuvee-noire-saint-michel-coffee-shop",
+      "cuvee-noire-saint-lazare",
+      "cuvee-noire-martyrs",
+      "cuvee-noire-faubourg-saint-antoine-coffee-shop",
+      "cuvee-noire-colisee-coffee-shop"
+    ],
+    "aliases": [],
+    "sources": [
+      "specialtyCoffeeParis"
+    ],
+    "status": "à vérifier (specialtycoffee.paris)",
+    "note": "",
+    "fetchedAt": "2026-10-01"
+  },
+  {
+    "slug": "the-beans-on-fire",
+    "name": "The Beans on Fire",
+    "country": "France",
+    "city": "Paris",
+    "website": "https://thebeansonfire.com",
+    "instagram": null,
+    "parisShopsServed": 6,
+    "ownShopIDs": [
+      "the-beans-on-fire-rue-des-trois-freres",
+      "the-beans-on-fire-boulevard-de-strasbourg",
+      "the-beans-on-fire-general-blaise"
+    ],
+    "aliases": [],
+    "sources": [
+      "specialtyCoffeeParis",
+      "annexeD"
+    ],
+    "status": "partiel (deux sources)",
+    "note": "",
+    "fetchedAt": "2026-10-01"
+  },
+  {
+    "slug": "muda",
+    "name": "Muda",
+    "country": "France",
+    "city": "",
+    "website": "https://cafesmuda.fr",
+    "instagram": null,
+    "parisShopsServed": 6,
+    "ownShopIDs": [],
+    "aliases": [],
+    "sources": [
+      "specialtyCoffeeParis"
+    ],
+    "status": "à vérifier (specialtycoffee.paris)",
+    "note": "",
+    "fetchedAt": "2026-10-01"
+  },
+  {
+    "slug": "loutsa",
+    "name": "Loutsa",
+    "country": "France",
+    "city": "Paris",
+    "website": "https://www.loutsa.fr",
+    "instagram": null,
+    "parisShopsServed": 5,
+    "ownShopIDs": [
+      "loutsa-passage-jouffroy",
+      "loutsa-torrefacteur-paris-marche-des-ternes",
+      "loutsa-rue-de-bazeilles"
+    ],
+    "aliases": [],
+    "sources": [
+      "specialtyCoffeeParis"
+    ],
+    "status": "à vérifier (specialtycoffee.paris)",
+    "note": "",
+    "fetchedAt": "2026-10-01"
+  },
+  {
+    "slug": "araku",
+    "name": "Araku",
+    "country": "France",
+    "city": "Paris",
+    "website": "https://www.arakucoffee.com",
+    "instagram": null,
+    "parisShopsServed": 5,
+    "ownShopIDs": [
+      "araku-coffee-rue-ferdinant-flocon",
+      "araku-coffee",
+      "araku-coffee-rue-de-prague",
+      "araku-coffee-rue-soufflot"
+    ],
+    "aliases": [],
+    "sources": [
+      "specialtyCoffeeParis"
+    ],
+    "status": "à vérifier (specialtycoffee.paris)",
+    "note": "",
+    "fetchedAt": "2026-10-01"
+  },
+  {
+    "slug": "torre",
+    "name": "Torré",
+    "country": "France",
+    "city": "Paris",
+    "website": "https://www.instagram.com/torrecoffeeshop.paris",
+    "instagram": "@torrecoffeeshop.paris",
+    "parisShopsServed": 4,
+    "ownShopIDs": [
+      "torre-tour-maubourg",
+      "torre-rue-yvonne-le-tac",
+      "torre-rue-la-fayette",
+      "torre-boulevard-de-courcelles"
+    ],
+    "aliases": [],
+    "sources": [
+      "specialtyCoffeeParis"
+    ],
+    "status": "à vérifier (specialtycoffee.paris)",
+    "note": "",
+    "fetchedAt": "2026-10-01"
+  },
+  {
+    "slug": "datura",
+    "name": "Datura",
+    "country": "France",
+    "city": "",
+    "website": "https://daturacoffee.com",
+    "instagram": null,
+    "parisShopsServed": 4,
+    "ownShopIDs": [],
+    "aliases": [],
+    "sources": [
+      "specialtyCoffeeParis"
+    ],
+    "status": "à vérifier (specialtycoffee.paris)",
+    "note": "",
+    "fetchedAt": "2026-10-01"
+  },
+  {
+    "slug": "people-possession",
+    "name": "People Possession",
+    "country": "France",
+    "city": "",
+    "website": "https://peoplepossession.com",
+    "instagram": null,
+    "parisShopsServed": 4,
+    "ownShopIDs": [],
+    "aliases": [],
+    "sources": [
+      "specialtyCoffeeParis"
+    ],
+    "status": "à vérifier (specialtycoffee.paris)",
+    "note": "",
+    "fetchedAt": "2026-10-01"
+  },
+  {
+    "slug": "cafe-nuances",
+    "name": "Café Nuances",
+    "country": "France",
+    "city": "Paris",
+    "website": "https://cafenuances.com",
+    "instagram": null,
+    "parisShopsServed": 4,
+    "ownShopIDs": [
+      "cafe-nuances-rue-danielle-casanova",
+      "cafe-nuances-rue-de-la-tremoille",
+      "cafe-nuances-marais",
+      "cafe-nuances-saint-germain-des-pres"
+    ],
+    "aliases": [],
+    "sources": [
+      "specialtyCoffeeParis"
+    ],
+    "status": "à vérifier (specialtycoffee.paris)",
+    "note": "",
+    "fetchedAt": "2026-10-01"
+  },
+  {
+    "slug": "blondie",
+    "name": "Blondie",
+    "country": "France",
+    "city": "Paris",
+    "website": "https://cafeblondie.com",
+    "instagram": null,
+    "parisShopsServed": 4,
+    "ownShopIDs": [
+      "blondie-rue-saint-georges",
+      "blondie-rue-louis-murat",
+      "blondie-rue-du-chateau-deau",
+      "blondie-rue-du-bac"
+    ],
+    "aliases": [],
+    "sources": [
+      "specialtyCoffeeParis"
+    ],
+    "status": "à vérifier (specialtycoffee.paris)",
+    "note": "",
+    "fetchedAt": "2026-10-01"
+  },
+  {
+    "slug": "terrah",
+    "name": "Terrah",
+    "country": "France",
+    "city": "Paris",
+    "website": "https://terrah.co",
+    "instagram": null,
+    "parisShopsServed": 3,
+    "ownShopIDs": [
+      "terrah-or-coffee-shop-and-roasters"
+    ],
+    "aliases": [],
+    "sources": [
+      "specialtyCoffeeParis"
+    ],
+    "status": "à vérifier (specialtycoffee.paris)",
+    "note": "",
+    "fetchedAt": "2026-10-01"
+  },
+  {
+    "slug": "la-cabra",
+    "name": "La Cabra",
+    "country": "Denmark",
+    "city": "Aarhus / Copenhague",
+    "website": "https://lacabra.com",
+    "instagram": null,
+    "parisShopsServed": 3,
+    "ownShopIDs": [],
+    "aliases": [],
+    "sources": [
+      "specialtyCoffeeParis",
+      "annexeD"
+    ],
+    "status": "partiel (deux sources)",
+    "note": "",
+    "fetchedAt": "2026-10-01"
+  },
+  {
+    "slug": "hexagone",
+    "name": "Hexagone",
+    "country": "France",
+    "city": "Paris",
+    "website": "https://hexagone-cafe.fr",
+    "instagram": null,
+    "parisShopsServed": 3,
+    "ownShopIDs": [
+      "hexagone-cafe"
+    ],
+    "aliases": [
+      "Hexagone Café"
+    ],
+    "sources": [
+      "specialtyCoffeeParis",
+      "annexeD"
+    ],
+    "status": "partiel (deux sources)",
+    "note": "",
+    "fetchedAt": "2026-10-01"
+  },
+  {
+    "slug": "hanoi-corner",
+    "name": "Hanoï Corner",
+    "country": "France",
+    "city": "",
+    "website": "https://boutique.hanoicorner.fr",
+    "instagram": null,
+    "parisShopsServed": 3,
+    "ownShopIDs": [],
+    "aliases": [],
+    "sources": [
+      "specialtyCoffeeParis"
+    ],
+    "status": "à vérifier (specialtycoffee.paris)",
+    "note": "",
+    "fetchedAt": "2026-10-01"
+  },
+  {
+    "slug": "certified",
+    "name": "Certified",
+    "country": "France",
+    "city": "Paris",
+    "website": "https://www.certified.cafe",
+    "instagram": null,
+    "parisShopsServed": 3,
+    "ownShopIDs": [
+      "certified-cafe-beaupassage",
+      "certified-cafe-panorama"
+    ],
+    "aliases": [],
+    "sources": [
+      "specialtyCoffeeParis"
+    ],
+    "status": "à vérifier (specialtycoffee.paris)",
+    "note": "",
+    "fetchedAt": "2026-10-01"
+  },
+  {
+    "slug": "coeur-coffee",
+    "name": "Cœur Coffee",
+    "country": "France",
+    "city": "Paris",
+    "website": null,
+    "instagram": null,
+    "parisShopsServed": 3,
+    "ownShopIDs": [
+      "coeur-coffee-roasters-rue-ravignan",
+      "coeur-coffee-roasters-rue-daunou"
+    ],
+    "aliases": [],
+    "sources": [
+      "specialtyCoffeeParis"
+    ],
+    "status": "à vérifier (specialtycoffee.paris)",
+    "note": "pas de site sur la source",
+    "fetchedAt": "2026-10-01"
+  },
+  {
+    "slug": "manhattan-coffee-roasters",
+    "name": "Manhattan Coffee Roasters",
+    "country": "Netherlands",
+    "city": "Rotterdam",
+    "website": "https://manhattancoffeeroasters.com",
+    "instagram": null,
+    "parisShopsServed": 3,
+    "ownShopIDs": [],
+    "aliases": [
+      "Manhattan"
+    ],
+    "sources": [
+      "specialtyCoffeeParis",
+      "annexeD"
+    ],
+    "status": "partiel (deux sources)",
+    "note": "",
+    "fetchedAt": "2026-10-01"
+  },
+  {
+    "slug": "partisan",
+    "name": "Partisan",
+    "country": "France",
+    "city": "Paris",
+    "website": "https://www.parispartisancafe.com",
+    "instagram": null,
+    "parisShopsServed": 2,
+    "ownShopIDs": [
+      "partisan-cafe-artisanal"
+    ],
+    "aliases": [
+      "Partisan Café Artisanal"
+    ],
+    "sources": [
+      "specialtyCoffeeParis",
+      "annexeD"
+    ],
+    "status": "partiel (deux sources)",
+    "note": "",
+    "fetchedAt": "2026-10-01"
+  },
+  {
+    "slug": "cafe-kitsune",
+    "name": "Café Kitsuné",
+    "country": "France",
+    "city": "Paris",
+    "website": "https://maisonkitsune.com/mk/fr/roastery",
+    "instagram": null,
+    "parisShopsServed": 2,
+    "ownShopIDs": [
+      "cafe-kitsune-opera",
+      "cafe-kitsune-louvre",
+      "cafe-kitsune-vertbois"
+    ],
+    "aliases": [],
+    "sources": [
+      "specialtyCoffeeParis",
+      "annexeD"
+    ],
+    "status": "partiel (deux sources)",
+    "note": "",
+    "fetchedAt": "2026-10-01"
+  },
+  {
+    "slug": "drop-coffee-roasters",
+    "name": "Drop Coffee Roasters",
+    "country": "Sweden",
+    "city": "Stockholm",
+    "website": "https://www.dropcoffee.com",
+    "instagram": null,
+    "parisShopsServed": 2,
+    "ownShopIDs": [],
+    "aliases": [
+      "Drop Coffee"
+    ],
+    "sources": [
+      "specialtyCoffeeParis",
+      "annexeD"
+    ],
+    "status": "partiel (deux sources)",
+    "note": "",
+    "fetchedAt": "2026-10-01"
+  },
+  {
+    "slug": "cayo",
+    "name": "Cayo Coffee Roasters",
+    "country": "France",
+    "city": "Paris",
+    "website": "https://www.cafecayo.fr",
+    "instagram": null,
+    "parisShopsServed": 2,
+    "ownShopIDs": [
+      "cafe-cayo"
+    ],
+    "aliases": [],
+    "sources": [
+      "specialtyCoffeeParis"
+    ],
+    "status": "à vérifier (specialtycoffee.paris)",
+    "note": "",
+    "fetchedAt": "2026-10-01"
+  },
+  {
+    "slug": "gramgram",
+    "name": "GramGram",
+    "country": "France",
+    "city": "",
+    "website": "https://gramgram.fr",
+    "instagram": null,
+    "parisShopsServed": 2,
+    "ownShopIDs": [],
+    "aliases": [],
+    "sources": [
+      "specialtyCoffeeParis"
+    ],
+    "status": "à vérifier (specialtycoffee.paris)",
+    "note": "",
+    "fetchedAt": "2026-10-01"
+  },
+  {
+    "slug": "city-of-light",
+    "name": "City of Light",
+    "country": "France",
+    "city": "Paris",
+    "website": "https://www.instagram.com/cityoflight.coffee",
+    "instagram": "@cityoflight.coffee",
+    "parisShopsServed": 2,
+    "ownShopIDs": [
+      "city-of-light-rue-malher",
+      "city-of-light-boissy-danglas"
+    ],
+    "aliases": [],
+    "sources": [
+      "specialtyCoffeeParis"
+    ],
+    "status": "à vérifier (specialtycoffee.paris)",
+    "note": "",
+    "fetchedAt": "2026-10-01"
+  },
+  {
+    "slug": "espeletia",
+    "name": "Espeletia",
+    "country": "France",
+    "city": "Paris",
+    "website": "https://www.instagram.com/espeletiacafe",
+    "instagram": "@espeletiacafe",
+    "parisShopsServed": 2,
+    "ownShopIDs": [
+      "espeletia-cafe-coffee-roaster"
+    ],
+    "aliases": [],
+    "sources": [
+      "specialtyCoffeeParis"
+    ],
+    "status": "à vérifier (specialtycoffee.paris)",
+    "note": "",
+    "fetchedAt": "2026-10-01"
+  },
+  {
+    "slug": "parlor-coffee",
+    "name": "Parlor Coffee",
+    "country": "United States",
+    "city": "",
+    "website": "https://parlorcoffee.com",
+    "instagram": null,
+    "parisShopsServed": 2,
+    "ownShopIDs": [],
+    "aliases": [],
+    "sources": [
+      "specialtyCoffeeParis"
+    ],
+    "status": "à vérifier (specialtycoffee.paris)",
+    "note": "",
+    "fetchedAt": "2026-10-01"
+  },
+  {
+    "slug": "right-side",
+    "name": "Right Side",
+    "country": "Spain",
+    "city": "Barcelone",
+    "website": "https://www.rightsidecoffee.com",
+    "instagram": null,
+    "parisShopsServed": 2,
+    "ownShopIDs": [],
+    "aliases": [],
+    "sources": [
+      "specialtyCoffeeParis",
+      "annexeD"
+    ],
+    "status": "partiel (deux sources)",
+    "note": "",
+    "fetchedAt": "2026-10-01"
+  },
+  {
+    "slug": "brulerie-des-gobelins",
+    "name": "Brûlerie des Gobelins",
+    "country": "France",
+    "city": "",
+    "website": "https://www.bruleriedesgobelins.fr",
+    "instagram": null,
+    "parisShopsServed": 2,
+    "ownShopIDs": [],
+    "aliases": [],
+    "sources": [
+      "specialtyCoffeeParis"
+    ],
+    "status": "à vérifier (specialtycoffee.paris)",
+    "note": "",
+    "fetchedAt": "2026-10-01"
+  },
+  {
+    "slug": "los-andes",
+    "name": "Los Andes",
+    "country": "France",
+    "city": "Paris",
+    "website": "https://www.losandescoffee.com",
+    "instagram": null,
+    "parisShopsServed": 2,
+    "ownShopIDs": [
+      "los-andes-coffee",
+      "los-andes-rue-notre-dame-de-lorette"
+    ],
+    "aliases": [],
+    "sources": [
+      "specialtyCoffeeParis"
+    ],
+    "status": "à vérifier (specialtycoffee.paris)",
+    "note": "",
+    "fetchedAt": "2026-10-01"
+  },
+  {
+    "slug": "assembly",
+    "name": "Assembly",
+    "country": "United Kingdom",
+    "city": "Londres",
+    "website": "https://assemblycoffee.co.uk",
+    "instagram": null,
+    "parisShopsServed": 2,
+    "ownShopIDs": [],
+    "aliases": [],
+    "sources": [
+      "specialtyCoffeeParis",
+      "annexeD"
+    ],
+    "status": "partiel (deux sources)",
+    "note": "",
+    "fetchedAt": "2026-10-01"
+  },
+  {
+    "slug": "shokunin",
+    "name": "Shokunin",
+    "country": "Netherlands",
+    "city": "",
+    "website": "https://shokunin.coffee",
+    "instagram": null,
+    "parisShopsServed": 2,
+    "ownShopIDs": [],
+    "aliases": [],
+    "sources": [
+      "specialtyCoffeeParis"
+    ],
+    "status": "à vérifier (specialtycoffee.paris)",
+    "note": "",
+    "fetchedAt": "2026-10-01"
+  },
+  {
+    "slug": "kalve",
+    "name": "Kalve",
+    "country": "Latvia",
+    "city": "Paris",
+    "website": "https://kalvecoffee.com",
+    "instagram": null,
+    "parisShopsServed": 2,
+    "ownShopIDs": [
+      "kalve-caumartin",
+      "kalve-desaix"
+    ],
+    "aliases": [],
+    "sources": [
+      "specialtyCoffeeParis"
+    ],
+    "status": "à vérifier (specialtycoffee.paris)",
+    "note": "",
+    "fetchedAt": "2026-10-01"
+  },
+  {
+    "slug": "plaine-cafe",
+    "name": "Plaine Café",
+    "country": "France",
+    "city": "Paris",
+    "website": "https://plainecafe.com",
+    "instagram": null,
+    "parisShopsServed": 2,
+    "ownShopIDs": [
+      "plaine-cafe",
+      "plaine-cafe-or-torrefacteur-de-cafe-de-specialite-printemps"
+    ],
+    "aliases": [],
+    "sources": [
+      "specialtyCoffeeParis"
+    ],
+    "status": "à vérifier (specialtycoffee.paris)",
+    "note": "",
+    "fetchedAt": "2026-10-01"
+  },
+  {
+    "slug": "esperanza",
+    "name": "Esperanza",
+    "country": "France",
+    "city": "Villeneuve-la-Garenne",
+    "website": "https://www.esperanzacafe.com",
+    "instagram": null,
+    "parisShopsServed": 2,
+    "ownShopIDs": [],
+    "aliases": [
+      "Esperanza Café"
+    ],
+    "sources": [
+      "specialtyCoffeeParis",
+      "annexeD"
+    ],
+    "status": "partiel (deux sources)",
+    "note": "",
+    "fetchedAt": "2026-10-01"
+  },
+  {
+    "slug": "canopi",
+    "name": "Canopi",
+    "country": "France",
+    "city": "",
+    "website": "https://canopicoffee.com",
+    "instagram": null,
+    "parisShopsServed": 2,
+    "ownShopIDs": [],
+    "aliases": [],
+    "sources": [
+      "specialtyCoffeeParis"
+    ],
+    "status": "à vérifier (specialtycoffee.paris)",
+    "note": "",
+    "fetchedAt": "2026-10-01"
+  },
+  {
+    "slug": "plume-cafe",
+    "name": "Plume café",
+    "country": "France",
+    "city": "",
+    "website": "https://plumecafe.fr",
+    "instagram": null,
+    "parisShopsServed": 1,
+    "ownShopIDs": [],
+    "aliases": [],
+    "sources": [
+      "specialtyCoffeeParis"
+    ],
+    "status": "à vérifier (specialtycoffee.paris)",
+    "note": "",
+    "fetchedAt": "2026-10-01"
+  },
+  {
+    "slug": "fathers",
+    "name": "Father's",
+    "country": "Czechia",
+    "city": "",
+    "website": "https://fathers.cz/en",
+    "instagram": null,
+    "parisShopsServed": 1,
+    "ownShopIDs": [],
+    "aliases": [],
+    "sources": [
+      "specialtyCoffeeParis"
+    ],
+    "status": "à vérifier (specialtycoffee.paris)",
+    "note": "",
+    "fetchedAt": "2026-10-01"
+  },
+  {
+    "slug": "synapse",
+    "name": "Synapse",
+    "country": "France",
+    "city": "Paris",
+    "website": "https://synapsetorrefaction.fr",
+    "instagram": null,
+    "parisShopsServed": 1,
+    "ownShopIDs": [
+      "synapse"
+    ],
+    "aliases": [],
+    "sources": [
+      "specialtyCoffeeParis"
+    ],
+    "status": "à vérifier (specialtycoffee.paris)",
+    "note": "",
+    "fetchedAt": "2026-10-01"
+  },
+  {
+    "slug": "cafe-joyeux",
+    "name": "Café Joyeux",
+    "country": "France",
+    "city": "Paris",
+    "website": "https://www.cafejoyeux.com",
+    "instagram": null,
+    "parisShopsServed": 1,
+    "ownShopIDs": [
+      "cafe-joyeux-rue-paul-cezanne"
+    ],
+    "aliases": [],
+    "sources": [
+      "specialtyCoffeeParis"
+    ],
+    "status": "à vérifier (specialtycoffee.paris)",
+    "note": "chaîne solidaire ; torréfaction propre à confirmer",
+    "fetchedAt": "2026-10-01"
+  },
+  {
+    "slug": "phin-mi",
+    "name": "Phin Mi",
+    "country": "France",
+    "city": "Paris",
+    "website": "https://www.phinmi.com",
+    "instagram": null,
+    "parisShopsServed": 1,
+    "ownShopIDs": [
+      "phin-mi"
+    ],
+    "aliases": [],
+    "sources": [
+      "specialtyCoffeeParis"
+    ],
+    "status": "à vérifier (specialtycoffee.paris)",
+    "note": "",
+    "fetchedAt": "2026-10-01"
+  },
+  {
+    "slug": "un-grain-decale",
+    "name": "Un Grain Décalé",
+    "country": "France",
+    "city": "Paris",
+    "website": "https://www.ungraindecale.fr",
+    "instagram": null,
+    "parisShopsServed": 1,
+    "ownShopIDs": [
+      "un-grain-decale"
+    ],
+    "aliases": [],
+    "sources": [
+      "specialtyCoffeeParis"
+    ],
+    "status": "à vérifier (specialtycoffee.paris)",
+    "note": "",
+    "fetchedAt": "2026-10-01"
+  },
+  {
+    "slug": "yellow-tucan",
+    "name": "Yellow Tucan",
+    "country": "France",
+    "city": "Paris",
+    "website": "https://www.yellowtucan.com",
+    "instagram": null,
+    "parisShopsServed": 1,
+    "ownShopIDs": [
+      "yellow-tucan"
+    ],
+    "aliases": [],
+    "sources": [
+      "specialtyCoffeeParis"
+    ],
+    "status": "à vérifier (specialtycoffee.paris)",
+    "note": "",
+    "fetchedAt": "2026-10-01"
+  },
+  {
+    "slug": "cafe-dauteur",
+    "name": "Café D'auteur",
+    "country": "France",
+    "city": "",
+    "website": "https://cafedauteur.com",
+    "instagram": null,
+    "parisShopsServed": 1,
+    "ownShopIDs": [],
+    "aliases": [],
+    "sources": [
+      "specialtyCoffeeParis"
+    ],
+    "status": "à vérifier (specialtycoffee.paris)",
+    "note": "",
+    "fetchedAt": "2026-10-01"
+  },
+  {
+    "slug": "buddy-buddy",
+    "name": "Buddy Buddy",
+    "country": "France",
+    "city": "Paris",
+    "website": "https://buddybuddy.co",
+    "instagram": null,
+    "parisShopsServed": 1,
+    "ownShopIDs": [
+      "buddy-buddy"
+    ],
+    "aliases": [],
+    "sources": [
+      "specialtyCoffeeParis"
+    ],
+    "status": "à vérifier (specialtycoffee.paris)",
+    "note": "",
+    "fetchedAt": "2026-10-01"
+  },
+  {
+    "slug": "alba",
+    "name": "Alba",
+    "country": "France",
+    "city": "",
+    "website": "https://www.alba-coffeeroasters.fr",
+    "instagram": null,
+    "parisShopsServed": 1,
+    "ownShopIDs": [],
+    "aliases": [],
+    "sources": [
+      "specialtyCoffeeParis"
+    ],
+    "status": "à vérifier (specialtycoffee.paris)",
+    "note": "",
+    "fetchedAt": "2026-10-01"
+  },
+  {
+    "slug": "brulerie-folie-mericourt",
+    "name": "Brûlerie de la Folie-Méricourt",
+    "country": "France",
+    "city": "",
+    "website": null,
+    "instagram": null,
+    "parisShopsServed": 1,
+    "ownShopIDs": [],
+    "aliases": [],
+    "sources": [
+      "specialtyCoffeeParis"
+    ],
+    "status": "à vérifier (specialtycoffee.paris)",
+    "note": "pas de site sur la source",
+    "fetchedAt": "2026-10-01"
+  },
+  {
+    "slug": "base-coffee",
+    "name": "Base Coffee",
+    "country": "Jordan",
+    "city": "Paris",
+    "website": "https://basecoffee.com",
+    "instagram": null,
+    "parisShopsServed": 1,
+    "ownShopIDs": [
+      "base-coffee"
+    ],
+    "aliases": [],
+    "sources": [
+      "specialtyCoffeeParis"
+    ],
+    "status": "à vérifier (specialtycoffee.paris)",
+    "note": "",
+    "fetchedAt": "2026-10-01"
+  },
+  {
+    "slug": "tisserie",
+    "name": "Tisserie",
+    "country": "France",
+    "city": "",
+    "website": "https://www.tisserie.coffee",
+    "instagram": null,
+    "parisShopsServed": 1,
+    "ownShopIDs": [],
+    "aliases": [],
+    "sources": [
+      "specialtyCoffeeParis"
+    ],
+    "status": "à vérifier (specialtycoffee.paris)",
+    "note": "",
+    "fetchedAt": "2026-10-01"
+  },
+  {
+    "slug": "allpress",
+    "name": "Allpress",
+    "country": "New Zealand",
+    "city": "",
+    "website": "https://www.allpressespresso.com",
+    "instagram": null,
+    "parisShopsServed": 1,
+    "ownShopIDs": [],
+    "aliases": [],
+    "sources": [
+      "specialtyCoffeeParis"
+    ],
+    "status": "à vérifier (specialtycoffee.paris)",
+    "note": "",
+    "fetchedAt": "2026-10-01"
+  },
+  {
+    "slug": "five-elephants",
+    "name": "Five Elephants",
+    "country": "Germany",
+    "city": "Berlin",
+    "website": "https://www.fiveelephant.com",
+    "instagram": null,
+    "parisShopsServed": 1,
+    "ownShopIDs": [],
+    "aliases": [
+      "Five Elephant"
+    ],
+    "sources": [
+      "specialtyCoffeeParis",
+      "annexeD"
+    ],
+    "status": "partiel (deux sources)",
+    "note": "",
+    "fetchedAt": "2026-10-01"
+  },
+  {
+    "slug": "lodeur-de-la-brulerie-lob",
+    "name": "L'Odeur de la Brûlerie - LOB",
+    "country": "France",
+    "city": "",
+    "website": "https://lob.paris",
+    "instagram": null,
+    "parisShopsServed": 1,
+    "ownShopIDs": [],
+    "aliases": [],
+    "sources": [
+      "specialtyCoffeeParis"
+    ],
+    "status": "à vérifier (specialtycoffee.paris)",
+    "note": "",
+    "fetchedAt": "2026-10-01"
+  },
+  {
+    "slug": "oats-coffee",
+    "name": "Oats Coffee",
+    "country": "South Korea",
+    "city": "Paris",
+    "website": "https://oatscoffee.kr",
+    "instagram": null,
+    "parisShopsServed": 1,
+    "ownShopIDs": [
+      "oats-coffee"
+    ],
+    "aliases": [],
+    "sources": [
+      "specialtyCoffeeParis"
+    ],
+    "status": "à vérifier (specialtycoffee.paris)",
+    "note": "",
+    "fetchedAt": "2026-10-01"
+  },
+  {
+    "slug": "cafe-366",
+    "name": "Café 366",
+    "country": "France",
+    "city": "",
+    "website": "https://cafe366.com",
+    "instagram": null,
+    "parisShopsServed": 1,
+    "ownShopIDs": [],
+    "aliases": [],
+    "sources": [
+      "specialtyCoffeeParis"
+    ],
+    "status": "à vérifier (specialtycoffee.paris)",
+    "note": "",
+    "fetchedAt": "2026-10-01"
+  },
+  {
+    "slug": "weekenders-coffee",
+    "name": "Weekenders Coffee",
+    "country": "Japan",
+    "city": "",
+    "website": "https://www.weekenderscoffee.com",
+    "instagram": null,
+    "parisShopsServed": 1,
+    "ownShopIDs": [],
+    "aliases": [],
+    "sources": [
+      "specialtyCoffeeParis"
+    ],
+    "status": "à vérifier (specialtycoffee.paris)",
+    "note": "",
+    "fetchedAt": "2026-10-01"
+  },
+  {
+    "slug": "prodigal-coffee",
+    "name": "Prodigal Coffee",
+    "country": "United States",
+    "city": "",
+    "website": "https://getprodigal.com",
+    "instagram": null,
+    "parisShopsServed": 1,
+    "ownShopIDs": [],
+    "aliases": [],
+    "sources": [
+      "specialtyCoffeeParis"
+    ],
+    "status": "à vérifier (specialtycoffee.paris)",
+    "note": "",
+    "fetchedAt": "2026-10-01"
+  },
+  {
+    "slug": "saint-romain-coffee",
+    "name": "Saint Romain Coffee",
+    "country": "France",
+    "city": "",
+    "website": "https://www.saintromaincoffee.com",
+    "instagram": null,
+    "parisShopsServed": 1,
+    "ownShopIDs": [],
+    "aliases": [],
+    "sources": [
+      "specialtyCoffeeParis"
+    ],
+    "status": "à vérifier (specialtycoffee.paris)",
+    "note": "",
+    "fetchedAt": "2026-10-01"
+  },
+  {
+    "slug": "artesano",
+    "name": "Artesano",
+    "country": "France",
+    "city": "Paris",
+    "website": "https://www.artesano-coffeeroaster.com",
+    "instagram": null,
+    "parisShopsServed": 1,
+    "ownShopIDs": [
+      "artesano"
+    ],
+    "aliases": [],
+    "sources": [
+      "specialtyCoffeeParis"
+    ],
+    "status": "à vérifier (specialtycoffee.paris)",
+    "note": "",
+    "fetchedAt": "2026-10-01"
+  },
+  {
+    "slug": "azeria",
+    "name": "Azeria",
+    "country": "France",
+    "city": "",
+    "website": "https://www.instagram.com/azeria.torrefaction",
+    "instagram": "@azeria.torrefaction",
+    "parisShopsServed": 1,
+    "ownShopIDs": [],
+    "aliases": [],
+    "sources": [
+      "specialtyCoffeeParis"
+    ],
+    "status": "à vérifier (specialtycoffee.paris)",
+    "note": "",
+    "fetchedAt": "2026-10-01"
+  },
+  {
+    "slug": "brulerie-de-varenne",
+    "name": "Brûlerie de Varenne",
+    "country": "France",
+    "city": "",
+    "website": "https://lesbruleriesdequartier.com",
+    "instagram": null,
+    "parisShopsServed": 1,
+    "ownShopIDs": [],
+    "aliases": [],
+    "sources": [
+      "specialtyCoffeeParis"
+    ],
+    "status": "à vérifier (specialtycoffee.paris)",
+    "note": "",
+    "fetchedAt": "2026-10-01"
+  },
+  {
+    "slug": "buna-origin-of-coffee",
+    "name": "Buna - Origin of Coffee",
+    "country": "France",
+    "city": "",
+    "website": "https://www.instagram.com/bunacafeparis10",
+    "instagram": "@bunacafeparis10",
+    "parisShopsServed": 1,
+    "ownShopIDs": [],
+    "aliases": [],
+    "sources": [
+      "specialtyCoffeeParis"
+    ],
+    "status": "à vérifier (specialtycoffee.paris)",
+    "note": "",
+    "fetchedAt": "2026-10-01"
+  },
+  {
+    "slug": "cafe-kaldi",
+    "name": "Café Kaldi",
+    "country": "France",
+    "city": "",
+    "website": "https://cafe-kaldi.fr",
+    "instagram": null,
+    "parisShopsServed": 1,
+    "ownShopIDs": [],
+    "aliases": [],
+    "sources": [
+      "specialtyCoffeeParis"
+    ],
+    "status": "à vérifier (specialtycoffee.paris)",
+    "note": "",
+    "fetchedAt": "2026-10-01"
+  },
+  {
+    "slug": "cafe-la-lune-verte",
+    "name": "Café La Lune Verte",
+    "country": "France",
+    "city": "Paris",
+    "website": "https://www.instagram.com/cafe_la_lune_verte",
+    "instagram": "@cafe_la_lune_verte",
+    "parisShopsServed": 1,
+    "ownShopIDs": [
+      "cafe-la-lune-verte"
+    ],
+    "aliases": [],
+    "sources": [
+      "specialtyCoffeeParis"
+    ],
+    "status": "à vérifier (specialtycoffee.paris)",
+    "note": "",
+    "fetchedAt": "2026-10-01"
+  },
+  {
+    "slug": "tinto",
+    "name": "Tinto",
+    "country": "France",
+    "city": "",
+    "website": "https://www.tintonantes.fr",
+    "instagram": null,
+    "parisShopsServed": 1,
+    "ownShopIDs": [],
+    "aliases": [],
+    "sources": [
+      "specialtyCoffeeParis"
+    ],
+    "status": "à vérifier (specialtycoffee.paris)",
+    "note": "",
+    "fetchedAt": "2026-10-01"
+  },
+  {
+    "slug": "ditta-artigianale",
+    "name": "Ditta Artigianale",
+    "country": "Italy",
+    "city": "Florence",
+    "website": "https://dittaartigianale.com",
+    "instagram": null,
+    "parisShopsServed": 1,
+    "ownShopIDs": [],
+    "aliases": [],
+    "sources": [
+      "specialtyCoffeeParis",
+      "annexeD"
+    ],
+    "status": "partiel (deux sources)",
+    "note": "",
+    "fetchedAt": "2026-10-01"
+  },
+  {
+    "slug": "ground-state",
+    "name": "Ground State",
+    "country": "Iran",
+    "city": "",
+    "website": "https://www.groundstated8.com",
+    "instagram": null,
+    "parisShopsServed": 1,
+    "ownShopIDs": [],
+    "aliases": [],
+    "sources": [
+      "specialtyCoffeeParis"
+    ],
+    "status": "à vérifier (specialtycoffee.paris)",
+    "note": "",
+    "fetchedAt": "2026-10-01"
+  },
+  {
+    "slug": "nomad",
+    "name": "Nomad",
+    "country": "Spain",
+    "city": "Barcelone",
+    "website": "https://nomadcoffee.es",
+    "instagram": null,
+    "parisShopsServed": 1,
+    "ownShopIDs": [],
+    "aliases": [],
+    "sources": [
+      "specialtyCoffeeParis",
+      "annexeD"
+    ],
+    "status": "partiel (deux sources)",
+    "note": "",
+    "fetchedAt": "2026-10-01"
+  },
+  {
+    "slug": "la-maison-du-barista",
+    "name": "La Maison du Barista",
+    "country": "France",
+    "city": "Paris",
+    "website": "https://www.lamaisondubarista.com",
+    "instagram": null,
+    "parisShopsServed": 1,
+    "ownShopIDs": [
+      "la-maison-du-barista-bar-a-cafe-and-boutique"
+    ],
+    "aliases": [],
+    "sources": [
+      "specialtyCoffeeParis"
+    ],
+    "status": "à vérifier (specialtycoffee.paris)",
+    "note": "",
+    "fetchedAt": "2026-10-01"
+  },
+  {
+    "slug": "la-cafeotheque",
+    "name": "La Caféothèque",
+    "country": "France",
+    "city": "Paris",
+    "website": "https://lacafeotheque.com",
+    "instagram": null,
+    "parisShopsServed": 1,
+    "ownShopIDs": [
+      "la-cafeotheque"
+    ],
+    "aliases": [],
+    "sources": [
+      "specialtyCoffeeParis",
+      "annexeD"
+    ],
+    "status": "partiel (deux sources)",
+    "note": "",
+    "fetchedAt": "2026-10-01"
+  },
+  {
+    "slug": "fuglen",
+    "name": "Fuglen",
+    "country": "Norway",
+    "city": "",
+    "website": "https://fuglen.no",
+    "instagram": null,
+    "parisShopsServed": 1,
+    "ownShopIDs": [],
+    "aliases": [],
+    "sources": [
+      "specialtyCoffeeParis"
+    ],
+    "status": "à vérifier (specialtycoffee.paris)",
+    "note": "",
+    "fetchedAt": "2026-10-01"
+  },
+  {
+    "slug": "cong",
+    "name": "Công",
+    "country": "Vietnam",
+    "city": "Paris",
+    "website": "https://congcaphe.com",
+    "instagram": null,
+    "parisShopsServed": 1,
+    "ownShopIDs": [
+      "cong-caphe"
+    ],
+    "aliases": [],
+    "sources": [
+      "specialtyCoffeeParis"
+    ],
+    "status": "à vérifier (specialtycoffee.paris)",
+    "note": "",
+    "fetchedAt": "2026-10-01"
+  },
+  {
+    "slug": "sierra",
+    "name": "Sierra",
+    "country": "France",
+    "city": "",
+    "website": "https://sierra-france.com",
+    "instagram": null,
+    "parisShopsServed": 1,
+    "ownShopIDs": [],
+    "aliases": [],
+    "sources": [
+      "specialtyCoffeeParis"
+    ],
+    "status": "à vérifier (specialtycoffee.paris)",
+    "note": "",
+    "fetchedAt": "2026-10-01"
+  },
+  {
+    "slug": "pfaff",
+    "name": "Pfaff",
+    "country": "France",
+    "city": "Paris",
+    "website": "https://www.cafes-pfaff.com",
+    "instagram": null,
+    "parisShopsServed": 1,
+    "ownShopIDs": [],
+    "aliases": [
+      "Cafés Pfaff"
+    ],
+    "sources": [
+      "specialtyCoffeeParis",
+      "annexeD"
+    ],
+    "status": "partiel (deux sources)",
+    "note": "",
+    "fetchedAt": "2026-10-01"
+  },
+  {
+    "slug": "anana",
+    "name": "ANÄNA",
+    "country": "Greece",
+    "city": "",
+    "website": "https://anana.coffee",
+    "instagram": null,
+    "parisShopsServed": 1,
+    "ownShopIDs": [],
+    "aliases": [],
+    "sources": [
+      "specialtyCoffeeParis"
+    ],
+    "status": "à vérifier (specialtycoffee.paris)",
+    "note": "",
+    "fetchedAt": "2026-10-01"
+  },
+  {
+    "slug": "la-compagnie-du-cafe",
+    "name": "La Compagnie du Café",
+    "country": "France",
+    "city": "Paris",
+    "website": "https://www.lacompagnieducafe.com",
+    "instagram": null,
+    "parisShopsServed": 1,
+    "ownShopIDs": [
+      "la-compagnie-du-cafe"
+    ],
+    "aliases": [],
+    "sources": [
+      "specialtyCoffeeParis"
+    ],
+    "status": "à vérifier (specialtycoffee.paris)",
+    "note": "",
+    "fetchedAt": "2026-10-01"
+  },
+  {
+    "slug": "kape-de-filipina",
+    "name": "Kape de Filipina",
+    "country": "Germany",
+    "city": "",
+    "website": "https://kapedefilipina.eu",
+    "instagram": null,
+    "parisShopsServed": 1,
+    "ownShopIDs": [],
+    "aliases": [],
+    "sources": [
+      "specialtyCoffeeParis"
+    ],
+    "status": "à vérifier (specialtycoffee.paris)",
+    "note": "",
+    "fetchedAt": "2026-10-01"
+  },
+  {
+    "slug": "escocafe",
+    "name": "Escocafé",
+    "country": "France",
+    "city": "Paris",
+    "website": "https://shop.escocafe.com",
+    "instagram": null,
+    "parisShopsServed": 1,
+    "ownShopIDs": [
+      "escocafe"
+    ],
+    "aliases": [],
+    "sources": [
+      "specialtyCoffeeParis"
+    ],
+    "status": "à vérifier (specialtycoffee.paris)",
+    "note": "",
+    "fetchedAt": "2026-10-01"
+  },
+  {
+    "slug": "coffee-specialty-coffee",
+    "name": "Coffee Specialty Coffee",
+    "country": "France",
+    "city": "Paris",
+    "website": "https://coffeespecialtycoffee.com",
+    "instagram": null,
+    "parisShopsServed": 1,
+    "ownShopIDs": [
+      "coffee-specialty-coffee"
+    ],
+    "aliases": [],
+    "sources": [
+      "specialtyCoffeeParis"
+    ],
+    "status": "à vérifier (specialtycoffee.paris)",
+    "note": "",
+    "fetchedAt": "2026-10-01"
+  },
+  {
+    "slug": "naad-coffee",
+    "name": "Naad Coffee",
+    "country": "France",
+    "city": "Paris",
+    "website": "https://naad-coffee.com",
+    "instagram": null,
+    "parisShopsServed": 1,
+    "ownShopIDs": [
+      "naad-coffee"
+    ],
+    "aliases": [],
+    "sources": [
+      "specialtyCoffeeParis"
+    ],
+    "status": "à vérifier (specialtycoffee.paris)",
+    "note": "",
+    "fetchedAt": "2026-10-01"
+  },
+  {
+    "slug": "sinombre",
+    "name": "Sinombre",
+    "country": "France",
+    "city": "",
+    "website": "https://sinombrecoffeeroaster.com",
+    "instagram": null,
+    "parisShopsServed": 1,
+    "ownShopIDs": [],
+    "aliases": [],
+    "sources": [
+      "specialtyCoffeeParis"
+    ],
+    "status": "à vérifier (specialtycoffee.paris)",
+    "note": "",
+    "fetchedAt": "2026-10-01"
+  },
+  {
+    "slug": "viahe-caphe",
+    "name": "Viahe caphe",
+    "country": "France",
+    "city": "Paris",
+    "website": "https://www.instagram.com/viahecaphe",
+    "instagram": "@viahecaphe",
+    "parisShopsServed": 1,
+    "ownShopIDs": [
+      "viahe-caphe"
+    ],
+    "aliases": [],
+    "sources": [
+      "specialtyCoffeeParis"
+    ],
+    "status": "à vérifier (specialtycoffee.paris)",
+    "note": "",
+    "fetchedAt": "2026-10-01"
+  },
+  {
+    "slug": "wide-awake",
+    "name": "Wide Awake",
+    "country": "Belgium",
+    "city": "",
+    "website": "https://wideawake.coffee",
+    "instagram": null,
+    "parisShopsServed": 1,
+    "ownShopIDs": [],
+    "aliases": [],
+    "sources": [
+      "specialtyCoffeeParis"
+    ],
+    "status": "à vérifier (specialtycoffee.paris)",
+    "note": "",
+    "fetchedAt": "2026-10-01"
+  },
+  {
+    "slug": "83",
+    "name": "83+",
+    "country": "France",
+    "city": "",
+    "website": "https://coffee83plus.com",
+    "instagram": null,
+    "parisShopsServed": 1,
+    "ownShopIDs": [],
+    "aliases": [],
+    "sources": [
+      "specialtyCoffeeParis"
+    ],
+    "status": "à vérifier (specialtycoffee.paris)",
+    "note": "",
+    "fetchedAt": "2026-10-01"
+  },
+  {
+    "slug": "ajour",
+    "name": "Ajour",
+    "country": "France",
+    "city": "",
+    "website": "https://ajour.cafe",
+    "instagram": null,
+    "parisShopsServed": 1,
+    "ownShopIDs": [],
+    "aliases": [],
+    "sources": [
+      "specialtyCoffeeParis"
+    ],
+    "status": "à vérifier (specialtycoffee.paris)",
+    "note": "",
+    "fetchedAt": "2026-10-01"
+  },
+  {
+    "slug": "roots",
+    "name": "Roots",
+    "country": "Thailand",
+    "city": "",
+    "website": "https://rootsbkk.com",
+    "instagram": null,
+    "parisShopsServed": 1,
+    "ownShopIDs": [],
+    "aliases": [],
+    "sources": [
+      "specialtyCoffeeParis"
+    ],
+    "status": "à vérifier (specialtycoffee.paris)",
+    "note": "",
+    "fetchedAt": "2026-10-01"
+  },
+  {
+    "slug": "rum-baba",
+    "name": "Rum Baba",
+    "country": "Netherlands",
+    "city": "Amsterdam",
+    "website": "https://rumbaba.nl",
+    "instagram": null,
+    "parisShopsServed": 1,
+    "ownShopIDs": [],
+    "aliases": [],
+    "sources": [
+      "specialtyCoffeeParis",
+      "annexeD"
+    ],
+    "status": "partiel (deux sources)",
+    "note": "",
+    "fetchedAt": "2026-10-01"
+  },
+  {
+    "slug": "tribute",
+    "name": "Tribute",
+    "country": "France",
+    "city": "",
+    "website": "https://tribute.cafe",
+    "instagram": null,
+    "parisShopsServed": 1,
+    "ownShopIDs": [],
+    "aliases": [],
+    "sources": [
+      "specialtyCoffeeParis"
+    ],
+    "status": "à vérifier (specialtycoffee.paris)",
+    "note": "",
+    "fetchedAt": "2026-10-01"
+  },
+  {
+    "slug": "aery",
+    "name": "Aery",
+    "country": "South Korea",
+    "city": "",
+    "website": "https://aerycoffee.com",
+    "instagram": null,
+    "parisShopsServed": 1,
+    "ownShopIDs": [],
+    "aliases": [],
+    "sources": [
+      "specialtyCoffeeParis"
+    ],
+    "status": "à vérifier (specialtycoffee.paris)",
+    "note": "",
+    "fetchedAt": "2026-10-01"
+  },
+  {
+    "slug": "apollons-gold",
+    "name": "Apollon's Gold",
+    "country": "Japan",
+    "city": "",
+    "website": "https://apollons-gold.com",
+    "instagram": null,
+    "parisShopsServed": 1,
+    "ownShopIDs": [],
+    "aliases": [],
+    "sources": [
+      "specialtyCoffeeParis"
+    ],
+    "status": "à vérifier (specialtycoffee.paris)",
+    "note": "",
+    "fetchedAt": "2026-10-01"
+  },
+  {
+    "slug": "bel-horizon-coffee-roaster",
+    "name": "Bel Horizon Coffee Roaster",
+    "country": "France",
+    "city": "Paris",
+    "website": "https://belhorizon.coffee",
+    "instagram": null,
+    "parisShopsServed": 1,
+    "ownShopIDs": [
+      "bel-horizon-coffee-roasters"
+    ],
+    "aliases": [],
+    "sources": [
+      "specialtyCoffeeParis"
+    ],
+    "status": "à vérifier (specialtycoffee.paris)",
+    "note": "",
+    "fetchedAt": "2026-10-01"
+  },
+  {
+    "slug": "muwad",
+    "name": "Muwad",
+    "country": "France",
+    "city": "",
+    "website": "https://muwadcoffee.com",
+    "instagram": null,
+    "parisShopsServed": 1,
+    "ownShopIDs": [],
+    "aliases": [],
+    "sources": [
+      "specialtyCoffeeParis"
+    ],
+    "status": "à vérifier (specialtycoffee.paris)",
+    "note": "",
+    "fetchedAt": "2026-10-01"
+  },
+  {
+    "slug": "le-maung",
+    "name": "Le Maung Coffee Roaster",
+    "country": "France",
+    "city": "Paris",
+    "website": "https://www.lemaungcoffee.com",
+    "instagram": null,
+    "parisShopsServed": 1,
+    "ownShopIDs": [
+      "le-maung"
+    ],
+    "aliases": [],
+    "sources": [
+      "specialtyCoffeeParis"
+    ],
+    "status": "à vérifier (specialtycoffee.paris)",
+    "note": "",
+    "fetchedAt": "2026-10-01"
+  },
+  {
+    "slug": "ambicion",
+    "name": "Ambición",
+    "country": "France",
+    "city": "",
+    "website": "https://ambicion.coffee",
+    "instagram": null,
+    "parisShopsServed": 1,
+    "ownShopIDs": [],
+    "aliases": [],
+    "sources": [
+      "specialtyCoffeeParis"
+    ],
+    "status": "à vérifier (specialtycoffee.paris)",
+    "note": "",
+    "fetchedAt": "2026-10-01"
+  },
+  {
+    "slug": "yunma",
+    "name": "Yunma",
+    "country": "France",
+    "city": "",
+    "website": "https://yunma.fr",
+    "instagram": null,
+    "parisShopsServed": 1,
+    "ownShopIDs": [],
+    "aliases": [],
+    "sources": [
+      "specialtyCoffeeParis"
+    ],
+    "status": "à vérifier (specialtycoffee.paris)",
+    "note": "",
+    "fetchedAt": "2026-10-01"
+  },
+  {
+    "slug": "coffee-collective",
+    "name": "Coffee Collective",
+    "country": "Denmark",
+    "city": "Copenhague",
+    "website": "https://coffeecollective.dk",
+    "instagram": null,
+    "parisShopsServed": 1,
+    "ownShopIDs": [],
+    "aliases": [],
+    "sources": [
+      "specialtyCoffeeParis",
+      "annexeD"
+    ],
+    "status": "partiel (deux sources)",
+    "note": "",
+    "fetchedAt": "2026-10-01"
+  },
+  {
+    "slug": "prolog",
+    "name": "Prolog",
+    "country": "Denmark",
+    "city": "Copenhague",
+    "website": "https://www.prologcoffee.com",
+    "instagram": null,
+    "parisShopsServed": 1,
+    "ownShopIDs": [],
+    "aliases": [],
+    "sources": [
+      "specialtyCoffeeParis",
+      "annexeD"
+    ],
+    "status": "partiel (deux sources)",
+    "note": "",
+    "fetchedAt": "2026-10-01"
+  },
+  {
+    "slug": "cime",
+    "name": "Cime",
+    "country": "France",
+    "city": "",
+    "website": "https://www.cime-cafe.fr",
+    "instagram": null,
+    "parisShopsServed": 1,
+    "ownShopIDs": [],
+    "aliases": [],
+    "sources": [
+      "specialtyCoffeeParis"
+    ],
+    "status": "à vérifier (specialtycoffee.paris)",
+    "note": "",
+    "fetchedAt": "2026-10-01"
+  },
+  {
+    "slug": "caoufe",
+    "name": "Caoufé",
+    "country": "France",
+    "city": "Paris",
+    "website": "https://caoufe.fr",
+    "instagram": null,
+    "parisShopsServed": 1,
+    "ownShopIDs": [
+      "caoufe"
+    ],
+    "aliases": [],
+    "sources": [
+      "specialtyCoffeeParis"
+    ],
+    "status": "à vérifier (specialtycoffee.paris)",
+    "note": "",
+    "fetchedAt": "2026-10-01"
+  },
+  {
+    "slug": "placid",
+    "name": "Placid",
+    "country": "France",
+    "city": "",
+    "website": "https://www.placidroasters.com",
+    "instagram": null,
+    "parisShopsServed": 1,
+    "ownShopIDs": [],
+    "aliases": [],
+    "sources": [
+      "specialtyCoffeeParis"
+    ],
+    "status": "à vérifier (specialtycoffee.paris)",
+    "note": "",
+    "fetchedAt": "2026-10-01"
+  },
+  {
+    "slug": "father-carpenter",
+    "name": "Father Carpenter",
+    "country": "Germany",
+    "city": "",
+    "website": "https://fathercarpenter.com",
+    "instagram": null,
+    "parisShopsServed": 1,
+    "ownShopIDs": [],
+    "aliases": [],
+    "sources": [
+      "specialtyCoffeeParis"
+    ],
+    "status": "à vérifier (specialtycoffee.paris)",
+    "note": "",
+    "fetchedAt": "2026-10-01"
+  },
+  {
+    "slug": "frukt",
+    "name": "Frukt",
+    "country": "Finland",
+    "city": "",
+    "website": "https://www.frukt.coffee",
+    "instagram": null,
+    "parisShopsServed": 1,
+    "ownShopIDs": [],
+    "aliases": [],
+    "sources": [
+      "specialtyCoffeeParis"
+    ],
+    "status": "à vérifier (specialtycoffee.paris)",
+    "note": "",
+    "fetchedAt": "2026-10-01"
+  },
+  {
+    "slug": "ivan-alfaro",
+    "name": "Ivan Alfaro",
+    "country": "France",
+    "city": "",
+    "website": "https://maitre-torrefacteur.fr",
+    "instagram": null,
+    "parisShopsServed": 1,
+    "ownShopIDs": [],
+    "aliases": [],
+    "sources": [
+      "specialtyCoffeeParis"
+    ],
+    "status": "à vérifier (specialtycoffee.paris)",
+    "note": "",
+    "fetchedAt": "2026-10-01"
+  },
+  {
+    "slug": "jozi",
+    "name": "Jozi",
+    "country": "France",
+    "city": "Paris",
+    "website": "https://www.jozi-cafe.com",
+    "instagram": null,
+    "parisShopsServed": 1,
+    "ownShopIDs": [
+      "jozi-cafe"
+    ],
+    "aliases": [],
+    "sources": [
+      "specialtyCoffeeParis"
+    ],
+    "status": "à vérifier (specialtycoffee.paris)",
+    "note": "",
+    "fetchedAt": "2026-10-01"
+  },
+  {
+    "slug": "klover",
+    "name": "Klover",
+    "country": "France",
+    "city": "Paris",
+    "website": "https://klovercoffee.com",
+    "instagram": null,
+    "parisShopsServed": 1,
+    "ownShopIDs": [
+      "klover-coffee-showroom"
+    ],
+    "aliases": [],
+    "sources": [
+      "specialtyCoffeeParis"
+    ],
+    "status": "à vérifier (specialtycoffee.paris)",
+    "note": "",
+    "fetchedAt": "2026-10-01"
+  },
+  {
+    "slug": "liperli",
+    "name": "Liperli",
+    "country": "France",
+    "city": "Paris",
+    "website": "https://liperli.fr",
+    "instagram": null,
+    "parisShopsServed": 1,
+    "ownShopIDs": [
+      "liperli"
+    ],
+    "aliases": [],
+    "sources": [
+      "specialtyCoffeeParis"
+    ],
+    "status": "à vérifier (specialtycoffee.paris)",
+    "note": "",
+    "fetchedAt": "2026-10-01"
+  },
+  {
+    "slug": "olas",
+    "name": "Ola’s",
+    "country": "France",
+    "city": "",
+    "website": null,
+    "instagram": null,
+    "parisShopsServed": 1,
+    "ownShopIDs": [],
+    "aliases": [],
+    "sources": [
+      "specialtyCoffeeParis"
+    ],
+    "status": "à vérifier (specialtycoffee.paris)",
+    "note": "pas de site sur la source",
+    "fetchedAt": "2026-10-01"
+  },
+  {
+    "slug": "canal-street-roaster",
+    "name": "Canal Street Roaster",
+    "country": "France",
+    "city": "Paris",
+    "website": "https://www.bonjourjacob.com",
+    "instagram": null,
+    "parisShopsServed": 1,
+    "ownShopIDs": [
+      "bonjour-jacob-rue-dauphine",
+      "bonjour-jacob-rue-yves-toudic"
+    ],
+    "aliases": [],
+    "sources": [
+      "specialtyCoffeeParis"
+    ],
+    "status": "à vérifier (specialtycoffee.paris)",
+    "note": "",
+    "fetchedAt": "2026-10-01"
+  },
+  {
+    "slug": "momus",
+    "name": "Momus",
+    "country": "France",
+    "city": "Paris",
+    "website": "https://momus-paris.com",
+    "instagram": null,
+    "parisShopsServed": 1,
+    "ownShopIDs": [
+      "momus"
+    ],
+    "aliases": [],
+    "sources": [
+      "specialtyCoffeeParis"
+    ],
+    "status": "à vérifier (specialtycoffee.paris)",
+    "note": "",
+    "fetchedAt": "2026-10-01"
+  },
+  {
+    "slug": "supreme-roastworks",
+    "name": "Supreme Roastworks",
+    "country": "Norway",
+    "city": "Oslo",
+    "website": "https://srw.no",
+    "instagram": null,
+    "parisShopsServed": 1,
+    "ownShopIDs": [],
+    "aliases": [],
+    "sources": [
+      "specialtyCoffeeParis",
+      "annexeD"
+    ],
+    "status": "partiel (deux sources)",
+    "note": "",
+    "fetchedAt": "2026-10-01"
+  },
+  {
+    "slug": "onxy",
+    "name": "Onyx",
+    "country": "United States",
+    "city": "",
+    "website": "https://onyxcoffeelab.eu",
+    "instagram": null,
+    "parisShopsServed": 1,
+    "ownShopIDs": [],
+    "aliases": [],
+    "sources": [
+      "specialtyCoffeeParis"
+    ],
+    "status": "à vérifier (specialtycoffee.paris)",
+    "note": "slug du site « onxy » (coquille) ; site .eu",
+    "fetchedAt": "2026-10-01"
+  },
+  {
+    "slug": "cafes-verlet",
+    "name": "Cafés Verlet",
+    "country": "France",
+    "city": "Paris",
+    "website": null,
+    "instagram": null,
+    "parisShopsServed": 0,
+    "ownShopIDs": [],
+    "aliases": [],
+    "sources": [
+      "annexeD"
+    ],
+    "status": "à vérifier (Annexe D)",
+    "note": "",
+    "fetchedAt": ""
+  },
+  {
+    "slug": "telescope",
+    "name": "Télescope",
+    "country": "France",
+    "city": "Paris",
+    "website": null,
+    "instagram": null,
+    "parisShopsServed": 0,
+    "ownShopIDs": [],
+    "aliases": [],
+    "sources": [
+      "annexeD"
+    ],
+    "status": "à vérifier (Annexe D)",
+    "note": "",
+    "fetchedAt": ""
+  },
+  {
+    "slug": "l-atelier-de-torrefaction",
+    "name": "L'Atelier de Torréfaction",
+    "country": "France",
+    "city": "Paris",
+    "website": null,
+    "instagram": null,
+    "parisShopsServed": 0,
+    "ownShopIDs": [],
+    "aliases": [],
+    "sources": [
+      "annexeD"
+    ],
+    "status": "à vérifier (Annexe D)",
+    "note": "",
+    "fetchedAt": ""
+  },
+  {
+    "slug": "substance-cafe",
+    "name": "Substance Café",
+    "country": "France",
+    "city": "Paris",
+    "website": null,
+    "instagram": null,
+    "parisShopsServed": 0,
+    "ownShopIDs": [],
+    "aliases": [],
+    "sources": [
+      "annexeD"
+    ],
+    "status": "à vérifier (Annexe D)",
+    "note": "",
+    "fetchedAt": ""
+  },
+  {
+    "slug": "tactile-pierre-de-chanterac",
+    "name": "Tactile (Pierre de Chanterac)",
+    "country": "France",
+    "city": "Paris",
+    "website": null,
+    "instagram": null,
+    "parisShopsServed": 0,
+    "ownShopIDs": [],
+    "aliases": [],
+    "sources": [
+      "annexeD"
+    ],
+    "status": "à vérifier (Annexe D)",
+    "note": "",
+    "fetchedAt": ""
+  },
+  {
+    "slug": "brulerie-du-cantin",
+    "name": "Brûlerie du Cantin",
+    "country": "France",
+    "city": "Lens",
+    "website": null,
+    "instagram": null,
+    "parisShopsServed": 0,
+    "ownShopIDs": [],
+    "aliases": [],
+    "sources": [
+      "annexeD"
+    ],
+    "status": "à vérifier (Annexe D)",
+    "note": "",
+    "fetchedAt": ""
+  },
+  {
+    "slug": "omnino",
+    "name": "Omnino",
+    "country": "France",
+    "city": "Strasbourg",
+    "website": null,
+    "instagram": null,
+    "parisShopsServed": 0,
+    "ownShopIDs": [],
+    "aliases": [],
+    "sources": [
+      "annexeD"
+    ],
+    "status": "à vérifier (Annexe D)",
+    "note": "",
+    "fetchedAt": ""
+  },
+  {
+    "slug": "hayuco",
+    "name": "Hayuco",
+    "country": "France",
+    "city": "Toulouse",
+    "website": null,
+    "instagram": null,
+    "parisShopsServed": 0,
+    "ownShopIDs": [],
+    "aliases": [],
+    "sources": [
+      "annexeD"
+    ],
+    "status": "à vérifier (Annexe D)",
+    "note": "",
+    "fetchedAt": ""
+  },
+  {
+    "slug": "ximun",
+    "name": "Ximun",
+    "country": "France",
+    "city": "Pays basque",
+    "website": null,
+    "instagram": null,
+    "parisShopsServed": 0,
+    "ownShopIDs": [],
+    "aliases": [],
+    "sources": [
+      "annexeD"
+    ],
+    "status": "à vérifier (Annexe D)",
+    "note": "",
+    "fetchedAt": ""
+  },
+  {
+    "slug": "piha",
+    "name": "Piha",
+    "country": "France",
+    "city": "Bordeaux",
+    "website": null,
+    "instagram": null,
+    "parisShopsServed": 0,
+    "ownShopIDs": [],
+    "aliases": [],
+    "sources": [
+      "annexeD"
+    ],
+    "status": "à vérifier (Annexe D)",
+    "note": "",
+    "fetchedAt": ""
+  },
+  {
+    "slug": "l-alchimiste",
+    "name": "L'Alchimiste",
+    "country": "France",
+    "city": "Bordeaux",
+    "website": null,
+    "instagram": null,
+    "parisShopsServed": 0,
+    "ownShopIDs": [],
+    "aliases": [],
+    "sources": [
+      "annexeD"
+    ],
+    "status": "à vérifier (Annexe D)",
+    "note": "",
+    "fetchedAt": ""
+  },
+  {
+    "slug": "tim-wendelboe",
+    "name": "Tim Wendelboe",
+    "country": "Norway",
+    "city": "Oslo",
+    "website": null,
+    "instagram": null,
+    "parisShopsServed": 0,
+    "ownShopIDs": [],
+    "aliases": [],
+    "sources": [
+      "annexeD"
+    ],
+    "status": "à vérifier (Annexe D)",
+    "note": "",
+    "fetchedAt": ""
+  },
+  {
+    "slug": "april",
+    "name": "April",
+    "country": "Denmark",
+    "city": "Copenhague",
+    "website": null,
+    "instagram": null,
+    "parisShopsServed": 0,
+    "ownShopIDs": [],
+    "aliases": [],
+    "sources": [
+      "annexeD"
+    ],
+    "status": "à vérifier (Annexe D)",
+    "note": "",
+    "fetchedAt": ""
+  },
+  {
+    "slug": "koppi",
+    "name": "Koppi",
+    "country": "Sweden",
+    "city": "Helsingborg",
+    "website": null,
+    "instagram": null,
+    "parisShopsServed": 0,
+    "ownShopIDs": [],
+    "aliases": [],
+    "sources": [
+      "annexeD"
+    ],
+    "status": "à vérifier (Annexe D)",
+    "note": "",
+    "fetchedAt": ""
+  },
+  {
+    "slug": "morgon",
+    "name": "Morgon",
+    "country": "Sweden",
+    "city": "Göteborg",
+    "website": null,
+    "instagram": null,
+    "parisShopsServed": 0,
+    "ownShopIDs": [],
+    "aliases": [],
+    "sources": [
+      "annexeD"
+    ],
+    "status": "à vérifier (Annexe D)",
+    "note": "",
+    "fetchedAt": ""
+  },
+  {
+    "slug": "kaffa-roastery",
+    "name": "Kaffa Roastery",
+    "country": "Finland",
+    "city": "Helsinki",
+    "website": null,
+    "instagram": null,
+    "parisShopsServed": 0,
+    "ownShopIDs": [],
+    "aliases": [],
+    "sources": [
+      "annexeD"
+    ],
+    "status": "à vérifier (Annexe D)",
+    "note": "",
+    "fetchedAt": ""
+  },
+  {
+    "slug": "the-barn",
+    "name": "The Barn",
+    "country": "Germany",
+    "city": "Berlin",
+    "website": null,
+    "instagram": null,
+    "parisShopsServed": 0,
+    "ownShopIDs": [],
+    "aliases": [],
+    "sources": [
+      "annexeD"
+    ],
+    "status": "à vérifier (Annexe D)",
+    "note": "",
+    "fetchedAt": ""
+  },
+  {
+    "slug": "bonanza",
+    "name": "Bonanza",
+    "country": "Germany",
+    "city": "Berlin",
+    "website": null,
+    "instagram": null,
+    "parisShopsServed": 0,
+    "ownShopIDs": [],
+    "aliases": [],
+    "sources": [
+      "annexeD"
+    ],
+    "status": "à vérifier (Annexe D)",
+    "note": "",
+    "fetchedAt": ""
+  },
+  {
+    "slug": "man-versus-machine",
+    "name": "Man Versus Machine",
+    "country": "Germany",
+    "city": "Munich",
+    "website": null,
+    "instagram": null,
+    "parisShopsServed": 0,
+    "ownShopIDs": [],
+    "aliases": [],
+    "sources": [
+      "annexeD"
+    ],
+    "status": "à vérifier (Annexe D)",
+    "note": "",
+    "fetchedAt": ""
+  },
+  {
+    "slug": "elbgold",
+    "name": "Elbgold",
+    "country": "Germany",
+    "city": "Hambourg",
+    "website": null,
+    "instagram": null,
+    "parisShopsServed": 0,
+    "ownShopIDs": [],
+    "aliases": [],
+    "sources": [
+      "annexeD"
+    ],
+    "status": "à vérifier (Annexe D)",
+    "note": "",
+    "fetchedAt": ""
+  },
+  {
+    "slug": "white-label",
+    "name": "White Label",
+    "country": "Netherlands",
+    "city": "Amsterdam",
+    "website": null,
+    "instagram": null,
+    "parisShopsServed": 0,
+    "ownShopIDs": [],
+    "aliases": [],
+    "sources": [
+      "annexeD"
+    ],
+    "status": "à vérifier (Annexe D)",
+    "note": "",
+    "fetchedAt": ""
+  },
+  {
+    "slug": "mok",
+    "name": "MOK",
+    "country": "Belgium",
+    "city": "Bruxelles / Louvain",
+    "website": null,
+    "instagram": null,
+    "parisShopsServed": 0,
+    "ownShopIDs": [],
+    "aliases": [],
+    "sources": [
+      "annexeD"
+    ],
+    "status": "à vérifier (Annexe D)",
+    "note": "",
+    "fetchedAt": ""
+  },
+  {
+    "slug": "caffenation",
+    "name": "Caffènation",
+    "country": "Belgium",
+    "city": "Anvers",
+    "website": null,
+    "instagram": null,
+    "parisShopsServed": 0,
+    "ownShopIDs": [],
+    "aliases": [],
+    "sources": [
+      "annexeD"
+    ],
+    "status": "à vérifier (Annexe D)",
+    "note": "",
+    "fetchedAt": ""
+  },
+  {
+    "slug": "hola-coffee",
+    "name": "Hola Coffee",
+    "country": "Spain",
+    "city": "Madrid",
+    "website": null,
+    "instagram": null,
+    "parisShopsServed": 0,
+    "ownShopIDs": [],
+    "aliases": [],
+    "sources": [
+      "annexeD"
+    ],
+    "status": "à vérifier (Annexe D)",
+    "note": "",
+    "fetchedAt": ""
+  },
+  {
+    "slug": "toma-cafe",
+    "name": "Toma Café",
+    "country": "Spain",
+    "city": "Madrid",
+    "website": null,
+    "instagram": null,
+    "parisShopsServed": 0,
+    "ownShopIDs": [],
+    "aliases": [],
+    "sources": [
+      "annexeD"
+    ],
+    "status": "à vérifier (Annexe D)",
+    "note": "",
+    "fetchedAt": ""
+  },
+  {
+    "slug": "gardelli",
+    "name": "Gardelli",
+    "country": "Italy",
+    "city": "Forlì",
+    "website": null,
+    "instagram": null,
+    "parisShopsServed": 0,
+    "ownShopIDs": [],
+    "aliases": [],
+    "sources": [
+      "annexeD"
+    ],
+    "status": "à vérifier (Annexe D)",
+    "note": "",
+    "fetchedAt": ""
+  },
+  {
+    "slug": "nero-scuro",
+    "name": "Nero Scuro",
+    "country": "Italy",
+    "city": "Italie",
+    "website": null,
+    "instagram": null,
+    "parisShopsServed": 0,
+    "ownShopIDs": [],
+    "aliases": [],
+    "sources": [
+      "annexeD"
+    ],
+    "status": "à vérifier (Annexe D)",
+    "note": "",
+    "fetchedAt": ""
+  },
+  {
+    "slug": "bugan-coffee-lab",
+    "name": "Bugan Coffee Lab",
+    "country": "Italy",
+    "city": "Bergame",
+    "website": null,
+    "instagram": null,
+    "parisShopsServed": 0,
+    "ownShopIDs": [],
+    "aliases": [],
+    "sources": [
+      "annexeD"
+    ],
+    "status": "à vérifier (Annexe D)",
+    "note": "",
+    "fetchedAt": ""
+  },
+  {
+    "slug": "garage-coffee-bros",
+    "name": "Garage Coffee Bros",
+    "country": "Italy",
+    "city": "Italie",
+    "website": null,
+    "instagram": null,
+    "parisShopsServed": 0,
+    "ownShopIDs": [],
+    "aliases": [],
+    "sources": [
+      "annexeD"
+    ],
+    "status": "à vérifier (Annexe D)",
+    "note": "",
+    "fetchedAt": ""
+  },
+  {
+    "slug": "square-mile",
+    "name": "Square Mile",
+    "country": "United Kingdom",
+    "city": "Londres",
+    "website": null,
+    "instagram": null,
+    "parisShopsServed": 0,
+    "ownShopIDs": [],
+    "aliases": [],
+    "sources": [
+      "annexeD"
+    ],
+    "status": "à vérifier (Annexe D)",
+    "note": "",
+    "fetchedAt": ""
+  },
+  {
+    "slug": "colonna",
+    "name": "Colonna",
+    "country": "United Kingdom",
+    "city": "Bath",
+    "website": null,
+    "instagram": null,
+    "parisShopsServed": 0,
+    "ownShopIDs": [],
+    "aliases": [],
+    "sources": [
+      "annexeD"
+    ],
+    "status": "à vérifier (Annexe D)",
+    "note": "",
+    "fetchedAt": ""
+  },
+  {
+    "slug": "origin",
+    "name": "Origin",
+    "country": "United Kingdom",
+    "city": "Cornouailles",
+    "website": null,
+    "instagram": null,
+    "parisShopsServed": 0,
+    "ownShopIDs": [],
+    "aliases": [],
+    "sources": [
+      "annexeD"
+    ],
+    "status": "à vérifier (Annexe D)",
+    "note": "",
+    "fetchedAt": ""
+  },
+  {
+    "slug": "hasbean",
+    "name": "Hasbean",
+    "country": "United Kingdom",
+    "city": "Stafford",
+    "website": null,
+    "instagram": null,
+    "parisShopsServed": 0,
+    "ownShopIDs": [],
+    "aliases": [],
+    "sources": [
+      "annexeD"
+    ],
+    "status": "à vérifier (Annexe D)",
+    "note": "",
+    "fetchedAt": ""
+  },
+  {
+    "slug": "dark-arts",
+    "name": "Dark Arts",
+    "country": "United Kingdom",
+    "city": "Londres",
+    "website": null,
+    "instagram": null,
+    "parisShopsServed": 0,
+    "ownShopIDs": [],
+    "aliases": [],
+    "sources": [
+      "annexeD"
+    ],
+    "status": "à vérifier (Annexe D)",
+    "note": "",
+    "fetchedAt": ""
+  },
+  {
+    "slug": "workshop",
+    "name": "Workshop",
+    "country": "United Kingdom",
+    "city": "Londres",
+    "website": null,
+    "instagram": null,
+    "parisShopsServed": 0,
+    "ownShopIDs": [],
+    "aliases": [],
+    "sources": [
+      "annexeD"
+    ],
+    "status": "à vérifier (Annexe D)",
+    "note": "",
+    "fetchedAt": ""
+  },
+  {
+    "slug": "round-hill",
+    "name": "Round Hill",
+    "country": "United Kingdom",
+    "city": "Bath",
+    "website": null,
+    "instagram": null,
+    "parisShopsServed": 0,
+    "ownShopIDs": [],
+    "aliases": [],
+    "sources": [
+      "annexeD"
+    ],
+    "status": "à vérifier (Annexe D)",
+    "note": "",
+    "fetchedAt": ""
+  },
+  {
+    "slug": "obadiah",
+    "name": "Obadiah",
+    "country": "United Kingdom",
+    "city": "Édimbourg",
+    "website": null,
+    "instagram": null,
+    "parisShopsServed": 0,
+    "ownShopIDs": [],
+    "aliases": [],
+    "sources": [
+      "annexeD"
+    ],
+    "status": "à vérifier (Annexe D)",
+    "note": "",
+    "fetchedAt": ""
+  },
+  {
+    "slug": "3fe",
+    "name": "3fe",
+    "country": "Ireland",
+    "city": "Dublin",
+    "website": null,
+    "instagram": null,
+    "parisShopsServed": 0,
+    "ownShopIDs": [],
+    "aliases": [],
+    "sources": [
+      "annexeD"
+    ],
+    "status": "à vérifier (Annexe D)",
+    "note": "",
+    "fetchedAt": ""
+  },
+  {
+    "slug": "mame",
+    "name": "Mame",
+    "country": "Switzerland",
+    "city": "Zurich",
+    "website": null,
+    "instagram": null,
+    "parisShopsServed": 0,
+    "ownShopIDs": [],
+    "aliases": [],
+    "sources": [
+      "annexeD"
+    ],
+    "status": "à vérifier (Annexe D)",
+    "note": "",
+    "fetchedAt": ""
+  },
+  {
+    "slug": "stoll",
+    "name": "Stoll",
+    "country": "Switzerland",
+    "city": "Zurich",
+    "website": null,
+    "instagram": null,
+    "parisShopsServed": 0,
+    "ownShopIDs": [],
+    "aliases": [],
+    "sources": [
+      "annexeD"
+    ],
+    "status": "à vérifier (Annexe D)",
+    "note": "",
+    "fetchedAt": ""
+  },
+  {
+    "slug": "gota-coffee-experts",
+    "name": "Gota Coffee Experts",
+    "country": "Austria",
+    "city": "Vienne",
+    "website": null,
+    "instagram": null,
+    "parisShopsServed": 0,
+    "ownShopIDs": [],
+    "aliases": [],
+    "sources": [
+      "annexeD"
+    ],
+    "status": "à vérifier (Annexe D)",
+    "note": "",
+    "fetchedAt": ""
+  },
+  {
+    "slug": "sussmund",
+    "name": "Süssmund",
+    "country": "Austria",
+    "city": "Vienne",
+    "website": null,
+    "instagram": null,
+    "parisShopsServed": 0,
+    "ownShopIDs": [],
+    "aliases": [],
+    "sources": [
+      "annexeD"
+    ],
+    "status": "à vérifier (Annexe D)",
+    "note": "",
+    "fetchedAt": ""
+  },
+  {
+    "slug": "kross-coffee-roasters",
+    "name": "Kross Coffee Roasters",
+    "country": "Greece",
+    "city": "Grèce",
+    "website": null,
+    "instagram": null,
+    "parisShopsServed": 0,
+    "ownShopIDs": [],
+    "aliases": [],
+    "sources": [
+      "annexeD"
+    ],
+    "status": "à vérifier (Annexe D)",
+    "note": "",
+    "fetchedAt": ""
+  },
+  {
+    "slug": "taf",
+    "name": "Taf",
+    "country": "Greece",
+    "city": "Athènes",
+    "website": null,
+    "instagram": null,
+    "parisShopsServed": 0,
+    "ownShopIDs": [],
+    "aliases": [],
+    "sources": [
+      "annexeD"
+    ],
+    "status": "à vérifier (Annexe D)",
+    "note": "",
+    "fetchedAt": ""
+  },
+  {
+    "slug": "fabrica-coffee-roasters",
+    "name": "Fábrica Coffee Roasters",
+    "country": "Portugal",
+    "city": "Lisbonne",
+    "website": null,
+    "instagram": null,
+    "parisShopsServed": 0,
+    "ownShopIDs": [],
+    "aliases": [],
+    "sources": [
+      "annexeD"
+    ],
+    "status": "à vérifier (Annexe D)",
+    "note": "",
+    "fetchedAt": ""
+  },
+  {
+    "slug": "doubleshot",
+    "name": "Doubleshot",
+    "country": "Czechia",
+    "city": "Prague",
+    "website": null,
+    "instagram": null,
+    "parisShopsServed": 0,
+    "ownShopIDs": [],
+    "aliases": [],
+    "sources": [
+      "annexeD"
+    ],
+    "status": "à vérifier (Annexe D)",
+    "note": "",
+    "fetchedAt": ""
+  },
+  {
+    "slug": "hayb",
+    "name": "HAYB",
+    "country": "Poland",
+    "city": "Varsovie",
+    "website": null,
+    "instagram": null,
+    "parisShopsServed": 0,
+    "ownShopIDs": [],
+    "aliases": [],
+    "sources": [
+      "annexeD"
+    ],
+    "status": "à vérifier (Annexe D)",
+    "note": "",
+    "fetchedAt": ""
+  },
+  {
+    "slug": "kawa",
+    "name": "Kawa",
+    "country": "France",
+    "city": "Paris",
+    "website": null,
+    "instagram": null,
+    "parisShopsServed": 0,
+    "ownShopIDs": [],
+    "aliases": [],
+    "sources": [
+      "annexeD"
+    ],
+    "status": "à vérifier (Annexe D)",
+    "note": "si distinct de Tanat",
+    "fetchedAt": ""
+  }
+]

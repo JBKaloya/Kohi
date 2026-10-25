@@ -24,7 +24,7 @@ Deux mots en `catalogueLabel` à côté du wordmark — **Coffees** · **Recipes
 | --- | --- |
 | **Coffees** | Grille d’objets. Le bouton scan n’existe que ici. |
 | **Recipes** | Trois onglets de niveau 2 : Mine · Suggested · From the pros. Ask à droite. Bouton `cup.and.saucer` : café → recette → brew (minuteur). Une recette se sauvegarde toujours depuis un brew. |
-| **Profil** | Icône `person.crop.circle` toujours visible. Kit, eau, défauts, onboarding, import (placeholder), IA expérimentale, compte. |
+| **Profil** | Icône `person.crop.circle` toujours visible. Kit, filtres, eau, défauts, onboarding, import (placeholder), IA expérimentale, compte. |
 | **Account** | Rangée dans Profil, seulement si `Supabase.plist` est présent. `List` système, hors grammaire catalogue. |
 
 Raccourcis système (App Intents, exposés à Siri / Shortcuts) :
@@ -48,7 +48,7 @@ Un seul écran d’accueil : des cartes posées sur du papier, un wordmark « Ko
 | Ouverture | Tap → fiche détail. Transition zoom (iOS 26+). |
 | Atterrissage | Une carte tout juste scannée arrive en haut de la grille avec une animation de pose. |
 | Vide | « Nothing collected yet » + invitation à scanner. |
-| Face | **Flyer** 4:5 dès qu’il est prêt, sinon le scan aplati. |
+| Face | Le scan aplati. |
 
 ---
 
@@ -106,18 +106,17 @@ Quand la lecture locale est faible — peu de champs, écriture manuscrite, japo
 Objet centré sur le papier, ombre, **inclinaison et reflet** selon le gyroscope. En dessous, la notice de catalogue. Une carte sans nom se titre par producteur / ferme / station, puis origine, puis torréfacteur ; la variété ne titre que s’il n’y a rien d’autre. Deux cartes au même titre reçoivent un suffixe `·` (torréfacteur, date de torréfaction, lot, date de scan).
 
 - **Tombstone** : nom (désambiguïsé), origine, altitude.
-- **Flyer / Scan** : chips pour basculer (si le poster est prêt). Tap sur l’objet aussi.
 - **Notes** : chips horizontaux des tasting notes.
-- **On the wheel** : chips outline des ids SCA 2016 reconnus dans ces notes (flag `flavorWheel`).
+- **On the wheel** : chips outline des ids SCA 2016 reconnus dans ces notes. Toujours monté.
 - **Caption** : torréfacteur, producteur, farm / wash station s’ils sont remplis, région, pays, altitude, variété, process, species **seulement si ce n’est pas arabica**, harvest, lot, roast (+ Agtron + méthode de décaf), **Roasted on** (+ jours), score, prix (`14 € · 250 g · 56 €/kg`), lieu, **Link** (URL produit, `arrow.up.right`), code label. Pas de « Brewed » ni de date d’ajout.
 - **Lieu** : tap → Apple Maps ou Google Maps.
 - **Show original** : texte d’origine après traduction (suffixe 日本語 / 中文).
-- **Suggested recipe** : rangée *Card / From the pros / Adapted / Yours* + **For your grinder** (mouture dans tes clics, ou « Add your grinder… ») + **Use**. La recette imprimée reste au-dessus, tag *Card*.
+- **Suggested recipe** : ligne 1 = nom + dose · ratio · temp ; ligne 2 = **For your grinder** (clics) ou **For your grinder: set a range**. **Use** à droite. La recette imprimée reste au-dessus, tag *Card*.
 - **Brews** : ligne 1 = nom de recette (ou méthode) + rating ; ligne 2 = `dose · ratio · temp`. Long press : **Brew again** / **Compare**. Un brew qui a enregistré une *Suggested correction* la montre en `tag`.
 - **Profile** (flag `cardProfile`) : radar médian (≥ 2 brews comparables) + meilleur en `inkMuted`, saveurs trouvées avec `✓` si déclarées, `n brews · avg · best`.
 - **Pages & documents** : pièces jointes.
 - **Note to self**.
-- Actions : **Edit**, **Regenerate poster**, **Remove from archive**. Pas de bouton **Ask** sur la carte.
+- Actions : **Edit**, **Remove from archive**. Pas de bouton **Ask** sur la carte.
 
 ---
 
@@ -130,15 +129,16 @@ Même feuille pour une nouvelle carte et une édition. Champs libres partout ; v
 | Coffee, Country, Region, Producer, Altitude, Variety, Process | Texte. Process : quick picks Washed, Natural, Honey, Anaerobic, Carbonic Maceration, Wet Hulled. |
 | **Roaster** | Texte + suggestions depuis l’index local. Choisir lie `roasterId`. « Add roaster » → nom, ville, pays, site, Instagram. Dédoublonnage nom normalisé + pays (« Already in the index… »). Hors ligne : texte libre. |
 | Place | Recherche MapKit (POI + adresse), biaisée par la localisation si autorisée. |
-| Tasting notes | Chips éditables. *Match to wheel* : chips outline des ids reconnus (non sélectionnés pour toi). |
-| **On the bag** (toujours visible) | Roast (5 chips), Agtron, **Roasted on**, Date (si pas de torréfaction), Price + devise, Bag, Lot, Harvest, Cupping, Farm, Station, Link (URL produit), Decaf + méthode. |
-| Brew method | Espresso, V60, Filter, AeroPress, Moka, French Press, Cold Brew. |
+| Tasting notes | Chips éditables. La roue n’est plus ici : le détail la montre déjà. |
+| **On the bag** (toujours visible) | Roast (rail 6 crans, Super light → Dark, Agtron pré-rempli si vide), Agtron, **Roasted on**, Date (si pas de torréfaction), Price + devise, Bag. |
+| Lot | Lot, Harvest, Cupping, Farm, Station, Link (URL produit), Decaf + méthode. |
 | Recipe on card | Recette reconnue, dismissible. |
-| Pages & documents | Ajouter / typer des pièces. |
 | **Bought at** (section visible) | Place + type. |
 | Note to self | Texte libre. **Dictate** (`DictationField`) dicte dans ce champ. |
+| **The rest of the bag** (en fin de formulaire) | Miniatures + **Scan the back label** / **Scan the roaster's recipe**. |
 | Date | Date du café (distincte de l’ajout et de *Roasted on*). |
-| On the shelf (nouvelle carte) | **Scan** sur la grille, ou **AI flyer** généré après save. |
+
+La méthode de brew n’est plus un champ d’édition : elle appartient au brew. `CoffeeCard.brewMethod` reste, alimenté par l’OCR, pour le filtre de la grille et le pré-remplissage.
 
 Squelettes shimmer pendant l’OCR. Discard d’un nouveau scan (fichiers effacés) ou retrait de l’archive.
 
@@ -164,7 +164,7 @@ Feuille catalogue depuis l’icône en haut à droite. Rien n’est obligatoire.
 
 ### Onboarding
 
-Après le **premier scan** (1 100 ms après l’atterrissage), une feuille : « Bring what you have », puis trois questions sautables (méthode, broyeur, eau). Un flag `hasSeenSetupFlow` empêche toute relance automatique. Relance depuis Profil › Set up again. Import et photo du kit sont des rangées « soon ».
+Après le **premier scan** (1 100 ms après l’atterrissage), une feuille : « Bring what you have », puis trois questions sautables (méthode + **Which paper?**, broyeur, eau). Un flag `hasSeenSetupFlow` empêche toute relance automatique. Relance depuis Profil › Set up again. Import et photo du kit sont des rangées « soon ».
 
 ### Équipements
 
@@ -173,13 +173,17 @@ Un item = `kind · brand · model · notes · isDefaultFor[methods]` + champs pa
 | Kind | Champs |
 | --- | --- |
 | Grinder | Autocomplétion sur la base bundlée (187 modèles) ou custom, burrs, réglage (clicks / stepless / dial), plages par méthode quand elles sont vérifiées. |
-| Brewer | Autocomplétion sur `brewers.json` (80 drippers : famille + bypass). Type, liste de filtres. |
+| Brewer | Autocomplétion sur `brewers.json` (80 drippers : famille + bypass). Type, taille, formes de papier acceptées. Les filtres ne s’éditent plus ici. |
 | Espresso machine | Autocomplétion (Sage, Gaggia, Silvia, Flair, Robot). Panier (g), pression. |
 | Kettle | Autocomplétion (Stagg EKG, Buono, Brewista). Col de cygne, contrôle de température. |
 | Scale | Autocomplétion (Acaia, Timemore, Hario). Résolution, timer intégré. |
 | Accessory | Notes. |
 
 Pas d’identification par photo.
+
+### Filtres
+
+Papier possédé, premier objet de kit à part entière (`FilterStock`, seed `filters.json`, 45 références). Rangées sous Your kit. Le premier papier d’un dripper devient son défaut. Compatible = forme × taille, avec dérogation `fits` (Sibarist L dans une Chemex).
 
 ### Eau
 
@@ -198,7 +202,7 @@ Profil = nom, source (*tap / filtered / bottled / recipe*), Ca / Mg / Na / HCO�
 
 ### Features (lot 2)
 
-Interrupteurs locaux (`LotFlags`) dans Profil › **Features** : `taste7`, `flavorWheel`, `brewCompare`, `cardProfile`, `flavorOrigin`. **On par défaut**, sauf `flavorOrigin`. Ils cachent l’UI ; l’archive migre toujours. Override `KOHI_*` en DEBUG.
+Interrupteurs locaux (`LotFlags`) dans Profil › **Features** : `brewCompare`, `cardProfile`, `flavorOrigin`, `keepVoiceNote`. **On par défaut**, sauf `flavorOrigin` et `keepVoiceNote`. Taste et la roue ne sont plus optionnels. Ils cachent l’UI ; l’archive migre toujours. Override `KOHI_*` en DEBUG. Une note de brew est transcrite puis supprimée, sauf si **Keep brew recordings** est on.
 
 ---
 
@@ -214,7 +218,7 @@ La température d’une suggestion ne bouge que si la carte dit le niveau de tor
 
 ### Brasser
 
-Le bouton `cup.and.saucer` ouvre un picker de café, puis le **même** parcours brew que la carte. Depuis une fiche recette, **Brew** ouvre ce parcours déjà rempli (Scope → Kit, puis Brew now ou Already brewed).
+Le bouton `cup.and.saucer` ouvre un picker de café, puis le **même** parcours brew que la carte. Depuis une fiche recette, **Brew** ouvre ce parcours déjà rempli (Scope → Kit → Dial, puis Brew ou Log without timer).
 
 ### From the pros
 
@@ -234,38 +238,49 @@ Bouton **ASK** en tête de Recipes, et « Ask about this coffee » sous Brews su
 
 ---
 
-## 10. Brew — un parcours, quatre temps
+## 10. Brew — six écrans
 
-Un seul host (`BrewFlowHost`) pour la carte, une recette, le FAB cup, un intent, l’édition d’un brew, et **Brew again**. Un seul seed (`BrewPrefill`) et un seul save (`BrewSession.finish`) : grind dans l’unité du moulin, eau, filtre, agitation, `captureSource`, `flowGs`.
+Un seul host (`BrewFlowHost`) pour la carte, une recette, le FAB cup, un intent, l’édition d’un brew, et **Brew again**. Un seul seed (`BrewPrefill`) et un seul save (`BrewSession.finish`) : grind dans l’unité du moulin, eau, filtre, agitation, `captureSource`, `flowGs`. Fermer garde un brouillon ; au relancement, **Resume / Discard**.
 
-Pensé pour le *deuxième* café : Save suffit si rien n’a changé. Pré-rempli depuis la recette, le dernier brew (éventuellement déjà ajusté par une Suggested correction), et les défauts du Setup.
+Pensé pour le *deuxième* café : Save suffit si rien n’a changé. Pré-rempli depuis la recette, le dernier brew (éventuellement déjà ajusté par une Suggested correction), et les défauts du Setup. Six ticks depuis le FAB, cinq depuis une carte.
 
-### 1. Scope
+### 1. Which coffee
 
-Format (1 cup / 2 cups / Batch), dose, eau, ratio. **Dictate** en tête : une phrase remplit format, dose, eau, temp, grind avant le choix de recette (`SpokenBrewParser`, puis `FieldExtract` si la couverture est faible). Recettes en liste : Card · Suggested · Last brew · Mine · From the pros. Une recette déjà en Suggested n’est pas répétée sous From the pros. Hors-dose : **scalée** à la taille courante, sous-ligne `scaled from 15 g`. Espresso et dose < 12 g : chiffres d’auteur, pas de sous-ligne.
+Depuis le FAB. Liste des cartes. Saute si on part d’une fiche.
 
-### 2. Kit
+### 2. Which recipe? (ex « What you're doing »)
 
-Méthode, bouilloire, brewer, eau, moulin, température, agitation, filtre. **Brew now** ouvre le timer. **Already brewed** saute le timer et va à After. En édition d’un brew sauvé : pas de timer, After est l’arrivée.
+Onglets **Pour Over / Immersion / Espresso** puis Last / Mine / From the pros. La liste est filtrée par famille : V60, Chemex, Kalita → Pour Over ; AeroPress, presse, switch, cold brew → Immersion ; espresso, moka → Espresso. Next toujours actif. **Build an express recipe** ouvre le builder. **Edit recipe** apparaît si la recette sélectionnée est `mine` ou `express`. Pas de Format ni de Parameters ici.
 
-### 3. Pour
+### 3. With what
 
-Sans étapes : chrono vide. Avec étapes : **GuidedBrewView** — un seul bloc, `Typography.number`, cible interpolée, tap = Next, Stop en bas. Avance automatique après 3 s si `autoAdvance`. **Total brew time** à la fin. Pas de `g/s` à l’écran (calculé à l’enregistrement).
+Onglets **Pour Over / Immersion / Espresso**. La méthode suit le dripper ou la machine. Quatre rangées : Dripper (ou Machine) / Grinder / Filter / **Accessories** (multi-sélection, visible si des accessoires sont déclarés dans Profile). La rangée Filter reste visible : « No paper for a French press ». Les papiers espresso sont des disques. Les accessoires en préparation s’ajoutent à `Brew.equipmentIDs`.
 
-### 4. After
+### 4. Today's settings
 
-- **Rating 1–5** (cibles 44 pt) + pastille de complétude.
-- **Taste** (flag `taste7`) : radar + 7 axes. Le brew précédent de ce café est l’underlay, pas un pré-remplissage.
-- **Flavors** (flag `flavorWheel`).
+Ligne **Recipe · nom · Edit** si une recette est attachée. **Paramètres** : dose, eau (ou Out en espresso), ratio calculé en lecture seule. Modifier l’eau redimensionne les masses d’étapes et affiche « Steps rescaled to X g » ; la dose seule ne touche pas la séquence. Le redimensionnement part toujours de `BrewSession.nominalRecipe`, la recette telle que choisie, jamais du dernier résultat — sinon chaque frappe se composerait sur la précédente. **Edit** ouvre `StepBuilderSheet` (accessoires par étape en plus). Recette `mine` / `express` mise à jour en place ; `reference` / `ai` copiée en `express`.
+
+Ligne de rappel `with V60 02 · Comandante C40` + **Change** (machines espresso comprises). **Eau** : profil + température dans le même bloc. **Grind** : rail à part, clics si le moulin a une plage, sinon sept crans + **Set your range**. Pied : **Brew** 52 pt, **Log without timer**.
+
+### 5. Pour
+
+Séquence toujours présente (recette ou séquence dérivée). **GuidedBrewView** — un seul bloc, `Typography.number`, cible interpolée, tap = Next, Stop enregistre l’étape en cours. **Rinse** est un bloc à part (masse indicative selon la forme, **Skip**). Le chrono démarre en quittant ce bloc : le rinçage est hors TBT et hors débit. Tag de débit en direct. **Narrate** sous le bloc (fichier AAC, pas de reco live). Avance automatique après 3 s si `autoAdvance`. **Total brew time** à la fin. Le téléphone ne s’endort pas (`isIdleTimerDisabled`).
+
+### 6. After — It's done
+
+- **Summary** (FieldGroup) : dose et boisson toujours éditables.
+- **What you did** + provenance (timer / narration / edited / default not confirmed). Une note vocale se transcrit ici en fond : shimmer, puis le texte (lexique café local, puis une passe d’orthographe `field-extract` si l’IA est on), puis les masses d’étapes. Le timer garde le temps ; la narration écrase la masse.
+- **Pour curve** : grille 50 g, une ligne par versement, triée par le temps réel.
+- **Rating 1–5** (cibles 44 pt) + pastille de complétude. Save marche avec un rating seul.
+- **Taste** : radar + 7 axes. Le brew précédent de ce café est l’underlay.
+- **Flavors** : *On the pack* / *In your cup* (roue SCA, toujours montée).
 - **Correction** : − · +.
-- **Comment** dicté (`DictationField`). Le Save est un `safeAreaInset`, pas un bouton toolbar — le champ ne passe plus dessous.
-- **Suggested correction** : lecture + trois mouvements classés (ensemble admissible G7 + steps + dripper). Hors ligne : une règle. Flag on par défaut.
-- **How useful was this?** : échelle à quatre niveaux + texte, sous chaque sortie modèle.
-- Paramètres repliés, éditables (dose, eau, grind, temp, time).
-- TDS, yield, **Save as recipe**, date, suppression.
-- **Compare with…** (flag `brewCompare`) : tous les brews comparables, chip Any coffee. **Brew again** depuis Compare atterrit au Kit.
+- **Comment** dicté (`DictationField`). Le verbatim de Narrate y est aussi recopié.
+- **Suggested correction** : *Save what you did* en tête des leviers quand la séquence n’est pas confirmée.
+- **Save as recipe** part des actuals.
+- **Compare with…** (flag `brewCompare`).
 
-La caféine (calcul, override, ligne) **n’existe plus**.
+Les titres de brew : `recipeName`, sinon la famille (Filter / Espresso / Batch), jamais le dripper.
 
 `captureSource` est enregistré **par brew** (`typed` / `dictated` / `scanned` / `prefilled`), pas par champ.
 
@@ -289,16 +304,9 @@ Autre face, sachet, ticket, fiche recette, ou document.
 
 ---
 
-## 12. Posters (flyers IA)
+## 12. Posters (retirés)
 
-Variante **4:5**, « tampon sur parchemin », pour la grille. Le scan reste l’archive.
-
-- Option à la création (**AI flyer** / **Scan**).
-- Génération asynchrone (`pending` → `ready` / `failed`) via `card-poster`.
-- Régénération depuis le détail.
-- Backfill depuis Compte (coût indicatif). Restore depuis le cloud si un poster existe déjà.
-
-Sans Supabase, la grille montre le scan.
+La génération de flyers IA a été retirée. Le scan est la face de la grille. Archive (prompt, stack, coût) : [ai-poster-retired.md](ai-poster-retired.md). La colonne Postgres `coffee_cards.poster` est conservée, plus écrite comme une feature.
 
 ---
 
@@ -309,18 +317,18 @@ Principes tenus : ne remplit que le vide ; règles d’abord ; badge / fallback 
 | Fonction | Où | État |
 | --- | --- | --- |
 | `card-vision` | Lecture carte | Livré (pas derrière le master switch). |
-| `card-poster` | Flyer | Livré (idem). |
 | `field-extract` (phrase → brew) | Dictée | Livré, si la grammaire locale est trop mince. |
 | `field-extract` (image → sachet / ticket / eau) | Client + edge | **Code présent, UI absente.** Voir le registre. |
-| `recipe-adapt` | Fiche recette, sous les règles | Livré, flag on, variante unverified + « pourquoi ». |
-| `ask` | Onglet Recipes + fiche café | Livré comme feuille, **sans contexte**, base `knowledge` vide. |
+| `recipe-adapt` | Fiche recette, sous les règles | Livré, flag on, variante unverified + « pourquoi ». Cache session par recette + café. |
+| `ask` | Onglet Recipes + fiche café | Livré comme feuille, **sans contexte**, base `knowledge` vide. Pas de cache (question nouvelle à chaque fois). |
+| `suggested-correction` | After | Livré, flag on. Cache session. En DEBUG, bouton Model (pas d’appel auto). |
 | Identification d’équipement par photo | Setup | Absent. |
 | Foundation Models on-device | Extraction structurée | Absent (repli serveur uniquement). |
 | Agents (enrichissement roaster, qualité, curateur, Coach) | Serveur | Absents. |
 
 Profil : master **Experimental AI** (off par défaut) + interrupteurs par feature. Kill switch serveur `ai_flags`. Chaque appel écrit un `AIEvent` (feature, modèle, tokens, latence, accepté ou non). Profil affiche un résumé « Kept ».
 
-Sans Supabase : voix on-device, OCR Vision, règles, recettes de référence et kit (Profil) fonctionnent. Vision lourde, posters, Ask, adapt et extract serveur manquent.
+Sans Supabase : voix on-device, OCR Vision, règles, recettes de référence et kit (Profil) fonctionnent. Vision lourde, Ask, adapt et extract serveur manquent.
 
 ---
 
@@ -392,7 +400,7 @@ Statuts : **livré** · **partiel** · **absent** · **en avance** (prévu plus 
 | Recettes de référence (attribuées, For your grinder) | 1.0 | **Livré** — onglet From the pros |
 | Brew Recipe / With / Water | 1.0 | **Livré** |
 | Taste 7 axes 0–10 + diagnostic + Suggested correction | 1.0 | **Livré** (trois mouvements, flags on) |
-| Dictée du brew on-device | 1.0 | **Livré** (`DictationField` sur le texte libre) |
+| Dictée du brew on-device | 1.0 | **Livré** (`DictationField` sur le texte libre ; note vocale pendant le timer, transcrite ensuite, y compris écran verrouillé) |
 | `AIEvent` + flags | 1.0 | **Livré** |
 | Retrait caféine | 1.0 | **Livré** |
 | `species` hors formulaire, décaf exposé | 1.0 | **Livré** — species au caption si non-arabica |

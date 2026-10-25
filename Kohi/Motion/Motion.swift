@@ -158,8 +158,9 @@ enum Motion {
         static let optionalRuleOpacity: Double = 0.55
         /// Rise of the hint line when focus arrives.
         static let hintRise: CGFloat = 4
-        /// Extra scroll padding so a focused field can sit above the keyboard.
-        static let keyboardClearance: CGFloat = 180
+        /// iOS already lifts the scroll view for the keyboard. Extra padding
+        /// here stacked a band of paper above it.
+        static let keyboardClearance: CGFloat = 0
         /// `paperShade` inset around a focused value, matching `GuessHighlight`.
         static let focusShadePad = (h: CGFloat(6), v: CGFloat(3))
         static let focusShadeRadius: CGFloat = 5

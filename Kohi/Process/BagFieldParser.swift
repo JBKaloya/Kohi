@@ -210,8 +210,9 @@ nonisolated enum BagFieldParser {
     ]
 
     /// "14 €", "€14.00", "¥1,500", "14,50 EUR". Requires a currency marker:
-    /// a bare number on a bag is a weight far more often than a price.
-    private static func price(in line: String) -> (Double, String)? {
+    /// a bare number on a bag is a weight far more often than a price. Also
+    /// how a café menu is read: the same rule holds on a chalkboard.
+    static func price(in line: String) -> (Double, String)? {
         let lowered = line.lowercased()
         guard let currency = currencySymbols.first(where: { lowered.contains($0.token) }) else {
             return nil
@@ -290,6 +291,9 @@ nonisolated enum BagFieldParser {
     /// Only explicit levels. "Omni" and "espresso roast" say what the roast is
     /// *for*, not how dark it is; mapping them to a notch would be inventing.
     private static let roastLevelTokens: [(token: String, level: RoastLevel)] = [
+        ("super-light", .superLight), ("super light", .superLight),
+        ("extra-light", .superLight), ("extra light", .superLight),
+        ("ultra-light", .superLight), ("ultra light", .superLight),
         ("medium-light", .mediumLight), ("medium light", .mediumLight),
         ("light-medium", .mediumLight), ("moyen clair", .mediumLight),
         ("medium-dark", .mediumDark), ("medium dark", .mediumDark),
@@ -313,6 +317,7 @@ nonisolated enum BagFieldParser {
         // A bare "LIGHT" / "MEDIUM" heading, which is how many cards print it.
         let bare = lowered.trimmingCharacters(in: CharacterSet(charactersIn: " •·-—:"))
         switch bare {
+        case "super-light", "super light", "extra light", "ultra light": return .superLight
         case "light": return .light
         case "medium-light", "medium light": return .mediumLight
         case "medium": return .medium

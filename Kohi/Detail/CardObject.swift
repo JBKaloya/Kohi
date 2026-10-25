@@ -6,7 +6,9 @@ import SwiftUI
 struct CardObject: View {
     let card: CoffeeCard
     let width: CGFloat
-    var variant: ThumbnailVariant = .poster
+    /// Single tap turns the fiche over. Double-tap still zooms. Nil on every
+    /// path that is not the fiche, so the scan's gestures stay as they were.
+    var onFlip: (() -> Void)? = nil
 
     @Environment(\.scenePhase) private var scenePhase
     @State private var tilt = DeviceTilt()
@@ -50,6 +52,7 @@ struct CardObject: View {
             .gesture(pinch)
             .highPriorityGesture(pan, including: zoomed ? .all : .none)
             .onTapGesture(count: 2, perform: toggle)
+            .modifier(FlipTap(action: onFlip == nil ? nil : { if !zoomed { onFlip?() } }))
             .accessibilityHint("Pinch or double tap to zoom inside the card")
             .task { tilt.start() }
             .onDisappear { tilt.stop() }
@@ -57,12 +60,11 @@ struct CardObject: View {
                 guard !zoomed else { return }
                 phase == .active ? tilt.start() : tilt.stop()
             }
-            .onChange(of: variant) { _, _ in resetLens() }
             .onChange(of: card.id) { _, _ in resetLens() }
     }
 
     private var plate: some View {
-        CardImageView(card: card, targetWidth: width, variant: variant)
+        CardImageView(card: card, targetWidth: width)
     }
 
     /// Layout stays the resting plate. Zoom is a transform inside the mask.
@@ -195,18 +197,9 @@ struct CardObject: View {
         guard inspect == nil else { return }
         let id = card.id
         let hasMask = card.hasMask
-        let variant = variant
         Task {
             inspect = await Task.detached(priority: .userInitiated) {
-                switch variant {
-                case .poster where ImageStore.shared.exists(id, kind: .poster):
-                    ImageCodec.downsample(
-                        ImageStore.shared.url(for: id, kind: .poster),
-                        maxPixel: 4096
-                    )
-                case .poster, .scan:
-                    ImagePipeline.composed(id: id, hasMask: hasMask, maxPixel: 4096)
-                }
+                ImagePipeline.composed(id: id, hasMask: hasMask, maxPixel: 4096)
             }.value
         }
     }
@@ -227,13 +220,21 @@ struct CardObject: View {
     }
 
     private var plateHeight: CGFloat {
-        let ratio: Double
-        if variant == .poster, card.poster == .ready || card.poster == .pending {
-            ratio = PosterLayout.aspectRatio
-        } else {
-            ratio = card.aspectRatio
-        }
-        guard ratio > 0 else { return width }
+        let ratio = card.aspectRatio > 0 ? card.aspectRatio : CardTileLayout.aspectRatio
         return width / CGFloat(ratio)
+    }
+}
+
+/// Single tap, only when the fiche asked for a flip. Absent, the double-tap
+/// zoom is the only tap on the scan.
+private struct FlipTap: ViewModifier {
+    var action: (() -> Void)?
+
+    func body(content: Content) -> some View {
+        if let action {
+            content.onTapGesture(count: 1, perform: action)
+        } else {
+            content
+        }
     }
 }

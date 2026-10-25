@@ -12,6 +12,7 @@ nonisolated struct BrewActivityAttributes: ActivityAttributes {
         var stepIndex: Int
         var stepCount: Int
         var startedAt: Date
+        var isRecording: Bool = false
     }
 
     var coffeeName: String

@@ -5,6 +5,8 @@ import SwiftUI
 struct AttachmentStrip: View {
     let cardID: UUID
     let attachments: [CardAttachment]
+    var title: String = Copy.pagesAndDocuments
+    var showsAddButton: Bool = true
     let onAdd: () -> Void
     var onSelect: ((CardAttachment) -> Void)?
 
@@ -13,7 +15,7 @@ struct AttachmentStrip: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
             HStack(alignment: .firstTextBaseline) {
-                Text("Pages & documents")
+                Text(title)
                     .catalogueLabel()
                 Spacer()
                 Text("\(attachments.count)")
@@ -26,7 +28,9 @@ struct AttachmentStrip: View {
                     ForEach(attachments) { attachment in
                         attachmentThumb(attachment)
                     }
-                    addButton
+                    if showsAddButton {
+                        addButton
+                    }
                 }
             }
         }

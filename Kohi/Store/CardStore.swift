@@ -13,6 +13,8 @@ final class CardStore {
     var landingCardID: UUID?
 
     @ObservationIgnored weak var sink: (any ArchiveChangeSink)?
+    /// Unlinked, never deleted, when a card goes.
+    @ObservationIgnored weak var tastings: TastingStore?
     @ObservationIgnored private let files: CardFileStore
     @ObservationIgnored private var saveTask: Task<Void, Never>?
     /// Card id → wheel ids declared on the bag plus tasted on brews.
@@ -81,8 +83,18 @@ final class CardStore {
         cards[index] = updated
         flavorIndex.removeValue(forKey: card.id)
         invalidateTitles()
+        CardFiles.invalidateKohi(id: card.id)
         sink?.cardChanged(card.id)
         scheduleSave()
+    }
+
+    /// Moves every card linked to one roaster id onto another.
+    func relinkRoaster(from old: UUID, to new: UUID) {
+        for card in cards where card.roasterId == old {
+            var moved = card
+            moved.roasterId = new
+            update(moved)
+        }
     }
 
     func delete(_ card: CoffeeCard) {
@@ -90,6 +102,7 @@ final class CardStore {
         flavorIndex.removeValue(forKey: card.id)
         invalidateTitles()
         ThumbnailCache.shared.invalidate(card.id)
+        tastings?.unlinkCard(card.id)
         sink?.cardDeleted(card.id)
         let id = card.id
         Task.detached(priority: .utility) { ImageStore.shared.removeAll(for: id) }

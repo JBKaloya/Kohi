@@ -46,7 +46,7 @@ struct SyncParityTests {
             equipmentIDs: [UUID(uuidString: "EEEEEEEE-0000-0000-0000-000000000002")!],
             waterProfileID: UUID(uuidString: "EEEEEEEE-0000-0000-0000-000000000003")!,
             agitation: .swirl,
-            filterId: UUID(uuidString: "EEEEEEEE-0000-0000-0000-000000000005")!,
+            filterStockId: UUID(uuidString: "EEEEEEEE-0000-0000-0000-000000000005")!,
             steps: [
                 BrewStep(
                     id: UUID(uuidString: "EEEEEEEE-0000-0000-0000-000000000004")!,
@@ -59,7 +59,20 @@ struct SyncParityTests {
                     note: "swirled"
                 )
             ],
+            plannedSteps: [
+                BrewStep(
+                    id: UUID(uuidString: "EEEEEEEE-0000-0000-0000-000000000006")!,
+                    index: 0,
+                    action: .bloom,
+                    at: 0,
+                    targetAt: 45,
+                    targetMass: 60
+                )
+            ],
+            actualSource: .timer,
             flowGs: 1.5,
+            recipeName: "V60 « Ultimate »",
+            pourRates: [PourRate(stepIndex: 1, grams: 60, seconds: 15, gPerS: 4)],
             taste: TasteProfile(acidity: 6, bitterness: 4, sweetness: 8, aroma: 8, aftertaste: 8, body: 4, clarity: 7),
             flavors: [
                 FlavorTag(id: "floral-floral-jasmine"),
@@ -71,6 +84,7 @@ struct SyncParityTests {
             acidity: -1,
             bitterness: 1,
             body: -1,
+            complexity: 1,
             notes: "bloomed longer"
         )
     }
@@ -87,6 +101,7 @@ struct SyncParityTests {
                 latitude: 48.8722,
                 longitude: 2.3819
             ),
+            placeID: "crible",
             placeType: .roastery,
             country: "Ethiopia",
             region: "Gedeb",
@@ -98,6 +113,38 @@ struct SyncParityTests {
             brewMethod: .v60,
             personalNotes: "keep for mornings",
             brews: [fullBrew()],
+            tastings: [
+                Tasting(
+                    id: UUID(uuidString: "FFFFFFFF-0000-0000-0000-000000000001")!,
+                    date: Date(timeIntervalSince1970: 1_700_000_200),
+                    context: .out(
+                        place: Place(
+                            name: "Crible",
+                            address: "75 Rue Buffon",
+                            latitude: 48.8412,
+                            longitude: 2.3614
+                        ),
+                        placeID: "crible"
+                    ),
+                    rating: 5,
+                    taste: TasteProfile(acidity: 7, sweetness: 6),
+                    flavors: [FlavorTag(custom: "Jasmine")],
+                    acidity: 1,
+                    bitterness: -1,
+                    body: 1,
+                    note: "at the bar",
+                    createdAt: Date(timeIntervalSince1970: 1_700_000_200),
+                    updatedAt: Date(timeIntervalSince1970: 1_700_000_200)
+                ),
+                Tasting(
+                    id: UUID(uuidString: "FFFFFFFF-0000-0000-0000-000000000002")!,
+                    date: Date(timeIntervalSince1970: 1_700_000_300),
+                    context: .home(brewID: nil),
+                    rating: 3,
+                    createdAt: Date(timeIntervalSince1970: 1_700_000_300),
+                    updatedAt: Date(timeIntervalSince1970: 1_700_000_300)
+                ),
+            ],
             attachments: [
                 CardAttachment(
                     id: UUID(uuidString: "CCCCCCCC-0000-0000-0000-000000000001")!,
@@ -190,9 +237,9 @@ struct SyncParityTests {
     @Test func coffeeCardPropertiesAreAllAccountedFor() {
         #expect(
             Self.properties(of: Self.fullCard()) == [
-                "id", "name", "roaster", "roasterId", "place", "placeType",
+                "id", "name", "roaster", "roasterId", "place", "placeID", "placeType",
                 "country", "region", "producer", "altitude", "variety", "process",
-                "tastingNotes", "brewMethod", "personalNotes", "brews",
+                "tastingNotes", "brewMethod", "personalNotes", "brews", "tastings",
                 "attachments", "species", "isDecaf", "decafMethod", "productURL",
                 "farm", "washStation", "roastLevel", "agtron",
                 "roastedOn", "harvest", "cuppingScore", "price", "currency",
@@ -210,10 +257,104 @@ struct SyncParityTests {
                 "id", "date", "method", "dose", "water", "beverage", "seconds",
                 "grind", "temperature", "tds", "recipeID", "recipeRef", "recipeSnapshot",
                 "scale", "equipmentIDs",
-                "waterProfileID", "agitation", "filterId", "steps", "flowGs",
+                "waterProfileID", "agitation", "filterStockId", "steps", "plannedSteps",
+                "actualSource", "flowGs", "recipeName", "pourRates",
                 "taste", "legacyTaste", "flavors",
                 "nextTimeSuggestion", "captureSource", "rating", "acidity",
-                "bitterness", "body", "notes",
+                "bitterness", "body", "complexity", "notes",
+            ]
+        )
+    }
+
+    // MARK: - Tastings
+
+    static func fullTasting() -> Tasting {
+        Tasting(
+            id: UUID(uuidString: "FFFFFFFF-0000-0000-0000-000000000010")!,
+            date: Date(timeIntervalSince1970: 1_700_000_400),
+            context: .out(
+                place: Place(
+                    name: "Crible",
+                    address: "75 Rue Buffon",
+                    latitude: 48.8412,
+                    longitude: 2.3614,
+                    mapItemID: "I1234",
+                    city: "Paris",
+                    country: "France"
+                ),
+                placeID: "crible"
+            ),
+            cardID: fullCard().id,
+            coffee: TastedCoffee(
+                name: "Sidra",
+                roaster: "Fève",
+                roasterId: UUID(uuidString: "DDDDDDDD-0000-0000-0000-000000000002")!,
+                country: "Colombia",
+                region: "Huila",
+                farm: "La Palma",
+                variety: "Sidra",
+                process: "Natural",
+                tastingNotes: ["strawberry"],
+                referenceID: "ref-1"
+            ),
+            method: .filter,
+            brewer: .v60,
+            isBatch: true,
+            methodNote: "Orea",
+            price: CupPrice(amount: Decimal(string: "5.50")!, currency: "EUR"),
+            photos: ["cup.heic"],
+            rating: 4,
+            taste: TasteProfile(acidity: 7, sweetness: 6),
+            flavors: [FlavorTag(custom: "Strawberry")],
+            acidity: 1,
+            bitterness: -1,
+            body: 1,
+            note: "at the bar",
+            createdAt: Date(timeIntervalSince1970: 1_700_000_500),
+            updatedAt: Date(timeIntervalSince1970: 1_700_000_600),
+            deletedAt: Date(timeIntervalSince1970: 1_700_000_700)
+        )
+    }
+
+    @Test func tastingSurvivesTheRowRoundTrip() throws {
+        let original = Self.fullTasting()
+        let row = TastingRow(tasting: original, userID: Self.userID)
+        #expect(row.toTasting() == original)
+
+        let data = try JSONSerialization.data(withJSONObject: Self.dictionary(from: row))
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .iso8601
+        let decoded = try decoder.decode(TastingRow.self, from: data)
+        #expect(decoded.toTasting() == original)
+    }
+
+    @Test func aSoftDeleteTravelsAsDeletedAt() {
+        let row = TastingRow(tasting: Self.fullTasting(), userID: Self.userID)
+        #expect(row.deleted_at == Date(timeIntervalSince1970: 1_700_000_700))
+        #expect(row.toTasting().isDeleted)
+    }
+
+    @Test func aLegacyHomeTastingKeepsItsContext() {
+        let home = Tasting(context: .home(brewID: UUID()), rating: 3)
+        let restored = TastingRow(tasting: home, userID: Self.userID).toTasting()
+        #expect(restored.context == home.context)
+    }
+
+    /// If this fails, a field was added to `Tasting`. Map it in `TastingRow`,
+    /// add the column, extend `fullTasting()`, then list it here.
+    @Test func tastingPropertiesAreAllAccountedFor() {
+        #expect(
+            Self.properties(of: Self.fullTasting()) == [
+                "id", "date", "context", "cardID", "coffee", "method", "brewer",
+                "isBatch", "methodNote", "price", "photos", "rating", "taste",
+                "flavors", "acidity", "bitterness", "body", "note", "createdAt",
+                "updatedAt", "deletedAt",
+            ]
+        )
+        #expect(
+            Self.properties(of: Self.fullTasting().coffee) == [
+                "name", "roaster", "roasterId", "country", "region", "farm",
+                "variety", "process", "tastingNotes", "referenceID",
             ]
         )
     }

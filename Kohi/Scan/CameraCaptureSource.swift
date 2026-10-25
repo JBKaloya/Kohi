@@ -328,10 +328,14 @@ struct CameraPreview: UIViewRepresentable {
 struct CameraCaptureView: View {
     let onCapture: (CapturedCard) -> Void
     let onCancel: () -> Void
+    /// False while review is on top, so the session does not keep hunting
+    /// and firing haptics behind an opacity-0 preview.
+    var isActive: Bool = true
 
     @Environment(\.scenePhase) private var scenePhase
     @State private var engine = ScanEngine()
     @State private var photoSelection: PhotosPickerItem?
+    @State private var isPickerPresented = false
     @State private var isLoadingPhoto = false
 
     var body: some View {
@@ -350,17 +354,33 @@ struct CameraCaptureView: View {
         .task {
             engine.onCapture = onCapture
             await engine.start()
+            syncSession()
         }
         .onDisappear { engine.stop() }
-        .onChange(of: scenePhase) { _, phase in
-            if phase == .active { engine.resume() }
+        .onChange(of: isActive) { _, _ in syncSession() }
+        .onChange(of: scenePhase) { _, _ in syncSession() }
+        .onChange(of: isPickerPresented) { _, presented in
+            if presented {
+                engine.stop()
+            } else {
+                syncSession()
+            }
         }
         .onChange(of: photoSelection) { _, item in
             guard let item else { return }
             Task { await importPhoto(item) }
         }
+        .photosPicker(isPresented: $isPickerPresented, selection: $photoSelection, matching: .images)
         .haptic(.detectionLock, trigger: engine.lockCount)
         .haptic(.capture, trigger: engine.captureCount)
+    }
+
+    private func syncSession() {
+        if isActive, scenePhase == .active, !isPickerPresented {
+            engine.resume()
+        } else {
+            engine.stop()
+        }
     }
 
     private var controls: some View {
@@ -407,7 +427,9 @@ struct CameraCaptureView: View {
     }
 
     private var photoPickerButton: some View {
-        PhotosPicker(selection: $photoSelection, matching: .images) {
+        Button {
+            isPickerPresented = true
+        } label: {
             ScanSideButton(systemImage: "photo.on.rectangle.angled", title: "Photo")
         }
         .buttonStyle(.plain)

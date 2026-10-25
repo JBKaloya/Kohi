@@ -101,17 +101,17 @@ Après **Save**, la carte tombe en haut de la grille avec une animation de pose.
 ### À faire
 
 1. La feuille **Bring what you have** est ouverte. Tape **Set up by hand**.
-2. **1 / 3 — How do you brew?** : choisis ta méthode. **Next**.
+2. **1 / 3 — How do you brew?** : choisis ta méthode. Si c’est du papier (V60, Kalita, Chemex…), **Which paper?** apparaît dans la même étape : le papier de la marque, Cafec Abaca, ou Other. **Next**.
 3. **2 / 3 — What do you grind with?** : cherche ton broyeur, ou tape **Custom** et écris la marque et le modèle. **Next**.
 4. **3 / 3 — What water?** : choisis **Tap**, **Bottled** ou **Recipe**. **Next**.
 5. Ouvre ensuite **Profile** (icône personne) et regarde ce que ces trois questions ont créé.
-6. Dans **Your kit**, ajoute un deuxième objet — une bouilloire, une balance, ce que tu as.
+6. Dans **Your kit**, ajoute un deuxième objet — une bouilloire, une balance, ce que tu as. Dans **Filters**, tape **Add a filter** si tu n’as pas choisi de papier à l’onboarding.
 
 ### Ce que tu devrais voir
 
 Trois questions, toutes sautables avec **Skip**. Rien n'est obligatoire.
 
-Dans **Profile**, tes réponses sont devenues des lignes sous **Your kit**, **Water** et **Defaults**. Ce sont ces valeurs par défaut qui pré-rempliront chaque extraction.
+Dans **Profile**, tes réponses sont devenues des lignes sous **Your kit**, **Filters**, **Water** et **Defaults**. Ce sont ces valeurs par défaut qui pré-rempliront chaque extraction.
 
 Deux rangées sont grisées avec la mention « soon » : *Import from another app* et *Photo of your kit*. C'est normal, elles ne sont pas faites.
 
@@ -131,13 +131,12 @@ Deux rangées sont grisées avec la mention « soon » : *Import from another ap
 
 1. Ouvre un café depuis **Coffees**.
 2. Descends jusqu'à **Log a brew**. Tape dessus.
-3. Tu es sur **Scope** : format, dose, eau, puis les recettes. **Avant de remplir quoi que ce soit, regarde ce qui est déjà là.**
-4. Tape **Dictate** en haut et dis, à voix normale, quelque chose comme :
-   > « 18 in, 250 of water, two forty-five, four stars »
-5. Regarde les champs se remplir et se surligner. Tape sur un champ surligné pour annuler ce qu'il a compris.
-6. Choisis une taille (**1 cup** / **2 cups**). Les recettes hors-dose restent visibles, scalées, avec une ligne `scaled from … g`. Ultimate n'apparaît qu'une fois.
-7. Tape **Kit**. Vérifie méthode, bouilloire, eau, moulin, filtre.
-8. Tape **Already brewed** (ou **Brew now** si tu brasses pour de vrai — le timer guidé, puis After).
+3. Tu es sur **What you're doing** : format, dose, eau, onglets **Filter / Espresso**, puis Last / Mine / From the pros. Filter doit lister les recettes V60 / Chemex / AeroPress, pas seulement le dernier dripper. Espresso liste Moka et espresso. **Next** s’active quand une recette est choisie ou que dose et eau sont là. Tu peux **Build an express recipe**. Pas de Dictate sur cet écran.
+4. Tape **Next**. **With what** : les mêmes onglets Filter / Espresso, déjà sur la famille choisie, puis Dripper ou Machine, Grinder, Filter (la rangée Filter reste visible même sans papier). Espresso doit poser ta machine, pas garder un V60.
+5. **Today's settings** : kit + Change, eau et température ensemble, rail de mouture en clics si tu as un range, sinon sept crans + **Set your range**. Pas de filtre ici. **Brew** ou **Log without timer**.
+6. Pendant le brew : **Narrate**, Skip sur le rinse, Stop enregistre l'étape en cours.
+7. **It's done** : summary, What you did (le texte de Narrate apparaît là, pas seulement « Narrated »), pour curve, rating, taste, flavors (on the pack / in your cup). Save marche avec un rating seul. Fermer plus tôt propose **Resume**.
+8. Tape **Log without timer** (ou **Brew** si tu brasses pour de vrai — le rinçage d'abord, puis le timer guidé, puis After).
 9. Sur **After** : donne une note de 1 à 5 dans **Rating**.
 10. Déplie **Taste** et bouge deux ou trois des sept curseurs (Acidity, Bitterness, Sweetness, Aroma, Aftertaste, Body, Clarity). Le tracé plus clair est le brew précédent, pas un pré-remplissage.
 11. Dans **Correction**, dis si l'acidité, l'amertume et le corps étaient *trop peu* (−), *bien* (·) ou *trop* (+).
@@ -158,7 +157,7 @@ De retour sur la fiche du café, ton extraction apparaît dans une section **Bre
 
 ### Questions
 
-1. **Clair ?** La dictée : est-ce qu'elle a compris ce que tu as dit ? Est-ce que tu as compris, en voyant les champs surlignés, ce qu'elle avait décidé et comment le corriger ?
+1. **Clair ?** Après Save, le brew sur la fiche a-t-il le nom de la recette (ou Filter / Espresso), jamais le dripper ?
 2. **À modifier ?** Les sept axes de **Taste** — c'est utilisable ou c'est du travail ? Et la ligne **Correction** (− · +) : fait-elle doublon avec les axes, ou est-ce plus rapide ?
 3. **Incorrect ?** La proposition **Suggested correction** te paraît-elle juste pour le café que tu viens de faire ? Écris ce qu'elle a proposé et ce que toi tu aurais changé.
 
@@ -173,10 +172,10 @@ De retour sur la fiche du café, ton extraction apparaît dans une section **Bre
 1. Va sur l’onglet **Recipes**.
 2. Tape **From the pros**. Ouvre une recette (par exemple V60 « Ultimate »).
 3. Sous **Brew this**, tape un café récent (checkmark) ou **Another coffee…**.
-4. Tape **Brew**. Tu n’es **pas** dans le bloom : d’abord **Scope**, puis **Kit** (Stagg, eau, moulin).
-5. Tape **Brew now**. L’écran guidé s’ouvre : un seul bloc, la masse cible, le chrono.
+4. Tape **Brew**. Tu n’es **pas** dans le bloom : d’abord **Scope** (pas de Dictate), puis **Kit** Filter / Espresso, puis **Dial** (Today's settings : eau + temp, grind, pas de filtre).
+5. Tape **Brew**. L’écran guidé s’ouvre : d’abord **Rinse** si le dripper prend du papier, avec Skip ; le chrono ne part qu’ensuite. Un seul bloc, la masse cible. **Narrate** enregistre un fichier, la reco arrive sur It's done.
 6. Tape le bloc pour **Next**. Laisse une étape avancer toute seule si elle le peut.
-7. À la fin, lis **Total brew time** (réel vs cible), puis note et **Save** sur After.
+7. À la fin, lis **Total brew time** (réel vs cible). Sur **It's done**, le texte de Narrate est dans **What you did**. Note et **Save**.
 
 ### Ce que tu devrais voir
 
@@ -263,16 +262,12 @@ Pendant le brew, tu vois `to 300 g` et `now 168 g` — où la balance devrait en
 1. **Profile** › **Experimental AI** : constate que le master est **On**. Tu peux le refuser.
 2. Onglet **Recipes** : un bouton **Ask** en haut à droite. Tape-le.
 3. Pose une question, ou tape un des exemples. Note la réponse avec **How useful was this?**
-4. Scanne une nouvelle carte : à la création, une section **On the shelf** propose **Scan** ou **AI flyer**.
-5. Choisis **AI flyer**, sauvegarde, et reviens sur la carte deux minutes plus tard.
 
 ### Ce que tu devrais voir
 
 Ask répond depuis la base, ou depuis la connaissance générale du café (tag GENERAL). Il ne dit plus « the base does not cover this one » à une question de café.
 
 Sous la réponse, une échelle : Not at all · A little · Useful · A lot, puis un texte dicté.
-
-**AI flyer** génère une affiche 4:5 « tampon sur parchemin » en une à deux minutes.
 
 ### Questions
 
@@ -337,3 +332,18 @@ Une capture d'écran vaut trois paragraphes. Une vidéo de trois secondes en vau
 **Ne pas signaler** — c'est connu et assumé dans ce build : le minuteur n'a pas de cadran circulaire ; la photo du sachet et le ticket de caisse ne sont pas lus par l'IA ; il n'y a ni widget, ni extension de partage, ni import depuis une autre app ; l'app n'a pas de thème sombre et ne tourne pas sur iPad. La recette 4:6 n'a pas été retravaillée.
 
 La liste complète est dans [build-2026-09-14.md](build-2026-09-14.md#8-limites-connues-de-ce-build).
+
+---
+
+## Dictée et note de brew — à faire sur un vrai iPhone
+
+Aucun de ces points ne se voit dans les tests unitaires. À faire **après** le parcours 4 ou 5, pendant un vrai café.
+
+1. **Pause.** Sur After, tape **Dictate** dans Comment, dis une phrase, attends trois secondes, dis la suite. Les deux morceaux doivent rester. Le mic ne doit pas devenir « Dictation unavailable ».
+2. **Deux champs.** Ouvre After, tape **Dictate** sur Comment, puis sans arrêter essaie un autre mic s’il y en a un. Tu dois lire **Another field is listening**, pas un bouton mort.
+3. **Note de brew, écran verrouillé.** Sans recette (chrono vide) ou avec étapes : tape **Record a brew note**, parle, verrouille le téléphone. Déverrouille. L’enregistrement tourne encore. Stop, puis After : le texte arrive, les chiffres dits à voix haute (température, clics, rating) remplissent les champs.
+4. **Appel.** Pendant un enregistrement, prends un appel puis raccroche. L’enregistrement reprend dans le même fichier.
+5. **AirPods.** Branche ou débranche des AirPods pendant **Dictate** sur Comment. Ça continue, ça ne passe pas unavailable.
+6. **Crash.** Lance un enregistrement, force-quitte l’app. Au relancement : « There is a recording from a brew you did not finish. » Transcribe ou Discard.
+7. **FR et EN.** Les deux langues, pour Dictate et pour la note de brew.
+

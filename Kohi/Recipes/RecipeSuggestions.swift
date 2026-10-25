@@ -2,6 +2,20 @@ import Foundation
 
 /// Cards that need a suggestion, one row each, brew-less first.
 nonisolated enum RecipeSuggestions {
+    /// Where the per-coffee block is drawn. All while the archive has no
+    /// brew, Mine once one exists and a coffee still needs a recipe, hidden
+    /// when every coffee already has a brew above 2.
+    enum BlockHome: Equatable, Sendable {
+        case all
+        case mine
+        case hidden
+    }
+
+    static func blockHome(hasBrew: Bool, count: Int) -> BlockHome {
+        if !hasBrew { return .all }
+        return count > 0 ? .mine : .hidden
+    }
+
     static let visibleCap = 6
 
     static func items(

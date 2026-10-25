@@ -4,7 +4,6 @@ import SwiftUI
 
 struct AccountSheet: View {
     @Environment(AccountStore.self) private var account
-    @Environment(CardStore.self) private var store
     @Environment(SyncCoordinator.self) private var sync
     @Environment(AIFeedbackStore.self) private var feedback
     @Environment(\.dismiss) private var dismiss
@@ -12,10 +11,6 @@ struct AccountSheet: View {
     @State private var nonce: String?
     @State private var error: String?
     @State private var isBusy = false
-    @State private var posterBackfillProgress: (done: Int, total: Int)?
-    @State private var posterBackfillTask: Task<Void, Never>?
-    @State private var isRestoringPosters = false
-    @State private var restoredPosterCount: Int?
     @State private var exportURL: URL?
 
     var body: some View {
@@ -54,10 +49,6 @@ struct AccountSheet: View {
                     }
 
                     syncSection
-
-                    if CardPoster.isAvailable {
-                        posterSection
-                    }
 
                     Section {
                         Button("Export AI feedback") {
@@ -186,87 +177,6 @@ struct AccountSheet: View {
                 Spacer()
                 Text(detail).foregroundStyle(.secondary)
             }
-        }
-    }
-
-    @ViewBuilder
-    private var posterSection: some View {
-        let missing = store.cards.filter { $0.poster != .ready && $0.poster != .pending }
-        Section {
-            if let progress = posterBackfillProgress {
-                HStack {
-                    Text("Generating posters…")
-                    Spacer()
-                    Text("\(progress.done)/\(progress.total)")
-                        .foregroundStyle(.secondary)
-                }
-            } else if missing.isEmpty {
-                Label("All cards have posters", systemImage: "checkmark.circle")
-                    .foregroundStyle(.secondary)
-            } else {
-                Button {
-                    startPosterBackfill(cards: missing)
-                } label: {
-                    HStack {
-                        Label("Generate \(missing.count) posters", systemImage: "stamp")
-                        Spacer()
-                        Text("~$\(String(format: "%.2f", Double(missing.count) * 0.22))")
-                            .foregroundStyle(.secondary)
-                    }
-                }
-            }
-            Button {
-                Task {
-                    isRestoringPosters = true
-                    restoredPosterCount = await sync.restorePosters()
-                    isRestoringPosters = false
-                }
-            } label: {
-                if isRestoringPosters {
-                    HStack {
-                        Text("Restoring…")
-                        Spacer()
-                        ProgressView()
-                    }
-                } else if let count = restoredPosterCount {
-                    Label(
-                        count == 0 ? "No remote posters to restore" : "Restored \(count) posters",
-                        systemImage: count == 0 ? "icloud.slash" : "checkmark.icloud"
-                    )
-                } else {
-                    Label("Restore posters from cloud", systemImage: "icloud.and.arrow.down")
-                }
-            }
-            .disabled(isRestoringPosters)
-        } header: {
-            Text("Posters")
-        } footer: {
-            Text("Restore pulls posters already saved in Supabase. Generate creates new ones (~$0.22 each, ~2.5 min for 5 cards at Tier 1).")
-        }
-    }
-
-    private func startPosterBackfill(cards: [CoffeeCard]) {
-        posterBackfillProgress = (done: 0, total: cards.count)
-        posterBackfillTask = Task {
-            for (index, card) in cards.enumerated() {
-                guard !Task.isCancelled else { break }
-                var pending = card
-                pending.poster = .pending
-                store.update(pending)
-
-                let success = await Task.detached(priority: .utility) {
-                    await CardPoster.generate(cardID: card.id)
-                }.value
-
-                guard var latest = store.card(id: card.id) else { continue }
-                latest.poster = success ? .ready : .failed
-                store.update(latest)
-                if success {
-                    ThumbnailCache.shared.warm(latest, buckets: ThumbnailCache.buckets)
-                }
-                posterBackfillProgress = (done: index + 1, total: cards.count)
-            }
-            posterBackfillProgress = nil
         }
     }
 

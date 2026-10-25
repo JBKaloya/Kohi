@@ -11,11 +11,14 @@ nonisolated struct GrindSetting: Codable, Hashable, Sendable {
     var grinderId: UUID?
     var value: Double?
     var raw: String?
+    /// 1…7, matching `GrindGrade`. Survives a grinder with no range.
+    var position: Int?
 
-    init(grinderId: UUID? = nil, value: Double? = nil, raw: String? = nil) {
+    init(grinderId: UUID? = nil, value: Double? = nil, raw: String? = nil, position: Int? = nil) {
         self.grinderId = grinderId
         self.value = value
         self.raw = raw
+        self.position = position
     }
 
     /// Parse a free-text setting: "22 clicks", "2.4", "fine".
@@ -164,6 +167,45 @@ nonisolated enum GrindGrade: Int, CaseIterable, Identifiable, Sendable {
         let scaled = min(max(position, 0), 1) * Double(allCases.count - 1)
         return Self(rawValue: min(max(Int(scaled.rounded()), 0), allCases.count - 1)) ?? .medium
     }
+
+    /// 1…7 notch index.
+    var notch: Int { rawValue + 1 }
+
+    static func notch(_ value: Int) -> GrindGrade {
+        Self(rawValue: min(max(value, 1), 7) - 1) ?? .medium
+    }
+}
+
+nonisolated extension GrindSetting {
+    /// Writes a 1…7 notch, interpolating clicks when a span is present, never `raw`.
+    mutating func setNotch(_ notch: Int, span: GrindSpan?, grinderId: UUID?) {
+        let clamped = min(max(notch, 1), 7)
+        position = clamped
+        raw = nil
+        if let span {
+            let t = Double(clamped - 1) / 6
+            value = span.value(at: t)
+            if self.grinderId == nil { self.grinderId = grinderId }
+        } else {
+            value = nil
+        }
+    }
+
+    /// Moves the notch from a typed click count.
+    mutating func setValue(_ value: Double, span: GrindSpan?, grinderId: UUID?) {
+        raw = nil
+        self.value = span?.snap(value) ?? value
+        if let span {
+            position = GrindGrade.nearest(position: span.position(of: self.value ?? value)).notch
+        }
+        if self.grinderId == nil { self.grinderId = grinderId }
+    }
+
+    var resolvedNotch: Int {
+        if let position { return min(max(position, 1), 7) }
+        if let raw, let grade = GrindGrade.parse(raw) { return grade.notch }
+        return GrindGrade.medium.notch
+    }
 }
 
 /// The numbers a grind rail can travel. Nil means the rail is grades only —
@@ -235,9 +277,9 @@ nonisolated struct GrindSpan: Equatable, Sendable {
     }
 }
 
-nonisolated extension GrindSetting {
+    nonisolated extension GrindSetting {
     enum CodingKeys: String, CodingKey {
-        case grinderId, value, raw
+        case grinderId, value, raw, position
     }
 
     init(from decoder: any Decoder) throws {
@@ -249,10 +291,11 @@ nonisolated extension GrindSetting {
         let grinderId = try c.decodeIfPresent(UUID.self, forKey: .grinderId)
         var value = try c.decodeIfPresent(Double.self, forKey: .value)
         let raw = try c.decodeIfPresent(String.self, forKey: .raw)
+        let position = try c.decodeIfPresent(Int.self, forKey: .position)
         if value == nil, let raw {
             value = Self.parse(raw)?.value
         }
-        self.init(grinderId: grinderId, value: value, raw: raw)
+        self.init(grinderId: grinderId, value: value, raw: raw, position: position)
     }
 }
 
@@ -300,6 +343,7 @@ nonisolated enum Completeness: Equatable, Sendable {
         case .complete:
             return "Comparable"
         case .missing(let fields):
+            if fields == [.rating] { return Copy.addRatingToCompareLater }
             return "missing " + fields.map(\.label).joined(separator: " · ")
         }
     }

@@ -32,7 +32,7 @@ Ce document décrit le système tel qu’il est implémenté. Les valeurs font f
 | Inclinaison relative du téléphone | `Kohi/Motion/DeviceTilt.swift` |
 | Densité de grille | `Kohi/Grid/GridDensity.swift` |
 | Chips / flow | `Kohi/Edit/TagField.swift` |
-| Rails | `Kohi/Design/AxisRail.swift`, `Kohi/Design/GrindRail.swift` |
+| Rails | `Kohi/Design/AxisRail.swift`, `Kohi/Design/GrindRail.swift`, `Kohi/Design/RoastRail.swift` |
 | Dates relatives | `Kohi/Design/CatalogueDate.swift` |
 | Style de press | `PressStyle` dans `Motion.swift` |
 | Police bundle | `Kohi/Resources/AngustaTest-DemiBold.otf` + `UIAppFonts` dans `Info.plist` |
@@ -68,9 +68,9 @@ Toutes les couleurs d’archive viennent de `Palette`. Rien n’est « presque p
 - **Sélection compacte (chip, rating, axe, cercle StepFlow) :** fill `ink`, texte `paper`. Repos : stroke `hairline`, texte `ink`.
 - **Sélection linéaire (rangée, rail) :** le choisi porte un filet `ink` et une méta inversée (`CatalogueMark`, même capsule qu’un chip). Le reste reste `hairline` / `inkMuted`. Pas de checkmark. `TabRail` : label `ink` vs `inkMuted`, filet sous l’actif.
 - **Scan :** le papier disparaît. Blanc, blanc à ~40–85 % d’opacité, capsules noires translucides. Le bouton primaire « Use » est une capsule blanche, texte `ink`.
-- **Comparaison A/B :** `primary` et `secondary` uniquement sur le radar, sa légende, et les colonnes A/B. Pas sur les boutons, les tabs, ni la sélection.
+- **Comparaison A/B :** `primary` et `secondary` uniquement quand deux séries se superposent — le radar de comparaison, le radar median/best de la fiche, la courbe cible/réel, les colonnes A/B. Une série seule reste encre. Jamais une troisième couleur. Pas sur les boutons, les tabs, ni la sélection. Chaque graphique porte sa légende en `tag`.
 
-Le chrome reste encre et papier. `primary` / `secondary` ne sont pas des accents d’interface : ils identifient deux séries sur un même graphique. La couleur vive des cartes scannées n’entre toujours pas dans le chrome.
+Le chrome reste encre et papier. `primary` / `secondary` ne sont pas des accents d’interface : ils identifient deux séries sur un même graphique. **La couleur vit dans l’objet carte** (fond, relief, sticker), **jamais dans le chrome**. Le chrome reste encre et papier. L’étiquette d’une carte Kohi est du papier : texte encre, filet hairline.
 
 ---
 
@@ -132,7 +132,7 @@ Tous les springs et tous les nombres de mouvement vivent dans `Motion`. Les vues
 | Token | Response | Damping | Rôle |
 | --- | --- | --- | --- |
 | `quick` | 0.22 | 1.00 | Press, toggles de chips, swap d’image. Critique, sans overshoot |
-| `snappy` | 0.35 | 0.82 | Densité, contenu de sheet, coaching, flip flyer/scan |
+| `snappy` | 0.35 | 0.82 | Densité, contenu de sheet, coaching |
 | `gentle` | 0.55 | 0.90 | Grandes surfaces : empty state, scroll vers une carte qui atterrit |
 | `land` | 0.70 | 0.62 | **Réservé** à l’atterrissage d’une carte dans la grille. Overshoot volontaire |
 | `tracking` | 0.28 | 0.86 | Doigt en vol (`interactiveSpring`) |
@@ -204,7 +204,7 @@ Empty state : fade + rise de 14 pt, delayed de 0.12 s sur `gentle`, pour ne pas 
 | --- | --- | --- |
 | `optionalRuleOpacity` | 0.55 | Filet d’une rangée facultative vide |
 | `hintRise` | 4 pt | L’indice arrive d’en dessous, `snappy` |
-| `keyboardClearance` | 180 pt | Padding bas tant qu’un champ est focalisé |
+| `keyboardClearance` | 0 pt | Hook only — iOS already lifts the focused field |
 | `focusShadePad` | 6 × 3 pt | `paperShade` derrière la valeur, comme `GuessHighlight` |
 | `focusShadeRadius` | 5 | Coin du shade |
 | `residueHold` | 320 ms | Un dérivé barré (ratio, µm) avant de disparaître |
@@ -263,16 +263,27 @@ Caméra, overlay, review. Fond `scanBackdrop`. Le chrome est blanc / translucide
 
 `List` UIKit/SwiftUI standard. Hors système. Ne pas y porter `catalogueLabel` ni `Palette.paper` à moins de redessiner toute la feuille.
 
-### Composants de parcours (lot 4)
+### Composants de parcours (lot 4 / brew v2)
 
 | Composant | Fichier | Rôle |
 | --- | --- | --- |
-| `BrewFlowHost` | `Kohi/Recipes/BrewFlowHost.swift` | Seul présentateur du parcours brew (Scope, Kit, Pour, After). |
-| `StepFlow` | `Kohi/Design/StepFlow.swift` | Chrome d’une question : segments 24×1, question 22 pt, Skip, Next 52 pt plein. Onboarding, Scope. |
-| `InsightBlock` | `Kohi/Design/InsightBlock.swift` | Toute sortie déduite ou modèle : titre, phrase, **provenance obligatoire** (`DERIVED FROM…` / `SOURCE:…`). Sparkles si modèle. |
-| `FieldGroup` | `Kohi/Design/FieldGroup.swift` | Groupes d’édition seulement (jamais en lecture). Filet, pas de fond. |
-| `DictationField` | `Kohi/Design/DictationField.swift` | Mic + Dictate sur tout texte libre. |
+| `BrewFlowHost` | `Kohi/Recipes/BrewFlowHost.swift` | Seul présentateur du parcours brew (Scope, Kit, Dial, Pour, After). Fermer garde un brouillon. |
+| `StepFlow` | `Kohi/Design/StepFlow.swift` | Chrome d'une question : segments 24×1, question 22 pt, Skip, Next 52 pt. Six ticks depuis le FAB, cinq depuis une carte. |
+| `CatalogPicker` | `Kohi/Design/CatalogPicker.swift` | Catalogue unique dripper / moulin / papier. FROM YOUR KIT (une ligne par objet possédé), ALL par sous-famille, Add manually. |
+| `PourCurve` | `Kohi/Design/PourCurve.swift` | Masse cumulée contre le temps réel (`at`), pas la cible. Grille 50 g. |
+| `StepBuilderSheet` | `Kohi/Recipes/StepBuilderSheet.swift` | Recette express : nom, totaux, gabarits, blocs. |
+| `InsightBlock` | `Kohi/Design/InsightBlock.swift` | Toute sortie déduite ou modèle : titre, phrase, **provenance obligatoire**. |
+| `FieldGroup` | `Kohi/Design/FieldGroup.swift` | Groupes d'édition seulement (jamais en lecture). Filet, pas de fond. |
+| `DictationField` | `Kohi/Design/DictationField.swift` | Mic + Dictate sur tout texte libre. Toujours visible ; un tap dit pourquoi si le moteur n'est pas prêt. |
+| `VoiceNoteControl` | `Kohi/Design/VoiceNoteControl.swift` | **Narrate** : enregistrement fichier d'un brew, « Recording — tap to stop » + chrono. |
+| `GrindPreview` | `Kohi/Design/GrindSample.swift` | Sachet de mouture, bandes G1 en µm, trait 1 mm. |
+| `KitRecallRow` | `Kohi/Design/KitRecallRow.swift` | Ligne `with V60 02 · Comandante C40` + CHANGE sur Today's settings. |
+| `FilterStockRow` | `Kohi/Setup/KitRow.swift` (`FilterKitRow`) | Papier possédé, même grammaire qu'un `KitRow`. |
 | `touchTarget(44)` | `Typography.swift` | Plancher tactile invisible, ne change pas le dessin. |
+
+**Règle d'affordance.** Une affordance ne disparaît jamais sur une condition calculée. Elle s'affiche avec sa raison. Which recipe? et With what ont trois familles : **Pour Over / Immersion / Espresso**. La rangée Filter reste visible : « No paper for a French press ». La rangée Accessories n'apparaît que si des accessoires sont déclarés. Le papier ne se choisit plus sur Today's settings. `DictationField` (Comment, nom de recette) suit la même règle ; Which recipe? n'a pas de Dictate.
+
+**Règle d'arithmétique.** Un chiffre de recette n'est redimensionné qu'à un seul endroit : [`RecipeScaling`](../Kohi/Process/RecipeScaling.swift). Aucune vue ne recalcule une masse. Trois invariants y vivent — le **rinçage n'est jamais mis à l'échelle** (son eau appartient au papier, pas à la recette), le **facteur est borné** à `0.2...5` (au-delà c'est une frappe en cours, pas une intention), et on **compare l'espresso par la boisson sortie, le reste par l'eau entrée**. Les actions d'étape proposées viennent de `DefaultSequence.actions(for:)`, jamais d'une table locale à un écran : c'est ce qui garantit qu'un espresso ne propose pas de Bloom.
 
 ---
 
@@ -298,7 +309,7 @@ Transition grille → détail : zoom matched (`navigationTransition(.zoom)` iOS 
 ### Détail — ordre de lecture
 
 1. Tombstone (catalogue, casse naturelle)
-2. Objet centré + picker Flyer / Scan si un poster existe
+2. Objet centré
 3. Titre Angusta
 4. Notes (chips outline, scroll horizontal)
 5. On the wheel (ids reconnus)
@@ -308,7 +319,7 @@ Transition grille → détail : zoom matched (`navigationTransition(.zoom)` iOS 
 9. `CardProfile` (≥ 2 brews comparables)
 10. Pages & documents
 11. Note to self
-12. Actions en `catalogueLabel` (Edit, Regenerate, Remove). Retour **COFFEES**.
+12. Actions en `catalogueLabel` (Edit, Remove). Retour **COFFEES**.
 
 ### Formulaires
 
@@ -339,9 +350,13 @@ L’unité d’un `NumberRow` est `hairline` tant que le champ est vide, `inkMut
 
 Edit d’une carte : épine toujours visible (Coffee, Roaster, Place, Process). Origin et On the bag se plient tant qu’ils sont vides, et s’ouvrent si le scan a trouvé quelque chose.
 
-### Poster
+### Tuile
 
-Ratio **4:5** (`PosterLayout.aspectRatio`). Scan : ratio réel de la carte (défaut 0.75). Pendant `poster == .pending`, la tuile montre `paperShade` + `ShimmerBar`.
+Ratio **4:5** (`CardTileLayout.aspectRatio`) sur la grille. Le détail utilise le ratio réel du scan (défaut 0.75).
+
+Deux faces. **Kohi cards** (défaut) est un paysage : terre de l’origine en bas, notes au milieu, ciel de l’altitude en haut, grain d’impression ; le symbole du sachet en relief ; une étiquette papier (torréfacteur, titre, lieu) ; le sticker de l’origine collé sur le coin de l’étiquette. Même café, même carte : tout se déduit des champs et de l’identifiant. **Scans** reste l’objet nu, à un tap.
+
+Mise en page en part de la largeur de la carte (`KohiCard`) : *Label* (défaut, étiquette `#FBF8F2` en bas) ou *Full bleed* (texte posé sur le champ, encre ou papier selon le fond), au choix dans le Profil. Le symbole prend l’un de quatre traitements (Emboss, Ink, Halftone, Pattern, ou Auto) ; en fiche, le relief suit l’inclinaison. Toute version de rendu passe par `CardStandard.version` : l’archive est redessinée une fois, en tâche de fond.
 
 ---
 
@@ -353,7 +368,7 @@ Objet nu. `CardImageView` + ombre interpolée. `PressStyle` 0.965. Pas de coin f
 
 ### `CardObject`
 
-La même image, traitée comme une chose : tilt, sheen, double ombre. Le sheen est maské par l’image (pas de halo hors carte). Stoppe le motion quand la scène n’est plus active, et dès qu’un pinch commence. Pinch 1–5× et double-tap zooment **dans** la silhouette (`mask` de la plaque au repos) — pas d’objet flottant, le scroll de la fiche reste. Le picker Flyer / Scan sous l’objet change la variante ; il ne commute plus au tap.
+La même image, traitée comme une chose : tilt, sheen, double ombre. Le sheen est maské par l’image (pas de halo hors carte). Stoppe le motion quand la scène n’est plus active, et dès qu’un pinch commence. Pinch 1–5× et double-tap zooment **dans** la silhouette (`mask` de la plaque au repos) — pas d’objet flottant, le scroll de la fiche reste.
 
 ### `CatalogueBackButton`
 
@@ -389,9 +404,13 @@ Rail hairline 1 pt, 11 ticks, dot 8 pt, rangée 34 pt, slop ±10. Tap la valeur 
 
 ### `GrindRail`
 
-Même rail hairline, Fine à gauche / Coarse à droite. Pas de `Slider` système. Clics (ou cadran) quand le broyeur a une plage, des `stepsPerRotation`, ou un réglage connu ; sinon les sept grades verbaux (`medium-fine`…). Caption à droite : `22 clicks` ou le mot. Les chips de broyeur vivent au-dessus, comme l’eau.
+Sept crans toujours (`extra-fine` → `extra-coarse`), Fine à gauche / Coarse à droite. Pas de `Slider` système. Quand le broyeur a une plage, une colonne `Typography.number` + unité à droite est liée dans les deux sens : un cran interpolé dans la plage, un nombre tapé déplace le point. Les deux écrivent `position` et `value`, jamais `raw`. Caption sous le rail : le grade (`medium-fine`). `GrindPreview` à gauche, bandes G1 en µm, trait 1 mm.
 
-Le CTA d’un `StepFlow` / Kit / After se replie tant qu’un champ a le clavier — le bouton ne monte pas au milieu de la fiche.
+Le CTA d’un `StepFlow` / Kit / Dial / After se replie tant qu’un champ a le clavier — le bouton ne monte pas au milieu de la fiche.
+
+### `RoastRail`
+
+Six crans, Super light à gauche / Dark à droite. Dégradé parchment → espresso sous le filet. Caption à droite : le libellé sans tiret. Un cran pré-remplit Agtron (95 / 85 / 75 / 65 / 55 / 45) seulement si le champ est vide ou encore à la médiane du cran précédent.
 
 ### `TasteRadar`
 
@@ -473,7 +492,7 @@ SF Symbols, light à semibold, petits.
 | `exclamationmark.circle` | 11 | Scan illisible |
 | `arrow.down.doc` / `camera` | 10 semibold | Placeholders d’import (inactifs) |
 
-Pas d’illustration custom hors Angusta et les cartes elles-mêmes. L’empty state *dessine* une carte en filets, il n’importe pas d’asset. **Les glyphes d’équipement sont dessinés de la même façon** : un `Path` en code (`EquipmentGlyph`, grille 24, trait 1 pt, round cap/join, pas de fill), 28 pt en rangée, 52 pt dans l’onboarding (`StepChoice`). `inkMuted` au repos, `ink` si l’item est un défaut. Jamais dans la grille, sur une carte, ni dans `BrewList`.
+Pas d’illustration custom hors Angusta et les cartes elles-mêmes. Les stickers d’origine sont des assets générés depuis des recettes en code (`OriginStickers.xcassets`, source `docs/card-lab/`). Un pays, un sticker. L’empty state *dessine* une carte en filets, il n’importe pas d’asset. **Les glyphes d’équipement sont dessinés de la même façon** : un `Path` en code (`EquipmentGlyph`, grille 24, trait 1 pt, round cap/join, pas de fill), 28 pt en rangée, 52 pt dans l’onboarding (`StepChoice`). `inkMuted` au repos, `ink` si l’item est un défaut. Jamais dans la grille, sur une carte, ni dans `BrewList`.
 
 ---
 
@@ -486,12 +505,12 @@ Anglais, sobre, phrase courte. On dit ce qui est vrai.
 - Review : « Retake », « Use », « Whiten »
 - OCR : « This does not look like a card » / « Nothing recognised on this scan »
 - Actions : « Log a brew », « Edit », « Remove from archive », « Discard this scan », « Brew again », « Compare »
-- Profil : « Your kit », « Water », « Defaults », « Set up again », « Import & export », « Experimental AI », « Features », « Account »
-- Onboarding : « Bring what you have », « How do you brew? », « What do you grind with? », « What water? »
+- Profil : « Your kit », « Filters », « Water », « Defaults », « Set up again », « Import & export », « Experimental AI », « Features », « Account »
+- Onboarding : « Bring what you have », « How do you brew? », « Which paper? », « What do you grind with? », « What water? »
 - Recipes : Mine · Suggested · From the pros ; Ask à droite ; bouton `cup.and.saucer` pour aller aux recettes
-- Brew : « Coffee dose », « Water weight », « Beverage », « Suggested correction », « For your grinder », « Dictate », « Total brew time »
+- Brew : « Coffee dose », « Water weight », « Beverage », « Today's settings », « Change », « Add the paper you use », « Add the water you use », « Log without timer », « Suggested correction », « For your grinder », « For your grinder: set a range », « Dictate », « Narrate », « What you did », « Followed the plan », « Default sequence », « Which coffee? », « With what? », « It's done », « Record a brew note », « Recording — tap to stop », « Total brew time », « Rinse more »
 - Provenance : `DERIVED FROM…` / `SOURCE:…` / `GENERAL COFFEE KNOWLEDGE`. Pas de *verified* à l’écran.
-- Cartes sans nom : producteur / ferme / station, puis origine, puis torréfacteur ; variété en dernier. Suffixe `·` seulement en cas de collision.
+- Cartes sans nom : producteur / ferme / station, puis origine, puis torréfacteur ; variété en dernier. Suffixe `·` seulement en cas de collision. `KohiCard` applique la même chaîne que `displayName`.
 
 Les labels de champs sont le vocabulaire du café (Roaster, Producer, Process…), pas des intitulés d’UI (« Coffee name »). Un placeholder est un **exemple vrai** (`Placeholders.swift`), jamais une consigne. Un indice de focus dit pourquoi le champ existe (`FieldCopy`), jamais comment le remplir.
 

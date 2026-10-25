@@ -61,7 +61,9 @@ struct SetupAddRow: View {
                     .catalogueLabel()
                 Spacer()
             }
-            .padding(.top, 2)
+            .padding(.vertical, 12)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .touchTarget()
         }
         .buttonStyle(.plain)
     }

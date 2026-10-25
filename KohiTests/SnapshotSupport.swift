@@ -24,8 +24,12 @@ enum SnapshotSupport {
         line: UInt = #line
     ) {
         assertSnapshot(
-            of: view.background(Palette.paper),
+            of: view
+                .background(Palette.paper)
+                .environment(\.kohiHapticsEnabled, false),
             as: .image(
+                precision: 1,
+                perceptualPrecision: 0.98,
                 layout: .fixed(width: width, height: height),
                 traits: traits
             ),

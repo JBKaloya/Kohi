@@ -9,7 +9,7 @@ enum Typography {
     static let value = Font.system(size: 14, weight: .regular)
 
     /// Display titles (coffee name, brand wordmark). Angusta DemiBold.
-    static let title = Font.custom(AppFonts.angustaDemiBold, size: 20)
+    static let title = Font.custom(AppFonts.angustaDemiBold, size: 25)
 
     /// Grid navigation wordmark.
     static let brand = Font.custom(AppFonts.angustaDemiBold, size: 28)

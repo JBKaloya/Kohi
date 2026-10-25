@@ -12,13 +12,15 @@ enum BrewPrefill {
         recipe: Recipe? = nil,
         size: RecipeSize? = nil,
         existing: Brew? = nil,
-        setup: SetupStore
+        setup: SetupStore,
+        keepSnapshot: Bool = true
     ) -> Brew {
         var brew: Brew
         if let existing {
             brew = existing
         } else if let recipe {
             brew = recipe.seededBrew(size: size)
+            if !keepSnapshot { brew.recipeSnapshot = nil }
         } else if let last = card.brews.first {
             brew = nextTimeDraft(from: last, setup: setup) ?? last.again()
         } else {
@@ -48,7 +50,9 @@ enum BrewPrefill {
         if replaceKit, let method = brew.method {
             applyDefaults(to: &brew, method: method, setup: setup)
         }
+        ensureMatchingBrewer(on: &brew, setup: setup)
         fillGrind(&brew, card: card, recipe: recipe, setup: setup)
+        fillTemperature(&brew, card: card)
         fillAgitation(&brew, card: card)
         fillFilter(&brew, setup: setup)
         fillSteps(&brew, card: card, recipe: recipe)
@@ -57,6 +61,39 @@ enum BrewPrefill {
         }
         if brew.captureSource == nil, brew.dose != nil, brew.water != nil || brew.beverage != nil {
             brew.captureSource = .prefilled
+        }
+    }
+
+    /// Paper you swap between cups. The selected brewer's family wins; the
+    /// method is the fallback when no brewer is on the brew yet.
+    static func showsFilter(method: BrewMethod?, brewer: Equipment?) -> Bool {
+        if let family = brewer?.brewerFamily {
+            return family.usesInterchangeableFilter
+        }
+        return method?.usesInterchangeableFilter ?? false
+    }
+
+    /// When Setup has a brewer for this method but it was never marked as a
+    /// default, Dial would otherwise have nothing to hang a filter list on.
+    /// Espresso never borrows a filter dripper.
+    static func ensureMatchingBrewer(on brew: inout Brew, setup: SetupStore) {
+        let tab = BrewKit.tab(for: brew.method)
+        if let current = BrewKit.activeBrewer(on: brew, in: setup) {
+            if BrewKit.matches(tab, current) { return }
+            BrewKit.clearCupboard(from: &brew, setup: setup)
+            brew.filterStockId = nil
+        }
+        guard let method = brew.method else { return }
+        let match = setup.equipment.first {
+            BrewKit.isCupboard($0.kind) && BrewKit.matches(tab, $0) && $0.brewerKind?.method == method
+        } ?? setup.equipment.first {
+            BrewKit.isCupboard($0.kind) && BrewKit.matches(tab, $0)
+        }
+        guard let match else { return }
+        brew.equipmentIDs.append(match.id)
+        if brew.filterStockId == nil, match.takesPaper,
+           let paper = FilterFit.default(for: match, in: setup) {
+            brew.filterStockId = paper.id
         }
     }
 
@@ -75,8 +112,8 @@ enum BrewPrefill {
         if let snapshot = brew.recipeSnapshot {
             return Recipe(snapshot: snapshot)
         }
-        return Recipe(
-            name: name,
+        var recipe = Recipe(
+            name: name.isEmpty ? Recipe.expressTitle(family: (brew.method ?? .v60).family) : name,
             method: brew.method ?? .v60,
             dose: brew.dose,
             water: brew.water,
@@ -84,14 +121,23 @@ enum BrewPrefill {
             temperature: brew.temperature,
             seconds: brew.seconds,
             grindLabel: brew.grind.display(),
-            source: .mine
+            source: .express,
+            evidence: .unverified
         )
+        return DefaultSequence.filling(recipe, roastLevel: nil)
     }
 
     static func finish(_ brew: Brew, events: AIEventLog, dictationEventID: UUID?) -> Brew {
         var saved = brew
         saved.flowGs = saved.averageFlow
         if saved.captureSource == nil { saved.captureSource = .typed }
+        if saved.recipeName == nil {
+            saved.recipeName = saved.recipeSnapshot?.name
+        }
+        if saved.agitation == nil {
+            saved.agitation = saved.resolvedAgitation
+        }
+        saved.refreshPourRates()
         if let dictationEventID {
             events.setAccepted(true, for: dictationEventID)
         }
@@ -169,15 +215,26 @@ enum BrewPrefill {
             $0.id != brew.id && $0.method == brew.method && $0.agitation != nil
         }) {
             brew.agitation = last.agitation
+        } else {
+            brew.agitation = .none
         }
     }
 
+    private static func fillTemperature(_ brew: inout Brew, card: CoffeeCard) {
+        guard brew.temperature == nil, let method = brew.method else { return }
+        brew.temperature = RecipeRules.suggestedTemperature(for: card.roastLevel, method: method)
+        if brew.captureSource == nil { brew.captureSource = .prefilled }
+    }
+
     private static func fillFilter(_ brew: inout Brew, setup: SetupStore) {
-        guard brew.filterId == nil else { return }
-        let brewer = brew.equipmentIDs.compactMap { setup.equipment(id: $0) }.first { $0.kind == .brewer }
-            ?? setup.defaults(for: brew.method ?? .v60).first { $0.kind == .brewer }
-        guard let brewer else { return }
-        brew.filterId = brewer.defaultFilterId ?? brewer.filters.first?.id
+        guard brew.filterStockId == nil else { return }
+        let tab = BrewKit.tab(for: brew.method)
+        let brewer = BrewKit.activeBrewer(on: brew, in: setup)
+            ?? setup.defaults(for: brew.method ?? .v60).first {
+                BrewKit.isCupboard($0.kind) && BrewKit.matches(tab, $0)
+            }
+        guard let brewer, BrewKit.matches(tab, brewer), brewer.takesPaper else { return }
+        brew.filterStockId = FilterFit.default(for: brewer, in: setup)?.id
     }
 
     private static func fillSteps(_ brew: inout Brew, card: CoffeeCard, recipe: Recipe?) {
@@ -199,14 +256,67 @@ enum BrewPrefill {
     }
 
     private static func nextTimeDraft(from last: Brew, setup: SetupStore) -> Brew? {
-        guard let saved = last.nextTimeSuggestion,
-              let suggestion = BrewDiagnosis.candidates(for: last)
-                  .first(where: { $0.change == saved })
-        else { return nil }
+        guard let pair = matchedSuggestion(on: last) else { return nil }
         return BrewDiagnosis.draft(
+            from: last,
+            applying: pair,
+            grinder: setup.preferredGrinder(for: last.method)
+        )
+    }
+
+    /// Brew again, with the move chosen last time already on the numbers.
+    ///
+    /// `Brew.again()` copies the cup as brewed. The chosen correction lives on
+    /// the previous cup, so it has to be applied here — passing `again()` in
+    /// as `existing` used to skip `nextTimeDraft` entirely.
+    static func preparedAgain(
+        from last: Brew,
+        setup: SetupStore
+    ) -> (brew: Brew, application: LastApplication?) {
+        let copy = last.again()
+        guard let suggestion = matchedSuggestion(on: last) else { return (copy, nil) }
+        let drafted = BrewDiagnosis.draft(
             from: last,
             applying: suggestion,
             grinder: setup.preferredGrinder(for: last.method)
         )
+        let undo = UndoFields(
+            grind: copy.grind,
+            dose: copy.dose,
+            water: copy.water,
+            beverage: copy.beverage,
+            temperature: copy.temperature,
+            seconds: copy.seconds
+        )
+        var brew = copy
+        brew.grind = drafted.grind
+        brew.dose = drafted.dose
+        brew.water = drafted.water
+        brew.beverage = drafted.beverage
+        brew.temperature = drafted.temperature
+        brew.seconds = drafted.seconds
+        return (brew, LastApplication(change: suggestion.change, undo: undo))
+    }
+
+    private static func matchedSuggestion(on last: Brew) -> NextTime? {
+        guard let saved = last.nextTimeSuggestion else { return nil }
+        return BrewDiagnosis.candidates(for: last).first { $0.change == saved }
+    }
+}
+
+extension BrewPrefill {
+    /// What Brew again already moved, and the numbers to put back on Undo.
+    struct LastApplication: Equatable, Sendable {
+        var change: String
+        var undo: UndoFields
+    }
+
+    struct UndoFields: Equatable, Sendable {
+        var grind: GrindSetting
+        var dose: Double?
+        var water: Double?
+        var beverage: Double?
+        var temperature: Double?
+        var seconds: Int?
     }
 }

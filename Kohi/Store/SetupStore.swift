@@ -14,6 +14,8 @@ final class SetupStore {
     private(set) var equipment: [Equipment] = []
     private(set) var waterProfiles: [WaterProfile] = []
     private(set) var calibrations: [GrindCalibration] = []
+    private(set) var filterStock: [FilterStock] = []
+    private var didLiftFilterStock = false
 
     @ObservationIgnored weak var sink: (any ArchiveChangeSink)?
     @ObservationIgnored private let files: JSONDocumentStore<Snapshot>
@@ -25,6 +27,31 @@ final class SetupStore {
         var equipment: [Equipment] = []
         var waterProfiles: [WaterProfile] = []
         var calibrations: [GrindCalibration] = []
+        var filterStock: [FilterStock] = []
+        var didLiftFilterStock: Bool = false
+
+        init(
+            equipment: [Equipment] = [],
+            waterProfiles: [WaterProfile] = [],
+            calibrations: [GrindCalibration] = [],
+            filterStock: [FilterStock] = [],
+            didLiftFilterStock: Bool = false
+        ) {
+            self.equipment = equipment
+            self.waterProfiles = waterProfiles
+            self.calibrations = calibrations
+            self.filterStock = filterStock
+            self.didLiftFilterStock = didLiftFilterStock
+        }
+
+        init(from decoder: any Decoder) throws {
+            let c = try decoder.container(keyedBy: CodingKeys.self)
+            equipment = try c.decodeIfPresent([Equipment].self, forKey: .equipment) ?? []
+            waterProfiles = try c.decodeIfPresent([WaterProfile].self, forKey: .waterProfiles) ?? []
+            calibrations = try c.decodeIfPresent([GrindCalibration].self, forKey: .calibrations) ?? []
+            filterStock = try c.decodeIfPresent([FilterStock].self, forKey: .filterStock) ?? []
+            didLiftFilterStock = try c.decodeIfPresent(Bool.self, forKey: .didLiftFilterStock) ?? false
+        }
     }
 
     init(files: JSONDocumentStore<Snapshot> = JSONDocumentStore(filename: "setup.json")) {
@@ -33,11 +60,18 @@ final class SetupStore {
             equipment = snapshot.equipment
             waterProfiles = snapshot.waterProfiles
             calibrations = snapshot.calibrations
+            filterStock = snapshot.filterStock
+            didLiftFilterStock = snapshot.didLiftFilterStock
+            if !didLiftFilterStock {
+                liftLegacyFilters()
+                didLiftFilterStock = true
+                scheduleSave()
+            }
         }
     }
 
     var isEmpty: Bool {
-        equipment.isEmpty && waterProfiles.isEmpty && calibrations.isEmpty
+        equipment.isEmpty && waterProfiles.isEmpty && calibrations.isEmpty && filterStock.isEmpty
     }
 
     var kitIsEmpty: Bool { equipment.isEmpty }
@@ -71,7 +105,14 @@ final class SetupStore {
         waterProfiles.first { $0.id == id }
     }
 
+    func filterStock(id: UUID) -> FilterStock? {
+        filterStock.first { $0.id == id }
+    }
+
     var grinders: [Equipment] { equipment(.grinder) }
+
+    /// Accessories (Melodrip, Switch, Kōno, etc.) available for assignment to a recipe step.
+    var accessories: [Equipment] { equipment(.accessory) }
 
     /// The equipment set as default for a method, one per kind. What the brew
     /// sheet starts from.
@@ -103,8 +144,29 @@ final class SetupStore {
 
     func add(_ item: Equipment) {
         equipment.append(item)
+        liftFilters(from: item)
         sink?.changed(.equipment, id: item.id)
         scheduleSave()
+    }
+
+    /// Adds a catalogue pick to the cupboard, or returns the one already there.
+    /// The first of its kind for a method becomes the default.
+    @discardableResult
+    func adopt(_ item: Equipment, asDefaultIfFirstFor method: BrewMethod?) -> Equipment {
+        let existing = equipment.first { owned in
+            if let ref = item.grinderRef, owned.grinderRef == ref { return true }
+            if let ref = item.brewerRef, owned.brewerRef == ref { return true }
+            return owned.kind == item.kind && owned.displayName == item.displayName
+        }
+        let stored = existing ?? item
+        if existing == nil { add(item) }
+        if let method {
+            let hasDefault = equipment.contains {
+                $0.id != stored.id && $0.kind == stored.kind && $0.isDefaultFor.contains(method)
+            }
+            if !hasDefault { setDefault(stored, for: method, on: true) }
+        }
+        return stored
     }
 
     func update(_ item: Equipment) {
@@ -112,6 +174,7 @@ final class SetupStore {
         var updated = item
         updated.updatedAt = .now
         equipment[index] = updated
+        liftFilters(from: updated)
         sink?.changed(.equipment, id: item.id)
         scheduleSave()
     }
@@ -206,6 +269,88 @@ final class SetupStore {
         scheduleSave()
     }
 
+    // MARK: - Filter stock
+
+    func add(_ stock: FilterStock) {
+        var stored = stock
+        if let brewerID = stored.isDefaultFor.first,
+           !filterStock.contains(where: { $0.isDefaultFor.contains(brewerID) }) {
+            stored.isDefaultFor = [brewerID]
+        }
+        filterStock.append(stored)
+        sink?.changed(.filterStock, id: stored.id)
+        scheduleSave()
+    }
+
+    func update(_ stock: FilterStock) {
+        guard let index = filterStock.firstIndex(where: { $0.id == stock.id }) else { return }
+        var updated = stock
+        updated.updatedAt = .now
+        filterStock[index] = updated
+        sink?.changed(.filterStock, id: stock.id)
+        scheduleSave()
+    }
+
+    func delete(_ stock: FilterStock) {
+        filterStock.removeAll { $0.id == stock.id }
+        sink?.deleted(.filterStock, id: stock.id)
+        scheduleSave()
+    }
+
+    /// Marks a paper as the default for a brewer, clearing any other that held it.
+    func setDefault(_ stock: FilterStock, for brewerID: UUID, on: Bool) {
+        for index in filterStock.indices {
+            var updated = filterStock[index]
+            let had = updated.isDefaultFor.contains(brewerID)
+            if updated.id == stock.id {
+                if on, !had { updated.isDefaultFor.append(brewerID) }
+                if !on { updated.isDefaultFor.removeAll { $0 == brewerID } }
+            } else if on, had {
+                updated.isDefaultFor.removeAll { $0 == brewerID }
+            } else {
+                continue
+            }
+            updated.updatedAt = .now
+            filterStock[index] = updated
+            sink?.changed(.filterStock, id: updated.id)
+        }
+        scheduleSave()
+    }
+
+    /// First paper added for a brewer becomes its default.
+    func add(_ stock: FilterStock, defaultFor brewerID: UUID?) {
+        var stored = stock
+        if let brewerID {
+            let hasDefault = filterStock.contains { $0.isDefaultFor.contains(brewerID) }
+            if !hasDefault, !stored.isDefaultFor.contains(brewerID) {
+                stored.isDefaultFor.append(brewerID)
+            }
+        }
+        add(stored)
+    }
+
+    private func liftFilters(from item: Equipment) {
+        guard item.kind == .brewer else { return }
+        for paper in item.filters where !paper.isEmpty {
+            guard !filterStock.contains(where: { $0.id == paper.id }) else { continue }
+            let kit = FilterShape.kit(from: paper.shape, model: item.model)
+            var stock = FilterStock(
+                id: paper.id,
+                customName: paper.brand.isEmpty ? paper.displayName : paper.brand,
+                size: paper.shape,
+                shape: kit.shapes.first,
+                isDefaultFor: item.defaultFilterId == paper.id ? [item.id] : []
+            )
+            if stock.customName?.isEmpty == true { stock.customName = paper.displayName }
+            filterStock.append(stock)
+            sink?.changed(.filterStock, id: stock.id)
+        }
+    }
+
+    private func liftLegacyFilters() {
+        for item in equipment { liftFilters(from: item) }
+    }
+
     // MARK: - Calibrations
 
     func calibration(grinderID: UUID, method: BrewMethod) -> GrindCalibration? {
@@ -251,9 +396,11 @@ final class SetupStore {
         let items = equipment
         let waters = waterProfiles
         let cals = calibrations
+        let papers = filterStock
         for item in items { delete(item) }
         for profile in waters { delete(profile) }
         for calibration in cals { delete(calibration) }
+        for paper in papers { delete(paper) }
         UserDefaults.standard.removeObject(forKey: Self.preferredMethodKey)
     }
 
@@ -300,6 +447,19 @@ final class SetupStore {
         scheduleSave()
     }
 
+    func merge(filterStock incoming: [FilterStock]) {
+        guard !incoming.isEmpty else { return }
+        var byID = Dictionary(
+            filterStock.map { ($0.id, $0) }, uniquingKeysWith: { first, _ in first }
+        )
+        for stock in incoming {
+            if let local = byID[stock.id], local.updatedAt > stock.updatedAt { continue }
+            byID[stock.id] = stock
+        }
+        filterStock = Array(byID.values).sorted { $0.createdAt < $1.createdAt }
+        scheduleSave()
+    }
+
     // MARK: - Persistence
 
     private func scheduleSave() {
@@ -326,19 +486,22 @@ final class SetupStore {
         Snapshot(
             equipment: equipment,
             waterProfiles: waterProfiles,
-            calibrations: calibrations
+            calibrations: calibrations,
+            filterStock: filterStock,
+            didLiftFilterStock: didLiftFilterStock
         )
     }
 }
 
 extension SetupStore: RemoteSyncStore {
-    var syncKinds: [EntityKind] { [.equipment, .waterProfile, .grindCalibration] }
+    var syncKinds: [EntityKind] { [.equipment, .waterProfile, .grindCalibration, .filterStock] }
 
     func syncableIDs(_ kind: EntityKind) -> [UUID] {
         switch kind {
         case .equipment: equipment.map(\.id)
         case .waterProfile: waterProfiles.map(\.id)
         case .grindCalibration: calibrations.map(\.id)
+        case .filterStock: filterStock.map(\.id)
         default: []
         }
     }
@@ -369,6 +532,13 @@ extension SetupStore: RemoteSyncStore {
             let rows = calibrations
                 .filter { ids.contains($0.id) }
                 .map { GrindCalibrationRow(calibration: $0, userID: userID) }
+            if !rows.isEmpty {
+                try await client.from(kind.table).upsert(rows).execute()
+            }
+        case .filterStock:
+            let rows = filterStock
+                .filter { ids.contains($0.id) }
+                .map { FilterStockRow(stock: $0, userID: userID) }
             if !rows.isEmpty {
                 try await client.from(kind.table).upsert(rows).execute()
             }
@@ -404,6 +574,9 @@ extension SetupStore: RemoteSyncStore {
         case .grindCalibration:
             let rows: [GrindCalibrationRow] = try await query.execute().value
             merge(calibrations: rows.map { $0.toCalibration() })
+        case .filterStock:
+            let rows: [FilterStockRow] = try await query.execute().value
+            merge(filterStock: rows.map { $0.toStock() })
         default:
             return
         }

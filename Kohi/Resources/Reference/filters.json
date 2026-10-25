@@ -1,0 +1,1276 @@
+[
+  {
+    "id": "hario-v60-white-jp-tabbed",
+    "brand": "Hario",
+    "line": "V60",
+    "model": "White · Made in Japan · tabbed",
+    "shape": "cone60",
+    "sizes": [
+      "01",
+      "02",
+      "03"
+    ],
+    "fits": [
+      "V60 01/02/03",
+      "Origami",
+      "Switch",
+      "Cafec Flower",
+      "Kono"
+    ],
+    "material": "paperWood",
+    "bleach": "bleachedTCF",
+    "thicknessUm": 206.0,
+    "crepe": "one-side",
+    "density": "medium",
+    "flowClass": "standard",
+    "notes": "Papier de référence ; les lots varient (intérieur lisse = plus lent). Rincer.",
+    "source": "Gagné 2019 (mesures) ; japanesecoffeegear.com",
+    "status": "mesuré / lots à vérifier"
+  },
+  {
+    "id": "hario-v60-white-tabless",
+    "brand": "Hario",
+    "line": "V60",
+    "model": "White · tabless",
+    "shape": "cone60",
+    "sizes": [
+      "02"
+    ],
+    "fits": [
+      "V60 02"
+    ],
+    "material": "paperWood",
+    "bleach": "bleachedTCF",
+    "thicknessUm": 242.0,
+    "crepe": "one-side",
+    "density": "medium",
+    "flowClass": "slow",
+    "notes": "Plus épais ; rare en rayon.",
+    "source": "Gagné 2019",
+    "status": "mesuré"
+  },
+  {
+    "id": "hario-v60-misarashi",
+    "brand": "Hario",
+    "line": "V60",
+    "model": "Misarashi · unbleached",
+    "shape": "cone60",
+    "sizes": [
+      "01",
+      "02",
+      "03"
+    ],
+    "fits": [
+      "V60 01/02/03",
+      "Origami",
+      "Switch"
+    ],
+    "material": "paperWood",
+    "bleach": "unbleached",
+    "thicknessUm": 203.0,
+    "crepe": "one-side",
+    "density": "medium",
+    "flowClass": "fast",
+    "notes": "5 ppm relargués à sec ; rincer 150 g d'eau chaude.",
+    "source": "Gagné 2019",
+    "status": "mesuré"
+  },
+  {
+    "id": "hario-v60-white-nl",
+    "brand": "Hario",
+    "line": "V60",
+    "model": "White · Made in Netherlands",
+    "shape": "cone60",
+    "sizes": [
+      "02"
+    ],
+    "fits": [
+      "V60 02"
+    ],
+    "material": "paperWood",
+    "bleach": "bleachedTCF",
+    "thicknessUm": null,
+    "crepe": "one-side",
+    "density": "high",
+    "flowClass": "verySlow",
+    "notes": "Plus épais, colmatage et goût de papier rapportés.",
+    "source": "driproast.com ; home-barista",
+    "status": "à vérifier"
+  },
+  {
+    "id": "cafec-abaca",
+    "brand": "Cafec",
+    "line": "Abaca",
+    "model": "Abaca (AC1/AC4)",
+    "shape": "cone60",
+    "sizes": [
+      "1cup",
+      "4cup"
+    ],
+    "fits": [
+      "V60 01/02",
+      "Cafec Flower",
+      "Origami"
+    ],
+    "material": "paperAbaca",
+    "bleach": "gentlyBleached",
+    "thicknessUm": 250.0,
+    "crepe": "two-side",
+    "density": "low",
+    "flowClass": "fast",
+    "notes": "Crêpage double face, débit régulier.",
+    "source": "Cafec ; Kohiraifu",
+    "status": "constructeur"
+  },
+  {
+    "id": "cafec-abaca-plus",
+    "brand": "Cafec",
+    "line": "Abaca+",
+    "model": "Abaca+",
+    "shape": "cone60",
+    "sizes": [
+      "1cup",
+      "4cup"
+    ],
+    "fits": [
+      "V60 01/02",
+      "Cafec Flower",
+      "Origami"
+    ],
+    "material": "paperAbaca",
+    "bleach": "gentlyBleached",
+    "thicknessUm": 220.0,
+    "crepe": "two-side",
+    "density": "high",
+    "flowClass": "standard",
+    "notes": "Polyvalent ; référence du test MIM.",
+    "source": "MIM Coffee Lab 2024 ; Kohiraifu",
+    "status": "constructeur + test"
+  },
+  {
+    "id": "cafec-t92-light",
+    "brand": "Cafec",
+    "line": "Roast profile",
+    "model": "T-92 / Light Roast (TH-1, LC)",
+    "shape": "cone60",
+    "sizes": [
+      "1cup",
+      "4cup"
+    ],
+    "fits": [
+      "V60 01/02",
+      "Cafec Flower"
+    ],
+    "material": "paperAbaca",
+    "bleach": "gentlyBleached",
+    "thicknessUm": 280.0,
+    "crepe": "two-side",
+    "density": "high",
+    "flowClass": "verySlow",
+    "notes": "Le plus long (6,5 min sur medium roast, MIM) ; rapports de colmatage.",
+    "source": "MIM Coffee Lab 2024 ; home-barista",
+    "status": "test + à vérifier"
+  },
+  {
+    "id": "cafec-t90-medium",
+    "brand": "Cafec",
+    "line": "Roast profile",
+    "model": "T-90 / Medium-Dark (TH-3, MC)",
+    "shape": "cone60",
+    "sizes": [
+      "1cup",
+      "4cup"
+    ],
+    "fits": [
+      "V60 01/02",
+      "Cafec Flower"
+    ],
+    "material": "paperAbaca",
+    "bleach": "gentlyBleached",
+    "thicknessUm": 220.0,
+    "crepe": "two-side",
+    "density": "medium",
+    "flowClass": "standard",
+    "notes": "Entre Sibarist FAST et Hario blanchi selon les utilisateurs.",
+    "source": "MIM Coffee Lab 2024 ; cafecusa.com",
+    "status": "test"
+  },
+  {
+    "id": "cafec-t83-dark",
+    "brand": "Cafec",
+    "line": "Roast profile",
+    "model": "T-83 / Dark Roast (TH-2, DC)",
+    "shape": "cone60",
+    "sizes": [
+      "1cup",
+      "4cup"
+    ],
+    "fits": [
+      "V60 01/02",
+      "Cafec Flower"
+    ],
+    "material": "paperAbaca",
+    "bleach": "gentlyBleached",
+    "thicknessUm": null,
+    "crepe": "two-side low",
+    "density": "low",
+    "flowClass": "fast",
+    "notes": "5,5 min (MIM) ; débit qui s'accélère en seconde moitié ; corps et sucrosité.",
+    "source": "MIM Coffee Lab 2024 ; cafec-jp.com",
+    "status": "test"
+  },
+  {
+    "id": "cafec-deep27",
+    "brand": "Cafec",
+    "line": "Deep",
+    "model": "Deep27",
+    "shape": "coneDeep",
+    "sizes": [
+      "27"
+    ],
+    "fits": [
+      "Cafec Deep 27"
+    ],
+    "material": "paperAbaca",
+    "bleach": "gentlyBleached",
+    "thicknessUm": 150.0,
+    "crepe": "one-side",
+    "density": "high",
+    "flowClass": "fast",
+    "notes": "Lit de café très profond.",
+    "source": "Kohiraifu",
+    "status": "constructeur"
+  },
+  {
+    "id": "sibarist-fast-cone",
+    "brand": "Sibarist",
+    "line": "FAST",
+    "model": "CONE FAST",
+    "shape": "cone60",
+    "sizes": [
+      "S",
+      "M",
+      "L"
+    ],
+    "fits": [
+      "V60 01/02/03",
+      "Switch",
+      "Origami",
+      "Chemex (L plié)"
+    ],
+    "material": "paperAbaca",
+    "bleach": "bleachedTCF",
+    "thicknessUm": null,
+    "crepe": null,
+    "density": null,
+    "flowClass": "veryFast",
+    "notes": "Marge de mouture : moudre plus fin sans sur-extraire ; quasi sans goût.",
+    "source": "sibarist.coffee ; wild-kaffee.com ; beanbench.coffee",
+    "status": "constructeur + revues"
+  },
+  {
+    "id": "sibarist-b3-cone",
+    "brand": "Sibarist",
+    "line": "B3",
+    "model": "CONE B3",
+    "shape": "cone60",
+    "sizes": [
+      "S",
+      "M",
+      "L"
+    ],
+    "fits": [
+      "V60 01/02/03",
+      "Switch",
+      "Origami"
+    ],
+    "material": "paperAbaca",
+    "bleach": "bleachedTCF",
+    "thicknessUm": null,
+    "crepe": null,
+    "density": "high",
+    "flowClass": "standard",
+    "notes": "Plus épais, peu poreux ; uniformité, sucrosité.",
+    "source": "sibarist.coffee",
+    "status": "constructeur"
+  },
+  {
+    "id": "sibarist-fast-flat",
+    "brand": "Sibarist",
+    "line": "FAST",
+    "model": "FLAT FAST",
+    "shape": "flatSmooth",
+    "sizes": [
+      "S",
+      "M",
+      "L"
+    ],
+    "fits": [
+      "Kalita Wave 155/185",
+      "Orea",
+      "April",
+      "B75"
+    ],
+    "material": "paperAbaca",
+    "bleach": "bleachedTCF",
+    "thicknessUm": null,
+    "crepe": "none",
+    "density": null,
+    "flowClass": "dependsOnDripper",
+    "notes": "Non plissé, colle aux parois, supprime le bypass ; Kalita verre ~20 % plus lente que céramique.",
+    "source": "sibarist.coffee",
+    "status": "constructeur"
+  },
+  {
+    "id": "sibarist-b3-flat",
+    "brand": "Sibarist",
+    "line": "B3",
+    "model": "FLAT B3",
+    "shape": "flatSmooth",
+    "sizes": [
+      "S",
+      "M",
+      "L"
+    ],
+    "fits": [
+      "Kalita Wave 155/185",
+      "Orea",
+      "April"
+    ],
+    "material": "paperAbaca",
+    "bleach": "bleachedTCF",
+    "thicknessUm": null,
+    "crepe": "none",
+    "density": "high",
+    "flowClass": "dependsOnDripper",
+    "notes": "",
+    "source": "sibarist.coffee",
+    "status": "constructeur"
+  },
+  {
+    "id": "kalita-wave-155",
+    "brand": "Kalita",
+    "line": "Wave",
+    "model": "Wave 155 (KWF-155)",
+    "shape": "wave",
+    "sizes": [
+      "155"
+    ],
+    "fits": [
+      "Kalita Wave 155",
+      "Origami S",
+      "B75",
+      "Orea (small)"
+    ],
+    "material": "paperWood",
+    "bleach": "bleachedTCF",
+    "thicknessUm": null,
+    "crepe": "wave",
+    "density": "medium",
+    "flowClass": "standard",
+    "notes": "Plis larges ; référence flat bottom.",
+    "source": "coffeeronin.ca ; Coffee Umami 2025",
+    "status": "revues"
+  },
+  {
+    "id": "kalita-wave-185",
+    "brand": "Kalita",
+    "line": "Wave",
+    "model": "Wave 185 (KWF-185)",
+    "shape": "wave",
+    "sizes": [
+      "185"
+    ],
+    "fits": [
+      "Kalita Wave 185",
+      "Origami M",
+      "April",
+      "Orea"
+    ],
+    "material": "paperWood",
+    "bleach": "bleachedTCF",
+    "thicknessUm": null,
+    "crepe": "wave",
+    "density": "medium",
+    "flowClass": "standard",
+    "notes": "",
+    "source": "coffeeronin.ca",
+    "status": "revues"
+  },
+  {
+    "id": "kalita-wave-brown",
+    "brand": "Kalita",
+    "line": "Wave",
+    "model": "Wave brown (unbleached)",
+    "shape": "wave",
+    "sizes": [
+      "155",
+      "185"
+    ],
+    "fits": [
+      "Kalita Wave 155/185"
+    ],
+    "material": "paperWood",
+    "bleach": "unbleached",
+    "thicknessUm": null,
+    "crepe": "wave",
+    "density": "medium",
+    "flowClass": "standard",
+    "notes": "Rincer.",
+    "source": "",
+    "status": "à vérifier"
+  },
+  {
+    "id": "orea-wave",
+    "brand": "Orea",
+    "line": "Wave",
+    "model": "Orea wave filter",
+    "shape": "wave",
+    "sizes": [
+      "155-like"
+    ],
+    "fits": [
+      "Orea V3/V4",
+      "Origami",
+      "B75"
+    ],
+    "material": "paperWood",
+    "bleach": "bleachedTCF",
+    "thicknessUm": null,
+    "crepe": "wave (plis serrés)",
+    "density": "high",
+    "flowClass": "standard",
+    "notes": "Moins d'odeur de papier que Kalita ; plus lent sur Origami, identique sur B75.",
+    "source": "coffeeronin.ca",
+    "status": "revue"
+  },
+  {
+    "id": "orea-flat",
+    "brand": "Orea",
+    "line": "Flat",
+    "model": "Orea flat / Type G / Type C",
+    "shape": "flatSmooth",
+    "sizes": [
+      "Orea"
+    ],
+    "fits": [
+      "Orea V3/V4"
+    ],
+    "material": "paperWood",
+    "bleach": "bleachedTCF",
+    "thicknessUm": null,
+    "crepe": "none",
+    "density": null,
+    "flowClass": "standard",
+    "notes": "Répétabilité du drawdown variable (Coffee Umami).",
+    "source": "Coffee Umami 2025",
+    "status": "revue"
+  },
+  {
+    "id": "april-flat",
+    "brand": "April",
+    "line": "April",
+    "model": "April paper filter",
+    "shape": "wave",
+    "sizes": [
+      "April"
+    ],
+    "fits": [
+      "April Brewer"
+    ],
+    "material": "paperWood",
+    "bleach": "bleachedTCF",
+    "thicknessUm": null,
+    "crepe": "wave",
+    "density": null,
+    "flowClass": "standard",
+    "notes": "Qualité de papier jugée inférieure par Coffee Rōnin.",
+    "source": "coffeeronin.ca",
+    "status": "à vérifier"
+  },
+  {
+    "id": "origami-cone",
+    "brand": "Origami",
+    "line": "Cone",
+    "model": "Origami cone S/M",
+    "shape": "cone60",
+    "sizes": [
+      "S",
+      "M"
+    ],
+    "fits": [
+      "Origami S/M",
+      "V60 01/02"
+    ],
+    "material": "paperWood",
+    "bleach": "bleachedTCF",
+    "thicknessUm": null,
+    "crepe": null,
+    "density": null,
+    "flowClass": "standard",
+    "notes": "",
+    "source": "",
+    "status": "à vérifier"
+  },
+  {
+    "id": "origami-wave",
+    "brand": "Origami",
+    "line": "Wave",
+    "model": "Origami wave",
+    "shape": "wave",
+    "sizes": [
+      "S",
+      "M"
+    ],
+    "fits": [
+      "Origami S/M"
+    ],
+    "material": "paperWood",
+    "bleach": "bleachedTCF",
+    "thicknessUm": null,
+    "crepe": "wave",
+    "density": null,
+    "flowClass": "standard",
+    "notes": "",
+    "source": "",
+    "status": "à vérifier"
+  },
+  {
+    "id": "timemore-b75",
+    "brand": "Timemore",
+    "line": "B75",
+    "model": "B75 filter",
+    "shape": "wave",
+    "sizes": [
+      "B75"
+    ],
+    "fits": [
+      "Timemore B75",
+      "B75 Pro"
+    ],
+    "material": "paperWood",
+    "bleach": "bleachedTCF",
+    "thicknessUm": null,
+    "crepe": "wave",
+    "density": null,
+    "flowClass": "standard",
+    "notes": "",
+    "source": "",
+    "status": "à vérifier"
+  },
+  {
+    "id": "timemore-crystal-eye",
+    "brand": "Timemore",
+    "line": "Crystal Eye",
+    "model": "Crystal Eye cone",
+    "shape": "cone60",
+    "sizes": [
+      "01",
+      "02"
+    ],
+    "fits": [
+      "Timemore Crystal Eye",
+      "V60"
+    ],
+    "material": "paperWood",
+    "bleach": "bleachedTCF",
+    "thicknessUm": null,
+    "crepe": null,
+    "density": null,
+    "flowClass": "standard",
+    "notes": "",
+    "source": "",
+    "status": "à vérifier"
+  },
+  {
+    "id": "chemex-bonded-white",
+    "brand": "Chemex",
+    "line": "Bonded",
+    "model": "Bonded white (square / circle)",
+    "shape": "chemex",
+    "sizes": [
+      "3cup",
+      "6cup",
+      "8cup",
+      "10cup"
+    ],
+    "fits": [
+      "Chemex"
+    ],
+    "material": "paperWood",
+    "bleach": "bleachedTCF",
+    "thicknessUm": 210.0,
+    "crepe": "none",
+    "density": "high",
+    "flowClass": "slow",
+    "notes": "Épais ; rincer ~4× plus qu'un V60.",
+    "source": "Gagné 2019",
+    "status": "mesuré"
+  },
+  {
+    "id": "chemex-bonded-natural",
+    "brand": "Chemex",
+    "line": "Bonded",
+    "model": "Bonded natural (unbleached)",
+    "shape": "chemex",
+    "sizes": [
+      "3cup",
+      "6cup",
+      "8cup",
+      "10cup"
+    ],
+    "fits": [
+      "Chemex"
+    ],
+    "material": "paperWood",
+    "bleach": "unbleached",
+    "thicknessUm": 167.0,
+    "crepe": "none",
+    "density": "high",
+    "flowClass": "standard",
+    "notes": "Plus rapide que le blanchi dans les mesures.",
+    "source": "Gagné 2019",
+    "status": "mesuré"
+  },
+  {
+    "id": "melitta-1x2",
+    "brand": "Melitta",
+    "line": "Original / Gourmet",
+    "model": "1x2",
+    "shape": "melitta",
+    "sizes": [
+      "1x2"
+    ],
+    "fits": [
+      "Melitta 1x2",
+      "Clever Dripper",
+      "Bonavita"
+    ],
+    "material": "paperBamboo",
+    "bleach": "bleachedTCF",
+    "thicknessUm": null,
+    "crepe": null,
+    "density": null,
+    "flowClass": "standard",
+    "notes": "Jusqu'à 60 % de bambou ; micro-perforations sur certaines gammes (plus de diterpènes).",
+    "source": "Wikipedia ; PubMed 29735059",
+    "status": "à vérifier"
+  },
+  {
+    "id": "melitta-1x4",
+    "brand": "Melitta",
+    "line": "Original / Gourmet",
+    "model": "1x4",
+    "shape": "melitta",
+    "sizes": [
+      "1x4"
+    ],
+    "fits": [
+      "Melitta 1x4",
+      "Clever Dripper (large)"
+    ],
+    "material": "paperBamboo",
+    "bleach": "bleachedTCF",
+    "thicknessUm": null,
+    "crepe": null,
+    "density": null,
+    "flowClass": "standard",
+    "notes": "",
+    "source": "",
+    "status": "à vérifier"
+  },
+  {
+    "id": "melitta-natural",
+    "brand": "Melitta",
+    "line": "Natural brown",
+    "model": "1x2 / 1x4 unbleached",
+    "shape": "melitta",
+    "sizes": [
+      "1x2",
+      "1x4"
+    ],
+    "fits": [
+      "Melitta"
+    ],
+    "material": "paperBamboo",
+    "bleach": "unbleached",
+    "thicknessUm": null,
+    "crepe": null,
+    "density": null,
+    "flowClass": "standard",
+    "notes": "Rincer.",
+    "source": "",
+    "status": "à vérifier"
+  },
+  {
+    "id": "kono-meimon",
+    "brand": "Kono",
+    "line": "Meimon",
+    "model": "Kono cone",
+    "shape": "cone60",
+    "sizes": [
+      "2cup",
+      "4cup"
+    ],
+    "fits": [
+      "Kono Meimon",
+      "V60"
+    ],
+    "material": "paperWood",
+    "bleach": "bleachedTCF",
+    "thicknessUm": null,
+    "crepe": null,
+    "density": null,
+    "flowClass": "standard",
+    "notes": "",
+    "source": "",
+    "status": "à vérifier"
+  },
+  {
+    "id": "aeropress-paper",
+    "brand": "AeroPress",
+    "line": "Paper",
+    "model": "AeroPress micro-filter",
+    "shape": "disc",
+    "sizes": [
+      "60mm"
+    ],
+    "fits": [
+      "AeroPress",
+      "AeroPress Go",
+      "Clear"
+    ],
+    "material": "paperWood",
+    "bleach": "bleachedTCF",
+    "thicknessUm": 120.0,
+    "crepe": "none",
+    "density": null,
+    "flowClass": "fast",
+    "notes": "Très fin.",
+    "source": "Gagné 2019",
+    "status": "mesuré"
+  },
+  {
+    "id": "aeropress-xl-paper",
+    "brand": "AeroPress",
+    "line": "Paper",
+    "model": "AeroPress XL filter",
+    "shape": "disc",
+    "sizes": [
+      "XL"
+    ],
+    "fits": [
+      "AeroPress XL"
+    ],
+    "material": "paperWood",
+    "bleach": "bleachedTCF",
+    "thicknessUm": null,
+    "crepe": "none",
+    "density": null,
+    "flowClass": "fast",
+    "notes": "",
+    "source": "",
+    "status": "à vérifier"
+  },
+  {
+    "id": "aesir",
+    "brand": "Aesir (Aubade)",
+    "line": "Aesir",
+    "model": "Aesir filter",
+    "shape": "disc",
+    "sizes": [
+      "60mm"
+    ],
+    "fits": [
+      "AeroPress"
+    ],
+    "material": "paperWood",
+    "bleach": "bleachedTCF",
+    "thicknessUm": 220.0,
+    "crepe": "none",
+    "density": "high",
+    "flowClass": "slow",
+    "notes": "Deux fois plus épais ; résiste aux chenaux et au colmatage ; compenser en pressant.",
+    "source": "Gagné 2019",
+    "status": "mesuré"
+  },
+  {
+    "id": "able-disk",
+    "brand": "Able",
+    "line": "Disk",
+    "model": "Disk fine / standard",
+    "shape": "disc",
+    "sizes": [
+      "60mm"
+    ],
+    "fits": [
+      "AeroPress"
+    ],
+    "material": "metal",
+    "bleach": null,
+    "thicknessUm": null,
+    "crepe": null,
+    "density": null,
+    "flowClass": "veryFast",
+    "notes": "Huiles et fines passent ; corps ; sédiment.",
+    "source": "",
+    "status": "à vérifier"
+  },
+  {
+    "id": "fellow-prismo",
+    "brand": "Fellow",
+    "line": "Prismo",
+    "model": "Prismo metal filter",
+    "shape": "disc",
+    "sizes": [
+      "60mm"
+    ],
+    "fits": [
+      "AeroPress"
+    ],
+    "material": "metal",
+    "bleach": null,
+    "thicknessUm": null,
+    "crepe": null,
+    "density": null,
+    "flowClass": "veryFast",
+    "notes": "Avec valve ; huiles passent.",
+    "source": "",
+    "status": "à vérifier"
+  },
+  {
+    "id": "coffee-sock",
+    "brand": "CoffeeSock",
+    "line": "Cloth",
+    "model": "Cloth V60",
+    "shape": "cloth",
+    "sizes": [
+      "01",
+      "02"
+    ],
+    "fits": [
+      "V60"
+    ],
+    "material": "cloth",
+    "bleach": null,
+    "thicknessUm": 690.0,
+    "crepe": null,
+    "density": null,
+    "flowClass": "fast",
+    "notes": "Huiles partielles ; entretien.",
+    "source": "Gagné 2019",
+    "status": "mesuré"
+  },
+  {
+    "id": "nel-drip",
+    "brand": "Hario / divers",
+    "line": "Nel",
+    "model": "Nel drip cloth",
+    "shape": "cloth",
+    "sizes": [
+      "1-2cup",
+      "3-4cup"
+    ],
+    "fits": [
+      "Nel drip stand"
+    ],
+    "material": "cloth",
+    "bleach": null,
+    "thicknessUm": null,
+    "crepe": null,
+    "density": null,
+    "flowClass": "fast",
+    "notes": "Corps ; garder humide.",
+    "source": "",
+    "status": "à vérifier"
+  },
+  {
+    "id": "hario-siphon-paper",
+    "brand": "Hario",
+    "line": "Siphon",
+    "model": "Siphon paper filter",
+    "shape": "disc",
+    "sizes": [
+      "siphon"
+    ],
+    "fits": [
+      "Hario siphon"
+    ],
+    "material": "paperWood",
+    "bleach": "unbleached",
+    "thicknessUm": 220.0,
+    "crepe": null,
+    "density": null,
+    "flowClass": "standard",
+    "notes": "",
+    "source": "Gagné 2019",
+    "status": "mesuré"
+  },
+  {
+    "id": "hario-siphon-cloth",
+    "brand": "Hario",
+    "line": "Siphon",
+    "model": "Siphon cloth",
+    "shape": "cloth",
+    "sizes": [
+      "siphon"
+    ],
+    "fits": [
+      "Hario siphon"
+    ],
+    "material": "cloth",
+    "bleach": null,
+    "thicknessUm": 645.0,
+    "crepe": null,
+    "density": null,
+    "flowClass": "fast",
+    "notes": "",
+    "source": "Gagné 2019",
+    "status": "mesuré"
+  },
+  {
+    "id": "sibarist-espresso-hc",
+    "brand": "Sibarist",
+    "line": "Espresso",
+    "model": "High Cellulose",
+    "shape": "disc",
+    "sizes": [
+      "50",
+      "53",
+      "55",
+      "57mm"
+    ],
+    "fits": [
+      "Portafilter baskets"
+    ],
+    "material": "paperCellulose",
+    "bleach": null,
+    "thicknessUm": null,
+    "crepe": null,
+    "density": null,
+    "flowClass": null,
+    "notes": "Filtre de dessus de puck ; rendement et clarté.",
+    "source": "sibarist.coffee ; wild-kaffee.com",
+    "status": "constructeur"
+  },
+  {
+    "id": "sibarist-espresso-hm",
+    "brand": "Sibarist",
+    "line": "Espresso",
+    "model": "High Membrane",
+    "shape": "disc",
+    "sizes": [
+      "50",
+      "53",
+      "55",
+      "57mm"
+    ],
+    "fits": [
+      "Portafilter baskets"
+    ],
+    "material": "paperMembrane",
+    "bleach": null,
+    "thicknessUm": null,
+    "crepe": null,
+    "density": null,
+    "flowClass": null,
+    "notes": "Structure synthétique régulière ; réduit l'astringence.",
+    "source": "wild-kaffee.com",
+    "status": "constructeur"
+  },
+  {
+    "id": "pulsar-paper",
+    "brand": "NextLevel",
+    "line": "Pulsar",
+    "model": "Pulsar paper filter",
+    "shape": "flatSmooth",
+    "sizes": [
+      "Pulsar"
+    ],
+    "fits": [
+      "NextLevel Pulsar"
+    ],
+    "material": "paperWood",
+    "bleach": "bleachedTCF",
+    "thicknessUm": null,
+    "crepe": "none",
+    "density": null,
+    "flowClass": "standard",
+    "notes": "No-bypass.",
+    "source": "",
+    "status": "à vérifier"
+  },
+  {
+    "id": "tricolate-paper",
+    "brand": "Tricolate",
+    "line": "Tricolate",
+    "model": "Tricolate filter",
+    "shape": "flatSmooth",
+    "sizes": [
+      "Tricolate"
+    ],
+    "fits": [
+      "Tricolate"
+    ],
+    "material": "paperWood",
+    "bleach": "bleachedTCF",
+    "thicknessUm": null,
+    "crepe": "none",
+    "density": null,
+    "flowClass": "standard",
+    "notes": "No-bypass.",
+    "source": "",
+    "status": "à vérifier"
+  },
+  {
+    "id": "kinto-paper",
+    "brand": "Kinto",
+    "line": "SCS / OCT",
+    "model": "Kinto filter",
+    "shape": "cone60",
+    "sizes": [
+      "2cup",
+      "4cup"
+    ],
+    "fits": [
+      "Kinto SCS",
+      "Kinto OCT"
+    ],
+    "material": "paperWood",
+    "bleach": "bleachedTCF",
+    "thicknessUm": null,
+    "crepe": null,
+    "density": null,
+    "flowClass": "standard",
+    "notes": "",
+    "source": "",
+    "status": "à vérifier"
+  },
+  {
+    "id": "batch-basket",
+    "brand": "générique",
+    "line": "Basket",
+    "model": "Batch brewer basket filter",
+    "shape": "basket",
+    "sizes": [
+      "various"
+    ],
+    "fits": [
+      "Moccamaster",
+      "batch brewers"
+    ],
+    "material": "paperWood",
+    "bleach": "bleachedTCF",
+    "thicknessUm": null,
+    "crepe": null,
+    "density": null,
+    "flowClass": "standard",
+    "notes": "",
+    "source": "",
+    "status": "à vérifier"
+  },
+  {
+    "id": "fellow-stagg-paper",
+    "brand": "Fellow",
+    "line": "Stagg",
+    "model": "Stagg X / XF paper filter",
+    "shape": "wave",
+    "sizes": [
+      "X",
+      "XF"
+    ],
+    "fits": [
+      "Fellow Stagg X",
+      "Fellow Stagg XF"
+    ],
+    "material": "paperWood",
+    "bleach": "bleachedTCF",
+    "thicknessUm": null,
+    "crepe": null,
+    "density": null,
+    "flowClass": "standard",
+    "notes": "Papier dédié Fellow ; les Kalita 185 sont souvent utilisés en substitut.",
+    "source": "",
+    "status": "à vérifier"
+  },
+  {
+    "id": "gabi-paper",
+    "brand": "Gabi",
+    "line": "Gabi",
+    "model": "Gabi Master A / B paper",
+    "shape": "cone60",
+    "sizes": [
+      "02"
+    ],
+    "fits": [
+      "Gabi Master A",
+      "Gabi B",
+      "V60 02"
+    ],
+    "material": "paperWood",
+    "bleach": "bleachedTCF",
+    "thicknessUm": null,
+    "crepe": null,
+    "density": null,
+    "flowClass": "standard",
+    "notes": "Gabi utilise des cônes 02 (V60 compatibles).",
+    "source": "",
+    "status": "à vérifier"
+  },
+  {
+    "id": "trinity-paper",
+    "brand": "Trinity",
+    "line": "Trinity",
+    "model": "Trinity Zero / One paper",
+    "shape": "dedicated",
+    "sizes": [
+      "Trinity"
+    ],
+    "fits": [
+      "Trinity Zero",
+      "Trinity One"
+    ],
+    "material": "paperWood",
+    "bleach": "bleachedTCF",
+    "thicknessUm": null,
+    "crepe": null,
+    "density": null,
+    "flowClass": "standard",
+    "notes": "Papier dédié.",
+    "source": "",
+    "status": "à vérifier"
+  },
+  {
+    "id": "ufo-paper",
+    "brand": "UFO",
+    "line": "UFO",
+    "model": "UFO 2.0 paper",
+    "shape": "dedicated",
+    "sizes": [
+      "UFO"
+    ],
+    "fits": [
+      "UFO Dripper 2.0",
+      "UFO Coffee Brewer"
+    ],
+    "material": "paperWood",
+    "bleach": "bleachedTCF",
+    "thicknessUm": null,
+    "crepe": null,
+    "density": null,
+    "flowClass": "standard",
+    "notes": "Papier dédié UFO 2.0 ; le premier UFO accepte des papiers compatibles (à vérifier).",
+    "source": "",
+    "status": "à vérifier"
+  },
+  {
+    "id": "pure-over-paper",
+    "brand": "Pure Over",
+    "line": "Pure Over",
+    "model": "Pure Over paper",
+    "shape": "dedicated",
+    "sizes": [
+      "Pure Over"
+    ],
+    "fits": [
+      "Pure Over"
+    ],
+    "material": "paperWood",
+    "bleach": "bleachedTCF",
+    "thicknessUm": null,
+    "crepe": null,
+    "density": null,
+    "flowClass": "standard",
+    "notes": "Papier spécifique.",
+    "source": "",
+    "status": "à vérifier"
+  },
+  {
+    "id": "cafflano-paper",
+    "brand": "Cafflano",
+    "line": "Cafflano",
+    "model": "Cafflano paper",
+    "shape": "dedicated",
+    "sizes": [
+      "Cafflano"
+    ],
+    "fits": [
+      "Cafflano"
+    ],
+    "material": "paperWood",
+    "bleach": "bleachedTCF",
+    "thicknessUm": null,
+    "crepe": null,
+    "density": null,
+    "flowClass": "standard",
+    "notes": "",
+    "source": "",
+    "status": "à vérifier"
+  },
+  {
+    "id": "lvl10-paper",
+    "brand": "NextLevel",
+    "line": "LVL-10",
+    "model": "LVL-10 paper",
+    "shape": "flatSmooth",
+    "sizes": [
+      "LVL-10"
+    ],
+    "fits": [
+      "NextLevel LVL-10"
+    ],
+    "material": "paperWood",
+    "bleach": "bleachedTCF",
+    "thicknessUm": null,
+    "crepe": null,
+    "density": null,
+    "flowClass": "standard",
+    "notes": "No-bypass.",
+    "source": "",
+    "status": "à vérifier"
+  },
+  {
+    "id": "simplify-paper",
+    "brand": "Simplify",
+    "line": "Simplify",
+    "model": "Simplify Brewer paper",
+    "shape": "flatSmooth",
+    "sizes": [
+      "Simplify"
+    ],
+    "fits": [
+      "Simplify Brewer"
+    ],
+    "material": "paperWood",
+    "bleach": "bleachedTCF",
+    "thicknessUm": null,
+    "crepe": null,
+    "density": null,
+    "flowClass": "standard",
+    "notes": "",
+    "source": "",
+    "status": "à vérifier"
+  },
+  {
+    "id": "kuju-pouch",
+    "brand": "Kuju",
+    "line": "Pocket PourOver",
+    "model": "Kuju single-serve pouch",
+    "shape": "dedicated",
+    "sizes": [
+      "single"
+    ],
+    "fits": [
+      "Kuju Coffee Brewer"
+    ],
+    "material": "paperWood",
+    "bleach": "bleachedTCF",
+    "thicknessUm": null,
+    "crepe": null,
+    "density": null,
+    "flowClass": "standard",
+    "notes": "Sachet tout-en-un, café inclus.",
+    "source": "",
+    "status": "à vérifier"
+  }
+]

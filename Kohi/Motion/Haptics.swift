@@ -52,9 +52,36 @@ enum Haptics {
     }
 }
 
+private struct KohiHapticsEnabledKey: EnvironmentKey {
+    static let defaultValue = true
+}
+
+extension EnvironmentValues {
+    /// Snapshots turn this off: `sensoryFeedback` traps in the simulator
+    /// when the Taptic Engine is still cold.
+    var kohiHapticsEnabled: Bool {
+        get { self[KohiHapticsEnabledKey.self] }
+        set { self[KohiHapticsEnabledKey.self] = newValue }
+    }
+}
+
 extension View {
     /// Fires a named haptic whenever `trigger` changes.
     func haptic<T: Equatable>(_ haptic: Haptic, trigger: T) -> some View {
-        sensoryFeedback(haptic.feedback, trigger: trigger)
+        modifier(NamedHaptic(haptic: haptic, trigger: trigger))
+    }
+}
+
+private struct NamedHaptic<T: Equatable>: ViewModifier {
+    var haptic: Haptic
+    var trigger: T
+    @Environment(\.kohiHapticsEnabled) private var enabled
+
+    func body(content: Content) -> some View {
+        if enabled {
+            content.sensoryFeedback(haptic.feedback, trigger: trigger)
+        } else {
+            content
+        }
     }
 }

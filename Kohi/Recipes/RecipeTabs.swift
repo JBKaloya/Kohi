@@ -1,26 +1,28 @@
 import SwiftUI
 
 enum RecipeTab: String, CaseIterable, Identifiable, Sendable {
+    case all
     case mine
-    case suggested
     case reference
 
     var id: String { rawValue }
 
     var label: String {
         switch self {
-        case .mine: "Mine"
-        case .suggested: "Suggested"
-        case .reference: Copy.fromThePros
+        case .all: "All"
+        case .mine: "My recipes"
+        case .reference: "Recipes from the pros"
         }
     }
 }
 
-/// Level-2 catalogue labels with a hairline under the active one, Ask on the right.
+/// Level-2 catalogue labels with a hairline under the active one.
+/// Ask has moved to the FAB — it is no longer in the tab rail.
 struct RecipeTabs: View {
     @Binding var selection: RecipeTab
-    var showsAsk: Bool
-    var onAsk: () -> Void
+    // Kept for call-site compatibility; no longer used.
+    var showsAsk: Bool = false
+    var onAsk: () -> Void = {}
 
     var body: some View {
         TabRail(
@@ -29,21 +31,6 @@ struct RecipeTabs: View {
             underline: .active,
             animation: Motion.quick,
             title: { $0.label }
-        ) {
-            if showsAsk {
-                Button(action: onAsk) {
-                    HStack(spacing: 5) {
-                        Image(systemName: "sparkles")
-                            .font(.system(size: 10, weight: .semibold))
-                        Text("Ask")
-                            .font(Typography.label)
-                            .tracking(Typography.labelTracking)
-                            .textCase(.uppercase)
-                    }
-                    .foregroundStyle(Palette.inkMuted)
-                }
-                .buttonStyle(.plain)
-            }
-        }
+        )
     }
 }

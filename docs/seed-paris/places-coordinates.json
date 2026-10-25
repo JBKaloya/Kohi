@@ -1,0 +1,3472 @@
+{
+  "crible": {
+    "latitude": 48.841172,
+    "longitude": 2.356277,
+    "score": 0.9721099999999999
+  },
+  "silo": {
+    "latitude": 48.877121,
+    "longitude": 2.348272,
+    "score": 0.9743490909090909
+  },
+  "viahe-caphe": {
+    "latitude": 48.854695,
+    "longitude": 2.370867,
+    "score": 0.9698945454545453
+  },
+  "espeletia-cafe-coffee-roaster": {
+    "latitude": 48.891696,
+    "longitude": 2.323313,
+    "score": 0.9767581818181819
+  },
+  "les-cremes": {
+    "latitude": 48.882349,
+    "longitude": 2.346806,
+    "score": 0.9746427272727272
+  },
+  "station-service-batignolles": {
+    "latitude": 48.888186,
+    "longitude": 2.316774,
+    "score": 0.9760436363636362
+  },
+  "santa-lyna": {
+    "latitude": 48.866707,
+    "longitude": 2.353029,
+    "score": 0.7526171770334928
+  },
+  "jozi-cafe": {
+    "latitude": 48.85118,
+    "longitude": 2.35064,
+    "score": 0.9703845454545453
+  },
+  "synapse": {
+    "latitude": 48.839621,
+    "longitude": 2.356093,
+    "score": 0.9714227272727272
+  },
+  "azur-cafe": {
+    "latitude": 48.872257,
+    "longitude": 2.304453,
+    "score": 0.9709436363636363
+  },
+  "liperli": {
+    "latitude": 48.882586,
+    "longitude": 2.332426,
+    "score": 0.9735199999999999
+  },
+  "dalda-li": {
+    "latitude": 48.877772,
+    "longitude": 2.344683,
+    "score": 0.9746427272727272
+  },
+  "leandres": {
+    "latitude": 48.879147,
+    "longitude": 2.348017,
+    "score": 0.9736981818181817
+  },
+  "lawasi": {
+    "latitude": 48.87163,
+    "longitude": 2.356951,
+    "score": 0.9808172727272727
+  },
+  "margo": {
+    "latitude": 48.872223,
+    "longitude": 2.366291,
+    "score": 0.792554193548387
+  },
+  "ruine": {
+    "latitude": 48.865427,
+    "longitude": 2.366512,
+    "score": 0.8495764114832536
+  },
+  "on-partage-cantine-cafeinee": {
+    "latitude": 48.855228,
+    "longitude": 2.387412,
+    "score": 0.8052141414141414
+  },
+  "gamine-bakeshop": {
+    "latitude": 48.891546,
+    "longitude": 2.335581,
+    "score": 0.9846927272727272
+  },
+  "bokbar": {
+    "latitude": 48.872315,
+    "longitude": 2.382548,
+    "score": 0.9800227272727272
+  },
+  "cafe-obrkof": {
+    "latitude": 48.864223,
+    "longitude": 2.369665,
+    "score": 0.7359661157024793
+  },
+  "comets-cafe-and-disques": {
+    "latitude": 48.855418,
+    "longitude": 2.38694,
+    "score": 0.978830909090909
+  },
+  "le-maung": {
+    "latitude": 48.865394,
+    "longitude": 2.348213,
+    "score": 0.9674563636363637
+  },
+  "coffee-specialty-coffee": {
+    "latitude": 48.863876,
+    "longitude": 2.354614,
+    "score": 0.9696527272727272
+  },
+  "flor-de-cafe": {
+    "latitude": 48.847087,
+    "longitude": 2.351423,
+    "score": 0.9757872727272727
+  },
+  "terre-dazur": {
+    "latitude": 48.875695,
+    "longitude": 2.296716,
+    "score": 0.7903760117302051
+  },
+  "caoufe": {
+    "latitude": 48.880875,
+    "longitude": 2.346334,
+    "score": 0.9746427272727272
+  },
+  "cafe-tranquille": {
+    "latitude": 48.878263,
+    "longitude": 2.356417,
+    "score": 0.9804454545454544
+  },
+  "los-andes-coffee": {
+    "latitude": 48.863894,
+    "longitude": 2.366761,
+    "score": 0.9737918181818181
+  },
+  "buena-onda-ca-phe": {
+    "latitude": 48.855499,
+    "longitude": 2.375405,
+    "score": 0.9744327272727272
+  },
+  "nilo-coffee-and-brunch": {
+    "latitude": 48.86439,
+    "longitude": 2.375006,
+    "score": 0.8928461876832844
+  },
+  "monlam-cafe": {
+    "latitude": 48.886418,
+    "longitude": 2.34552,
+    "score": 0.9749318181818181
+  },
+  "zaia": {
+    "latitude": 48.879312,
+    "longitude": 2.400118,
+    "score": 0.7340870247933884
+  },
+  "cafe-vert": {
+    "latitude": 48.850151,
+    "longitude": 2.373564,
+    "score": 0.9848218181818181
+  },
+  "coeur-coffee-roasters-rue-ravignan": {
+    "latitude": 48.885359,
+    "longitude": 2.337885,
+    "score": 0.9732290909090908
+  },
+  "kozy-rue-du-petit-pont": {
+    "latitude": 48.852412,
+    "longitude": 2.346283,
+    "score": 0.9657281818181817
+  },
+  "kafeibaie": {
+    "latitude": 48.868518,
+    "longitude": 2.354553,
+    "score": 0.9625699999999999
+  },
+  "typica-filles-du-calvaire": {
+    "latitude": 48.862344,
+    "longitude": 2.365456,
+    "score": 0.9655272727272726
+  },
+  "press-coffee": {
+    "latitude": 48.864353,
+    "longitude": 2.36571,
+    "score": 0.7248855614973262
+  },
+  "eclat": {
+    "latitude": 48.857411,
+    "longitude": 2.367848,
+    "score": 0.7469125061425061
+  },
+  "le-peloton-cafe": {
+    "latitude": 48.855516,
+    "longitude": 2.355939,
+    "score": 0.9664263636363636
+  },
+  "phin-mi": {
+    "latitude": 48.84594,
+    "longitude": 2.354173,
+    "score": 0.9706118181818182
+  },
+  "kozy-bosquet": {
+    "latitude": 48.855414,
+    "longitude": 2.305398,
+    "score": 0.785200407523511
+  },
+  "matin-des-oliviers": {
+    "latitude": 48.863485,
+    "longitude": 2.334163,
+    "score": 0.96015
+  },
+  "bon-bouquet-cafe": {
+    "latitude": 48.874306,
+    "longitude": 2.339318,
+    "score": 0.9707754545454544
+  },
+  "kozy-rue-la-fayette": {
+    "latitude": 48.874791,
+    "longitude": 2.340183,
+    "score": 0.9743490909090909
+  },
+  "mon-loup": {
+    "latitude": 48.878412,
+    "longitude": 2.340197,
+    "score": 0.9667736363636362
+  },
+  "cafe-muller": {
+    "latitude": 48.873223,
+    "longitude": 2.353322,
+    "score": 0.87883985645933
+  },
+  "cafeinoman": {
+    "latitude": 48.868179,
+    "longitude": 2.375018,
+    "score": 0.9817963636363636
+  },
+  "two-doors-coffee-shop": {
+    "latitude": 48.890864,
+    "longitude": 2.34027,
+    "score": 0.9750718181818181
+  },
+  "canopi-coffee": {
+    "latitude": 48.888621,
+    "longitude": 2.324705,
+    "score": 0.9719263636363635
+  },
+  "ojjjo": {
+    "latitude": 48.87005,
+    "longitude": 2.389186,
+    "score": 0.9761081818181818
+  },
+  "the-kursaal": {
+    "latitude": 48.845544,
+    "longitude": 2.401263,
+    "score": 0.7458119480519481
+  },
+  "kophi-paris": {
+    "latitude": 48.857358,
+    "longitude": 2.37548,
+    "score": 0.9786454545454545
+  },
+  "partage-cafe": {
+    "latitude": 48.844153,
+    "longitude": 2.308269,
+    "score": 0.9865681818181816
+  },
+  "casa-cafe": {
+    "latitude": 48.847283,
+    "longitude": 2.377924,
+    "score": 0.8128316461916462
+  },
+  "kott-cafe": {
+    "latitude": 48.864582,
+    "longitude": 2.37357,
+    "score": 0.9719481818181817
+  },
+  "kozy-rue-de-la-vieuville": {
+    "latitude": 48.88468,
+    "longitude": 2.339033,
+    "score": 0.8093498347107438
+  },
+  "shiba-cafe-rue-des-colontaires": {
+    "latitude": 48.843457,
+    "longitude": 2.306674,
+    "score": 0.9785063636363636
+  },
+  "noa-cafe": {
+    "latitude": 48.874876,
+    "longitude": 2.386068,
+    "score": 0.9760563636363636
+  },
+  "o-coffee": {
+    "latitude": 48.849085,
+    "longitude": 2.291103,
+    "score": 0.9842463636363635
+  },
+  "aux-arts-etc-cafe-galerie-dart": {
+    "latitude": 48.851953,
+    "longitude": 2.34895,
+    "score": 0.9660418181818181
+  },
+  "san-carlo-coffee-shop": {
+    "latitude": 48.868218,
+    "longitude": 2.351772,
+    "score": 0.8254633431085043
+  },
+  "minicafe-ile-saint-louis": {
+    "latitude": 48.851263,
+    "longitude": 2.35594,
+    "score": 0.9664263636363636
+  },
+  "big-shot-coffee": {
+    "latitude": 48.861317,
+    "longitude": 2.343563,
+    "score": 0.9731518181818182
+  },
+  "chez-louis-paris": {
+    "latitude": 48.861322,
+    "longitude": 2.343991,
+    "score": 0.9587399999999998
+  },
+  "apapacho-cafe": {
+    "latitude": 48.869753,
+    "longitude": 2.347782,
+    "score": 0.7731216253443526
+  },
+  "barista-gallery": {
+    "latitude": 48.859725,
+    "longitude": 2.349818,
+    "score": 0.8480069696969696
+  },
+  "liv": {
+    "latitude": 48.850208,
+    "longitude": 2.36159,
+    "score": 0.7237175757575757
+  },
+  "braun-notes-saint-michel": {
+    "latitude": 48.853267,
+    "longitude": 2.345751,
+    "score": 0.7390618181818182
+  },
+  "bleuet": {
+    "latitude": 48.880528,
+    "longitude": 2.325544,
+    "score": 0.9655372727272725
+  },
+  "blondie-rue-saint-georges": {
+    "latitude": 48.876579,
+    "longitude": 2.337177,
+    "score": 0.9721109090909091
+  },
+  "slowe-wellness-house": {
+    "latitude": 48.872118,
+    "longitude": 2.350474,
+    "score": 0.9737609090909091
+  },
+  "perlant": {
+    "latitude": 48.871904,
+    "longitude": 2.366351,
+    "score": 0.9687672727272727
+  },
+  "clove": {
+    "latitude": 48.884674,
+    "longitude": 2.341817,
+    "score": 0.97416
+  },
+  "saint-barista-coffee": {
+    "latitude": 48.859093,
+    "longitude": 2.376019,
+    "score": 0.9769427272727272
+  },
+  "lactem-rue-croix-des-petits-champs": {
+    "latitude": 48.864371,
+    "longitude": 2.340372,
+    "score": 0.9649372727272727
+  },
+  "my-fermentation": {
+    "latitude": 48.858196,
+    "longitude": 2.350286,
+    "score": 0.9625290909090908
+  },
+  "atti-cafe": {
+    "latitude": 48.868463,
+    "longitude": 2.34701,
+    "score": 0.9603736363636363
+  },
+  "larbre-a-cafe-rue-du-nil": {
+    "latitude": 48.867731,
+    "longitude": 2.347641,
+    "score": 0.9603736363636363
+  },
+  "substance-cafe": {
+    "latitude": 48.866259,
+    "longitude": 2.349172,
+    "score": 0.9658463636363634
+  },
+  "tanat-archives": {
+    "latitude": 48.863536,
+    "longitude": 2.360978,
+    "score": 0.968871818181818
+  },
+  "fringe": {
+    "latitude": 48.862736,
+    "longitude": 2.36476,
+    "score": 0.9728827272727272
+  },
+  "boot-cafe": {
+    "latitude": 48.861167,
+    "longitude": 2.365356,
+    "score": 0.9660845454545453
+  },
+  "djoong-saint-paul": {
+    "latitude": 48.853021,
+    "longitude": 2.361306,
+    "score": 0.9684054545454543
+  },
+  "yellow-tucan": {
+    "latitude": 48.854739,
+    "longitude": 2.367362,
+    "score": 0.9673009090909089
+  },
+  "cafe-dauteur": {
+    "latitude": 48.854251,
+    "longitude": 2.338238,
+    "score": 0.9715536363636362
+  },
+  "zia": {
+    "latitude": 48.85425,
+    "longitude": 2.307149,
+    "score": 0.8082758288770052
+  },
+  "noir-rue-de-grenelle": {
+    "latitude": 48.857816,
+    "longitude": 2.306197,
+    "score": 0.9774636363636363
+  },
+  "papillote": {
+    "latitude": 48.880744,
+    "longitude": 2.333383,
+    "score": 0.9700563636363635
+  },
+  "komorebi": {
+    "latitude": 48.880353,
+    "longitude": 2.335471,
+    "score": 0.9728699999999999
+  },
+  "stella-cafe": {
+    "latitude": 48.876716,
+    "longitude": 2.337562,
+    "score": 0.9750063636363636
+  },
+  "larbre-a-cafe-rue-des-martyrs": {
+    "latitude": 48.879059,
+    "longitude": 2.339765,
+    "score": 0.8525442424242423
+  },
+  "lactem-rue-du-faubourg-montmartre": {
+    "latitude": 48.875634,
+    "longitude": 2.340635,
+    "score": 0.9734590909090909
+  },
+  "vingt23": {
+    "latitude": 48.872914,
+    "longitude": 2.350184,
+    "score": 0.9764236363636363
+  },
+  "residence-kann": {
+    "latitude": 48.873206,
+    "longitude": 2.362831,
+    "score": 0.9741636363636362
+  },
+  "radiodays": {
+    "latitude": 48.871593,
+    "longitude": 2.367287,
+    "score": 0.9702609090909091
+  },
+  "the-beans-on-fire-rue-des-trois-freres": {
+    "latitude": 48.885559,
+    "longitude": 2.338295,
+    "score": 0.9783581818181818
+  },
+  "sylon-de-montmartre": {
+    "latitude": 48.883616,
+    "longitude": 2.338427,
+    "score": 0.818130303030303
+  },
+  "larbre-a-cafe-oberkampf": {
+    "latitude": 48.864779,
+    "longitude": 2.372782,
+    "score": 0.9809390909090907
+  },
+  "inform-cafe-rue-des-acacias": {
+    "latitude": 48.877019,
+    "longitude": 2.29178,
+    "score": 0.9769990909090909
+  },
+  "early-bird": {
+    "latitude": 48.848935,
+    "longitude": 2.378178,
+    "score": 0.56242
+  },
+  "noeud": {
+    "latitude": 48.847558,
+    "longitude": 2.293121,
+    "score": 0.9797109090909091
+  },
+  "la-main-noire": {
+    "latitude": 48.886479,
+    "longitude": 2.328116,
+    "score": 0.9723172727272728
+  },
+  "miliki-paris": {
+    "latitude": 48.873648,
+    "longitude": 2.390504,
+    "score": 0.9767290909090909
+  },
+  "coffee-shop-de-mathieu": {
+    "latitude": 48.849957,
+    "longitude": 2.294386,
+    "score": 0.7557418181818181
+  },
+  "plural-cafe": {
+    "latitude": 48.86887,
+    "longitude": 2.385816,
+    "score": 0.9800227272727272
+  },
+  "57-grains-coffee-shop": {
+    "latitude": 48.890486,
+    "longitude": 2.34334,
+    "score": 0.9821909090909091
+  },
+  "candle-kids-coffee": {
+    "latitude": 48.872593,
+    "longitude": 2.389276,
+    "score": 0.9808354545454544
+  },
+  "panas-cafe": {
+    "latitude": 48.851476,
+    "longitude": 2.384658,
+    "score": 0.9727081818181817
+  },
+  "caphette": {
+    "latitude": 48.864686,
+    "longitude": 2.373982,
+    "score": 0.9712818181818181
+  },
+  "keen-je-cafe-cantine": {
+    "latitude": 48.860896,
+    "longitude": 2.380282,
+    "score": 0.9811072727272726
+  },
+  "aka-coffee-shop": {
+    "latitude": 48.831872,
+    "longitude": 2.327719,
+    "score": 0.9737345454545453
+  },
+  "koko-coffee-shop": {
+    "latitude": 48.883785,
+    "longitude": 2.371804,
+    "score": 0.9792609090909089
+  },
+  "oh-my-cappuccino": {
+    "latitude": 48.880729,
+    "longitude": 2.373295,
+    "score": 0.9699672727272727
+  },
+  "cafe-marlette-pigalle": {
+    "latitude": 48.880187,
+    "longitude": 2.340197,
+    "score": 0.8525442424242423
+  },
+  "kozy-rue-des-martyrs": {
+    "latitude": 48.880034,
+    "longitude": 2.340413,
+    "score": 0.8525442424242423
+  },
+  "joho": {
+    "latitude": 48.85683,
+    "longitude": 2.358678,
+    "score": 0.9655145454545453
+  },
+  "trombone-coffee-shop": {
+    "latitude": 48.854652,
+    "longitude": 2.403058,
+    "score": 0.8165289256198347
+  },
+  "stuffburn-bc": {
+    "latitude": 48.870462,
+    "longitude": 2.339421,
+    "score": 0.9675354545454545
+  },
+  "kalany-mya": {
+    "latitude": 48.864857,
+    "longitude": 2.349196,
+    "score": 0.8296753246753246
+  },
+  "grave": {
+    "latitude": 48.863986,
+    "longitude": 2.356397,
+    "score": 0.9714154545454544
+  },
+  "tiba": {
+    "latitude": 48.863307,
+    "longitude": 2.362982,
+    "score": 0.9714154545454544
+  },
+  "unthaitled": {
+    "latitude": 48.865251,
+    "longitude": 2.363421,
+    "score": 0.9632709090909091
+  },
+  "the-coffee-rue-saint-gilles": {
+    "latitude": 48.85772,
+    "longitude": 2.367601,
+    "score": 0.9675636363636362
+  },
+  "background-coffee": {
+    "latitude": 48.839632,
+    "longitude": 2.34011,
+    "score": 0.9776063636363636
+  },
+  "le-bon-moment": {
+    "latitude": 48.850059,
+    "longitude": 2.350543,
+    "score": 0.9712327272727272
+  },
+  "buddy-buddy": {
+    "latitude": 48.871699,
+    "longitude": 2.363669,
+    "score": 0.9690136363636362
+  },
+  "graines": {
+    "latitude": 48.848838,
+    "longitude": 2.340287,
+    "score": 0.8094152892561983
+  },
+  "terres-de-cafe-saint-germain-des-pres": {
+    "latitude": 48.853882,
+    "longitude": 2.336268,
+    "score": 0.9604527272727271
+  },
+  "blondie-rue-louis-murat": {
+    "latitude": 48.876071,
+    "longitude": 2.309347,
+    "score": 0.9640072727272727
+  },
+  "los-andes-rue-notre-dame-de-lorette": {
+    "latitude": 48.879628,
+    "longitude": 2.336203,
+    "score": 0.9725063636363637
+  },
+  "shigure": {
+    "latitude": 48.879271,
+    "longitude": 2.337373,
+    "score": 0.9693554545454546
+  },
+  "sezam-cafe": {
+    "latitude": 48.877677,
+    "longitude": 2.344653,
+    "score": 0.9746427272727272
+  },
+  "convos": {
+    "latitude": 48.868487,
+    "longitude": 2.350083,
+    "score": 0.9642254545454545
+  },
+  "5-pailles": {
+    "latitude": 48.873231,
+    "longitude": 2.354523,
+    "score": 0.9804454545454544
+  },
+  "efkeria": {
+    "latitude": 48.874498,
+    "longitude": 2.355048,
+    "score": 0.9752545454545455
+  },
+  "the-beans-on-fire-boulevard-de-strasbourg": {
+    "latitude": 48.870599,
+    "longitude": 2.355207,
+    "score": 0.97647
+  },
+  "blondie-rue-du-chateau-deau": {
+    "latitude": 48.870557,
+    "longitude": 2.359276,
+    "score": 0.97566
+  },
+  "keo-ca-phe-viet": {
+    "latitude": 48.872255,
+    "longitude": 2.362821,
+    "score": 0.9744618181818182
+  },
+  "cafe-la-lune-verte": {
+    "latitude": 48.868181,
+    "longitude": 2.37409,
+    "score": 0.9788763636363637
+  },
+  "coffee-ya": {
+    "latitude": 48.852954,
+    "longitude": 2.392726,
+    "score": 0.7537688087774294
+  },
+  "cafe-marlette-montmartre": {
+    "latitude": 48.885266,
+    "longitude": 2.336287,
+    "score": 0.9779381818181817
+  },
+  "kozy-rue-saint-martin": {
+    "latitude": 48.86116,
+    "longitude": 2.351348,
+    "score": 0.9714654545454544
+  },
+  "binie-cafe-and-traiteur": {
+    "latitude": 48.880223,
+    "longitude": 2.342197,
+    "score": 0.9735199999999999
+  },
+  "dahu-cafe-and-atelier-velo": {
+    "latitude": 48.841985,
+    "longitude": 2.278624,
+    "score": 0.979041818181818
+  },
+  "magic-carpet-cafe": {
+    "latitude": 48.848967,
+    "longitude": 2.375832,
+    "score": 0.6782557771260996
+  },
+  "tarmac-torrefaction": {
+    "latitude": 48.845824,
+    "longitude": 2.380132,
+    "score": 0.9848218181818181
+  },
+  "klover-coffee-showroom": {
+    "latitude": 48.859678,
+    "longitude": 2.38604,
+    "score": 0.9758581818181818
+  },
+  "galicafe-coffee-shop-and-food": {
+    "latitude": 48.890915,
+    "longitude": 2.346321,
+    "score": 0.9750718181818181
+  },
+  "vague-coffee": {
+    "latitude": 48.886328,
+    "longitude": 2.31767,
+    "score": 0.9788945454545454
+  },
+  "bel-horizon-coffee-roasters": {
+    "latitude": 48.846887,
+    "longitude": 2.304496,
+    "score": 0.7397610160427808
+  },
+  "seven-heaven-coffee-lunch-brunch": {
+    "latitude": 48.851626,
+    "longitude": 2.380535,
+    "score": 0.9739272727272726
+  },
+  "hoa-ca-phe-coffee-shop": {
+    "latitude": 48.859219,
+    "longitude": 2.375363,
+    "score": 0.9811072727272726
+  },
+  "noir-rue-des-trois-freres": {
+    "latitude": 48.883893,
+    "longitude": 2.341586,
+    "score": 0.9783581818181818
+  },
+  "automne-cafe": {
+    "latitude": 48.85845,
+    "longitude": 2.377885,
+    "score": 0.9786454545454545
+  },
+  "pasa-dena": {
+    "latitude": 48.856944,
+    "longitude": 2.358647,
+    "score": 0.9655145454545453
+  },
+  "chanceux-st-maur": {
+    "latitude": 48.862347,
+    "longitude": 2.37983,
+    "score": 0.9817963636363636
+  },
+  "helens-book": {
+    "latitude": 48.839176,
+    "longitude": 2.349137,
+    "score": 0.9731081818181817
+  },
+  "cafe-inn": {
+    "latitude": 48.867488,
+    "longitude": 2.331507,
+    "score": 0.8592290274841438
+  },
+  "rems-coffee-shop": {
+    "latitude": 48.868463,
+    "longitude": 2.34701,
+    "score": 0.9603736363636363
+  },
+  "huddle-coffee": {
+    "latitude": 48.867749,
+    "longitude": 2.355893,
+    "score": 0.9715745454545454
+  },
+  "sample-cafe": {
+    "latitude": 48.866971,
+    "longitude": 2.361198,
+    "score": 0.9715745454545454
+  },
+  "pontochoux": {
+    "latitude": 48.861299,
+    "longitude": 2.365183,
+    "score": 0.9660845454545453
+  },
+  "terres-de-cafe-blancs-manteaux": {
+    "latitude": 48.859621,
+    "longitude": 2.355515,
+    "score": 0.9679363636363635
+  },
+  "8litheque": {
+    "latitude": 48.835223,
+    "longitude": 2.331043,
+    "score": 0.9691363636363635
+  },
+  "le-bone-appart": {
+    "latitude": 48.85455,
+    "longitude": 2.365009,
+    "score": 0.9631354545454546
+  },
+  "cofftea-shop": {
+    "latitude": 48.839694,
+    "longitude": 2.345796,
+    "score": 0.9697609090909091
+  },
+  "the-coffee-rue-mazarine": {
+    "latitude": 48.854475,
+    "longitude": 2.33815,
+    "score": 0.9715536363636362
+  },
+  "torre-tour-maubourg": {
+    "latitude": 48.860819,
+    "longitude": 2.310445,
+    "score": 0.7870050413223139
+  },
+  "cafe-pigalle": {
+    "latitude": 48.881506,
+    "longitude": 2.337327,
+    "score": 0.9662045454545453
+  },
+  "loutsa-passage-jouffroy": {
+    "latitude": 48.872473,
+    "longitude": 2.342116,
+    "score": 0.7337368035190616
+  },
+  "noir-rue-richer": {
+    "latitude": 48.873988,
+    "longitude": 2.34432,
+    "score": 0.9718554545454544
+  },
+  "cafe-rumi": {
+    "latitude": 48.877603,
+    "longitude": 2.2994,
+    "score": 0.9761936363636362
+  },
+  "nest": {
+    "latitude": 48.866313,
+    "longitude": 2.336076,
+    "score": 0.96015
+  },
+  "cesar-y-georgette": {
+    "latitude": 48.865232,
+    "longitude": 2.336226,
+    "score": 0.9631463636363635
+  },
+  "merlo-caffe": {
+    "latitude": 48.85881,
+    "longitude": 2.364396,
+    "score": 0.9728827272727272
+  },
+  "bakea": {
+    "latitude": 48.868943,
+    "longitude": 2.359988,
+    "score": 0.9744618181818182
+  },
+  "steel": {
+    "latitude": 48.868132,
+    "longitude": 2.373873,
+    "score": 0.9788763636363637
+  },
+  "the-hood": {
+    "latitude": 48.867352,
+    "longitude": 2.376392,
+    "score": 0.9797345454545453
+  },
+  "ronnie-bakery": {
+    "latitude": 48.87874,
+    "longitude": 2.337277,
+    "score": 0.9725063636363637
+  },
+  "torre-rue-yvonne-le-tac": {
+    "latitude": 48.884098,
+    "longitude": 2.340945,
+    "score": 0.97416
+  },
+  "dialogues-coffee": {
+    "latitude": 48.857519,
+    "longitude": 2.305202,
+    "score": 0.9774636363636363
+  },
+  "bagarre-coffee-club-speciality-coffee": {
+    "latitude": 48.862638,
+    "longitude": 2.372533,
+    "score": 0.7708834265734266
+  },
+  "broken-biscuits": {
+    "latitude": 48.87213,
+    "longitude": 2.348002,
+    "score": 0.9760827272727272
+  },
+  "seda-seda": {
+    "latitude": 48.863661,
+    "longitude": 2.378671,
+    "score": 0.9817963636363636
+  },
+  "loree-cafe": {
+    "latitude": 48.865004,
+    "longitude": 2.374028,
+    "score": 0.9809390909090907
+  },
+  "dreamin-man-rue-perree": {
+    "latitude": 48.864635,
+    "longitude": 2.36155,
+    "score": 0.9635845454545454
+  },
+  "cafe-aimee": {
+    "latitude": 48.883642,
+    "longitude": 2.290003,
+    "score": 0.9782281818181818
+  },
+  "coutume-rue-de-passy": {
+    "latitude": 48.858192,
+    "longitude": 2.276141,
+    "score": 0.9794345454545453
+  },
+  "sands-coffee": {
+    "latitude": 48.890206,
+    "longitude": 2.321565,
+    "score": 0.9759454545454544
+  },
+  "broomi": {
+    "latitude": 48.884404,
+    "longitude": 2.319229,
+    "score": 0.9796972727272726
+  },
+  "les-fanes": {
+    "latitude": 48.857232,
+    "longitude": 2.399562,
+    "score": 0.9811018181818182
+  },
+  "buna-bet-coffee-shop": {
+    "latitude": 48.885165,
+    "longitude": 2.380619,
+    "score": 0.981430909090909
+  },
+  "koni-coffee-shop": {
+    "latitude": 48.873479,
+    "longitude": 2.383622,
+    "score": 0.9820645454545454
+  },
+  "shekamou": {
+    "latitude": 48.846142,
+    "longitude": 2.286542,
+    "score": 0.9807627272727273
+  },
+  "comptoir-binder": {
+    "latitude": 48.831018,
+    "longitude": 2.330494,
+    "score": 0.97072
+  },
+  "bambin-cafe": {
+    "latitude": 48.872409,
+    "longitude": 2.380325,
+    "score": 0.8596161290322579
+  },
+  "kafkaf-rue-keller": {
+    "latitude": 48.853926,
+    "longitude": 2.376408,
+    "score": 0.9744327272727272
+  },
+  "poesie-coffee": {
+    "latitude": 48.853754,
+    "longitude": 2.3743,
+    "score": 0.8186592789968651
+  },
+  "loutsa-torrefacteur-paris-marche-des-ternes": {
+    "latitude": 48.880962,
+    "longitude": 2.291944,
+    "score": 0.971680909090909
+  },
+  "epicentre-coffee-shop": {
+    "latitude": 48.886069,
+    "longitude": 2.373032,
+    "score": 0.9797190909090908
+  },
+  "praesens-coffee-shop-and-restaurant": {
+    "latitude": 48.871136,
+    "longitude": 2.356989,
+    "score": 0.9808172727272727
+  },
+  "the-coffee-rue-gonnet": {
+    "latitude": 48.850318,
+    "longitude": 2.390027,
+    "score": 0.683842987012987
+  },
+  "belleville-brulerie-paris": {
+    "latitude": 48.883166,
+    "longitude": 2.374149,
+    "score": 0.9713763636363635
+  },
+  "kozy-rue-cler": {
+    "latitude": 48.85586,
+    "longitude": 2.306991,
+    "score": 0.9718536363636363
+  },
+  "hug-bingsu-coffee": {
+    "latitude": 48.862805,
+    "longitude": 2.349095,
+    "score": 0.5931536363636363
+  },
+  "tanat-victoria": {
+    "latitude": 48.858301,
+    "longitude": 2.346192,
+    "score": 0.7776818181818181
+  },
+  "matamata-coffee": {
+    "latitude": 48.866121,
+    "longitude": 2.344122,
+    "score": 0.9635245454545454
+  },
+  "kiji-montorgueil": {
+    "latitude": 48.864581,
+    "longitude": 2.348727,
+    "score": 0.9672936363636362
+  },
+  "cuvee-noire-chatelet": {
+    "latitude": 48.861455,
+    "longitude": 2.352849,
+    "score": 0.9670281818181817
+  },
+  "laize-sainte-avoye": {
+    "latitude": 48.860941,
+    "longitude": 2.355759,
+    "score": 0.9736390909090907
+  },
+  "cafe-abel": {
+    "latitude": 48.853935,
+    "longitude": 2.363536,
+    "score": 0.9593781818181817
+  },
+  "juni-coffee": {
+    "latitude": 48.85368,
+    "longitude": 2.36632,
+    "score": 0.9724063636363636
+  },
+  "frappe": {
+    "latitude": 48.848392,
+    "longitude": 2.350073,
+    "score": 0.9757872727272727
+  },
+  "galata-bakery-and-coffee": {
+    "latitude": 48.846148,
+    "longitude": 2.351191,
+    "score": 0.9741863636363635
+  },
+  "bonjour-jacob-rue-dauphine": {
+    "latitude": 48.854687,
+    "longitude": 2.339221,
+    "score": 0.9702681818181819
+  },
+  "cafe-joyeux-rue-paul-cezanne": {
+    "latitude": 48.874433,
+    "longitude": 2.309246,
+    "score": 0.9616854545454545
+  },
+  "noir-boulevard-haussman": {
+    "latitude": 48.875093,
+    "longitude": 2.318282,
+    "score": 0.7400574025974026
+  },
+  "sayly": {
+    "latitude": 48.878056,
+    "longitude": 2.320256,
+    "score": 0.9724927272727272
+  },
+  "bknk-or-book-nook": {
+    "latitude": 48.878303,
+    "longitude": 2.33166,
+    "score": 0.9745463636363635
+  },
+  "cafe-shin-rue-des-petites-ecuries": {
+    "latitude": 48.873856,
+    "longitude": 2.349449,
+    "score": 0.87883985645933
+  },
+  "contretemps": {
+    "latitude": 48.8713,
+    "longitude": 2.349898,
+    "score": 0.9764236363636363
+  },
+  "white-paris-10": {
+    "latitude": 48.871946,
+    "longitude": 2.35397,
+    "score": 0.9804454545454544
+  },
+  "cafe-dose-faubourg-st-denis": {
+    "latitude": 48.872717,
+    "longitude": 2.354475,
+    "score": 0.9804454545454544
+  },
+  "oni-coffee-shop": {
+    "latitude": 48.868816,
+    "longitude": 2.357716,
+    "score": 0.7461579606879607
+  },
+  "bonjour-jacob-rue-yves-toudic": {
+    "latitude": 48.870896,
+    "longitude": 2.363136,
+    "score": 0.9726190909090909
+  },
+  "la-maison-du-barista-bar-a-cafe-and-boutique": {
+    "latitude": 48.870655,
+    "longitude": 2.363839,
+    "score": 0.9720427272727272
+  },
+  "buna": {
+    "latitude": 48.873517,
+    "longitude": 2.365073,
+    "score": 0.975490909090909
+  },
+  "amulette": {
+    "latitude": 48.87364,
+    "longitude": 2.371255,
+    "score": 0.9713827272727272
+  },
+  "kafe": {
+    "latitude": 48.87433,
+    "longitude": 2.353295,
+    "score": 0.9698818181818181
+  },
+  "the-sunny-side": {
+    "latitude": 48.872409,
+    "longitude": 2.36401,
+    "score": 0.976561818181818
+  },
+  "bonne": {
+    "latitude": 48.888995,
+    "longitude": 2.346832,
+    "score": 0.9785545454545455
+  },
+  "ilik-coffee": {
+    "latitude": 48.866703,
+    "longitude": 2.358045,
+    "score": 0.9686781818181819
+  },
+  "tempo": {
+    "latitude": 48.86113,
+    "longitude": 2.378187,
+    "score": 0.9678854545454544
+  },
+  "kumquat-cafe-paris": {
+    "latitude": 48.863245,
+    "longitude": 2.379026,
+    "score": 0.9817963636363636
+  },
+  "tronche-cafe": {
+    "latitude": 48.857116,
+    "longitude": 2.372979,
+    "score": 0.9717372727272726
+  },
+  "unreve": {
+    "latitude": 48.860612,
+    "longitude": 2.37861,
+    "score": 0.8928461876832844
+  },
+  "combo-cafe": {
+    "latitude": 48.89551,
+    "longitude": 2.348523,
+    "score": 0.9840145454545454
+  },
+  "latte-club-bastille": {
+    "latitude": 48.852037,
+    "longitude": 2.372817,
+    "score": 0.9806390909090908
+  },
+  "cafe-lune": {
+    "latitude": 48.86814,
+    "longitude": 2.387185,
+    "score": 0.9829572727272726
+  },
+  "aroma-caffe": {
+    "latitude": 48.839618,
+    "longitude": 2.322328,
+    "score": 0.7993945454545455
+  },
+  "agria-coffee-shop": {
+    "latitude": 48.854521,
+    "longitude": 2.385946,
+    "score": 0.7432582887700534
+  },
+  "terrah-or-coffee-shop-and-roasters": {
+    "latitude": 48.86356,
+    "longitude": 2.369823,
+    "score": 0.9809390909090907
+  },
+  "simple-coffee": {
+    "latitude": 48.882949,
+    "longitude": 2.339781,
+    "score": 0.8541269696969697
+  },
+  "helene-et-madeleine": {
+    "latitude": 48.86142,
+    "longitude": 2.370502,
+    "score": 0.9763545454545454
+  },
+  "011-cafe": {
+    "latitude": 48.866546,
+    "longitude": 2.38977,
+    "score": 0.9805945454545454
+  },
+  "nadine-coffee-shop": {
+    "latitude": 48.892478,
+    "longitude": 2.342567,
+    "score": 0.9730172727272727
+  },
+  "naughtee-cafe": {
+    "latitude": 48.846223,
+    "longitude": 2.340626,
+    "score": 0.9679845454545454
+  },
+  "tanat-chateau-deau": {
+    "latitude": 48.870772,
+    "longitude": 2.3592,
+    "score": 0.97566
+  },
+  "coeur-coffee-roasters-rue-daunou": {
+    "latitude": 48.869808,
+    "longitude": 2.331116,
+    "score": 0.9643845454545454
+  },
+  "cafe-dantan": {
+    "latitude": 48.870086,
+    "longitude": 2.348136,
+    "score": 0.9660681818181818
+  },
+  "contrastes-paris": {
+    "latitude": 48.865373,
+    "longitude": 2.349038,
+    "score": 0.9674563636363637
+  },
+  "blackbird-coffee": {
+    "latitude": 48.861249,
+    "longitude": 2.35602,
+    "score": 0.9736390909090907
+  },
+  "maison-phe": {
+    "latitude": 48.856899,
+    "longitude": 2.359687,
+    "score": 0.9645836363636363
+  },
+  "escocafe": {
+    "latitude": 48.855398,
+    "longitude": 2.362337,
+    "score": 0.9625290909090908
+  },
+  "the-coffee-rue-du-cardinal-lemoine": {
+    "latitude": 48.845111,
+    "longitude": 2.349954,
+    "score": 0.9741863636363635
+  },
+  "biboune": {
+    "latitude": 48.846347,
+    "longitude": 2.32065,
+    "score": 0.9746045454545454
+  },
+  "ugraine": {
+    "latitude": 48.84576,
+    "longitude": 2.323915,
+    "score": 0.9667536363636362
+  },
+  "judy-rue-de-fleurus": {
+    "latitude": 48.847148,
+    "longitude": 2.330403,
+    "score": 0.9695090909090908
+  },
+  "parallel-coffee": {
+    "latitude": 48.867268,
+    "longitude": 2.30274,
+    "score": 0.9616854545454545
+  },
+  "nichee": {
+    "latitude": 48.876629,
+    "longitude": 2.321341,
+    "score": 0.9665072727272727
+  },
+  "petrin-cafe": {
+    "latitude": 48.882085,
+    "longitude": 2.332678,
+    "score": 0.9667736363636362
+  },
+  "la-compagnie-du-cafe": {
+    "latitude": 48.877869,
+    "longitude": 2.337959,
+    "score": 0.9725063636363637
+  },
+  "jovia": {
+    "latitude": 48.876414,
+    "longitude": 2.338545,
+    "score": 0.9638827272727272
+  },
+  "jims-corner": {
+    "latitude": 48.878878,
+    "longitude": 2.349168,
+    "score": 0.9743490909090909
+  },
+  "momus": {
+    "latitude": 48.879265,
+    "longitude": 2.340052,
+    "score": 0.8525442424242423
+  },
+  "yeuz": {
+    "latitude": 48.873715,
+    "longitude": 2.35177,
+    "score": 0.87883985645933
+  },
+  "kah": {
+    "latitude": 48.871076,
+    "longitude": 2.368431,
+    "score": 0.975490909090909
+  },
+  "legacy-coffee": {
+    "latitude": 48.877322,
+    "longitude": 2.370454,
+    "score": 0.8307747846889951
+  },
+  "cafe-vasily": {
+    "latitude": 48.852234,
+    "longitude": 2.267874,
+    "score": 0.7861057142857142
+  },
+  "un-ami": {
+    "latitude": 48.828637,
+    "longitude": 2.316571,
+    "score": 0.9801381818181817
+  },
+  "frnchlovebread": {
+    "latitude": 48.843686,
+    "longitude": 2.384659,
+    "score": 0.9848218181818181
+  },
+  "terres-de-cafe-daguerre": {
+    "latitude": 48.834339,
+    "longitude": 2.328739,
+    "score": 0.9787281818181817
+  },
+  "cafe-cayo": {
+    "latitude": 48.825799,
+    "longitude": 2.378078,
+    "score": 0.9832836363636362
+  },
+  "cuvee-noire-bastille-coffee-shop": {
+    "latitude": 48.853485,
+    "longitude": 2.370625,
+    "score": 0.9822463636363635
+  },
+  "del-carmen-cafe": {
+    "latitude": 48.861921,
+    "longitude": 2.371956,
+    "score": 0.9763545454545454
+  },
+  "harvest": {
+    "latitude": 48.856308,
+    "longitude": 2.376345,
+    "score": 0.9822463636363635
+  },
+  "calin-matin": {
+    "latitude": 48.857184,
+    "longitude": 2.382143,
+    "score": 0.9715154545454545
+  },
+  "cafe-caractere": {
+    "latitude": 48.853432,
+    "longitude": 2.375762,
+    "score": 0.973651818181818
+  },
+  "loud-coffee-shop": {
+    "latitude": 48.84405,
+    "longitude": 2.384203,
+    "score": 0.9848218181818181
+  },
+  "boris-rue-lepic": {
+    "latitude": 48.885438,
+    "longitude": 2.334507,
+    "score": 0.9807463636363636
+  },
+  "the-coffee-saint-lazare": {
+    "latitude": 48.880239,
+    "longitude": 2.327134,
+    "score": 0.9713963636363635
+  },
+  "manie-avenue-victor-hugo": {
+    "latitude": 48.850253,
+    "longitude": 2.266789,
+    "score": 0.4265871840354767
+  },
+  "luciko-cafe": {
+    "latitude": 48.869628,
+    "longitude": 2.322203,
+    "score": 0.9688990909090909
+  },
+  "the-coffee-martyrs": {
+    "latitude": 48.88123,
+    "longitude": 2.340102,
+    "score": 0.8525442424242423
+  },
+  "dom-cafe": {
+    "latitude": 48.859907,
+    "longitude": 2.3091,
+    "score": 0.9759890909090908
+  },
+  "nau-cafe": {
+    "latitude": 48.85308,
+    "longitude": 2.367438,
+    "score": 0.7916807371007372
+  },
+  "pompom-coffee": {
+    "latitude": 48.856887,
+    "longitude": 2.374664,
+    "score": 0.9786454545454545
+  },
+  "geurimi": {
+    "latitude": 48.856756,
+    "longitude": 2.358488,
+    "score": 0.9655145454545453
+  },
+  "kissaba-irasshai": {
+    "latitude": 48.862682,
+    "longitude": 2.341888,
+    "score": 0.9642536363636363
+  },
+  "io-cafe": {
+    "latitude": 48.865613,
+    "longitude": 2.361545,
+    "score": 0.9657209090909089
+  },
+  "cortado": {
+    "latitude": 48.862396,
+    "longitude": 2.361921,
+    "score": 0.9714154545454544
+  },
+  "la-boutique-caron": {
+    "latitude": 48.867374,
+    "longitude": 2.359255,
+    "score": 0.9715745454545454
+  },
+  "we-love-coffee": {
+    "latitude": 48.835047,
+    "longitude": 2.347925,
+    "score": 0.9774299999999999
+  },
+  "certified-cafe-beaupassage": {
+    "latitude": 48.854898,
+    "longitude": 2.325443,
+    "score": 0.8300027272727272
+  },
+  "larbre-a-cafe-le-bon-marche": {
+    "latitude": 48.849983,
+    "longitude": 2.323297,
+    "score": 0.9707845454545454
+  },
+  "shiba-cafe-madeleine": {
+    "latitude": 48.872519,
+    "longitude": 2.324883,
+    "score": 0.9636936363636363
+  },
+  "seamer": {
+    "latitude": 48.877159,
+    "longitude": 2.337117,
+    "score": 0.9721109090909091
+  },
+  "tilila": {
+    "latitude": 48.87989,
+    "longitude": 2.345282,
+    "score": 0.9735199999999999
+  },
+  "kape": {
+    "latitude": 48.864198,
+    "longitude": 2.368644,
+    "score": 0.9763545454545454
+  },
+  "foret-foret": {
+    "latitude": 48.857132,
+    "longitude": 2.367423,
+    "score": 0.9681554545454544
+  },
+  "tactile": {
+    "latitude": 48.856615,
+    "longitude": 2.379395,
+    "score": 0.8216794805194805
+  },
+  "maya": {
+    "latitude": 48.888531,
+    "longitude": 2.347145,
+    "score": 0.9778645454545453
+  },
+  "coeur-healthy-epicerie": {
+    "latitude": 48.861843,
+    "longitude": 2.37973,
+    "score": 0.9725299999999999
+  },
+  "anaya-coffee": {
+    "latitude": 48.863731,
+    "longitude": 2.37549,
+    "score": 0.8928461876832844
+  },
+  "caua-coffee": {
+    "latitude": 48.861235,
+    "longitude": 2.367456,
+    "score": 0.7958133075435202
+  },
+  "ici-coffee": {
+    "latitude": 48.834762,
+    "longitude": 2.327238,
+    "score": 0.9787281818181817
+  },
+  "junction": {
+    "latitude": 48.854523,
+    "longitude": 2.384261,
+    "score": 0.9819818181818181
+  },
+  "sisters-coffee": {
+    "latitude": 48.834003,
+    "longitude": 2.329151,
+    "score": 0.9765272727272726
+  },
+  "news-and-coffee": {
+    "latitude": 48.858332,
+    "longitude": 2.378905,
+    "score": 0.42992272727272723
+  },
+  "proost-coffee-shop-et-bar-a-madeleines": {
+    "latitude": 48.859127,
+    "longitude": 2.376179,
+    "score": 0.9769427272727272
+  },
+  "onoul": {
+    "latitude": 48.845269,
+    "longitude": 2.295258,
+    "score": 0.9748399999999999
+  },
+  "one-sip-coffee": {
+    "latitude": 48.859139,
+    "longitude": 2.381386,
+    "score": 0.9723445454545454
+  },
+  "terres-de-cafe-17": {
+    "latitude": 48.885097,
+    "longitude": 2.320533,
+    "score": 0.9773754545454545
+  },
+  "emm-cafe": {
+    "latitude": 48.857939,
+    "longitude": 2.368536,
+    "score": 0.9812427272727272
+  },
+  "polygone-coffee-club": {
+    "latitude": 48.86056,
+    "longitude": 2.379656,
+    "score": 0.9811072727272726
+  },
+  "chanceux-bastille": {
+    "latitude": 48.859436,
+    "longitude": 2.368002,
+    "score": 0.8259475757575757
+  },
+  "sound-and-coffee": {
+    "latitude": 48.870925,
+    "longitude": 2.341615,
+    "score": 0.8402191919191919
+  },
+  "peak": {
+    "latitude": 48.880021,
+    "longitude": 2.364037,
+    "score": 0.9808172727272727
+  },
+  "vieyen": {
+    "latitude": 48.861108,
+    "longitude": 2.342399,
+    "score": 0.965800909090909
+  },
+  "kalve-caumartin": {
+    "latitude": 48.870677,
+    "longitude": 2.328137,
+    "score": 0.9735809090909091
+  },
+  "inform-cafe-rue-orsel": {
+    "latitude": 48.883799,
+    "longitude": 2.34422,
+    "score": 0.978010909090909
+  },
+  "bordel": {
+    "latitude": 48.868356,
+    "longitude": 2.390185,
+    "score": 0.9767290909090909
+  },
+  "koffessa": {
+    "latitude": 48.877242,
+    "longitude": 2.351351,
+    "score": 0.9764236363636363
+  },
+  "mee-cafe": {
+    "latitude": 48.864952,
+    "longitude": 2.334014,
+    "score": 0.9640018181818182
+  },
+  "terres-de-cafe-saint-honore": {
+    "latitude": 48.861972,
+    "longitude": 2.340339,
+    "score": 0.9731518181818182
+  },
+  "cafe-nuances-rue-danielle-casanova": {
+    "latitude": 48.867948,
+    "longitude": 2.331493,
+    "score": 0.9614572727272727
+  },
+  "shukery-coffee-and-matcha": {
+    "latitude": 48.865641,
+    "longitude": 2.334686,
+    "score": 0.7928463636363635
+  },
+  "cafe-berry": {
+    "latitude": 48.863261,
+    "longitude": 2.356733,
+    "score": 0.9696527272727272
+  },
+  "fcc": {
+    "latitude": 48.863964,
+    "longitude": 2.348178,
+    "score": 0.9622863636363637
+  },
+  "melane": {
+    "latitude": 48.840812,
+    "longitude": 2.347072,
+    "score": 0.8518897653958943
+  },
+  "strada": {
+    "latitude": 48.84691,
+    "longitude": 2.351225,
+    "score": 0.9757872727272727
+  },
+  "larbre-a-cafe-odeon": {
+    "latitude": 48.851784,
+    "longitude": 2.338952,
+    "score": 0.8306137967914438
+  },
+  "cafe-du-clown": {
+    "latitude": 48.851805,
+    "longitude": 2.336311,
+    "score": 0.9659254545454545
+  },
+  "judy-rue-jean-jacques-rousseau": {
+    "latitude": 48.862462,
+    "longitude": 2.340537,
+    "score": 0.9661381818181817
+  },
+  "petibon-rue-cler": {
+    "latitude": 48.856423,
+    "longitude": 2.306701,
+    "score": 0.9718536363636363
+  },
+  "base-coffee": {
+    "latitude": 48.853901,
+    "longitude": 2.331328,
+    "score": 0.9695090909090908
+  },
+  "olysse": {
+    "latitude": 48.880535,
+    "longitude": 2.31684,
+    "score": 0.9724454545454545
+  },
+  "la-petite-bleue": {
+    "latitude": 48.872616,
+    "longitude": 2.328853,
+    "score": 0.9681472727272726
+  },
+  "torre-rue-la-fayette": {
+    "latitude": 48.875093,
+    "longitude": 2.341333,
+    "score": 0.9743490909090909
+  },
+  "coutume-rue-du-faubourg-poissonniere": {
+    "latitude": 48.875351,
+    "longitude": 2.348058,
+    "score": 0.9743490909090909
+  },
+  "clode": {
+    "latitude": 48.852331,
+    "longitude": 2.330744,
+    "score": 0.9702681818181819
+  },
+  "republique-of-coffee": {
+    "latitude": 48.868193,
+    "longitude": 2.361894,
+    "score": 0.7400154545454545
+  },
+  "ten-belles-rue-de-la-grange-aux-belles": {
+    "latitude": 48.873549,
+    "longitude": 2.364779,
+    "score": 0.9748090909090908
+  },
+  "cafe-dose-paris-lamarck": {
+    "latitude": 48.890024,
+    "longitude": 2.338629,
+    "score": 0.9828081818181817
+  },
+  "co-coffee-and-craft": {
+    "latitude": 48.874737,
+    "longitude": 2.372421,
+    "score": 0.9727254545454544
+  },
+  "crema-cafe-montmartre": {
+    "latitude": 48.886097,
+    "longitude": 2.336772,
+    "score": 0.977310909090909
+  },
+  "lam": {
+    "latitude": 48.867262,
+    "longitude": 2.360024,
+    "score": 0.9715745454545454
+  },
+  "creem-coffee-shop": {
+    "latitude": 48.853642,
+    "longitude": 2.366476,
+    "score": 0.9724063636363636
+  },
+  "cafe-du-cycliste-paris": {
+    "latitude": 48.870464,
+    "longitude": 2.345579,
+    "score": 0.9629172727272727
+  },
+  "daark": {
+    "latitude": 48.858282,
+    "longitude": 2.364609,
+    "score": 0.9728827272727272
+  },
+  "cypher-coffee-shop": {
+    "latitude": 48.864638,
+    "longitude": 2.393966,
+    "score": 0.8013554545454545
+  },
+  "cafe-fluo-paris": {
+    "latitude": 48.888794,
+    "longitude": 2.320036,
+    "score": 0.9804527272727271
+  },
+  "cafe-dose-batignolles": {
+    "latitude": 48.887058,
+    "longitude": 2.317876,
+    "score": 0.8391051515151514
+  },
+  "kawaa-daumesnil": {
+    "latitude": 48.848024,
+    "longitude": 2.37345,
+    "score": 0.8084623753665687
+  },
+  "hexagone-cafe": {
+    "latitude": 48.83535,
+    "longitude": 2.320104,
+    "score": 0.9797881818181816
+  },
+  "good-news-coffee-shop": {
+    "latitude": 48.843678,
+    "longitude": 2.29564,
+    "score": 0.8040441414141414
+  },
+  "back-in-black": {
+    "latitude": 48.856219,
+    "longitude": 2.369022,
+    "score": 0.9812427272727272
+  },
+  "lomi": {
+    "latitude": 48.891217,
+    "longitude": 2.341752,
+    "score": 0.7966049529780563
+  },
+  "crumbles": {
+    "latitude": 48.880876,
+    "longitude": 2.334628,
+    "score": 0.9722727272727271
+  },
+  "lithium-cafe": {
+    "latitude": 48.859787,
+    "longitude": 2.40467,
+    "score": 0.9799281818181816
+  },
+  "noir-rue-gustave-courbet": {
+    "latitude": 48.86738,
+    "longitude": 2.280931,
+    "score": 0.9735290909090909
+  },
+  "the-beans-on-fire-general-blaise": {
+    "latitude": 48.861604,
+    "longitude": 2.378331,
+    "score": 0.53720993006993
+  },
+  "core-paris": {
+    "latitude": 48.855832,
+    "longitude": 2.367656,
+    "score": 0.960520909090909
+  },
+  "moka-nova": {
+    "latitude": 48.851609,
+    "longitude": 2.37439,
+    "score": 0.9806390909090908
+  },
+  "pola": {
+    "latitude": 48.866167,
+    "longitude": 2.377006,
+    "score": 0.9817963636363636
+  },
+  "mmmcafe": {
+    "latitude": 48.88186,
+    "longitude": 2.305567,
+    "score": 0.9792418181818182
+  },
+  "immersion-vendome-brunch-and-coffee": {
+    "latitude": 48.867909,
+    "longitude": 2.331666,
+    "score": 0.9614572727272727
+  },
+  "immersion-republique-brunch-and-coffee": {
+    "latitude": 48.871076,
+    "longitude": 2.360088,
+    "score": 0.8475819191919192
+  },
+  "le-phin-cafe": {
+    "latitude": 48.85232,
+    "longitude": 2.364995,
+    "score": 0.9661418181818181
+  },
+  "certified-cafe-panorama": {
+    "latitude": 48.870869,
+    "longitude": 2.341598,
+    "score": 0.7800016317016316
+  },
+  "paolina-caffe": {
+    "latitude": 48.867881,
+    "longitude": 2.34719,
+    "score": 0.9709890909090908
+  },
+  "bcoffee": {
+    "latitude": 48.856541,
+    "longitude": 2.358313,
+    "score": 0.9655145454545453
+  },
+  "city-of-light-rue-malher": {
+    "latitude": 48.855611,
+    "longitude": 2.361114,
+    "score": 0.96415
+  },
+  "loutsa-rue-de-bazeilles": {
+    "latitude": 48.83926,
+    "longitude": 2.350328,
+    "score": 0.9618763636363634
+  },
+  "chez": {
+    "latitude": 48.851941,
+    "longitude": 2.336951,
+    "score": 0.9725554545454546
+  },
+  "moka": {
+    "latitude": 48.870602,
+    "longitude": 2.307767,
+    "score": 0.9700754545454545
+  },
+  "coutume-hotel-mathis": {
+    "latitude": 48.870066,
+    "longitude": 2.311324,
+    "score": 0.9709436363636363
+  },
+  "noir-coffee-shop-and-torrefacteur": {
+    "latitude": 48.87616,
+    "longitude": 2.338451,
+    "score": 0.9638827272727272
+  },
+  "cafe-pli-temple": {
+    "latitude": 48.869129,
+    "longitude": 2.368662,
+    "score": 0.9765090909090909
+  },
+  "moi-paris": {
+    "latitude": 48.864903,
+    "longitude": 2.362934,
+    "score": 0.605515077186964
+  },
+  "passion-cafe": {
+    "latitude": 48.889903,
+    "longitude": 2.334028,
+    "score": 0.9819845454545453
+  },
+  "octave-batignolles": {
+    "latitude": 48.886746,
+    "longitude": 2.323465,
+    "score": 0.9804527272727271
+  },
+  "city-of-light-boissy-danglas": {
+    "latitude": 48.870068,
+    "longitude": 2.322425,
+    "score": 0.9688990909090909
+  },
+  "oats-coffee": {
+    "latitude": 48.866686,
+    "longitude": 2.335804,
+    "score": 0.9634499999999999
+  },
+  "cercer-deli": {
+    "latitude": 48.865298,
+    "longitude": 2.363204,
+    "score": 0.9632709090909091
+  },
+  "feyma": {
+    "latitude": 48.891558,
+    "longitude": 2.335458,
+    "score": 0.9846927272727272
+  },
+  "gula": {
+    "latitude": 48.854226,
+    "longitude": 2.377659,
+    "score": 0.8216794805194805
+  },
+  "kawaa-lumiere": {
+    "latitude": 48.831912,
+    "longitude": 2.388676,
+    "score": 0.8535512396694215
+  },
+  "creacafe-by-lou": {
+    "latitude": 48.864568,
+    "longitude": 2.393692,
+    "score": 0.8013554545454545
+  },
+  "artsy-coffee": {
+    "latitude": 48.88958,
+    "longitude": 2.344111,
+    "score": 0.9778645454545453
+  },
+  "bleu-coffee-shop": {
+    "latitude": 48.835199,
+    "longitude": 2.317503,
+    "score": 0.9803363636363636
+  },
+  "extraction-coffee": {
+    "latitude": 48.856386,
+    "longitude": 2.368974,
+    "score": 0.9812427272727272
+  },
+  "moon-coffee-shop": {
+    "latitude": 48.850342,
+    "longitude": 2.393063,
+    "score": 0.7432582887700534
+  },
+  "kalve-desaix": {
+    "latitude": 48.852093,
+    "longitude": 2.291952,
+    "score": 0.9769763636363634
+  },
+  "delit-le-cafe": {
+    "latitude": 48.882572,
+    "longitude": 2.314545,
+    "score": 0.9735236363636363
+  },
+  "the-coffee-rue-de-vaugirard": {
+    "latitude": 48.83874,
+    "longitude": 2.299534,
+    "score": 0.8188931578947367
+  },
+  "coffee-arts-paris": {
+    "latitude": 48.864899,
+    "longitude": 2.365385,
+    "score": 0.7248855614973262
+  },
+  "chapter": {
+    "latitude": 48.889077,
+    "longitude": 2.345938,
+    "score": 0.9778645454545453
+  },
+  "june": {
+    "latitude": 48.875472,
+    "longitude": 2.381664,
+    "score": 0.7711914076246333
+  },
+  "sip": {
+    "latitude": 48.874315,
+    "longitude": 2.28283,
+    "score": 0.9776599999999999
+  },
+  "koni-rue-du-faubourg-saint-denis": {
+    "latitude": 48.873654,
+    "longitude": 2.354837,
+    "score": 0.9804454545454544
+  },
+  "storm-cycling-club": {
+    "latitude": 48.848121,
+    "longitude": 2.353367,
+    "score": 0.8261948202959831
+  },
+  "latte-club-rue-reaumur": {
+    "latitude": 48.864938,
+    "longitude": 2.359139,
+    "score": 0.9697318181818181
+  },
+  "tam-cafe": {
+    "latitude": 48.88016,
+    "longitude": 2.346145,
+    "score": 0.9746427272727272
+  },
+  "le-23": {
+    "latitude": 48.855158,
+    "longitude": 2.276905,
+    "score": 0.6387576623376623
+  },
+  "cafe-ode": {
+    "latitude": 48.863201,
+    "longitude": 2.349547,
+    "score": 0.9616790909090908
+  },
+  "lancaster-le-cafe": {
+    "latitude": 48.864165,
+    "longitude": 2.332581,
+    "score": 0.9629872727272726
+  },
+  "noir-saint-augustin": {
+    "latitude": 48.86883,
+    "longitude": 2.336529,
+    "score": 0.9660681818181818
+  },
+  "immersion-sentier": {
+    "latitude": 48.867442,
+    "longitude": 2.34405,
+    "score": 0.9706863636363635
+  },
+  "ha-noi-1988-flowers-and-archives": {
+    "latitude": 48.861021,
+    "longitude": 2.357779,
+    "score": 0.968871818181818
+  },
+  "white-coffee-paris-3": {
+    "latitude": 48.858712,
+    "longitude": 2.364624,
+    "score": 0.9728827272727272
+  },
+  "noir-ile-saint-louis": {
+    "latitude": 48.85244,
+    "longitude": 2.354722,
+    "score": 0.9710372727272727
+  },
+  "noir-rue-de-clery": {
+    "latitude": 48.868297,
+    "longitude": 2.347369,
+    "score": 0.9698254545454544
+  },
+  "cafe-shin-palais-royal": {
+    "latitude": 48.865327,
+    "longitude": 2.336759,
+    "score": 0.7890332323232323
+  },
+  "nuance": {
+    "latitude": 48.845058,
+    "longitude": 2.354859,
+    "score": 0.9704999999999999
+  },
+  "le-renard-cafe-by-tomo": {
+    "latitude": 48.846321,
+    "longitude": 2.351432,
+    "score": 0.9741863636363635
+  },
+  "raf": {
+    "latitude": 48.847178,
+    "longitude": 2.327562,
+    "score": 0.9747045454545454
+  },
+  "noir-rue-de-luynes": {
+    "latitude": 48.854911,
+    "longitude": 2.326292,
+    "score": 0.963560909090909
+  },
+  "terres-de-cafe-bourdonnais": {
+    "latitude": 48.856905,
+    "longitude": 2.301565,
+    "score": 0.8341662237762236
+  },
+  "cuvee-noire-madeleine": {
+    "latitude": 48.870286,
+    "longitude": 2.328097,
+    "score": 0.9735809090909091
+  },
+  "joro-kaffe": {
+    "latitude": 48.878799,
+    "longitude": 2.332782,
+    "score": 0.9734590909090909
+  },
+  "cafe-soucoupe-rue-du-faubourg-poissonniere": {
+    "latitude": 48.873346,
+    "longitude": 2.347802,
+    "score": 0.9743490909090909
+  },
+  "babarista-coffee-shop": {
+    "latitude": 48.876947,
+    "longitude": 2.352048,
+    "score": 0.9748754545454544
+  },
+  "immersion-montmartre-brunch-and-coffee": {
+    "latitude": 48.884312,
+    "longitude": 2.339667,
+    "score": 0.8541269696969697
+  },
+  "rems-coffee-rue-des-rosiers": {
+    "latitude": 48.857258,
+    "longitude": 2.359296,
+    "score": 0.9690672727272727
+  },
+  "dac-coffee-shop": {
+    "latitude": 48.848818,
+    "longitude": 2.402369,
+    "score": 0.9806354545454545
+  },
+  "cong-caphe": {
+    "latitude": 48.865138,
+    "longitude": 2.342158,
+    "score": 0.5990136363636362
+  },
+  "blu": {
+    "latitude": 48.870058,
+    "longitude": 2.329853,
+    "score": 0.7476062679425837
+  },
+  "my-homie-paris": {
+    "latitude": 48.862018,
+    "longitude": 2.380141,
+    "score": 0.9817963636363636
+  },
+  "athena-art-cafe": {
+    "latitude": 48.858483,
+    "longitude": 2.282294,
+    "score": 0.9698427272727271
+  },
+  "vibes-coffee-and-kitchen": {
+    "latitude": 48.879694,
+    "longitude": 2.29834,
+    "score": 0.9763245454545454
+  },
+  "ten-belles-rue-breguet": {
+    "latitude": 48.857604,
+    "longitude": 2.37363,
+    "score": 0.7564224451410657
+  },
+  "fauna": {
+    "latitude": 48.863125,
+    "longitude": 2.36872,
+    "score": 0.9809390909090907
+  },
+  "sipp-coffee-paris": {
+    "latitude": 48.843151,
+    "longitude": 2.329978,
+    "score": 0.9667536363636362
+  },
+  "another-coffee-shop": {
+    "latitude": 48.869296,
+    "longitude": 2.362842,
+    "score": 0.9644745454545453
+  },
+  "cafe-home": {
+    "latitude": 48.869919,
+    "longitude": 2.34632,
+    "score": 0.9662799999999999
+  },
+  "chez-coffeeandco": {
+    "latitude": 48.868231,
+    "longitude": 2.342843,
+    "score": 0.9683899999999999
+  },
+  "blondie-rue-du-bac": {
+    "latitude": 48.858451,
+    "longitude": 2.328405,
+    "score": 0.9754572727272726
+  },
+  "kind-yoga": {
+    "latitude": 48.869677,
+    "longitude": 2.351507,
+    "score": 0.9671254545454545
+  },
+  "foam-coffee": {
+    "latitude": 48.870062,
+    "longitude": 2.351737,
+    "score": 0.6670451515151514
+  },
+  "toto-coffee": {
+    "latitude": 48.855544,
+    "longitude": 2.35853,
+    "score": 0.9696454545454545
+  },
+  "plaine-cafe": {
+    "latitude": 48.875446,
+    "longitude": 2.326976,
+    "score": 0.3882894777562862
+  },
+  "volume-coffee": {
+    "latitude": 48.880085,
+    "longitude": 2.331576,
+    "score": 0.9723518181818182
+  },
+  "moka-rue-la-fayette": {
+    "latitude": 48.873258,
+    "longitude": 2.334332,
+    "score": 0.9743490909090909
+  },
+  "cafe-pimpin-rue-guy-moquet": {
+    "latitude": 48.891489,
+    "longitude": 2.319901,
+    "score": 0.9780445454545454
+  },
+  "heaf": {
+    "latitude": 48.87185,
+    "longitude": 2.325569,
+    "score": 0.967590909090909
+  },
+  "boris-boulangerie": {
+    "latitude": 48.889019,
+    "longitude": 2.334751,
+    "score": 0.9805445454545455
+  },
+  "saint-pearl-sorbonne": {
+    "latitude": 48.849851,
+    "longitude": 2.344851,
+    "score": 0.835560909090909
+  },
+  "extraction-coffee-rue-lamarck": {
+    "latitude": 48.890042,
+    "longitude": 2.337565,
+    "score": 0.9828081818181817
+  },
+  "corner-coffee": {
+    "latitude": 48.889965,
+    "longitude": 2.364244,
+    "score": 0.9767754545454546
+  },
+  "les-betises-coffee": {
+    "latitude": 48.866468,
+    "longitude": 2.380351,
+    "score": 0.9809390909090907
+  },
+  "motors-coffee": {
+    "latitude": 48.859287,
+    "longitude": 2.346969,
+    "score": 0.962471818181818
+  },
+  "laize-palais-royal": {
+    "latitude": 48.863722,
+    "longitude": 2.338111,
+    "score": 0.9649372727272727
+  },
+  "cuvee-noire-petits-carreaux": {
+    "latitude": 48.867743,
+    "longitude": 2.347116,
+    "score": 0.9709890909090908
+  },
+  "tanat-tiquetonne": {
+    "latitude": 48.864803,
+    "longitude": 2.347227,
+    "score": 0.9672936363636362
+  },
+  "nami": {
+    "latitude": 48.864667,
+    "longitude": 2.350108,
+    "score": 0.8254633431085043
+  },
+  "partisan-cafe-artisanal": {
+    "latitude": 48.864661,
+    "longitude": 2.35303,
+    "score": 0.8446426959247648
+  },
+  "moonlight-cafe": {
+    "latitude": 48.863885,
+    "longitude": 2.356394,
+    "score": 0.9714154545454544
+  },
+  "la-cafeotheque": {
+    "latitude": 48.854432,
+    "longitude": 2.355775,
+    "score": 0.9677345454545454
+  },
+  "percent-drdbicd-oberkampf": {
+    "latitude": 48.86255,
+    "longitude": 2.365636,
+    "score": 0.7923670995670995
+  },
+  "boma": {
+    "latitude": 48.847563,
+    "longitude": 2.34843,
+    "score": 0.8810381818181818
+  },
+  "cafe-dalbodree": {
+    "latitude": 48.849813,
+    "longitude": 2.350274,
+    "score": 0.7591208133971292
+  },
+  "graines-du-jour": {
+    "latitude": 48.84078,
+    "longitude": 2.349553,
+    "score": 0.9763227272727272
+  },
+  "petibon-rue-du-4-septembre": {
+    "latitude": 48.869947,
+    "longitude": 2.335153,
+    "score": 0.7560561538461539
+  },
+  "pat": {
+    "latitude": 48.845373,
+    "longitude": 2.332041,
+    "score": 0.9743981818181818
+  },
+  "coutume-rue-de-babylone": {
+    "latitude": 48.851669,
+    "longitude": 2.318362,
+    "score": 0.9727190909090907
+  },
+  "bake-and-blend": {
+    "latitude": 48.858407,
+    "longitude": 2.300667,
+    "score": 0.7600716083916084
+  },
+  "primitives": {
+    "latitude": 48.868335,
+    "longitude": 2.304429,
+    "score": 0.8573072727272727
+  },
+  "cafe-fino": {
+    "latitude": 48.873411,
+    "longitude": 2.321535,
+    "score": 0.969000909090909
+  },
+  "mokha": {
+    "latitude": 48.872247,
+    "longitude": 2.325556,
+    "score": 0.9648363636363636
+  },
+  "approach": {
+    "latitude": 48.869251,
+    "longitude": 2.333646,
+    "score": 0.9624627272727271
+  },
+  "naad-coffee": {
+    "latitude": 48.868446,
+    "longitude": 2.368035,
+    "score": 0.7467863636363635
+  },
+  "manie-rue-des-archives": {
+    "latitude": 48.858397,
+    "longitude": 2.355019,
+    "score": 0.9684054545454543
+  },
+  "pag": {
+    "latitude": 48.866075,
+    "longitude": 2.350723,
+    "score": 0.8254633431085043
+  },
+  "noir-rue-legendre": {
+    "latitude": 48.884194,
+    "longitude": 2.31416,
+    "score": 0.9823690909090907
+  },
+  "mara-cafe-and-brunch": {
+    "latitude": 48.862586,
+    "longitude": 2.373404,
+    "score": 0.9793463636363635
+  },
+  "borderline-cafe": {
+    "latitude": 48.845492,
+    "longitude": 2.402814,
+    "score": 0.9735027272727272
+  },
+  "pontochoux-cafe": {
+    "latitude": 48.861299,
+    "longitude": 2.365183,
+    "score": 0.9660845454545453
+  },
+  "torre-boulevard-de-courcelles": {
+    "latitude": 48.879971,
+    "longitude": 2.302481,
+    "score": 0.7984854545454545
+  },
+  "the-coffee-boulevard-de-grenelle": {
+    "latitude": 48.848672,
+    "longitude": 2.298483,
+    "score": 0.7618843243243243
+  },
+  "cuvee-noire-saint-michel-coffee-shop": {
+    "latitude": 48.851187,
+    "longitude": 2.342843,
+    "score": 0.7491379606879607
+  },
+  "haikara-kissa-coffee": {
+    "latitude": 48.864979,
+    "longitude": 2.369,
+    "score": 0.9730445454545453
+  },
+  "yian": {
+    "latitude": 48.841937,
+    "longitude": 2.395744,
+    "score": 0.9765790909090909
+  },
+  "parcelle-cafe": {
+    "latitude": 48.842722,
+    "longitude": 2.328041,
+    "score": 0.7683654545454545
+  },
+  "archipelago": {
+    "latitude": 48.833418,
+    "longitude": 2.370325,
+    "score": 0.9770045454545454
+  },
+  "terres-de-cafe-tiquetonne": {
+    "latitude": 48.864827,
+    "longitude": 2.346451,
+    "score": 0.9672936363636362
+  },
+  "vestiges": {
+    "latitude": 48.863698,
+    "longitude": 2.355232,
+    "score": 0.9696527272727272
+  },
+  "the-coffee-rue-des-gravilliers": {
+    "latitude": 48.864038,
+    "longitude": 2.356135,
+    "score": 0.9714154545454544
+  },
+  "noir-rue-des-blancs-manteaux": {
+    "latitude": 48.858497,
+    "longitude": 2.35785,
+    "score": 0.9679363636363635
+  },
+  "arabica-le-marais": {
+    "latitude": 48.856739,
+    "longitude": 2.363214,
+    "score": 0.9675227272727273
+  },
+  "the-coffee-rue-de-la-sorbonne": {
+    "latitude": 48.849571,
+    "longitude": 2.343319,
+    "score": 0.9673490909090908
+  },
+  "lets": {
+    "latitude": 48.881966,
+    "longitude": 2.327013,
+    "score": 0.9695699999999999
+  },
+  "cuvee-noire-saint-lazare": {
+    "latitude": 48.875796,
+    "longitude": 2.327775,
+    "score": 0.9750063636363636
+  },
+  "ikebanart": {
+    "latitude": 48.872244,
+    "longitude": 2.35016,
+    "score": 0.8249084848484848
+  },
+  "resilience": {
+    "latitude": 48.891083,
+    "longitude": 2.329141,
+    "score": 0.9828081818181817
+  },
+  "taxiphone": {
+    "latitude": 48.885102,
+    "longitude": 2.351734,
+    "score": 0.9789236363636363
+  },
+  "othman-cafe-and-holistic-boutique": {
+    "latitude": 48.863775,
+    "longitude": 2.397323,
+    "score": 0.8249462162162161
+  },
+  "babarista-rue-dussoubs": {
+    "latitude": 48.864996,
+    "longitude": 2.348618,
+    "score": 0.9658463636363634
+  },
+  "the-coffee-rue-delambre": {
+    "latitude": 48.841525,
+    "longitude": 2.326268,
+    "score": 0.9749381818181818
+  },
+  "glow-up-studio-and-coffee": {
+    "latitude": 48.850481,
+    "longitude": 2.361582,
+    "score": 0.7237175757575757
+  },
+  "un-nuage-de-lait": {
+    "latitude": 48.833932,
+    "longitude": 2.355466,
+    "score": 0.9722709090909091
+  },
+  "le-pazari": {
+    "latitude": 48.860051,
+    "longitude": 2.376019,
+    "score": 0.7359661157024793
+  },
+  "the-coffee-rue-saint-honore": {
+    "latitude": 48.861296,
+    "longitude": 2.343102,
+    "score": 0.9731518181818182
+  },
+  "influence-cafe": {
+    "latitude": 48.867,
+    "longitude": 2.361,
+    "score": 0.9715745454545454
+  },
+  "sapiens-cafe": {
+    "latitude": 48.84393,
+    "longitude": 2.402452,
+    "score": 0.9758536363636363
+  },
+  "cafe-nuances-rue-de-la-tremoille": {
+    "latitude": 48.866569,
+    "longitude": 2.302323,
+    "score": 0.9665072727272727
+  },
+  "noir-rue-du-boccador": {
+    "latitude": 48.867196,
+    "longitude": 2.302151,
+    "score": 0.9655372727272725
+  },
+  "cafe-detours": {
+    "latitude": 48.858046,
+    "longitude": 2.371868,
+    "score": 0.9811072727272726
+  },
+  "proost": {
+    "latitude": 48.859215,
+    "longitude": 2.347029,
+    "score": 0.962471818181818
+  },
+  "calibre": {
+    "latitude": 48.862538,
+    "longitude": 2.340445,
+    "score": 0.9661381818181817
+  },
+  "kure-bazaar": {
+    "latitude": 48.863514,
+    "longitude": 2.334675,
+    "score": 0.9731518181818182
+  },
+  "cafe-maa": {
+    "latitude": 48.850318,
+    "longitude": 2.343444,
+    "score": 0.9698927272727272
+  },
+  "lilebrairie-and-co": {
+    "latitude": 48.851312,
+    "longitude": 2.338262,
+    "score": 0.9683372727272728
+  },
+  "judy-rue-de-bearn": {
+    "latitude": 48.856334,
+    "longitude": 2.365931,
+    "score": 0.9644136363636364
+  },
+  "spiced": {
+    "latitude": 48.872276,
+    "longitude": 2.326626,
+    "score": 0.7560260606060606
+  },
+  "kb-cafeshop": {
+    "latitude": 48.880671,
+    "longitude": 2.340795,
+    "score": 0.7894800000000001
+  },
+  "paris-dabang": {
+    "latitude": 48.861536,
+    "longitude": 2.374718,
+    "score": 0.9793463636363635
+  },
+  "terres-de-cafe-boulevard-beaumarchais": {
+    "latitude": 48.858379,
+    "longitude": 2.367602,
+    "score": 0.6732024324324324
+  },
+  "casa-rossa": {
+    "latitude": 48.826363,
+    "longitude": 2.347633,
+    "score": 0.9766336363636363
+  },
+  "koro-cafe": {
+    "latitude": 48.884,
+    "longitude": 2.313101,
+    "score": 0.8444162289562289
+  },
+  "joy-x-beck": {
+    "latitude": 48.865542,
+    "longitude": 2.394816,
+    "score": 0.9756418181818182
+  },
+  "noir-rue-soufflot": {
+    "latitude": 48.846443,
+    "longitude": 2.344162,
+    "score": 0.9687136363636363
+  },
+  "araku-coffee-rue-ferdinant-flocon": {
+    "latitude": 48.890972,
+    "longitude": 2.345677,
+    "score": 0.971781818181818
+  },
+  "anma-coffee": {
+    "latitude": 48.872371,
+    "longitude": 2.359818,
+    "score": 0.7451537662337662
+  },
+  "mw-paris-coffee-and-matcha": {
+    "latitude": 48.850032,
+    "longitude": 2.344947,
+    "score": 0.9776063636363636
+  },
+  "moka-rue-de-ponthieu": {
+    "latitude": 48.871495,
+    "longitude": 2.307232,
+    "score": 0.9709436363636363
+  },
+  "cuppa-gallery": {
+    "latitude": 48.859382,
+    "longitude": 2.323505,
+    "score": 0.9776518181818181
+  },
+  "immersion-tour-eiffel-brunch-and-coffee": {
+    "latitude": 48.85635,
+    "longitude": 2.302432,
+    "score": 0.8341662237762236
+  },
+  "araku-coffee": {
+    "latitude": 48.862824,
+    "longitude": 2.362897,
+    "score": 0.9693218181818182
+  },
+  "araku-coffee-rue-de-prague": {
+    "latitude": 48.849689,
+    "longitude": 2.376028,
+    "score": 0.971510909090909
+  },
+  "cafe-jirisan": {
+    "latitude": 48.870448,
+    "longitude": 2.337376,
+    "score": 0.9603736363636363
+  },
+  "good-news-rue-montmartre": {
+    "latitude": 48.867064,
+    "longitude": 2.344218,
+    "score": 0.9706863636363635
+  },
+  "the-coffee-rue-la-feuillade": {
+    "latitude": 48.865958,
+    "longitude": 2.340041,
+    "score": 0.9551563636363636
+  },
+  "brown": {
+    "latitude": 48.857084,
+    "longitude": 2.355123,
+    "score": 0.9703945454545454
+  },
+  "the-coffee-quai-de-la-tournelle": {
+    "latitude": 48.850483,
+    "longitude": 2.352819,
+    "score": 0.8901706417112298
+  },
+  "ten-belles-rue-du-cherche-midi": {
+    "latitude": 48.84878,
+    "longitude": 2.325205,
+    "score": 0.9746045454545454
+  },
+  "cafe-la-procure-x-coutume": {
+    "latitude": 48.850201,
+    "longitude": 2.332119,
+    "score": 0.9651863636363635
+  },
+  "un-grain-decale": {
+    "latitude": 48.844622,
+    "longitude": 2.332054,
+    "score": 0.9700899999999999
+  },
+  "maison-fleuret": {
+    "latitude": 48.855067,
+    "longitude": 2.331004,
+    "score": 0.8891906417112299
+  },
+  "noir-rue-de-londres": {
+    "latitude": 48.878061,
+    "longitude": 2.326548,
+    "score": 0.9661436363636363
+  },
+  "cult": {
+    "latitude": 48.873894,
+    "longitude": 2.335949,
+    "score": 0.9743490909090909
+  },
+  "cafe-maison-mariel": {
+    "latitude": 48.873846,
+    "longitude": 2.350717,
+    "score": 0.87883985645933
+  },
+  "the-coffee-rue-yvonne-le-tac": {
+    "latitude": 48.88418,
+    "longitude": 2.339362,
+    "score": 0.97416
+  },
+  "quartz-cafe": {
+    "latitude": 48.858084,
+    "longitude": 2.322633,
+    "score": 0.97178
+  },
+  "the-monocle-cafe-and-shop": {
+    "latitude": 48.866166,
+    "longitude": 2.345231,
+    "score": 0.9640599999999998
+  },
+  "stop-81": {
+    "latitude": 48.862774,
+    "longitude": 2.359588,
+    "score": 0.9686781818181819
+  },
+  "lattein-coffee": {
+    "latitude": 48.850384,
+    "longitude": 2.300333,
+    "score": 0.9711081818181818
+  },
+  "jana-coffee-club": {
+    "latitude": 48.865552,
+    "longitude": 2.347442,
+    "score": 0.9674563636363637
+  },
+  "folie-store-coffee-shop": {
+    "latitude": 48.86162,
+    "longitude": 2.374423,
+    "score": 0.9793463636363635
+  },
+  "atome-coffee-shop": {
+    "latitude": 48.85693,
+    "longitude": 2.272217,
+    "score": 0.7861057142857142
+  },
+  "lalla-coffee": {
+    "latitude": 48.850083,
+    "longitude": 2.37927,
+    "score": 0.9776972727272726
+  },
+  "cafe-pimpin-rue-des-panoyaux": {
+    "latitude": 48.866489,
+    "longitude": 2.385526,
+    "score": 0.9796318181818182
+  },
+  "le-cafe-sumeria": {
+    "latitude": 48.85054,
+    "longitude": 2.380536,
+    "score": 0.9809954545454543
+  },
+  "cone-coffee-shop": {
+    "latitude": 48.854077,
+    "longitude": 2.343367,
+    "score": 0.9677681818181818
+  },
+  "the-coffee-rue-pierre-demours": {
+    "latitude": 48.88306,
+    "longitude": 2.298222,
+    "score": 0.97879
+  },
+  "pause-nuage": {
+    "latitude": 48.841024,
+    "longitude": 2.352044,
+    "score": 0.9757872727272727
+  },
+  "jade-matcha-gallery": {
+    "latitude": 48.851364,
+    "longitude": 2.334862,
+    "score": 0.9694045454545455
+  },
+  "cuvee-noire-martyrs": {
+    "latitude": 48.880507,
+    "longitude": 2.340655,
+    "score": 0.8525442424242423
+  },
+  "josette-coffee": {
+    "latitude": 48.866299,
+    "longitude": 2.347067,
+    "score": 0.9667690909090907
+  },
+  "cafe-pepees": {
+    "latitude": 48.836645,
+    "longitude": 2.320639,
+    "score": 0.9803363636363636
+  },
+  "cafe-kodomo": {
+    "latitude": 48.86852,
+    "longitude": 2.373037,
+    "score": 0.9691936363636363
+  },
+  "kafkaf-rue-de-trevise": {
+    "latitude": 48.874509,
+    "longitude": 2.345293,
+    "score": 0.9713963636363635
+  },
+  "kafkaf-rue-saint-martin": {
+    "latitude": 48.863682,
+    "longitude": 2.352607,
+    "score": 0.8696420779220778
+  },
+  "acafe": {
+    "latitude": 48.863034,
+    "longitude": 2.334767,
+    "score": 0.970430909090909
+  },
+  "casa-zur-cafe-cantine-latino": {
+    "latitude": 48.871207,
+    "longitude": 2.32616,
+    "score": 0.9653154545454544
+  },
+  "araku-coffee-rue-soufflot": {
+    "latitude": 48.847143,
+    "longitude": 2.342468,
+    "score": 0.9687136363636363
+  },
+  "kiji-opera": {
+    "latitude": 48.868293,
+    "longitude": 2.333983,
+    "score": 0.9622172727272725
+  },
+  "the-coffee-rue-saint-placide": {
+    "latitude": 48.848644,
+    "longitude": 2.325515,
+    "score": 0.8828661876832843
+  },
+  "the-coffee-rue-saint-dominique": {
+    "latitude": 48.859806,
+    "longitude": 2.309229,
+    "score": 0.9759890909090908
+  },
+  "kis-keep-it-secret": {
+    "latitude": 48.864263,
+    "longitude": 2.36008,
+    "score": 0.9693218181818182
+  },
+  "a-droyte": {
+    "latitude": 48.861896,
+    "longitude": 2.364918,
+    "score": 0.9641536363636364
+  },
+  "maison-amat": {
+    "latitude": 48.876482,
+    "longitude": 2.351538,
+    "score": 0.9679390909090908
+  },
+  "off-campus": {
+    "latitude": 48.852623,
+    "longitude": 2.39198,
+    "score": 0.7537688087774294
+  },
+  "dreamin-man-rue-amelot": {
+    "latitude": 48.865272,
+    "longitude": 2.366456,
+    "score": 0.9812427272727272
+  },
+  "ginie": {
+    "latitude": 48.85174,
+    "longitude": 2.322341,
+    "score": 0.9727190909090907
+  },
+  "caffe-doppio": {
+    "latitude": 48.864931,
+    "longitude": 2.374379,
+    "score": 0.9809390909090907
+  },
+  "cafe-la": {
+    "latitude": 48.888001,
+    "longitude": 2.346904,
+    "score": 0.9787427272727272
+  },
+  "ooops": {
+    "latitude": 48.855078,
+    "longitude": 2.295049,
+    "score": 0.801950909090909
+  },
+  "nume": {
+    "latitude": 48.829191,
+    "longitude": 2.317127,
+    "score": 0.9801381818181817
+  },
+  "days": {
+    "latitude": 48.865778,
+    "longitude": 2.350352,
+    "score": 0.9671254545454545
+  },
+  "mimi": {
+    "latitude": 48.865193,
+    "longitude": 2.336519,
+    "score": 0.965800909090909
+  },
+  "saint-pearl-jardin-du-luxembourg": {
+    "latitude": 48.848029,
+    "longitude": 2.339991,
+    "score": 0.9622954545454544
+  },
+  "cafe-kitsune-opera": {
+    "latitude": 48.868327,
+    "longitude": 2.333527,
+    "score": 0.7915027272727272
+  },
+  "the-coffee-poissonniere": {
+    "latitude": 48.869595,
+    "longitude": 2.347708,
+    "score": 0.7731216253443526
+  },
+  "recto-verso": {
+    "latitude": 48.863521,
+    "longitude": 2.360302,
+    "score": 0.964891818181818
+  },
+  "safe-concept": {
+    "latitude": 48.862026,
+    "longitude": 2.365748,
+    "score": 0.9655272727272726
+  },
+  "terres-de-cafe-rambuteau": {
+    "latitude": 48.860562,
+    "longitude": 2.355653,
+    "score": 0.9670281818181817
+  },
+  "noir-rue-saint-florentin": {
+    "latitude": 48.867474,
+    "longitude": 2.324353,
+    "score": 0.9566854545454545
+  },
+  "saint-pearl-saint-germain": {
+    "latitude": 48.854932,
+    "longitude": 2.330596,
+    "score": 0.9700836363636363
+  },
+  "goodnews-rue-du-bac": {
+    "latitude": 48.857849,
+    "longitude": 2.327982,
+    "score": 0.9754572727272726
+  },
+  "fidele": {
+    "latitude": 48.868253,
+    "longitude": 2.351789,
+    "score": 0.8254633431085043
+  },
+  "dayclub": {
+    "latitude": 48.874632,
+    "longitude": 2.342846,
+    "score": 0.9699245454545454
+  },
+  "cafe-pimpin-rue-ramey": {
+    "latitude": 48.891749,
+    "longitude": 2.344829,
+    "score": 0.9787427272727272
+  },
+  "toasty": {
+    "latitude": 48.866131,
+    "longitude": 2.34203,
+    "score": 0.9709890909090908
+  },
+  "noho-louvres": {
+    "latitude": 48.864082,
+    "longitude": 2.342613,
+    "score": 0.9642536363636363
+  },
+  "goodnews-victor-hugo": {
+    "latitude": 48.844194,
+    "longitude": 2.264667,
+    "score": 0.43376036855036854
+  },
+  "mardi": {
+    "latitude": 48.876278,
+    "longitude": 2.387517,
+    "score": 0.9796209090909089
+  },
+  "chaize": {
+    "latitude": 48.867532,
+    "longitude": 2.38533,
+    "score": 0.8061895959595959
+  },
+  "cafe-dose-paris-jules-joffrin": {
+    "latitude": 48.892908,
+    "longitude": 2.342338,
+    "score": 0.983590909090909
+  },
+  "chez-coffeeand-brunch": {
+    "latitude": 48.857229,
+    "longitude": 2.363159,
+    "score": 0.7823354545454545
+  },
+  "saenz": {
+    "latitude": 48.876559,
+    "longitude": 2.377398,
+    "score": 0.8257812987012987
+  },
+  "plaine-cafe-or-torrefacteur-de-cafe-de-specialite-printemps": {
+    "latitude": 48.874392,
+    "longitude": 2.328278,
+    "score": 0.5070737320574162
+  },
+  "minicafe-rue-des-barres": {
+    "latitude": 48.85517,
+    "longitude": 2.355303,
+    "score": 0.9645836363636363
+  },
+  "goodnews-rue-de-4-septembre": {
+    "latitude": 48.869947,
+    "longitude": 2.335153,
+    "score": 0.7560561538461539
+  },
+  "cafe-bogato": {
+    "latitude": 48.859092,
+    "longitude": 2.353367,
+    "score": 0.9673009090909089
+  },
+  "la-patate-douce": {
+    "latitude": 48.866105,
+    "longitude": 2.357288,
+    "score": 0.9585909090909092
+  },
+  "chorok": {
+    "latitude": 48.867078,
+    "longitude": 2.334556,
+    "score": 0.9578281818181819
+  },
+  "paolina-caffe-marais": {
+    "latitude": 48.85773,
+    "longitude": 2.364588,
+    "score": 0.9728827272727272
+  },
+  "umami-matcha-cafe": {
+    "latitude": 48.866528,
+    "longitude": 2.363535,
+    "score": 0.9664218181818182
+  },
+  "inform-coffe-shop": {
+    "latitude": 48.881532,
+    "longitude": 2.310612,
+    "score": 0.804695885167464
+  },
+  "salted-boy": {
+    "latitude": 48.864846,
+    "longitude": 2.35942,
+    "score": 0.9697318181818181
+  },
+  "in-the-box-espace-de-deconnexion-digitale": {
+    "latitude": 48.855306,
+    "longitude": 2.375341,
+    "score": 0.9744327272727272
+  },
+  "gratitude-shoman": {
+    "latitude": 48.853996,
+    "longitude": 2.336889,
+    "score": 0.9725554545454546
+  },
+  "copains-le-studio-montorgueil": {
+    "latitude": 48.865198,
+    "longitude": 2.347036,
+    "score": 0.9667690909090907
+  },
+  "mousse": {
+    "latitude": 48.859736,
+    "longitude": 2.356375,
+    "score": 0.9684054545454543
+  },
+  "benchy": {
+    "latitude": 48.849215,
+    "longitude": 2.325677,
+    "score": 0.9746045454545454
+  },
+  "codys": {
+    "latitude": 48.854501,
+    "longitude": 2.325625,
+    "score": 0.9774636363636363
+  },
+  "cafe-gizele": {
+    "latitude": 48.856661,
+    "longitude": 2.395907,
+    "score": 0.9831500000000001
+  },
+  "noir-avenue-mozart": {
+    "latitude": 48.857868,
+    "longitude": 2.27417,
+    "score": 0.7788907070707071
+  },
+  "le-cafe-en-rouje": {
+    "latitude": 48.866008,
+    "longitude": 2.345431,
+    "score": 0.7768942245989304
+  },
+  "noir-rue-monge": {
+    "latitude": 48.846574,
+    "longitude": 2.351903,
+    "score": 0.7563515360501567
+  },
+  "goodnews-rue-de-la-pepiniere": {
+    "latitude": 48.87527,
+    "longitude": 2.323594,
+    "score": 0.967590909090909
+  },
+  "kun-cafe": {
+    "latitude": 48.875796,
+    "longitude": 2.344028,
+    "score": 0.9743490909090909
+  },
+  "mood-coffee": {
+    "latitude": 48.86805,
+    "longitude": 2.290596,
+    "score": 0.7852702597402597
+  },
+  "ice-and-coffee": {
+    "latitude": 48.883745,
+    "longitude": 2.343173,
+    "score": 0.978010909090909
+  },
+  "noir-avenue-kleber": {
+    "latitude": 48.865241,
+    "longitude": 2.288558,
+    "score": 0.7919876802507837
+  },
+  "noir-rue-de-passy": {
+    "latitude": 48.858342,
+    "longitude": 2.284207,
+    "score": 0.9794345454545453
+  },
+  "cafe-madam": {
+    "latitude": 48.865606,
+    "longitude": 2.350675,
+    "score": 0.8254633431085043
+  },
+  "chanceux": {
+    "latitude": 48.85175,
+    "longitude": 2.346777,
+    "score": 0.9704999999999999
+  },
+  "jmzz-cafe": {
+    "latitude": 48.867713,
+    "longitude": 2.350256,
+    "score": 0.9665790909090908
+  },
+  "le-floor": {
+    "latitude": 48.86902,
+    "longitude": 2.3422,
+    "score": 0.9666754545454544
+  },
+  "cafe-nuances-marais": {
+    "latitude": 48.858883,
+    "longitude": 2.35833,
+    "score": 0.9675227272727273
+  },
+  "goodnews-rue-la-fayette": {
+    "latitude": 48.874009,
+    "longitude": 2.337202,
+    "score": 0.9743490909090909
+  },
+  "merci-noir": {
+    "latitude": 48.860778,
+    "longitude": 2.367034,
+    "score": 0.7527317224880382
+  },
+  "andco": {
+    "latitude": 48.873151,
+    "longitude": 2.364382,
+    "score": 0.9772363636363635
+  },
+  "capturism-studio-x-cafe": {
+    "latitude": 48.851569,
+    "longitude": 2.335395,
+    "score": 0.9649109090909089
+  },
+  "umami-matcha-cafe-to-go": {
+    "latitude": 48.879933,
+    "longitude": 2.291598,
+    "score": 0.97879
+  },
+  "goodnews-saint-dominique": {
+    "latitude": 48.859812,
+    "longitude": 2.308159,
+    "score": 0.9759890909090908
+  },
+  "goodnews-saint-germain": {
+    "latitude": 48.852484,
+    "longitude": 2.33808,
+    "score": 0.7633588811188811
+  },
+  "cafe-nuances-saint-germain-des-pres": {
+    "latitude": 48.851953,
+    "longitude": 2.330259,
+    "score": 0.9669390909090909
+  },
+  "cafe-pli-parmentier": {
+    "latitude": 48.870456,
+    "longitude": 2.370521,
+    "score": 0.885211818181818
+  },
+  "coffee-island-rue-de-steinkerque": {
+    "latitude": 48.883309,
+    "longitude": 2.343651,
+    "score": 0.9727954545454546
+  },
+  "le-pont-traverse-paris-6": {
+    "latitude": 48.848547,
+    "longitude": 2.331861,
+    "score": 0.9747045454545454
+  },
+  "skene": {
+    "latitude": 48.851775,
+    "longitude": 2.330275,
+    "score": 0.9669390909090909
+  },
+  "cafe-moco": {
+    "latitude": 48.854148,
+    "longitude": 2.386574,
+    "score": 0.5688802371541501
+  },
+  "cuvee-noire-faubourg-saint-antoine-coffee-shop": {
+    "latitude": 48.850987,
+    "longitude": 2.376954,
+    "score": 0.9806390909090908
+  },
+  "cafe-fairly": {
+    "latitude": 48.864932,
+    "longitude": 2.346759,
+    "score": 0.9667690909090907
+  },
+  "cafe-george": {
+    "latitude": 48.850729,
+    "longitude": 2.328114,
+    "score": 0.9746045454545454
+  },
+  "cuvee-noire-colisee-coffee-shop": {
+    "latitude": 48.870803,
+    "longitude": 2.308317,
+    "score": 0.9700754545454545
+  },
+  "white-coffee-paris-9": {
+    "latitude": 48.878538,
+    "longitude": 2.339616,
+    "score": 0.8525442424242423
+  },
+  "cafe-707": {
+    "latitude": 48.848044,
+    "longitude": 2.348449,
+    "score": 0.8810381818181818
+  },
+  "kintaro-cafe": {
+    "latitude": 48.868674,
+    "longitude": 2.334196,
+    "score": 0.9622172727272725
+  },
+  "saint-pearl-wilson": {
+    "latitude": 48.864782,
+    "longitude": 2.300306,
+    "score": 0.8394872727272726
+  },
+  "goodnews-saint-michel": {
+    "latitude": 48.853215,
+    "longitude": 2.345927,
+    "score": 0.7524308021390373
+  },
+  "wani": {
+    "latitude": 48.848644,
+    "longitude": 2.325515,
+    "score": 0.8104149197860961
+  },
+  "goodnews-cafe-chaussee-dantin": {
+    "latitude": 48.875389,
+    "longitude": 2.332125,
+    "score": 0.8397613968957871
+  },
+  "copains-rue-des-abbesses": {
+    "latitude": 48.884097,
+    "longitude": 2.338923,
+    "score": 0.9779381818181817
+  },
+  "clode-coffee-shop-paris-12": {
+    "latitude": 48.847092,
+    "longitude": 2.37205,
+    "score": 0.7850711688311688
+  },
+  "cafe-rencontre": {
+    "latitude": 48.858628,
+    "longitude": 2.382447,
+    "score": 0.7619470629370629
+  },
+  "copains-le-studio-rue-yves-toudic": {
+    "latitude": 48.87056,
+    "longitude": 2.363397,
+    "score": 0.9726190909090909
+  },
+  "dreamin-man-rue-coquilliere": {
+    "latitude": 48.864241,
+    "longitude": 2.341411,
+    "score": 0.9641290909090909
+  },
+  "goodnews-boetie": {
+    "latitude": 48.874291,
+    "longitude": 2.318655,
+    "score": 0.9735345454545454
+  },
+  "cafe-kitsune-vertbois": {
+    "latitude": 48.866979,
+    "longitude": 2.358434,
+    "score": 0.9703190909090907
+  },
+  "cafe-papeterie": {
+    "latitude": 48.866145,
+    "longitude": 2.340411,
+    "score": 0.9595454545454546
+  },
+  "used-book-cafe": {
+    "latitude": 48.860778,
+    "longitude": 2.367034,
+    "score": 0.7527317224880382
+  },
+  "copains-rue-des-rosiers": {
+    "latitude": 48.857453,
+    "longitude": 2.358999,
+    "score": 0.9690672727272727
+  },
+  "wiolette": {
+    "latitude": 48.852576,
+    "longitude": 2.333502,
+    "score": 0.9702681818181819
+  },
+  "niwa": {
+    "latitude": 48.850638,
+    "longitude": 2.319428,
+    "score": 0.9738409090909091
+  },
+  "goodnews-rue-du-four": {
+    "latitude": 48.852738,
+    "longitude": 2.33366,
+    "score": 0.9702681818181819
+  },
+  "ralphs-coffee": {
+    "latitude": 48.854201,
+    "longitude": 2.330741,
+    "score": 0.7633588811188811
+  },
+  "kabane": {
+    "latitude": 48.852199,
+    "longitude": 2.383245,
+    "score": 0.9755881818181819
+  },
+  "goodnews-boulevard-de-la-madeleine": {
+    "latitude": 48.869568,
+    "longitude": 2.326972,
+    "score": 0.7497097902097902
+  },
+  "goodnews-rambuteau": {
+    "latitude": 48.860245,
+    "longitude": 2.356601,
+    "score": 0.9670281818181817
+  },
+  "cafe-kitsune-louvre": {
+    "latitude": 48.863972,
+    "longitude": 2.335736,
+    "score": 0.8182444077134985
+  },
+  "coutume-galeries-lafayette": {
+    "latitude": 48.873199,
+    "longitude": 2.332434,
+    "score": 0.4801401078582434
+  },
+  "goodnews-cafe": {
+    "latitude": 48.867948,
+    "longitude": 2.331493,
+    "score": 0.9614572727272727
+  },
+  "goodnews-cafe-poissonniere": {
+    "latitude": 48.871284,
+    "longitude": 2.345368,
+    "score": 0.7456434152334153
+  },
+  "goodnews-opera": {
+    "latitude": 48.865296,
+    "longitude": 2.334835,
+    "score": 0.7928463636363635
+  },
+  "coffee-faubourg": {
+    "latitude": 48.876549,
+    "longitude": 2.339474,
+    "score": 0.9734590909090909
+  },
+  "bing-sutt": {
+    "latitude": 48.866528,
+    "longitude": 2.363535,
+    "score": 0.9664218181818182
+  },
+  "artesano": {
+    "latitude": 48.85257,
+    "longitude": 2.360451,
+    "score": 0.9684054545454543
+  },
+  "coutume-x-julhes": {
+    "latitude": 48.872346,
+    "longitude": 2.354226,
+    "score": 0.9804454545454544
+  },
+  "the-coffee-cite-du-wauxhall": {
+    "latitude": 48.869296,
+    "longitude": 2.362842,
+    "score": 0.9644745454545453
+  },
+  "medinas": {
+    "latitude": 48.843496,
+    "longitude": 2.330385,
+    "score": 0.9667536363636362
+  },
+  "onisuko-rue-du-vieux-colombier": {
+    "latitude": 48.851453,
+    "longitude": 2.331308,
+    "score": 0.9669390909090909
+  },
+  "boem": {
+    "latitude": 48.87321,
+    "longitude": 2.362386,
+    "score": 0.9741636363636362
+  },
+  "roll-in-rue-de-clery": {
+    "latitude": 48.868629,
+    "longitude": 2.348609,
+    "score": 0.9698254545454544
+  },
+  "brouillon": {
+    "latitude": 48.872371,
+    "longitude": 2.359818,
+    "score": 0.7451537662337662
+  },
+  "onisuko-rue-de-turenne": {
+    "latitude": 48.856304,
+    "longitude": 2.364071,
+    "score": 0.9655145454545453
+  },
+  "kaffa-koffee-oberkampf": {
+    "latitude": 48.865851,
+    "longitude": 2.378514,
+    "score": 0.9809390909090907
+  },
+  "typica-specialty-coffee-chemin-vert": {
+    "latitude": 48.86056,
+    "longitude": 2.379656,
+    "score": 0.9811072727272726
+  },
+  "the-cafe-next-door": {
+    "latitude": 48.86945,
+    "longitude": 2.363563,
+    "score": 0.9720427272727272
+  },
+  "jaco": {
+    "latitude": 48.852893,
+    "longitude": 2.367364,
+    "score": 0.963670909090909
+  }
+}

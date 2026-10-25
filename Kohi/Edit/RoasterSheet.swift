@@ -4,9 +4,11 @@ import SwiftUI
 /// where the roastery is.
 ///
 /// City and country are not decoration — they are what tells two roasteries
-/// with the same name apart, and the country is half of the dedupe key. The
-/// links are optional and exist so a later enrichment pass has somewhere to
-/// start.
+/// with the same name apart, and the country is half of the dedupe key. While
+/// either is typed, the index offers the spelling it already uses. A country
+/// that can only mean one place is stored that way, so "Danemark" and
+/// "Denmark" do not become two roasteries. The links are optional and exist
+/// so a later enrichment pass has somewhere to start.
 struct RoasterSheet: View {
     @Environment(RoasterStore.self) private var roasters
     @Environment(AccountStore.self) private var account
@@ -48,7 +50,9 @@ struct RoasterSheet: View {
                             placeholder: Placeholders.text(.roasterCity),
                             labelWidth: 74,
                             presence: .useful,
-                            hint: FieldCopy.roasterPlace
+                            hint: FieldCopy.roasterPlace,
+                            completions: cityOffers.map(\.title),
+                            onComplete: acceptCity
                         )
                         TextRow(
                             label: "Country",
@@ -56,7 +60,14 @@ struct RoasterSheet: View {
                             placeholder: Placeholders.text(.roasterCountry),
                             labelWidth: 74,
                             presence: .useful,
-                            hint: FieldCopy.roasterPlace
+                            hint: FieldCopy.roasterPlace,
+                            completions: PlaceCompletion.countries(
+                                matching: country,
+                                known: knownCountries
+                            ),
+                            onComplete: { picked in
+                                withAnimation(Motion.snappy) { country = picked }
+                            }
                         )
                         TextRow(
                             label: "Website",
@@ -114,12 +125,35 @@ struct RoasterSheet: View {
         name.trimmingCharacters(in: .whitespaces)
     }
 
+    private var knownCountries: [String] {
+        roasters.roasters.map(\.country)
+    }
+
+    private var cityOffers: [PlaceCompletion.CityOffer] {
+        PlaceCompletion.cities(matching: city, in: roasters.roasters, country: country)
+    }
+
     /// Shown before saving, not after: finding out you created a duplicate is
-    /// worse than being told you were about to.
+    /// worse than being told you were about to. The country is the resolved
+    /// one, so a French spelling still finds the roastery already filed.
     private var existing: Roaster? {
         guard trimmedName.count >= 2 else { return nil }
-        let probe = Roaster(name: trimmedName, country: country)
+        let probe = Roaster(name: trimmedName, country: resolvedCountry)
         return roasters.roasters.first { $0.dedupeKey == probe.dedupeKey }
+    }
+
+    private var resolvedCountry: String {
+        PlaceCompletion.canonicalCountry(country, known: knownCountries)
+    }
+
+    private func acceptCity(_ title: String) {
+        let filled = cityOffers.first { $0.title == title }?.country
+        withAnimation(Motion.snappy) {
+            city = title
+            if country.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty, let filled {
+                country = filled
+            }
+        }
     }
 
     private func commit() {
@@ -130,7 +164,7 @@ struct RoasterSheet: View {
         }
         let roaster = Roaster(
             name: trimmedName,
-            country: country.trimmingCharacters(in: .whitespaces),
+            country: resolvedCountry.trimmingCharacters(in: .whitespaces),
             city: city.trimmingCharacters(in: .whitespaces),
             website: clean(website),
             instagram: clean(instagram),

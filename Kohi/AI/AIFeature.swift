@@ -17,10 +17,10 @@ nonisolated enum AIFeature: String, Codable, CaseIterable, Identifiable, Sendabl
     case ask
     /// Ranked Suggested correction, constrained to the admissible set.
     case suggestedCorrection = "suggested-correction"
+    /// Reading a photographed café menu into coffees, from its OCR text.
+    case menuExtract = "menu-extract"
     /// Four-level usefulness scale under every model output.
     case aiFeedback = "ai-feedback"
-    /// The flyer, which was here before all of this.
-    case poster
 
     var id: String { rawValue }
 
@@ -31,8 +31,8 @@ nonisolated enum AIFeature: String, Codable, CaseIterable, Identifiable, Sendabl
         case .recipeAdapt: "Suggest recipe variants"
         case .ask: "Answer questions"
         case .suggestedCorrection: "Suggested correction"
+        case .menuExtract: "Read café menus"
         case .aiFeedback: "AI feedback"
-        case .poster: "Make flyers"
         }
     }
 
@@ -45,21 +45,21 @@ nonisolated enum AIFeature: String, Codable, CaseIterable, Identifiable, Sendabl
         case .recipeAdapt: "Recipes still come from the rules."
         case .ask: "No answers, no citations."
         case .suggestedCorrection: "The rule still proposes one move."
+        case .menuExtract: "Menus are still read on device."
         case .aiFeedback: "Usefulness is not recorded."
-        case .poster: "Cards keep the scan as their face."
         }
     }
 
     /// Whether the master "Experimental AI" switch governs it.
     ///
-    /// Reading a label and making a flyer shipped before this section existed
-    /// and are part of what the app does; putting them behind a switch that
-    /// starts off would quietly remove two working features. They stay on, and
-    /// stay individually refusable.
+    /// Reading a label shipped before this section existed and is part of
+    /// what the app does; putting it behind a switch that starts off would
+    /// quietly remove a working feature. It stays on, and stays individually
+    /// refusable.
     var isExperimental: Bool {
         switch self {
-        case .cardVision, .poster, .aiFeedback: false
-        case .fieldExtract, .recipeAdapt, .ask, .suggestedCorrection: true
+        case .cardVision, .aiFeedback: false
+        case .fieldExtract, .recipeAdapt, .ask, .suggestedCorrection, .menuExtract: true
         }
     }
 
@@ -71,8 +71,8 @@ nonisolated enum AIFeature: String, Codable, CaseIterable, Identifiable, Sendabl
         case .recipeAdapt: "recipe-adapt"
         case .ask: "ask"
         case .suggestedCorrection: "suggested-correction"
+        case .menuExtract: "field-extract"
         case .aiFeedback: nil
-        case .poster: "card-poster"
         }
     }
 }

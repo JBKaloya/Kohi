@@ -13,10 +13,12 @@ struct WaterSheet: View {
     @State private var isNew: Bool
     @State private var isConfirmingDelete = false
     @State private var tapCount = 0
+    var onCreated: ((WaterProfile) -> Void)?
 
-    init(profile: WaterProfile?) {
+    init(profile: WaterProfile?, onCreated: ((WaterProfile) -> Void)? = nil) {
         _draft = State(initialValue: profile ?? WaterProfile())
         _isNew = State(initialValue: profile == nil)
+        self.onCreated = onCreated
     }
 
     var body: some View {
@@ -263,9 +265,17 @@ struct WaterSheet: View {
             }
 
             if let id = draft.mineralProductID,
-               let product = ReferenceBase.mineralProducts.first(where: { $0.id == id }),
-               product.compositionOnFile == false {
-                Text("composition not on file yet")
+               let advice = MineralCalculator.advise(productID: id, targetPpm: draft.tds ?? MineralCalculator.product(id: id)?.nominalPpm ?? 150) {
+                Text(advice.line)
+                    .font(Typography.value)
+                    .foregroundStyle(Palette.ink)
+                Text(advice.provenance)
+                    .font(Typography.tag)
+                    .foregroundStyle(Palette.inkMuted)
+            } else if draft.mineralProductID != nil {
+                // Unknown product, or one whose composition is not published:
+                // say so and leave the fields below to be filled by hand.
+                Text(Copy.compositionNotOnFile)
                     .font(Typography.tag)
                     .foregroundStyle(Palette.inkMuted)
             }
@@ -309,6 +319,7 @@ struct WaterSheet: View {
     private func save() {
         if isNew {
             setup.add(draft)
+            onCreated?(draft)
         } else {
             setup.update(draft)
         }

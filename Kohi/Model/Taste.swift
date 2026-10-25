@@ -42,6 +42,9 @@ nonisolated struct BrewStep: Identifiable, Codable, Hashable, Sendable {
     var targetAt: Int?
     var targetMass: Double?
     var note: String
+    var skipped: Bool
+    var agitation: Agitation?
+    var agitationSkipped: Bool
 
     init(
         id: UUID = UUID(),
@@ -51,7 +54,10 @@ nonisolated struct BrewStep: Identifiable, Codable, Hashable, Sendable {
         mass: Double? = nil,
         targetAt: Int? = nil,
         targetMass: Double? = nil,
-        note: String = ""
+        note: String = "",
+        skipped: Bool = false,
+        agitation: Agitation? = nil,
+        agitationSkipped: Bool = false
     ) {
         self.id = id
         self.index = index
@@ -61,6 +67,9 @@ nonisolated struct BrewStep: Identifiable, Codable, Hashable, Sendable {
         self.targetAt = targetAt
         self.targetMass = targetMass
         self.note = note
+        self.skipped = skipped
+        self.agitation = agitation
+        self.agitationSkipped = agitationSkipped
     }
 
     var timeLabel: String {
@@ -95,5 +104,8 @@ nonisolated extension BrewStep {
         targetAt = try c.decodeIfPresent(Int.self, forKey: .targetAt)
         targetMass = try c.decodeIfPresent(Double.self, forKey: .targetMass)
         note = try c.decodeIfPresent(String.self, forKey: .note) ?? ""
+        skipped = try c.decodeIfPresent(Bool.self, forKey: .skipped) ?? false
+        agitation = try c.decodeIfPresent(Agitation.self, forKey: .agitation)
+        agitationSkipped = try c.decodeIfPresent(Bool.self, forKey: .agitationSkipped) ?? false
     }
 }

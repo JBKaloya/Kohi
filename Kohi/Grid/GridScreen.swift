@@ -5,9 +5,13 @@ import SwiftUI
 struct GridScreen: View {
     let onScan: () -> Void
     var isIngesting = false
+    /// Set by a scan that recognised a coffee already on the shelf.
+    @Binding var openCard: CoffeeCard?
 
     @Environment(RecipeStore.self) private var recipes
     @Environment(CardStore.self) private var store
+    @Environment(TastingStore.self) private var tastings
+    @Environment(CardLookStore.self) private var looks
     @Environment(AccountStore.self) private var account
     @Environment(SetupStore.self) private var setup
     @Environment(IntentRouter.self) private var router
@@ -34,7 +38,11 @@ struct GridScreen: View {
     /// Set when a shortcut asked for a brew rather than a tap.
     @State private var startsBrew = false
     @State private var scrollToSuggested = false
+    @State private var composesTasting = false
+    @State private var openedTasting: Tasting?
+    @State private var openedPlace: PlaceGroup?
     @State private var isPickingCoffee = false
+    @State private var isAskingFromFAB = false
     @State private var brewCoffee: CoffeeCard?
     @State private var flow: BrewSession?
     @Namespace private var namespace
@@ -77,8 +85,11 @@ struct GridScreen: View {
                     switch tab {
                     case .coffees:
                         if store.cards.isEmpty && searchText.isEmpty && methodFilter == nil && flavorFilter == nil && placeFilter == nil {
-                            EmptyStateView()
-                                .frame(maxHeight: .infinity)
+                            EmptyStateView(onAddTasting: {
+                                tab = .tastings
+                                composesTasting = true
+                            })
+                            .frame(maxHeight: .infinity)
                         } else {
                             VStack(spacing: 0) {
                                 if shouldShowSearch { searchChips }
@@ -90,7 +101,51 @@ struct GridScreen: View {
                             onOpen: { card in
                                 scrollToSuggested = true
                                 selection = card
+                            },
+                            onOpenBrew: { card, brew in
+                                flow = BrewSession(
+                                    card: card,
+                                    existing: brew,
+                                    mode: .edit,
+                                    start: .after,
+                                    setup: setup
+                                )
+                            },
+                            onAgainBrew: { card, brew in
+                                let prepared = BrewPrefill.preparedAgain(from: brew, setup: setup)
+                                flow = BrewSession(
+                                    card: card,
+                                    recipe: brew.recipeSnapshot.map(Recipe.init(snapshot:)),
+                                    existing: prepared.brew,
+                                    start: .dial,
+                                    lastApplication: prepared.application,
+                                    setup: setup
+                                )
+                            },
+                            onReadBrew: { card, brew in
+                                let session = BrewSession(
+                                    card: card,
+                                    existing: brew,
+                                    mode: .edit,
+                                    start: .after,
+                                    setup: setup
+                                )
+                                session.opensRead = true
+                                session.frozenCorrection = SuggestedCorrection.fallback(
+                                    from: brew,
+                                    card: card,
+                                    equipment: setup.equipment,
+                                    filterStock: setup.filterStock,
+                                    tasting: TastingIntent.confirmed(from: brew.notes)
+                                )
+                                flow = session
                             }
+                        )
+                    case .tastings:
+                        TastingsScreen(
+                            onAdd: { composesTasting = true },
+                            opened: $openedTasting,
+                            openedPlace: $openedPlace
                         )
                     }
                 }
@@ -102,12 +157,30 @@ struct GridScreen: View {
                     }
                     if tab == .coffees {
                         ScanButton(action: onScan)
+                    } else if tab == .tastings {
+                        if !tastings.isEmpty {
+                            CircleButton(
+                                systemName: "plus",
+                                accessibilityLabel: Copy.addTasting
+                            ) {
+                                composesTasting = true
+                            }
+                        }
                     } else {
-                        CircleButton(
-                            systemName: "cup.and.saucer",
-                            accessibilityLabel: "Start a brew"
-                        ) {
-                            isPickingCoffee = true
+                        // Two glass buttons side by side: brew and ask.
+                        HStack(spacing: 16) {
+                            CircleButton(
+                                systemName: "cup.and.saucer",
+                                accessibilityLabel: "Start a brew"
+                            ) {
+                                isPickingCoffee = true
+                            }
+                            CircleButton(
+                                showsCoffeeMark: true,
+                                accessibilityLabel: "Ask"
+                            ) {
+                                isAskingFromFAB = true
+                            }
                         }
                     }
                 }
@@ -130,6 +203,15 @@ struct GridScreen: View {
                 }
             }
             .haptic(.densityChange, trigger: densityChanges)
+            .task(id: looks.global) {
+                guard looks.global == .kohi else { return }
+                try? await Task.sleep(for: .milliseconds(300))
+                for card in store.cards {
+                    if Task.isCancelled { return }
+                    guard looks.resolved(card) == .kohi else { continue }
+                    _ = await CardComposer.shared.tile(for: card)
+                }
+            }
             .toolbar {
                 ToolbarItem(placement: .principal) {
                     Text("Kohi")
@@ -149,7 +231,11 @@ struct GridScreen: View {
                     .appEnvironment(appEnvironment)
             }
             .sheet(isPresented: $isPickingCoffee) {
-                RecipeCoffeePicker(picked: $brewCoffee)
+                RecipeCoffeePicker(picked: $brewCoffee, showsJourneyChrome: true)
+                    .appEnvironment(appEnvironment)
+            }
+            .sheet(isPresented: $isAskingFromFAB) {
+                AskSheet()
                     .appEnvironment(appEnvironment)
             }
             .onChange(of: brewCoffee) { _, card in
@@ -162,7 +248,8 @@ struct GridScreen: View {
                 )
                 flow = BrewSession(
                     card: card,
-                    recipe: suggestion?.recipe,
+                    suggested: suggestion?.recipe,
+                    fromCard: false,
                     setup: setup
                 )
                 brewCoffee = nil
@@ -172,10 +259,13 @@ struct GridScreen: View {
                     session: session,
                     onDismiss: { flow = nil },
                     onAgain: { seed in
+                        let prepared = BrewPrefill.preparedAgain(from: seed, setup: setup)
                         flow = BrewSession(
                             card: session.card,
-                            existing: seed.again(),
-                            start: .kit,
+                            recipe: seed.recipeSnapshot.map(Recipe.init(snapshot:)),
+                            existing: prepared.brew,
+                            start: .dial,
+                            lastApplication: prepared.application,
                             setup: setup
                         )
                     }
@@ -203,7 +293,30 @@ struct GridScreen: View {
                     scrollToSuggested = false
                 }
             }
+            .onChange(of: openCard?.id) { _, _ in
+                guard let card = openCard else { return }
+                selection = store.card(id: card.id) ?? card
+                openCard = nil
+            }
+            .navigationDestination(item: $openedTasting) { tasting in
+                TastingDetailView(tastingID: tasting.id)
+                    .appEnvironment(appEnvironment)
+            }
+            .navigationDestination(item: $openedPlace) { group in
+                PlaceTastingsView(place: group.place, placeID: group.placeID)
+                    .appEnvironment(appEnvironment)
+            }
+            .sheet(isPresented: $composesTasting) {
+                TastingComposeSheet()
+                    .appEnvironment(appEnvironment)
+            }
             .task { await openFirstCardIfRequested() }
+            .onReceive(NotificationCenter.default.publisher(for: BrewDraft.resumeNotification)) { _ in
+                if let payload = BrewDraft.load(),
+                   let session = BrewDraft.session(from: payload, store: store, recipes: recipes, setup: setup) {
+                    flow = session
+                }
+            }
             .task { handleIntent() }
             .onChange(of: router.pending) { _, _ in handleIntent() }
         }
@@ -222,7 +335,7 @@ struct GridScreen: View {
 
         guard let card else { return }
         tab = .coffees
-        flow = BrewSession(card: card, setup: setup)
+        flow = BrewSession(card: card, fromCard: false, setup: setup)
     }
 
     /// The coffee a brew most likely belongs to: the one most recently brewed
@@ -310,10 +423,11 @@ struct GridScreen: View {
         }
     }
 
-    /// An archive of one card does not need a second tab yet; the tabs appear
-    /// once there is anything to switch between.
+    /// An empty archive does not need tabs yet; they appear once there is
+    /// anything to switch between, or once someone went to Tastings from the
+    /// empty state.
     private var showsTabs: Bool {
-        !store.cards.isEmpty
+        !store.cards.isEmpty || !tastings.isEmpty || tab != .coffees
     }
 
     private var grid: some View {

@@ -11,6 +11,7 @@ final class SyncCoordinator: ArchiveChangeSink {
 
     @ObservationIgnored let outbox: SyncOutbox
     @ObservationIgnored private weak var store: CardStore?
+    @ObservationIgnored private weak var tastings: TastingStore?
     @ObservationIgnored private weak var account: AccountStore?
     @ObservationIgnored private var syncTask: Task<Void, Never>?
     @ObservationIgnored private var debounceTask: Task<Void, Never>?
@@ -28,6 +29,46 @@ final class SyncCoordinator: ArchiveChangeSink {
         self.account = account
         store.sink = self
         register(store)
+    }
+
+    /// Tastings written on a card by an older build, on any device, arrive
+    /// with the card. They are lifted after the tastings pull, so a tombstone
+    /// pulled in the same pass already blocks the import.
+    func attach(tastings: TastingStore) {
+        self.tastings = tastings
+        tastings.sink = self
+        register(tastings)
+    }
+
+    private func importLegacyTastings() {
+        guard let tastings, let store else { return }
+        TastingMigrator.importLegacy(cards: store.cards, into: tastings)
+    }
+
+    /// Up what this phone took, down what another one did. A photo that
+    /// fails stays pending and is tried on the next pass; it never blocks
+    /// the tasting row, which has already synced.
+    private func syncTastingPhotos(client: SupabaseClient, userID: UUID) async {
+        guard let tastings else { return }
+        let bucket = client.storage.from("cards")
+        for tasting in tastings.tastings {
+            for name in tasting.photos {
+                let path = TastingPhotos.remotePath(userID: userID, tastingID: tasting.id, name: name)
+                if TastingPhotos.exists(tastingID: tasting.id, name: name) {
+                    guard outbox.needsUpload(tasting.id, kind: name),
+                          let data = try? Data(contentsOf: TastingPhotos.url(tastingID: tasting.id, name: name)) else { continue }
+                    do {
+                        try await bucket.upload(path, data: data, options: FileOptions(contentType: "image/jpeg", upsert: true))
+                        outbox.markImageUploaded(tasting.id, kind: name)
+                    } catch {
+                        Log.app.warning("tasting photo upload failed for \(tasting.id): \(error)")
+                    }
+                } else if let data = try? await bucket.download(path: path) {
+                    TastingPhotos.write(data, tastingID: tasting.id, name: name)
+                    outbox.markImageUploaded(tasting.id, kind: name)
+                }
+            }
+        }
     }
 
     /// Lets a store take part in Force Full Backup and the pending counter.
@@ -82,9 +123,6 @@ final class SyncCoordinator: ArchiveChangeSink {
 
         for card in store?.cards ?? [] {
             var kinds = ["original.heic", "flat.heic", "mask.png"]
-            if card.poster == .ready {
-                kinds.append("poster.heic")
-            }
             for attachment in card.attachments {
                 kinds.append("attach-\(attachment.id.uuidString).heic")
             }
@@ -108,7 +146,8 @@ final class SyncCoordinator: ArchiveChangeSink {
                 let pushGaps = try await push(client: client, userID: userID)
                 try await pull(client: client, userID: userID)
                 let pullGaps = try await pullEntities(client: client, userID: userID)
-                let restored = await hydratePosters(client: client, userID: userID)
+                importLegacyTastings()
+                await syncTastingPhotos(client: client, userID: userID)
                 lastSyncDate = .now
                 let missing = Array(Set(pushGaps + pullGaps)).sorted()
                 if let summary = outbox.errorSummary {
@@ -119,7 +158,6 @@ final class SyncCoordinator: ArchiveChangeSink {
                     lastError = missing.isEmpty ? nil : SyncSchema.message(missing: missing)
                 }
                 isSyncing = false
-                if restored > 0 { pushSoon() }
             } catch {
                 if !Task.isCancelled {
                     lastError = SyncSchema.missingRelation(in: error)
@@ -130,15 +168,6 @@ final class SyncCoordinator: ArchiveChangeSink {
                 isSyncing = false
             }
         }
-    }
-
-    /// Downloads remote posters for local cards that don't have one yet.
-    @discardableResult
-    func restorePosters() async -> Int {
-        guard let client = account?.client, let userID = account?.userID else { return 0 }
-        let restored = await hydratePosters(client: client, userID: userID)
-        if restored > 0 { pushSoon() }
-        return restored
     }
 
     // MARK: - Push
@@ -177,8 +206,7 @@ final class SyncCoordinator: ArchiveChangeSink {
                     cardID: card.id,
                     userID: userID,
                     client: client,
-                    attachments: card.attachments,
-                    posterReady: card.poster == .ready
+                    attachments: card.attachments
                 )
 
                 outbox.clearFailure(.card, cardID)
@@ -200,7 +228,7 @@ final class SyncCoordinator: ArchiveChangeSink {
         }
 
         missing += try await pushEntities(
-            kinds: [.recipe],
+            kinds: [.recipe, .tasting],
             client: client,
             userID: userID
         )
@@ -447,16 +475,12 @@ final class SyncCoordinator: ArchiveChangeSink {
         return missing
     }
 
-    private func uploadImages(cardID: UUID, userID: UUID, client: SupabaseClient, attachments: [CardAttachment] = [], posterReady: Bool = false) async throws {
+    private func uploadImages(cardID: UUID, userID: UUID, client: SupabaseClient, attachments: [CardAttachment] = []) async throws {
         var kinds: [(CardImageKind, String)] = [
             (.original, "original.heic"),
             (.flat, "flat.heic"),
             (.mask, "mask.png"),
         ]
-
-        if posterReady {
-            kinds.append((.poster, "poster.heic"))
-        }
 
         for attachment in attachments {
             let filename = "attach-\(attachment.id.uuidString).heic"
@@ -554,7 +578,6 @@ final class SyncCoordinator: ArchiveChangeSink {
                             cardID: card.id,
                             userID: userID,
                             hasMask: card.hasMask,
-                            posterReady: card.poster == .ready,
                             attachments: card.attachments,
                             client: client
                         )
@@ -568,7 +591,6 @@ final class SyncCoordinator: ArchiveChangeSink {
         cardID: UUID,
         userID: UUID,
         hasMask: Bool,
-        posterReady: Bool = false,
         attachments: [CardAttachment] = [],
         client: SupabaseClient
     ) async {
@@ -596,67 +618,6 @@ final class SyncCoordinator: ArchiveChangeSink {
                 Log.app.warning("pull \(filename) failed for \(cardID): \(error)")
             }
         }
-
-        if posterReady || !ImageStore.shared.exists(cardID, kind: .poster) {
-            _ = await downloadPoster(cardID: cardID, userID: userID, client: client)
-        }
-    }
-
-    /// Pulls `poster.heic` or `poster.png` from Storage and installs it locally.
-    @discardableResult
-    private func downloadPoster(
-        cardID: UUID,
-        userID: UUID,
-        client: SupabaseClient
-    ) async -> Bool {
-        if ImageStore.shared.exists(cardID, kind: .poster) { return true }
-        let basePath = "\(userID.uuidString.lowercased())/\(cardID.uuidString.lowercased())"
-        for filename in ["poster.heic", "poster.png"] {
-            do {
-                let data = try await client.storage.from("cards")
-                    .download(path: "\(basePath)/\(filename)")
-                guard ImagePipeline.installPoster(id: cardID, data: data) else { continue }
-                outbox.markImageUploaded(cardID, kind: "poster.heic")
-                Log.app.info("pulled \(filename) for \(cardID)")
-                return true
-            } catch {
-                continue
-            }
-        }
-        return false
-    }
-
-    /// For every local card missing a poster file, try Storage. Marks restored
-    /// cards `ready` without firing a nested sync mid-pull.
-    @discardableResult
-    private func hydratePosters(client: SupabaseClient, userID: UUID) async -> Int {
-        guard let store else { return 0 }
-        var restored = 0
-        for card in store.cards {
-            let hadFile = ImageStore.shared.exists(card.id, kind: .poster)
-            if !hadFile {
-                let pulled = await downloadPoster(cardID: card.id, userID: userID, client: client)
-                guard pulled else { continue }
-            } else if card.poster == .ready {
-                continue
-            }
-            guard var latest = store.card(id: card.id) else { continue }
-            if latest.poster != .ready {
-                let old = store.sink
-                store.sink = nil
-                latest.poster = .ready
-                store.update(latest)
-                store.sink = old
-                outbox.markDirty(.card, latest.id)
-            }
-            ThumbnailCache.shared.invalidate(latest.id)
-            ThumbnailCache.shared.warm(latest)
-            restored += 1
-        }
-        if restored > 0 {
-            Log.app.info("hydrated \(restored) posters from storage")
-        }
-        return restored
     }
 }
 

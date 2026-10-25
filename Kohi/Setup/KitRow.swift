@@ -86,7 +86,7 @@ struct KitRow: View {
             }
             Rectangle().fill(CatalogueChoice.rule(isSelected)).frame(height: 1)
         }
-        .padding(.vertical, 2)
+        .padding(.vertical, 6)
     }
 
     private var detail: String {
@@ -137,7 +137,48 @@ struct WaterKitRow: View {
                 }
                 Rectangle().fill(CatalogueChoice.rule(profile.isDefault)).frame(height: 1)
             }
-            .padding(.vertical, 2)
+            .padding(.vertical, 6)
+        }
+        .buttonStyle(.plain)
+    }
+}
+
+/// Owned paper, same grammar as `KitRow`.
+struct FilterKitRow: View {
+    let stock: FilterStock
+    var onTap: () -> Void
+
+    var body: some View {
+        Button(action: onTap) {
+            VStack(spacing: 9) {
+                HStack(alignment: .firstTextBaseline, spacing: 12) {
+                    EquipmentGlyphView(
+                        glyph: .paperFilter,
+                        size: 28,
+                        color: stock.isDefaultFor.isEmpty ? Palette.inkMuted : Palette.ink
+                    )
+                    .alignmentGuide(.firstTextBaseline) { d in d[.bottom] - 6 }
+
+                    VStack(alignment: .leading, spacing: 3) {
+                        Text(stock.displayName)
+                            .font(Typography.value)
+                            .foregroundStyle(Palette.ink)
+                            .lineLimit(1)
+                        if !stock.summary.isEmpty {
+                            Text(stock.summary)
+                                .font(Typography.tag)
+                                .foregroundStyle(Palette.inkMuted)
+                                .lineLimit(1)
+                        }
+                    }
+                    Spacer(minLength: 8)
+                    if !stock.isDefaultFor.isEmpty {
+                        CatalogueMark(text: "Default", isSelected: true)
+                    }
+                }
+                Rectangle().fill(CatalogueChoice.rule(!stock.isDefaultFor.isEmpty)).frame(height: 1)
+            }
+            .padding(.vertical, 6)
         }
         .buttonStyle(.plain)
     }

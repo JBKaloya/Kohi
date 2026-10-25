@@ -42,13 +42,14 @@ struct TabRail<Tab: Identifiable & Equatable, Trailing: View>: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            HStack(alignment: .firstTextBaseline, spacing: 12) {
+            HStack(alignment: .center, spacing: 0) {
+                // Tabs sit flush left, no centering, no implicit Spacer between them.
                 ForEach(tabs) { tab in
                     Button {
                         guard selection != tab else { return }
                         withAnimation(animation) { selection = tab }
                     } label: {
-                        VStack(spacing: 6) {
+                        VStack(alignment: .leading, spacing: 6) {
                             Text(title(tab))
                                 .font(Typography.label)
                                 .tracking(Typography.labelTracking)
@@ -57,19 +58,25 @@ struct TabRail<Tab: Identifiable & Equatable, Trailing: View>: View {
                                 .lineLimit(1)
                                 .minimumScaleFactor(0.75)
                                 .allowsTightening(true)
-                                .padding(.vertical, underline == .rail ? 10 : 0)
-
-                            if underline == .active {
-                                Rectangle()
-                                    .fill(selection == tab ? Palette.ink : Color.clear)
-                                    .frame(height: 1)
-                            }
+                                // Underline is scoped to the text width only.
+                                .overlay(alignment: .bottom) {
+                                    if underline == .active {
+                                        Rectangle()
+                                            .fill(selection == tab ? Palette.ink : Color.clear)
+                                            .frame(height: 1)
+                                            .offset(y: 6)
+                                    }
+                                }
                         }
+                        .frame(minHeight: 44, alignment: .center)
+                        .padding(.trailing, 20)  // gap between tabs
+                        .contentShape(Rectangle())
                     }
                     .buttonStyle(.plain)
                 }
 
-                Spacer()
+                // Trailing content (e.g. Ask button) pushed to the far right.
+                Spacer(minLength: 8)
                 trailing
             }
 

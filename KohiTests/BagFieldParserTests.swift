@@ -87,6 +87,8 @@ struct BagFieldParserTests {
     /// "medium-dark" must not be read as "medium".
     @Test func longestRoastLevelTokenWins() {
         #expect(Self.parse(["Medium light roast"]).roastLevel == .mediumLight)
+        #expect(Self.parse(["Super light roast"]).roastLevel == .superLight)
+        #expect(Self.parse(["extra-light"]).roastLevel == .superLight)
     }
 
     // MARK: - Price
