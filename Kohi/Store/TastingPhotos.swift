@@ -40,6 +40,21 @@ nonisolated enum TastingPhotos {
         return write(jpeg, tastingID: tastingID, name: name) ? name : nil
     }
 
+    /// A scanned card, flattened to its corners, kept as one of the tasting's
+    /// photos.
+    @discardableResult
+    static func save(scan: ScanResult, tastingID: UUID) -> String? {
+        var image = ImagePipeline.correctPerspective(scan.image, quad: scan.quad) ?? scan.image
+        if scan.enhance, let enhanced = ImagePipeline.enhance(image) { image = enhanced }
+        let sized = ImagePipeline.downsample(image, maxPixel: 2048) ?? image
+        let out = NSMutableData()
+        guard let destination = CGImageDestinationCreateWithData(out, UTType.jpeg.identifier as CFString, 1, nil) else { return nil }
+        CGImageDestinationAddImage(destination, sized, [kCGImageDestinationLossyCompressionQuality: 0.82] as CFDictionary)
+        guard CGImageDestinationFinalize(destination) else { return nil }
+        let name = "scan-\(UUID().uuidString.lowercased()).jpg"
+        return write(out as Data, tastingID: tastingID, name: name) ? name : nil
+    }
+
     @discardableResult
     static func write(_ data: Data, tastingID: UUID, name: String) -> Bool {
         do {

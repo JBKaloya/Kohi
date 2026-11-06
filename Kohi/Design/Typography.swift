@@ -11,6 +11,9 @@ enum Typography {
     /// Display titles (coffee name, brand wordmark). Angusta DemiBold.
     static let title = Font.custom(AppFonts.angustaDemiBold, size: 25)
 
+    /// The coffee name held in the detail's top bar once its title scrolls away.
+    static let barTitle = Font.custom(AppFonts.angustaDemiBold, size: 19)
+
     /// Grid navigation wordmark.
     static let brand = Font.custom(AppFonts.angustaDemiBold, size: 28)
 

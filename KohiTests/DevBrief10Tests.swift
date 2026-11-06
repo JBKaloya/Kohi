@@ -1,6 +1,7 @@
 import CoreGraphics
 import Foundation
 import Testing
+import SwiftUI
 @testable import Kohi
 
 /// Lot 10: two-column grid, tabbed card detail, tasting flow, scan intent.
@@ -433,6 +434,28 @@ struct DemoScanOCRTests {
             return
         }
         #expect(candidates.map(\.name) == ["Ethiopia Guji", "Kenya Kiambu AA", "Colombia El Paraiso"])
+    }
+
+    @Test func aScannedCardIsKeptAmongTheTastingPhotos() async throws {
+        let captured = try #require(DemoScan.card.capture())
+        let scan = ScanResult(image: captured.image, quad: try #require(captured.quad), enhance: false)
+        var draft = TastingDraft()
+        let binding = Binding(get: { draft }, set: { draft = $0 })
+        await TastingReader().read(scan, into: binding, roasters: roasters, cards: [])
+        #expect(draft.photos.count == 1)
+        let name = try #require(draft.photos.first)
+        #expect(TastingPhotos.exists(tastingID: draft.id, name: name))
+        #expect(draft.coffee.name == "Kenya Tekangu")
+        try? FileManager.default.removeItem(at: TastingPhotos.directory(for: draft.id))
+    }
+
+    @Test func demosLiveOnlyInDebugBuilds() throws {
+        let demo = try String(contentsOf: DevBrief10.kohiRoot.appending(path: "Scan/DemoScan.swift"))
+        #expect(demo.hasPrefix("#if DEBUG"))
+        let camera = try String(contentsOf: DevBrief10.kohiRoot.appending(path: "Scan/CameraCaptureSource.swift"))
+        #expect(camera.contains("#if DEBUG\n    private var sampleDemoButton"))
+        let screen = try String(contentsOf: DevBrief10.kohiRoot.appending(path: "Scan/ScanScreen.swift"))
+        #expect(screen.contains("#if targetEnvironment(simulator) && DEBUG"))
     }
 
     @Test func eachDemoLandsOnTheSampleSurface() throws {

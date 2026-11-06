@@ -72,8 +72,8 @@ Sinon, le scan part droit vers le sachet, comme avant. Deux réponses *A bag* de
 - Coaching d’une seule phrase à la fois : poser la carte, se rapprocher, tenir à plat, éviter le glare, rester immobile.
 - **Auto-capture** une fois la carte assez grande, droite, nette et stable (~0,6 s). Déclencheur manuel en plus.
 - Import depuis la photothèque (même revue que la capture live).
-- Simulateur : pas de caméra. Au-dessus du déclencheur, quatre choix : *Archive* (une carte bundlée), *Bag*, *Café card*, *Menu* (dessinés en code, posés sur la même surface).
-- Sur iPhone, le bouton **Demo** est un menu avec les mêmes démos plus *Archive card*.
+- Simulateur (build Debug) : pas de caméra. Au-dessus du déclencheur, quatre choix : *Archive* (une carte bundlée), *Bag*, *Café card*, *Menu* (dessinés en code, posés sur la même surface).
+- Sur iPhone, en build Debug, le bouton **Demo** est un menu avec les mêmes démos plus *Archive card*. Les builds Release (TestFlight, App Store) n'ont aucune démo : ni bouton, ni démos dessinées, ni faux fix.
 
 Si l’accès caméra est refusé, on peut toujours importer une photo.
 
@@ -116,7 +116,7 @@ Quand la lecture locale est faible — peu de champs, écriture manuscrite, japo
 
 Objet centré sur le papier, ombre, **inclinaison et reflet** selon le gyroscope. En dessous, la notice de catalogue. Une carte sans nom se titre par producteur / ferme / station, puis origine, puis torréfacteur ; la variété ne titre que s’il n’y a rien d’autre. Deux cartes au même titre reçoivent un suffixe `·` (torréfacteur, date de torréfaction, lot, date de scan).
 
-Sous le titre, un rail à deux onglets, **Coffee** et **Brews n**, qui reste épinglé en haut quand on scrolle ; **Ask** à droite du rail. La fiche s’ouvre sur *Coffee*, sauf quand un brew y envoie (raccourci *Log a brew*). Un brew enregistré depuis la fiche bascule sur *Brews* à la fermeture ; un brew abandonné ne change rien. La barre du haut n’a plus que le retour : le bouton *Cards* (scan / carte Kohi) a disparu.
+Sous le titre, un rail à deux onglets, **Coffee** et **Brews n**, qui reste épinglé en haut quand on scrolle — le nom du café passe alors dans la barre du haut ; **Ask** à droite du rail. La fiche s’ouvre sur *Coffee*, sauf quand un brew y envoie (raccourci *Log a brew*). Un brew enregistré depuis la fiche bascule sur *Brews* à la fermeture ; un brew abandonné ne change rien. La barre du haut n’a plus que le retour : le bouton *Cards* (scan / carte Kohi) a disparu.
 
 **Coffee** : notes, roue, caption, originaux, recettes, invitation au kit, pages, note to self, actions. **Brews** : profil, journal (ou « No brews yet. » + *Brew this coffee*), *Tasted at*.
 
@@ -138,7 +138,7 @@ Sous le titre, un rail à deux onglets, **Coffee** et **Brews n**, qui reste ép
 Une nouvelle dégustation est un parcours d’une question par écran (`TastingFlow`) : *Where are you?* → *What's in the cup?* → *Which coffee?* → *How was it made?* → *How was it?* → *Anything to remember?* Cinq étapes quand le lieu est déjà connu.
 
 - *What's in the cup?* : **Scan the card** (carte de café, menu ou sachet : le tri se fait à la lecture), **From my Coffee Collection** (grisé si la collection est vide), **Type it in**.
-- Le scan d’une carte remplit les champs vides ; un menu demande lequel ; ce qui est deviné s’affiche en *Read, to confirm*. *Rescan* reste à portée.
+- Le scan est gardé parmi les photos de la dégustation (carte redressée). Il remplit les champs vides ; un menu demande lequel ; ce qui est deviné s’affiche en *Read, to confirm*. *Rescan* reste à portée.
 - *How was it made?* et *How was it?* ont **Skip** et **Save now** (dès que nom et lieu sont là).
 - Fermer avec du contenu demande *Discard this tasting?*
 - Modifier une dégustation garde le formulaire d’un écran (`TastingComposeSheet`).

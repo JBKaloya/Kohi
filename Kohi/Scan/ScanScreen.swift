@@ -30,7 +30,7 @@ struct ScanScreen: View {
 
     @ViewBuilder
     private var camera: some View {
-        #if targetEnvironment(simulator)
+        #if targetEnvironment(simulator) && DEBUG
         SimulatedCaptureView(onCapture: { pending = $0 }, onCancel: onCancel)
         #else
         switch ScanSource.preferred {
@@ -47,9 +47,9 @@ struct ScanScreen: View {
     }
 }
 
-#if targetEnvironment(simulator)
+#if targetEnvironment(simulator) && DEBUG
 /// There is no camera in the simulator, so this stands in for one: it returns a
-/// bundled sample as though it had just been scanned.
+/// bundled sample as though it had just been scanned. Debug builds only.
 struct SimulatedCaptureView: View {
     let onCapture: (CapturedCard) -> Void
     let onCancel: () -> Void
@@ -103,9 +103,7 @@ struct SimulatedCaptureView: View {
             }
         }
         .task {
-            #if DEBUG
             if DebugHooks.opensReview { shoot() }
-            #endif
         }
     }
 

@@ -391,6 +391,19 @@ struct CardDetailView: View {
                 CatalogueBackButton(title: "COFFEES") { dismiss() }
                 Spacer()
             }
+            .overlay {
+                if isPastRail {
+                    Text(cardTitle)
+                        .font(Typography.barTitle)
+                        .foregroundStyle(Palette.ink)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.8)
+                        .padding(.horizontal, 96)
+                        .transition(.opacity.combined(with: .offset(y: 6)))
+                        .accessibilityAddTraits(.isHeader)
+                }
+            }
+            .animation(Motion.quick, value: isPastRail)
             .padding(.horizontal, 16)
             .background(Palette.paper)
         }

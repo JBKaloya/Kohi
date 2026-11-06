@@ -96,7 +96,7 @@ Après **Save**, la carte tombe en haut de la grille avec une animation de pose.
 
 ## Parcours 2 bis — Une tasse au café, un sachet à la maison
 
-*10 minutes. Sur simulateur, ou sur iPhone avec le bouton **Demo**.*
+*10 minutes. Sur simulateur, ou sur iPhone avec le bouton **Demo**. Build Debug seulement : une build TestFlight n'a ni démos ni faux fix — teste alors avec une vraie carte, dans un vrai café.*
 
 Trois démos sont dessinées dans l'app : un **sachet** (Fève, Ethiopia Chelchele), une **carte de café** (Kenya Tekangu, Belleville, V60 — 5,50 €) et un **menu** (trois cafés filtre). Sur simulateur, choisis-la au-dessus du déclencheur (*Archive*, *Bag*, *Café card*, *Menu*). Sur iPhone, **Demo** est un menu avec les mêmes choix, plus *Archive card*.
 

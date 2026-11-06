@@ -27,7 +27,14 @@ final class TastingReader {
         isReading = true
         couldNotRead = false
         defer { isReading = false }
+        let tastingID = draft.wrappedValue.id
+        async let photo = Task.detached(priority: .userInitiated) {
+            TastingPhotos.save(scan: scan, tastingID: tastingID)
+        }.value
         let read = await TextExtractor.read(image: scan.image)
+        if let name = await photo, !draft.wrappedValue.photos.contains(name) {
+            draft.wrappedValue.photos.append(name)
+        }
         lines = read.map(\.text)
         take(TastingCapture.sort(read, roasters: roasters), into: draft, cards: cards)
     }

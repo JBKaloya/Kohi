@@ -81,6 +81,7 @@ nonisolated enum SampleArchive {
         !CardFileStore().exists
     }
 
+    #if DEBUG
     /// A bundled sample warped onto a surface, as though it had just been
     /// photographed at an angle. The quad is known exactly, so this exercises
     /// perspective correction, the cut-out, and OCR without a camera.
@@ -130,6 +131,7 @@ nonisolated enum SampleArchive {
 
         return CapturedCard(image: image, quad: quad)
     }
+    #endif
 
     static func seed() -> [CoffeeCard] {
         var cards: [CoffeeCard] = []

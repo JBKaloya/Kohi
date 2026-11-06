@@ -1,3 +1,4 @@
+#if DEBUG
 import CoreGraphics
 import SwiftUI
 
@@ -5,6 +6,8 @@ import SwiftUI
 /// collection, the card a café puts by the cup, and a café's menu. Drawn in
 /// code and then laid on the same surface as the archive sample, so the
 /// review, the read and both flows run exactly as they do on paper.
+///
+/// Debug builds only: a TestFlight or App Store build has no demo.
 enum DemoScan: String, CaseIterable, Identifiable {
     case bag
     case card
@@ -24,11 +27,7 @@ enum DemoScan: String, CaseIterable, Identifiable {
 
     /// `KOHI_DEMO=bag|card|menu` makes the simulator shutter file that demo.
     static var requested: DemoScan? {
-        #if DEBUG
         ProcessInfo.processInfo.environment["KOHI_DEMO"].flatMap(DemoScan.init(rawValue:))
-        #else
-        nil
-        #endif
     }
 
     /// The flat artwork, before it is laid on the surface.
@@ -145,3 +144,4 @@ private struct DemoMenu: View {
         .padding(.bottom, 18)
     }
 }
+#endif

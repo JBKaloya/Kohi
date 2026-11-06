@@ -86,6 +86,7 @@ Deux familles, un rôle chacune.
 | --- | --- | --- | --- | --- | --- |
 | `brand` | Angusta | 28 | DemiBold | — | Wordmark « Kohi » dans la nav de la grille |
 | `title` | Angusta | 20 | DemiBold | — | Nom du café en détail |
+| `barTitle` | Angusta | 19 | DemiBold | — | Nom du café dans la barre du détail, une fois le rail épinglé |
 | `value` | SF | 14 | Regular | Default | Valeurs de champs, empty-state titre, champs de formulaire |
 | `body` | SF | 14 | Regular | Default | Note personnelle, notes de brew |
 | `subtitle` | SF | 13 | Regular | Default | Sous-titres, empty-state, « Retake », adresses |
@@ -313,7 +314,7 @@ Transition grille → détail : zoom matched (`navigationTransition(.zoom)` iOS 
 1. Tombstone (catalogue, casse naturelle)
 2. Objet centré
 3. Titre Angusta
-4. Rail `TabRail` **Coffee** / **Brews n**, épinglé sous la barre en scrollant, padding 28, fond papier. *Ask* en trailing (si le flag est on). Changer d'onglet une fois le rail épinglé remonte au rail.
+4. Rail `TabRail` **Coffee** / **Brews n**, épinglé sous la barre en scrollant, padding 28, fond papier. *Ask* en trailing (si le flag est on). Changer d'onglet une fois le rail épinglé remonte au rail. Épinglé, le nom du café apparaît au centre de la barre du haut (`barTitle`, fondu + 6 pt), sur la ligne du retour **COFFEES**.
 
 **Coffee** (ouverture par défaut, et avec `startsAtSuggested`) :
 

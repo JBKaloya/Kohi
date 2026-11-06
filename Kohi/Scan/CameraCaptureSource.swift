@@ -410,7 +410,12 @@ struct CameraCaptureView: View {
             Spacer()
             shutterButton
             Spacer()
+            #if DEBUG
             sampleDemoButton
+            #else
+            // Keeps the shutter centred.
+            photoPickerButton.hidden().accessibilityHidden(true)
+            #endif
         }
         .padding(.horizontal, 28)
         .padding(.bottom, 40)
@@ -420,7 +425,9 @@ struct CameraCaptureView: View {
         VStack(spacing: 22) {
             HStack(spacing: 28) {
                 photoPickerButton
+                #if DEBUG
                 sampleDemoButton
+                #endif
             }
         }
         .padding(.bottom, 48)
@@ -438,6 +445,7 @@ struct CameraCaptureView: View {
         .accessibilityLabel("Import from photo library")
     }
 
+    #if DEBUG
     private var sampleDemoButton: some View {
         Menu {
             ForEach(DemoScan.allCases) { kind in
@@ -459,6 +467,7 @@ struct CameraCaptureView: View {
         .disabled(isLoadingPhoto)
         .accessibilityLabel("Try a sample coffee card")
     }
+    #endif
 
     private var shutterButton: some View {
         Button {
@@ -489,6 +498,7 @@ struct CameraCaptureView: View {
         onCapture(captured)
     }
 
+    #if DEBUG
     private func loadSampleCard() async {
         isLoadingPhoto = true
         engine.stop()
@@ -514,6 +524,7 @@ struct CameraCaptureView: View {
         }
         onCapture(captured)
     }
+    #endif
 
     private var deniedState: some View {
         VStack(spacing: 12) {
