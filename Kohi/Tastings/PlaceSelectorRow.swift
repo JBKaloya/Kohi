@@ -1,27 +1,33 @@
 import SwiftUI
 
-/// The first thing in a tasting: where it was. A suggested place reads as a
-/// question until it is tapped; a chosen one reads as a fact, tap to change.
+/// The first thing in a tasting: where it was. The nearest place arrives
+/// already chosen and reads as a fact, with Change beside it. A suggestion
+/// without a location fix still reads as a question until it is tapped.
 struct PlaceSelectorRow: View {
     let place: Place?
     let suggestion: PlaceSuggestion?
+    var isMissing = false
     let onAccept: (PlaceSuggestion) -> Void
     let onChoose: () -> Void
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text(Copy.placeTitle).catalogueLabel()
+            Text(Copy.placeTitle).catalogueLabel(missing: isMissing)
             if let place {
                 Button(action: onChoose) {
-                    VStack(alignment: .leading, spacing: 3) {
-                        Text(place.name)
-                            .font(Typography.subtitle)
-                            .foregroundStyle(Palette.ink)
-                        if let line = detail(place) {
-                            Text(line)
-                                .font(Typography.tag)
-                                .foregroundStyle(Palette.inkMuted)
+                    HStack(alignment: .firstTextBaseline, spacing: 12) {
+                        VStack(alignment: .leading, spacing: 3) {
+                            Text(place.name)
+                                .font(Typography.subtitle)
+                                .foregroundStyle(Palette.ink)
+                            if let line = detail(place) {
+                                Text(line)
+                                    .font(Typography.tag)
+                                    .foregroundStyle(Palette.inkMuted)
+                            }
                         }
+                        Spacer(minLength: 8)
+                        Text(Copy.change).catalogueLabel()
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .contentShape(Rectangle())
@@ -37,18 +43,19 @@ struct PlaceSelectorRow: View {
                                 .foregroundStyle(Palette.ink)
                                 .padding(.horizontal, 12)
                                 .padding(.vertical, 8)
-                                .overlay(Capsule().stroke(Palette.hairline, lineWidth: 1))
+                                .overlay(Capsule().stroke(isMissing ? Palette.primary : Palette.hairline, lineWidth: 1))
                         }
                         .buttonStyle(.plain)
                     }
                     Button(action: onChoose) {
                         Text(suggestion == nil ? Copy.choosePlace : Copy.placeOther)
                             .font(suggestion == nil ? Typography.subtitle : Typography.tag)
-                            .foregroundStyle(suggestion == nil ? Palette.ink : Palette.inkMuted)
+                            .foregroundStyle(suggestion == nil ? (isMissing ? Palette.primary : Palette.ink) : Palette.inkMuted)
                     }
                     .buttonStyle(.plain)
                     .touchTarget()
                 }
+                .animation(Motion.snappy, value: isMissing)
             }
         }
     }

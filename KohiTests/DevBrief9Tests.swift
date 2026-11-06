@@ -310,7 +310,7 @@ struct DevBrief9Tests {
     @Test func aFreshInstallOpensOnKohiCards() {
         let defaults = Self.freshDefaults()
         #expect(CardLookStore(defaults: defaults).global == .kohi)
-        #expect(defaults.integer(forKey: CardStandard.lookMigrationKey) == CardStandard.version)
+        #expect(defaults.integer(forKey: CardStandard.lookMigrationKey) == CardStandard.lookVersion)
     }
 
     @Test func scanAsDefaultMovesOnceAndOverridesStay() {
@@ -390,6 +390,26 @@ struct DevBrief9Tests {
         #expect(try Data(contentsOf: url) == first)
     }
 
+    @Test func theMosaicGetsASmallCopyWithoutRenderingAgain() async throws {
+        let defaults = Self.freshDefaults()
+        let composer = CardComposer()
+        composer.defaults = defaults
+        let card = Self.kenya
+        ImageStore.shared.removeAll(for: card.id)
+        defer { ImageStore.shared.removeAll(for: card.id) }
+
+        #expect(await composer.cachedDisplayTile(for: card, maxPixel: 600) == nil)
+        let first = try #require(await composer.displayTile(for: card, maxPixel: 600))
+        #expect(max(first.width, first.height) == 600)
+        #expect(composer.renderCount == 1)
+
+        composer.clearMemoryForTesting()
+        let again = try #require(await composer.cachedDisplayTile(for: card, maxPixel: 600))
+        #expect(again.height == 600)
+        await composer.ensureTile(for: card)
+        #expect(composer.renderCount == 1)
+    }
+
     @Test func aLayoutChangeIsANewTile() {
         let defaults = Self.freshDefaults()
         let composer = CardComposer()
@@ -397,6 +417,13 @@ struct DevBrief9Tests {
         let label = composer.token(for: Self.kenya)
         defaults.set(CardLayout.fullBleed.rawValue, forKey: CardLayout.defaultsKey)
         #expect(composer.token(for: Self.kenya) != label)
+    }
+
+    @Test func cardTitlesDropLatinAccentsOnly() {
+        #expect(KohiCard.titleText("Diego Samuel Bermúdez, Piendamó") == "Diego Samuel Bermudez, Piendamo")
+        #expect(KohiCard.titleText("Fazenda Sertão") == "Fazenda Sertao")
+        #expect(KohiCard.titleText("レギュラーコーヒー") == "レギュラーコーヒー")
+        #expect(KohiCard.titleText("Nano Challa") == "Nano Challa")
     }
 
     @Test func aCoffeeCanKeepItsOwnLayout() {

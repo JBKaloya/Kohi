@@ -262,7 +262,7 @@ struct DictationFieldInventoryTests {
             #expect(text.contains("DictationField"), "missing in \(file)")
         }
         let guided = try String(contentsOf: VocabTests.kohiRoot.appending(path: "Recipes/GuidedBrewView.swift"))
-        #expect(guided.contains("VoiceNoteControl"))
+        #expect(guided.contains("NarrationPill"))
         #expect(!guided.contains("DictationField"))
         #expect(guided.contains("isIdleTimerDisabled"))
         #expect(!guided.contains("emptyClock"))
@@ -282,7 +282,9 @@ struct DictationFieldInventoryTests {
         let note = try String(contentsOf: VocabTests.kohiRoot.appending(path: "Scan/BrewVoiceNote.swift"))
         #expect(note.contains("AVAudioRecorder"))
         #expect(note.contains("pending.json"))
-        #expect(note.contains("playAndRecord"))
+        // The playAndRecord plans live on DictationSession. The note activates that list.
+        #expect(note.contains("DictationSession.activate"))
+        #expect(note.contains("sessionPlans"))
         #expect(!note.contains("spokenAudio"))
         let transcriber = try String(contentsOf: VocabTests.kohiRoot.appending(path: "Scan/VoiceNoteTranscriber.swift"))
         #expect(transcriber.contains("SFSpeechURLRecognitionRequest"))
@@ -357,9 +359,10 @@ struct RecipeFlowScreenTests {
         #expect(dial.contains("StepFlow"))
         #expect(dial.contains("Copy.waterWeight"))
         #expect(!dial.contains("GrindRail"))
-        // Parameters (dose · ratio · water) moved here from What you're doing,
-        // so the ratio's DerivedValue now belongs on Dial.
-        #expect(dial.contains("DerivedValue"))
+        // Parameters (dose · ratio · water) moved here from What you're doing.
+        // The ratio rolls; it is no longer a static DerivedValue.
+        #expect(dial.contains("RollingDigits"))
+        #expect(dial.contains("SwipeToStart"))
         #expect(!dial.contains("Pick a brewer"))
         #expect(!dial.contains("Brew now"))
         #expect(!dial.contains("Already brewed"))
@@ -397,7 +400,7 @@ struct DictationQueueTests {
         #expect(!dictation.contains("SpeechAnalyzerSession"))
         #expect(!dictation.contains("startAnalyzer"))
         #expect(!dictation.contains("task?.finish()"))
-        #expect(dictation.contains("Task { @MainActor [weak self] in"))
+        #expect(dictation.contains("Task { @MainActor [weak owner] in"))
         // `prepare()` before `inputNode` is the CoreAudio abort:
         // `required condition is false: inputNode != nil || outputNode != nil`
         #expect(!dictation.contains("preparedInputFormat"))

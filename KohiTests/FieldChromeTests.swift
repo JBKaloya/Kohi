@@ -40,10 +40,14 @@ struct FieldChromeTests {
         #expect(FieldChrome.label(presence: .optional, isEmpty: true, isFocused: true) == .inkMuted)
     }
 
-    @Test func anErrorKeepsTheRuleInInkWithoutFocus() {
-        let rule = FieldChrome.rule(presence: .useful, isEmpty: false, isFocused: false, hasError: true)
-        #expect(rule.tone == .ink)
-        #expect(rule.opacity == 1)
+    @Test func aMissingFieldTurnsCoffeeBrown() {
+        for focused in [false, true] {
+            let rule = FieldChrome.rule(presence: .useful, isEmpty: true, isFocused: focused, hasError: true)
+            #expect(rule.tone == .primary)
+            #expect(rule.opacity == 1)
+            #expect(FieldChrome.label(presence: .optional, isEmpty: true, isFocused: focused, hasError: true) == .primary)
+        }
+        #expect(FieldTone.primary.color == Palette.primary)
     }
 
     @Test func aUnitGhostsUntilThereIsANumber() {

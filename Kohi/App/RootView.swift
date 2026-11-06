@@ -68,6 +68,7 @@ struct RootView: View {
             openCard: $cardToOpen
         )
             .appEnvironment(env)
+            .toggleStyle(.liquid)
             .fullScreenCover(isPresented: $isScanning, onDismiss: {
                 presentDraftIfReady()
             }) {

@@ -112,7 +112,7 @@ struct GrindConverterSheet: View {
                 )
             }
 
-            NumberRow("Setting", value: $setting, unit: settingUnit)
+            RollingCounter("Setting", value: $setting, range: .grindSetting, unit: settingUnit)
 
             FormField(label: "To") {
                 ChipPicker(
@@ -297,14 +297,16 @@ struct CalibrationSheet: View {
     @State private var setting: Double?
     @State private var microns: Double?
     @State private var note = ""
+    @State private var settingError: String?
+    @State private var rejectTrigger = 0
 
     var body: some View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 22) {
                     VStack(spacing: 16) {
-                        NumberRow("Setting", value: $setting, unit: unit)
-                        NumberRow("Is about", value: $microns, unit: "µm")
+                        RollingCounter("Setting", value: $setting, range: .grindSetting, unit: unit, error: settingError)
+                        RollingCounter("Is about", value: $microns, range: .microns, unit: "µm")
                         TextRow(
                             label: "Note",
                             text: $note,
@@ -340,11 +342,14 @@ struct CalibrationSheet: View {
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Save", action: save)
                         .fontWeight(.medium)
-                        .disabled(setting == nil)
                 }
             }
         }
         .tint(Palette.ink)
+        .haptic(.deleted, trigger: rejectTrigger)
+        .onChange(of: setting) { _, new in
+            if new != nil { settingError = nil }
+        }
         .onAppear {
             guard let existing = setup.calibration(grinderID: grinder.id, method: method) else {
                 return
@@ -364,7 +369,11 @@ struct CalibrationSheet: View {
     }
 
     private func save() {
-        guard let setting else { return }
+        guard let setting else {
+            settingError = FieldCopy.settingMissing
+            rejectTrigger += 1
+            return
+        }
         let existing = setup.calibration(grinderID: grinder.id, method: method)
         setup.record(GrindCalibration(
             id: existing?.id ?? UUID(),

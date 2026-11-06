@@ -108,7 +108,7 @@ struct CardEditSheet: View {
 
                     FieldGroup(title: Copy.onTheBag) {
                         roastLevelPicker
-                        NumberRow("Agtron", value: $draft.agtron, unit: "", labelWidth: 74)
+                        RollingCounter("Agtron", value: $draft.agtron, range: .agtron, labelWidth: 74)
                         roastedOnRow
                         group("Date") {
                             DatePicker("", selection: $draft.date, displayedComponents: .date)
@@ -121,9 +121,10 @@ struct CardEditSheet: View {
                     FieldGroup(title: "Lot") {
                         field("Lot", text: bagText(\.lot), placeholder: Placeholders.text(.bagLot))
                         field("Harvest", text: bagText(\.harvest), placeholder: Placeholders.text(.bagHarvest))
-                        NumberRow(
+                        RollingCounter(
                             "Cupping",
                             value: $draft.cuppingScore,
+                            range: .cupping,
                             unit: "pts",
                             placeholder: Placeholders.text(.bagCupping),
                             labelWidth: 74
@@ -631,9 +632,10 @@ struct CardEditSheet: View {
 
     private var priceRow: some View {
         VStack(alignment: .leading, spacing: 10) {
-            NumberRow(
+            RollingCounter(
                 "Price",
                 value: $draft.price,
+                range: .price,
                 unit: draft.currency ?? "—",
                 placeholder: Placeholders.text(.bagPrice),
                 labelWidth: 74
@@ -654,9 +656,10 @@ struct CardEditSheet: View {
 
     private var bagWeightPicker: some View {
         VStack(alignment: .leading, spacing: 10) {
-            NumberRow(
+            RollingCounter(
                 "Bag",
                 value: $draft.bagWeightG,
+                range: .bagWeight,
                 unit: "g",
                 placeholder: Placeholders.text(.bagWeight),
                 labelWidth: 74

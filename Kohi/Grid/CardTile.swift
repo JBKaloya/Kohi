@@ -15,6 +15,8 @@ struct CardTile: View {
     @State private var landing: Double = 1
     @State private var touchdown = 0
     @State private var kohiImage: CGImage?
+    @State private var placeholder: CardComposer.Placeholder?
+    @Environment(\.displayScale) private var displayScale
 
     private var face: CardLook { looks.resolved(card) }
 
@@ -26,14 +28,25 @@ struct CardTile: View {
                 } else {
                     ZStack {
                         if let kohiImage {
-                            Image(decorative: kohiImage, scale: 3)
+                            Image(decorative: kohiImage, scale: 1)
                                 .resizable()
                                 .interpolation(.high)
                                 .frame(width: width, height: width / CardTileLayout.aspectRatio)
                                 .transition(.opacity)
+                        } else if let placeholder {
+                            KohiCard(
+                                content: placeholder.content,
+                                density: .tile,
+                                width: width,
+                                layout: looks.layout(for: card.id),
+                                backdrop: placeholder.field,
+                                textTone: placeholder.tone
+                            )
+                            .transition(.opacity)
                         } else {
-                            KohiCardPlaceholder(card: card, width: width)
-                                .transition(.opacity)
+                            RoundedRectangle(cornerRadius: width * 0.05, style: .continuous)
+                                .fill(Palette.hairline.opacity(0.4))
+                                .frame(width: width, height: width / CardTileLayout.aspectRatio)
                         }
                     }
                 }
@@ -75,13 +88,47 @@ struct CardTile: View {
                 kohiImage = nil
                 return
             }
-            kohiImage = await CardComposer.shared.tile(for: card)
+            let composer = CardComposer.shared
+            let pixels = Int((width / CardTileLayout.aspectRatio * displayScale).rounded(.up))
+            if let cached = await composer.cachedDisplayTile(for: card, maxPixel: pixels) {
+                kohiImage = cached
+                return
+            }
+            if kohiImage == nil {
+                placeholder = await composer.placeholder(for: card)
+            }
+            guard !Task.isCancelled else { return }
+            if let drawn = await composer.displayTile(for: card, maxPixel: pixels) {
+                kohiImage = drawn
+            }
         }
     }
 
-    /// Changes when the coffee, the stamp, or the face changes, and not otherwise.
+    /// Cheap on purpose: it runs on every body. The token itself is worked out off the main thread.
     private var kohiTask: String {
-        let token = CardComposer.shared.token(for: card)
-        return "\(face.rawValue)-\(looks.layout(for: card.id).rawValue)-\(stamps.revision(for: card.id))-\(token)"
+        var fields = Hasher()
+        fields.combine(card.name)
+        fields.combine(card.roaster)
+        fields.combine(card.country)
+        fields.combine(card.region)
+        fields.combine(card.producer)
+        fields.combine(card.farm)
+        fields.combine(card.washStation)
+        fields.combine(card.altitude)
+        fields.combine(card.variety)
+        fields.combine(card.process)
+        fields.combine(card.tastingNotes)
+        fields.combine(card.roastLevel)
+        fields.combine(card.isDecaf)
+        fields.combine(card.roastedOn)
+        fields.combine(card.createdAt)
+        return [
+            face.rawValue,
+            looks.layout(for: card.id).rawValue,
+            String(stamps.revision(for: card.id)),
+            card.id.uuidString,
+            String(fields.finalize()),
+            String(Int(width)),
+        ].joined(separator: "-")
     }
 }

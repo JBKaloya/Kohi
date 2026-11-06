@@ -67,11 +67,11 @@ struct StepBuilderSheet: View {
 
     private var totalsGroup: some View {
         FieldGroup(title: "Totals") {
-            NumberRow("Dose", value: $draft.dose, unit: "g", labelWidth: 74)
+            RollingCounter("Dose", value: $draft.dose, range: .dose, unit: "g", labelWidth: 74)
             if draft.method == .espresso {
-                NumberRow("Out", value: $draft.beverage, unit: "g", labelWidth: 74)
+                RollingCounter("Out", value: $draft.beverage, range: .beverage, unit: "g", labelWidth: 74)
             } else {
-                NumberRow("Water", value: $draft.water, unit: "g", labelWidth: 74)
+                RollingCounter("Water", value: $draft.water, range: .water, unit: "g", labelWidth: 74)
             }
             if let ratio = draft.ratioValue {
                 HStack {
@@ -243,10 +243,10 @@ struct StepBuilderSheet: View {
 
         // Mass
         if step.action.acceptsMass {
-            NumberRow("Mass", value: Binding(
+            RollingCounter("Mass", value: Binding(
                 get: { stepBinding.wrappedValue.targetMass },
                 set: { stepBinding.wrappedValue.targetMass = $0 }
-            ), unit: "g", labelWidth: 74)
+            ), range: .water, unit: "g", labelWidth: 74)
             .padding(.top, 8)
         }
 

@@ -4,9 +4,9 @@ import SwiftUI
 /// Adding or editing a coffee had in a coffee shop. One screen, place first.
 ///
 /// Where, then what, then the details behind a disclosure, then how it was.
-/// Save only appears once there is a coffee name and a place: the one place
-/// in Kohi where something is required, because a tasting without either is
-/// not a tasting anyone can find again.
+/// A coffee name and a place are required, because a tasting without either
+/// is not a tasting anyone can find again. Save is always there; tapping it
+/// early marks what is missing instead of hiding the way forward.
 struct TastingComposeSheet: View {
     var editing: Tasting? = nil
     /// Snapshot and tests pass a list instead of asking for a fix.
@@ -38,6 +38,8 @@ struct TastingComposeSheet: View {
     @State private var linkOffer: CoffeeCard?
     @State private var photoItems: [PhotosPickerItem] = []
     @State private var saveTrigger = 0
+    @State private var rejectTrigger = 0
+    @State private var flagged: Set<TastingField> = []
     @FocusState private var nameFocused: Bool
 
     init(
@@ -60,71 +62,81 @@ struct TastingComposeSheet: View {
 
     var body: some View {
         NavigationStack {
-            ScrollView {
-                VStack(alignment: .leading, spacing: 30) {
-                    PlaceSelectorRow(
-                        place: draft.place,
-                        suggestion: draft.place == nil ? topSuggestion : nil,
-                        onAccept: { draft.choose($0.place, $0.placeID) },
-                        onChoose: {
-                            nearby.start()
-                            choosingPlace = true
-                        }
-                    )
-
-                    what
-
-                    details
-
-                    VStack(alignment: .leading, spacing: 28) {
-                        Text(Copy.yourTasting).catalogueLabel()
-                        SensoryEvaluationSection(
-                            rating: $draft.rating,
-                            taste: $draft.taste,
-                            flavors: $draft.flavors,
-                            previousTaste: previousTaste,
-                            previousCaption: Copy.previousCupIsLighter,
-                            declared: draft.coffee.declaredFlavors,
-                            recent: recentFlavors
+            ScrollViewReader { scroller in
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 30) {
+                        PlaceSelectorRow(
+                            place: draft.place,
+                            suggestion: draft.place == nil ? topSuggestion : nil,
+                            isMissing: flagged.contains(.place),
+                            onAccept: { draft.choose($0.place, $0.placeID) },
+                            onChoose: {
+                                nearby.start()
+                                choosingPlace = true
+                            }
                         )
-                        VStack(alignment: .leading, spacing: 10) {
-                            Text(Copy.noteToSelf).catalogueLabel()
-                            TextField("", text: $draft.note, axis: .vertical)
-                                .font(Typography.body)
-                                .foregroundStyle(Palette.ink)
-                                .lineLimit(2...6)
-                            DictationField(text: $draft.note)
+                        .id(TastingField.place)
+
+                        what
+                            .id(TastingField.coffee)
+
+                        details
+
+                        VStack(alignment: .leading, spacing: 28) {
+                            Text(Copy.yourTasting).catalogueLabel()
+                            SensoryEvaluationSection(
+                                rating: $draft.rating,
+                                taste: $draft.taste,
+                                flavors: $draft.flavors,
+                                previousTaste: previousTaste,
+                                previousCaption: Copy.previousCupIsLighter,
+                                declared: draft.coffee.declaredFlavors,
+                                recent: recentFlavors
+                            )
+                            VStack(alignment: .leading, spacing: 10) {
+                                Text(Copy.noteToSelf).catalogueLabel()
+                                TextField("", text: $draft.note, axis: .vertical)
+                                    .font(Typography.body)
+                                    .foregroundStyle(Palette.ink)
+                                    .lineLimit(2...6)
+                                DictationField(text: $draft.note)
+                            }
                         }
                     }
+                    .padding(.horizontal, 28)
+                    .padding(.top, 12)
+                    .padding(.bottom, 48)
+                    .frame(maxWidth: .infinity, alignment: .leading)
                 }
-                .padding(.horizontal, 28)
-                .padding(.top, 12)
-                .padding(.bottom, 48)
-                .frame(maxWidth: .infinity, alignment: .leading)
-            }
-            .scrollIndicators(.hidden)
-            .scrollDismissesKeyboard(.interactively)
-            .background(Palette.paper.ignoresSafeArea())
-            .navigationTitle(isEditing ? Copy.editTasting : Copy.addTasting)
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbarColorScheme(.light, for: .navigationBar)
-            .tint(Palette.ink)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") { dismiss() }
-                }
-                if draft.canSave {
+                .scrollIndicators(.hidden)
+                .scrollDismissesKeyboard(.interactively)
+                .background(Palette.paper.ignoresSafeArea())
+                .navigationTitle(isEditing ? Copy.editTasting : Copy.addTasting)
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbarColorScheme(.light, for: .navigationBar)
+                .tint(Palette.ink)
+                .toolbar {
+                    ToolbarItem(placement: .cancellationAction) {
+                        Button("Cancel") { dismiss() }
+                    }
                     ToolbarItem(placement: .confirmationAction) {
-                        Button("Save", action: save)
+                        Button("Save") { save(scroller) }
                             .fontWeight(.medium)
                     }
                 }
             }
-            .animation(Motion.quick, value: draft.canSave)
         }
         .presentationBackground(Palette.paper)
         .haptic(.saved, trigger: saveTrigger)
+        .haptic(.deleted, trigger: rejectTrigger)
         .onAppear(perform: load)
+        .onChange(of: topSuggestion, initial: true) { _, suggestion in
+            guard !isEditing, nearby.coordinate != nil, let suggestion else { return }
+            draft.autofill(suggestion.place, suggestion.placeID)
+        }
+        .onChange(of: draft.missing) { _, missing in
+            withAnimation(Motion.snappy) { flagged.formIntersection(missing) }
+        }
         .task {
             guard requestsLocation, previewSuggestions == nil, !isEditing, PlaceLocator.isAuthorized else { return }
             nearby.start()
@@ -192,7 +204,7 @@ struct TastingComposeSheet: View {
 
     private var what: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text(Copy.coffeeName).catalogueLabel()
+            Text(Copy.coffeeName).catalogueLabel(missing: flagged.contains(.coffee))
             TextField(Placeholders.text(.cardCoffee), text: $draft.coffee.name)
                 .font(Typography.subtitle)
                 .foregroundStyle(Palette.ink)
@@ -553,8 +565,17 @@ struct TastingComposeSheet: View {
         if !isEditing { nameFocused = draft.place != nil }
     }
 
-    private func save() {
-        guard draft.canSave else { return }
+    private func save(_ scroller: ScrollViewProxy) {
+        let missing = draft.missing
+        guard missing.isEmpty else {
+            rejectTrigger += 1
+            withAnimation(Motion.snappy) { flagged = missing }
+            if let first = TastingField.allCases.first(where: missing.contains) {
+                withAnimation(Motion.snappy) { scroller.scrollTo(first, anchor: .top) }
+                if first == .coffee { nameFocused = true }
+            }
+            return
+        }
         saveTrigger += 1
         var tasting = draft.tasting(base: editing)
         if tasting.coffee.roasterId == nil {
@@ -673,6 +694,12 @@ enum TastingMethod: String, CaseIterable, Identifiable, Sendable {
     }
 }
 
+/// What Save waits on, in screen order.
+enum TastingField: CaseIterable, Hashable {
+    case place
+    case coffee
+}
+
 /// The form's working copy. Strings where the user types, values on save.
 struct TastingDraft: Equatable {
     var id = UUID()
@@ -713,10 +740,19 @@ struct TastingDraft: Equatable {
         note = tasting.note ?? ""
     }
 
+    /// Set when the place came from the location fix rather than a tap, so a
+    /// better suggestion may still replace it and a chosen one never is.
+    var placeIsAutomatic = false
+
     /// Name and place. Nothing else is required.
-    var canSave: Bool {
-        !coffee.trimmedName.isEmpty && place != nil
+    var missing: Set<TastingField> {
+        var fields: Set<TastingField> = []
+        if place == nil { fields.insert(.place) }
+        if coffee.trimmedName.isEmpty { fields.insert(.coffee) }
+        return fields
     }
+
+    var canSave: Bool { missing.isEmpty }
 
     var notesText: String {
         get { coffee.tastingNotes.joined(separator: ", ") }
@@ -750,6 +786,15 @@ struct TastingDraft: Equatable {
     mutating func choose(_ place: Place, _ placeID: String?) {
         self.place = place
         self.placeID = placeID
+        placeIsAutomatic = false
+    }
+
+    /// The nearest place, taken for you. Never over a place you picked.
+    mutating func autofill(_ place: Place, _ placeID: String?) {
+        guard self.place == nil || placeIsAutomatic else { return }
+        self.place = place
+        self.placeID = placeID
+        placeIsAutomatic = true
     }
 
     /// Links a card and copies it into the snapshot, once.

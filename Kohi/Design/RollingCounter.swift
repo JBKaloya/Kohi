@@ -1,0 +1,404 @@
+import SwiftUI
+
+/// A number between a minus and a plus.
+///
+/// Three ways to change it: press a key for one step; hold it and it repeats,
+/// faster and in tens the longer it is held; or drag the number, a step every
+/// 12 points, and let go while it is moving to fling it. Tapping the number
+/// opens the keyboard, because 1000 g is not something you reach by tapping.
+struct RollingCounter: View {
+    enum Style {
+        /// The brew dial. 56 pt digits, 52 pt keys, the full width of the column.
+        case brew
+        /// A catalogue row. The label sits to the left, the slab is 44 pt tall.
+        case row
+    }
+
+    let label: String
+    @Binding var value: Double?
+    var range: NumberRange
+    var unit: String = ""
+    var placeholder: String = ""
+    var labelWidth: CGFloat = 92
+    var presence: FieldPresence = .optional
+    var hint: String?
+    var error: String?
+    var style: Style = .row
+
+    init(
+        _ label: String,
+        value: Binding<Double?>,
+        range: NumberRange,
+        unit: String = "",
+        placeholder: String = "",
+        labelWidth: CGFloat = 92,
+        presence: FieldPresence = .optional,
+        hint: String? = nil,
+        error: String? = nil,
+        style: Style = .row
+    ) {
+        self.label = label
+        self._value = value
+        self.range = range
+        self.unit = unit
+        self.placeholder = placeholder
+        self.labelWidth = labelWidth
+        self.presence = presence
+        self.hint = hint
+        self.error = error
+        self.style = style
+    }
+
+    init(
+        _ label: String,
+        value: Binding<Int?>,
+        range: NumberRange,
+        unit: String = "",
+        placeholder: String = "",
+        labelWidth: CGFloat = 92,
+        presence: FieldPresence = .optional,
+        hint: String? = nil,
+        error: String? = nil,
+        style: Style = .row
+    ) {
+        self.init(
+            label,
+            value: Binding(
+                get: { value.wrappedValue.map(Double.init) },
+                set: { value.wrappedValue = $0.map { Int($0.rounded()) } }
+            ),
+            range: range,
+            unit: unit,
+            placeholder: placeholder,
+            labelWidth: labelWidth,
+            presence: presence,
+            hint: hint,
+            error: error,
+            style: style
+        )
+    }
+
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @FocusState private var editing: Bool
+    @State private var draft = ""
+    @State private var holdTask: Task<Void, Never>?
+    @State private var flingTask: Task<Void, Never>?
+    @State private var stepTick = 0
+    @State private var dragSteps = 0
+    @State private var dragAxis: DragAxis = .undecided
+
+    private enum DragAxis { case undecided, vertical, horizontal }
+
+    private var labelTone: Color {
+        FieldChrome.label(presence: presence, isEmpty: value == nil, isFocused: editing, hasError: error != nil).color
+    }
+
+    private var scale: Double { pow(10, Double(range.decimals)) }
+    private var cell: CGFloat { style == .brew ? 56 : 34 }
+    private var fontSize: CGFloat { style == .brew ? 34 : 17 }
+    private var keyWidth: CGFloat { style == .brew ? 52 : 36 }
+    private var corner: CGFloat { style == .brew ? 18 : 12 }
+    private var inset: CGFloat { 5 }
+
+    var body: some View {
+        Group {
+            if style == .brew {
+                VStack(alignment: .leading, spacing: 8) {
+                    HStack {
+                        Text(label).scalingCatalogueLabel(missing: error != nil).foregroundStyle(labelTone)
+                        Spacer(minLength: 8)
+                        if let hint {
+                            Text(hint).scalingCatalogueLabel()
+                        }
+                    }
+                    slab
+                    message
+                }
+            } else {
+                VStack(alignment: .leading, spacing: 4) {
+                    HStack(alignment: .center, spacing: 12) {
+                        Text(label)
+                            .scalingCatalogueLabel(missing: error != nil)
+                            .foregroundStyle(labelTone)
+                            .frame(width: labelWidth, alignment: .leading)
+                        slab
+                    }
+                    message
+                }
+            }
+        }
+        .reportsFieldFocus(editing)
+        .haptic(.step, trigger: stepTick)
+        .onDisappear {
+            holdTask?.cancel()
+            flingTask?.cancel()
+        }
+    }
+
+    private var slab: some View {
+        HStack(spacing: 0) {
+            RepeatKey(
+                systemName: "minus",
+                label: "Less",
+                width: keyWidth,
+                height: cell,
+                corner: corner - inset,
+                enabled: canStep(-1)
+            ) {
+                beginHold(-1)
+            } onEnd: {
+                holdTask?.cancel()
+            } onTap: {
+                bump(-1, audible: true)
+            }
+
+            number
+                .frame(maxWidth: .infinity)
+
+            RepeatKey(
+                systemName: "plus",
+                label: "More",
+                width: keyWidth,
+                height: cell,
+                corner: corner - inset,
+                enabled: canStep(1)
+            ) {
+                beginHold(1)
+            } onEnd: {
+                holdTask?.cancel()
+            } onTap: {
+                bump(1, audible: true)
+            }
+        }
+        .padding(inset)
+        .background(Palette.well, in: RoundedRectangle(cornerRadius: corner, style: .continuous))
+    }
+
+    @ViewBuilder
+    private var number: some View {
+        if editing {
+            TextField("", text: $draft)
+                .font(.system(size: fontSize, weight: .regular))
+                .monospacedDigit()
+                .multilineTextAlignment(.center)
+                .keyboardType(range.decimals > 0 ? .decimalPad : .numberPad)
+                .focused($editing)
+                .frame(height: cell)
+                .onSubmit { commitDraft() }
+                .onChange(of: editing) { _, focused in
+                    if !focused { commitDraft() }
+                }
+        } else if value == nil, !placeholder.isEmpty {
+            Text(placeholder)
+                .font(.system(size: min(fontSize, 17), weight: .regular))
+                .foregroundStyle(Palette.inkMuted)
+                .frame(height: cell)
+                .frame(maxWidth: .infinity)
+                .contentShape(Rectangle())
+                .onTapGesture { beginEditing() }
+        } else {
+            HStack(spacing: 6) {
+                digits
+                if !unit.isEmpty {
+                    Text(unit)
+                        .font(style == .brew ? .system(size: 15) : Typography.tag)
+                        .foregroundStyle(Palette.inkMuted)
+                }
+            }
+            .frame(height: cell)
+            .frame(maxWidth: .infinity)
+            .contentShape(Rectangle())
+            .onTapGesture { beginEditing() }
+            .simultaneousGesture(drag)
+        }
+    }
+
+    private var digits: some View {
+        let scaled = scaledValue(value ?? range.default)
+        return RollingDigits(
+            counts: RollMath.counts(of: scaled, places: range.places),
+            bases: Array(repeating: 10, count: range.places),
+            show: RollMath.shownPlaces(scaled: scaled, decimals: range.decimals, places: range.places),
+            separators: range.decimals > 0 ? [range.decimals - 1: "."] : [:],
+            cell: cell,
+            fontSize: fontSize
+        )
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(label)
+        .accessibilityValue(spoken)
+        .accessibilityAdjustableAction { direction in
+            switch direction {
+            case .increment: bump(1, audible: true)
+            case .decrement: bump(-1, audible: true)
+            @unknown default: break
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var message: some View {
+        if let error {
+            Text(error)
+                .font(Typography.tag)
+                .foregroundStyle(Palette.primary)
+        }
+    }
+
+    private var spoken: String {
+        guard let value else { return placeholder.isEmpty ? "Not set" : placeholder }
+        return unit.isEmpty ? GrindRange.number(value) : "\(GrindRange.number(value)) \(unit)"
+    }
+
+    private var drag: some Gesture {
+        DragGesture(minimumDistance: 6)
+            .onChanged { gesture in
+                let height = gesture.translation.height
+                let width = gesture.translation.width
+                if dragAxis == .undecided {
+                    guard abs(height) >= 6 || abs(width) >= 6 else { return }
+                    dragAxis = abs(height) >= abs(width) ? .vertical : .horizontal
+                }
+                guard dragAxis == .vertical else { return }
+                let steps = Int((-height / 12).rounded(.towardZero))
+                let delta = steps - dragSteps
+                if delta != 0 {
+                    bump(delta, audible: false)
+                    dragSteps = steps
+                }
+            }
+            .onEnded { gesture in
+                let wasVertical = dragAxis == .vertical
+                dragSteps = 0
+                dragAxis = .undecided
+                guard wasVertical, !reduceMotion else { return }
+                let predicted = -gesture.predictedEndTranslation.height
+                let travelled = -gesture.translation.height
+                let extra = predicted - travelled
+                guard abs(extra) > 24 else { return }
+                fling(pointsPerFrame: extra / 8)
+            }
+    }
+
+    private func beginHold(_ direction: Int) {
+        holdTask?.cancel()
+        flingTask?.cancel()
+        bump(direction, audible: true)
+        let started = Date()
+        holdTask = Task { @MainActor in
+            try? await Task.sleep(for: .seconds(HoldRepeat.arm))
+            while !Task.isCancelled {
+                let held = Date().timeIntervalSince(started)
+                guard !Task.isCancelled else { return }
+                bump(direction * HoldRepeat.magnitude(held: held), audible: false)
+                try? await Task.sleep(for: .seconds(HoldRepeat.interval(held: held)))
+            }
+        }
+    }
+
+    private func bump(_ steps: Int, audible: Bool) {
+        guard steps != 0 else { return }
+        let origin = value ?? range.default
+        let next: Double
+        if value == nil {
+            next = range.clamp(range.default)
+        } else {
+            next = range.clamp(origin + Double(steps) * range.step)
+        }
+        guard next != value else { return }
+        value = next
+        if audible { stepTick += 1 }
+    }
+
+    private func canStep(_ direction: Int) -> Bool {
+        let origin = value ?? range.default
+        let next = value == nil
+            ? range.clamp(range.default)
+            : range.clamp(origin + Double(direction) * range.step)
+        return next != value
+    }
+
+    private func fling(pointsPerFrame: CGFloat) {
+        flingTask?.cancel()
+        var velocity = pointsPerFrame
+        var accumulator: CGFloat = 0
+        flingTask = Task { @MainActor in
+            while !Task.isCancelled, abs(velocity) > 0.4 {
+                accumulator += velocity
+                let steps = accumulator > 0 ? Int(floor(accumulator / 12)) : Int(ceil(accumulator / 12))
+                if steps != 0 {
+                    bump(steps, audible: false)
+                    accumulator -= CGFloat(steps) * 12
+                }
+                velocity *= 0.94
+                try? await Task.sleep(for: .milliseconds(16))
+            }
+        }
+    }
+
+    private func beginEditing() {
+        holdTask?.cancel()
+        flingTask?.cancel()
+        draft = value.map { GrindRange.number($0) } ?? ""
+        editing = true
+    }
+
+    private func commitDraft() {
+        let trimmed = draft.trimmingCharacters(in: .whitespaces)
+        if trimmed.isEmpty {
+            value = nil
+            return
+        }
+        guard let parsed = NumberText.parse(trimmed) else { return }
+        value = range.clamp(parsed)
+    }
+
+    private func scaledValue(_ number: Double) -> Int {
+        Int((number * scale).rounded())
+    }
+}
+
+/// An upright key. Pressing scales it to 0.9; holding repeats through the
+/// caller's `onBegin`, which is expected to arm `HoldRepeat`.
+private struct RepeatKey: View {
+    var systemName: String
+    var label: String
+    var width: CGFloat
+    var height: CGFloat
+    var corner: CGFloat
+    var enabled: Bool
+    var onBegin: () -> Void
+    var onEnd: () -> Void
+    var onTap: () -> Void
+
+    @State private var down = false
+
+    var body: some View {
+        Image(systemName: systemName)
+            .font(.system(size: 16, weight: .semibold))
+            .foregroundStyle(Palette.ink)
+            .frame(width: width, height: height)
+            .background(Palette.paper, in: RoundedRectangle(cornerRadius: max(0, corner), style: .continuous))
+            .scaleEffect(down && enabled ? Motion.Chrome.keyPressScale : 1)
+            .opacity(enabled ? 1 : 0.35)
+            .animation(down ? .easeOut(duration: 0.11) : Motion.quick, value: down)
+            .contentShape(Rectangle())
+            .gesture(
+                DragGesture(minimumDistance: 0)
+                    .onChanged { _ in
+                        guard enabled, !down else { return }
+                        down = true
+                        onBegin()
+                    }
+                    .onEnded { _ in
+                        guard down else { return }
+                        down = false
+                        onEnd()
+                    }
+            )
+            .accessibilityElement()
+            .accessibilityLabel(label)
+            .accessibilityAddTraits(.isButton)
+            .accessibilityAction { onTap() }
+            .accessibilityRespondsToUserInteraction(enabled)
+    }
+}

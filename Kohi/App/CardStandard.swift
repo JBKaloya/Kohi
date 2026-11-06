@@ -3,7 +3,9 @@ import Foundation
 /// One version for everything that changes the picture of a Kohi card. Raising any part
 /// changes every tile token, and the archive is drawn again once.
 nonisolated enum CardStandard {
-    static let version = 3
+    static let version = 4
+    /// When the default face moved to Kohi cards. Not raised with `version`: that runs once.
+    static let lookVersion = 3
 
     /// Parts that change the image. Part of every tile token.
     static let signature = [
@@ -34,9 +36,9 @@ nonisolated enum CardStandard {
     /// The new card is the default face, once. Choices made per coffee stay: they were explicit.
     @MainActor
     static func migrateLook(_ defaults: UserDefaults) {
-        guard defaults.integer(forKey: lookMigrationKey) < version else { return }
+        guard defaults.integer(forKey: lookMigrationKey) < lookVersion else { return }
         defaults.set(CardLook.kohi.rawValue, forKey: CardLookStore.globalKey)
-        defaults.set(version, forKey: lookMigrationKey)
+        defaults.set(lookVersion, forKey: lookMigrationKey)
     }
 }
 

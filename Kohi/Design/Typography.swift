@@ -46,10 +46,34 @@ extension View {
 
 extension View {
     /// Applies the catalogue label treatment: uppercase, tracked, muted.
-    func catalogueLabel() -> some View {
+    /// `missing` marks a field Save is waiting on.
+    func catalogueLabel(missing: Bool = false) -> some View {
         font(Typography.label)
             .tracking(Typography.labelTracking)
             .textCase(.uppercase)
-            .foregroundStyle(Palette.inkMuted)
+            .foregroundStyle(missing ? Palette.primary : Palette.inkMuted)
+            .animation(Motion.snappy, value: missing)
+    }
+
+    /// Same treatment, growing with Dynamic Type. At the default size it
+    /// matches `catalogueLabel()`.
+    func scalingCatalogueLabel(missing: Bool = false) -> some View {
+        modifier(ScalingCatalogueLabel(missing: missing))
+    }
+}
+
+private struct ScalingCatalogueLabel: ViewModifier {
+    var missing = false
+    @ScaledMetric(relativeTo: .caption2) private var size: CGFloat = 10
+
+    func body(content: Content) -> some View {
+        content
+            .font(.system(size: size, weight: .medium, design: .monospaced))
+            .tracking(Typography.labelTracking)
+            .textCase(.uppercase)
+            .foregroundStyle(missing ? Palette.primary : Palette.inkMuted)
+            .animation(Motion.snappy, value: missing)
+            .lineLimit(2)
+            .minimumScaleFactor(0.8)
     }
 }

@@ -18,6 +18,10 @@ enum Palette {
     /// Hairline rules in the caption block.
     static let hairline = Color(red: 0.886, green: 0.867, blue: 0.827)
 
+    /// A recess cut into the paper: ink at 5% mixed into paper, so a control
+    /// reads as a well rather than a card laid on top. Keys inside it stay `paper`.
+    static let well = Color(red: 0.936, green: 0.929, blue: 0.913)
+
     /// Cast by cards sitting on the paper.
     static let cardShadow = Color(red: 0.30, green: 0.26, blue: 0.20).opacity(0.22)
 

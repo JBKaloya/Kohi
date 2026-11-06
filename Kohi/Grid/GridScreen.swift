@@ -209,7 +209,7 @@ struct GridScreen: View {
                 for card in store.cards {
                     if Task.isCancelled { return }
                     guard looks.resolved(card) == .kohi else { continue }
-                    _ = await CardComposer.shared.tile(for: card)
+                    await CardComposer.shared.ensureTile(for: card)
                 }
             }
             .toolbar {

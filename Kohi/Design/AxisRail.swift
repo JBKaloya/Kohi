@@ -1,6 +1,7 @@
 import SwiftUI
 
-/// One taste axis as a hairline rail, 0…10. Tap a tick or drag. Tapping the
+/// One taste axis, 0…10. The rail is a slosh slider: the handle is rigid,
+/// the fill has mass, and letting go snaps to a whole number. Tapping the
 /// current value clears it.
 struct AxisRail: View {
     let axis: TasteAxis
@@ -8,99 +9,8 @@ struct AxisRail: View {
     var enabled = true
     var onChange: () -> Void = {}
 
-    @State private var gestureOrigin: Int?
-    @State private var didMove = false
-    @State private var tracking = false
-
     var body: some View {
-        HStack(alignment: .center, spacing: 16) {
-            Text(axis.label)
-                .catalogueLabel()
-                .frame(width: 74, alignment: .leading)
-
-            rail
-
-            Text(value.map(String.init) ?? "—")
-                .font(Typography.tag)
-                .foregroundStyle(Palette.ink)
-                .frame(width: 18, alignment: .trailing)
-                .monospacedDigit()
-        }
-        .frame(minHeight: 44)
-        .contentShape(Rectangle().inset(by: -10))
-        .accessibilityElement(children: .ignore)
-        .accessibilityLabel(axis.label)
-        .accessibilityValue(value.map(String.init) ?? "not scored")
-        .accessibilityAdjustableAction { direction in
-            switch direction {
-            case .increment: set(min((value ?? -1) + 1, 10))
-            case .decrement:
-                if let current = value, current > 0 { set(current - 1) }
-                else { set(nil) }
-            @unknown default: break
-            }
-        }
-    }
-
-    private var rail: some View {
-        GeometryReader { proxy in
-            let width = max(proxy.size.width, 1)
-            ZStack {
-                Rectangle()
-                    .fill(Palette.hairline)
-                    .frame(height: 1)
-                ForEach(0...10, id: \.self) { tick in
-                    Circle()
-                        .fill(value == tick ? Palette.ink : Palette.hairline)
-                        .frame(width: value == tick ? 8 : 3, height: value == tick ? 8 : 3)
-                        .position(x: x(for: tick, width: width), y: 17)
-                }
-            }
-            .contentShape(Rectangle())
-            .gesture(
-                DragGesture(minimumDistance: 12)
-                    .onChanged { gesture in
-                        guard enabled else { return }
-                        if !tracking {
-                            gestureOrigin = value
-                            tracking = true
-                            didMove = false
-                        }
-                        didMove = true
-                        set(tick(at: gesture.location.x, width: width))
-                    }
-                    .onEnded { _ in
-                        tracking = false
-                        didMove = false
-                        gestureOrigin = nil
-                    }
-            )
-            .simultaneousGesture(
-                SpatialTapGesture().onEnded { gesture in
-                    guard enabled else { return }
-                    let snapped = tick(at: gesture.location.x, width: width)
-                    set(value == snapped ? nil : snapped)
-                }
-            )
-        }
-        .frame(height: 34)
-    }
-
-    private func x(for tick: Int, width: CGFloat) -> CGFloat {
-        let inset: CGFloat = 4
-        return inset + (width - inset * 2) * CGFloat(tick) / 10
-    }
-
-    private func tick(at x: CGFloat, width: CGFloat) -> Int {
-        let inset: CGFloat = 4
-        let usable = max(width - inset * 2, 1)
-        return min(max(Int(((x - inset) / usable * 10).rounded()), 0), 10)
-    }
-
-    private func set(_ next: Int?) {
-        guard value != next else { return }
-        value = next
-        onChange()
+        SloshRail(label: axis.label, value: $value, enabled: enabled, onChange: onChange)
     }
 }
 

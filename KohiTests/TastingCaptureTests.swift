@@ -120,6 +120,32 @@ struct TastingDraftTests {
         #expect(!draft.canSave)
     }
 
+    @Test func missingNamesWhatSaveWaitsOn() {
+        var draft = TastingDraft()
+        #expect(draft.missing == [.place, .coffee])
+        draft.coffee.name = "Gesha"
+        #expect(draft.missing == [.place])
+        draft.choose(crible, "crible")
+        #expect(draft.missing.isEmpty)
+        draft.coffee.name = ""
+        #expect(draft.missing == [.coffee])
+    }
+
+    @Test func theNearestPlaceIsTakenButNeverOverAChoice() {
+        let klover = Place(name: "Klover", address: "6 Rue Merlin", latitude: 48.86, longitude: 2.38)
+        var draft = TastingDraft()
+        draft.autofill(klover, "klover")
+        #expect(draft.place == klover && draft.placeID == "klover" && draft.placeIsAutomatic)
+
+        draft.autofill(crible, "crible")
+        #expect(draft.place == crible)
+
+        draft.choose(klover, "klover")
+        #expect(!draft.placeIsAutomatic)
+        draft.autofill(crible, "crible")
+        #expect(draft.place == klover)
+    }
+
     @Test func methodChipsMapOntoTheBrewVocabulary() {
         var draft = TastingDraft()
         draft.coffee.name = "Gesha"

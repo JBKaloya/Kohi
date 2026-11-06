@@ -14,6 +14,8 @@ struct RecipeEditSheet: View {
     @State private var draft: Recipe
     @State private var tapCount = 0
     @State private var showSteps = false
+    @State private var nameError: String?
+    @State private var rejectTrigger = 0
 
     init(recipe: Recipe? = nil) {
         existing = recipe
@@ -32,29 +34,34 @@ struct RecipeEditSheet: View {
                             label: "Name",
                             text: $draft.name,
                             placeholder: "Name this recipe",
-                            presence: .useful
+                            presence: .useful,
+                            error: nameError
                         )
                         DictationField(text: $draft.name)
-                        FormField(label: "Method") {
-                            ChipPicker(
-                                items: BrewMethod.allCases,
-                                label: \.label,
-                                selection: methodBinding,
-                                allowsDeselect: false,
-                                onPick: { tapCount += 1 }
+                        RollingPicker(
+                            label: "Method",
+                            options: BrewMethod.allCases.map {
+                                RollOption(id: $0, name: $0.label)
+                            },
+                            selection: Binding(
+                                get: { draft.method ?? .v60 },
+                                set: {
+                                    draft.method = $0
+                                    tapCount += 1
+                                }
                             )
-                        }
+                        )
                     }
 
                     FieldGroup(title: "Parameters") {
-                        NumberRow("Dose", value: $draft.dose, unit: "g", labelWidth: 74)
+                        RollingCounter("Dose", value: $draft.dose, range: .dose, unit: "g", labelWidth: 74)
                         if draft.method == .espresso {
-                            NumberRow("Out", value: $draft.beverage, unit: "g", labelWidth: 74)
+                            RollingCounter("Out", value: $draft.beverage, range: .beverage, unit: "g", labelWidth: 74)
                         } else {
-                            NumberRow("Water", value: $draft.water, unit: "g", labelWidth: 74)
+                            RollingCounter("Water", value: $draft.water, range: .water, unit: "g", labelWidth: 74)
                         }
-                        NumberRow("Temp", value: $draft.temperature, unit: "°C", labelWidth: 74)
-                        NumberRow("Time", value: secondsBinding, unit: "s", labelWidth: 74)
+                        RollingCounter("Temp", value: $draft.temperature, range: .temperature, unit: "°C", labelWidth: 74)
+                        RollingCounter("Time", value: secondsBinding, range: .brewTime, unit: "s", labelWidth: 74)
                         TextRow(label: "Grind", text: $draft.grindLabel, placeholder: "medium-fine",
                                 capitalization: .never)
                     }
@@ -87,12 +94,15 @@ struct RecipeEditSheet: View {
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Save") { save() }
                         .fontWeight(.medium)
-                        .disabled(draft.name.trimmingCharacters(in: .whitespaces).isEmpty)
                 }
+            }
+            .onChange(of: draft.name) { _, _ in
+                if !trimmedName.isEmpty { nameError = nil }
             }
         }
         .tint(Palette.ink)
         .haptic(.tap, trigger: tapCount)
+        .haptic(.deleted, trigger: rejectTrigger)
         .sheet(isPresented: $showSteps) {
             StepBuilderSheet(draft: draft) { recipe in
                 draft.steps = recipe.steps
@@ -104,13 +114,6 @@ struct RecipeEditSheet: View {
         }
     }
 
-    private var methodBinding: Binding<BrewMethod?> {
-        Binding(
-            get: { draft.method },
-            set: { if let value = $0 { draft.method = value } }
-        )
-    }
-
     private var secondsBinding: Binding<Double?> {
         Binding(
             get: { draft.seconds.map(Double.init) },
@@ -118,7 +121,16 @@ struct RecipeEditSheet: View {
         )
     }
 
+    private var trimmedName: String {
+        draft.name.trimmingCharacters(in: .whitespaces)
+    }
+
     private func save() {
+        guard !trimmedName.isEmpty else {
+            nameError = FieldCopy.recipeNameMissing
+            rejectTrigger += 1
+            return
+        }
         draft.source = .mine
         draft.autoAdvance = false
         if isEditing {

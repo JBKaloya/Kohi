@@ -107,33 +107,34 @@ struct AfterBrewSheet: View {
 
     private var summary: some View {
         FieldGroup(title: "Summary") {
-            HStack(spacing: 0) {
-                NumberRow(Copy.coffeeDose, value: $session.brew.dose, unit: "g", compactWidth: 70)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                NumberRow(
+            VStack(alignment: .leading, spacing: 16) {
+                RollingCounter(Copy.coffeeDose, value: $session.brew.dose, range: .dose, unit: "g", style: .brew)
+                RollingCounter(
                     session.brew.method == .espresso ? Copy.beverage : Copy.waterWeight,
                     value: session.brew.method == .espresso ? $session.brew.beverage : $session.brew.water,
+                    range: session.brew.method == .espresso ? .beverage : .water,
                     unit: "g",
-                    compactWidth: 70
+                    style: .brew
                 )
-                .frame(maxWidth: .infinity, alignment: .leading)
-                DerivedValue(text: session.brew.ratio ?? "—")
-                    .frame(maxWidth: .infinity)
-            }
-            HStack(spacing: 0) {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("Grind").catalogueLabel()
-                    Text(session.brew.grind.display())
-                        .font(Typography.value)
-                        .foregroundStyle(Palette.ink)
-                        .lineLimit(1)
-                        .minimumScaleFactor(0.7)
+                HStack {
+                    Text("Ratio").catalogueLabel()
+                    Spacer()
+                    DerivedValue(text: session.brew.ratio ?? "—")
                 }
-                .frame(maxWidth: .infinity, alignment: .leading)
-                NumberRow("Temp", value: $session.brew.temperature, unit: "°C", compactWidth: 70)
+                HStack(spacing: 16) {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("Grind").catalogueLabel()
+                        Text(session.brew.grind.display())
+                            .font(Typography.value)
+                            .foregroundStyle(Palette.ink)
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.7)
+                    }
                     .frame(maxWidth: .infinity, alignment: .leading)
-                timeRow
-                    .frame(maxWidth: .infinity, alignment: .leading)
+                    timeRow
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                }
+                RollingCounter("Temp", value: $session.brew.temperature, range: .temperature, unit: "°C", style: .row)
             }
         }
     }
@@ -357,9 +358,10 @@ struct AfterBrewSheet: View {
     @ViewBuilder
     private var more: some View {
         VStack(alignment: .leading, spacing: 16) {
-            NumberRow(
+            RollingCounter(
                 "TDS",
                 value: $session.brew.tds,
+                range: .brewTDS,
                 unit: "%",
                 placeholder: Placeholders.text(.brewTDS),
                 labelWidth: 74

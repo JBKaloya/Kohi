@@ -30,6 +30,20 @@ struct BrewFlowHost: View {
                 onDone: onDismiss
             )
         } else {
+            // Pour sits behind the dial, so lifting the sheet reveals the timer
+            // rather than swapping one screen for another.
+            ZStack {
+                if session.step == .pour {
+                    pour
+                        .transition(.opacity)
+                }
+                steps
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var steps: some View {
             switch session.step {
             case .start:
                 BrewStartView(
@@ -65,23 +79,9 @@ struct BrewFlowHost: View {
                     onBrewNow: { session.brewNow(in: setup) },
                     onAlreadyBrewed: { session.alreadyBrewed(in: setup) }
                 )
+                .transition(.move(edge: .top))
             case .pour:
-                GuidedBrewView(
-                    card: session.card,
-                    recipe: session.timerRecipe(in: setup),
-                    brew: session.brew,
-                    voiceNote: session.voiceNote,
-                    equipment: setup.equipment,
-                    onFinish: {
-                        var brew = $0
-                        if brew.actualSource == .none { brew.actualSource = .timer }
-                        brew.refreshPourRates()
-                        session.poured(brew)
-                    },
-                    onCancel: { session.step = .dial },
-                    journeyStep: session.progressIndex,
-                    journeyTotal: session.progressTotal
-                )
+                EmptyView()
             case .after:
                 AfterBrewSheet(
                     session: session,
@@ -91,7 +91,27 @@ struct BrewFlowHost: View {
                     onBack: { session.step = .dial }
                 )
             }
-        }
+    }
+
+    private var pour: some View {
+        GuidedBrewView(
+            card: session.card,
+            recipe: session.timerRecipe(in: setup),
+            brew: session.brew,
+            voiceNote: session.voiceNote,
+            equipment: setup.equipment,
+            onFinish: {
+                var brew = $0
+                if brew.actualSource == .none { brew.actualSource = .timer }
+                brew.refreshPourRates()
+                session.poured(brew)
+            },
+            onCancel: {
+                withAnimation(Motion.Lift.giveUp) { session.step = .dial }
+            },
+            journeyStep: session.progressIndex,
+            journeyTotal: session.progressTotal
+        )
     }
 
     private func back() {

@@ -29,11 +29,22 @@ final class BrewVoiceNote {
     private(set) var fileURL: URL?
     private(set) var startedAt: Date?
     private(set) var brewID: UUID?
+    /// 0…1, the recorder's level. The pill draws bars from `levels`.
+    private(set) var level: Double = 0
+    private(set) var levels: [Double] = []
+    /// How long the kept recording is. Playback scrubs inside it.
+    private(set) var recordedSeconds: TimeInterval = 0
+    private(set) var progress: Double = 0
+    private(set) var isPlaying = false
 
     private var recorder: AVAudioRecorder?
+    private var player: AVAudioPlayer?
     private var interruptionObserver: (any NSObjectProtocol)?
     private let delegate = RecorderHook()
+    private let playerDelegate = PlayerHook()
     private var isStarting = false
+    private var meterTask: Task<Void, Never>?
+    private var playTask: Task<Void, Never>?
 
     var isRecording: Bool { state == .recording }
 
@@ -44,6 +55,7 @@ final class BrewVoiceNote {
 
     init() {
         delegate.owner = self
+        playerDelegate.owner = self
     }
 
     func start(brewID: UUID) async {
@@ -84,6 +96,7 @@ final class BrewVoiceNote {
             ]
         )
         recorder.delegate = delegate
+        recorder.isMeteringEnabled = true
         recorder.prepareToRecord()
         guard recorder.record() else { throw DictationError.unavailable }
 
@@ -91,9 +104,14 @@ final class BrewVoiceNote {
         self.fileURL = url
         self.brewID = brewID
         self.startedAt = .now
+        self.recordedSeconds = 0
+        self.levels = []
+        self.level = 0
+        self.progress = 0
         self.state = .recording
         writePending()
         watchInterruptions()
+        startMeter()
     }
 
     /// Drops the previous category, then walks the same plans as live dictation.
@@ -106,6 +124,12 @@ final class BrewVoiceNote {
     nonisolated static var sessionPlans: [DictationSessionPlan] { DictationSession.plans }
 
     func stop() {
+        if let startedAt, state == .recording || state == .paused {
+            recordedSeconds = Date().timeIntervalSince(startedAt)
+        }
+        meterTask?.cancel()
+        meterTask = nil
+        stopPlayback()
         recorder?.stop()
         recorder = nil
         if let interruptionObserver {
@@ -157,8 +181,90 @@ final class BrewVoiceNote {
         fileURL = nil
         brewID = nil
         startedAt = nil
+        recordedSeconds = 0
+        levels = []
+        level = 0
+        progress = 0
         clearPending()
         state = .idle
+    }
+
+    func togglePlayback() {
+        if isPlaying {
+            pausePlayback()
+        } else {
+            play()
+        }
+    }
+
+    func play() {
+        guard let fileURL, hasFile else { return }
+        if player == nil {
+            try? Self.activateSession()
+            guard let player = try? AVAudioPlayer(contentsOf: fileURL) else { return }
+            player.delegate = playerDelegate
+            playerDelegate.owner = self
+            player.prepareToPlay()
+            self.player = player
+        }
+        if progress >= 0.99 {
+            player?.currentTime = 0
+            progress = 0
+        }
+        player?.play()
+        isPlaying = true
+        playTask?.cancel()
+        playTask = Task { @MainActor in
+            while !Task.isCancelled, let player, player.isPlaying {
+                progress = player.duration > 0 ? player.currentTime / player.duration : 0
+                try? await Task.sleep(for: .milliseconds(32))
+            }
+        }
+    }
+
+    func pausePlayback() {
+        player?.pause()
+        isPlaying = false
+        playTask?.cancel()
+    }
+
+    func seek(to fraction: Double) {
+        guard let player, player.duration > 0 else { return }
+        let clamped = min(1, max(0, fraction))
+        player.currentTime = clamped * player.duration
+        progress = clamped
+    }
+
+    func stopPlayback() {
+        player?.stop()
+        player = nil
+        isPlaying = false
+        playTask?.cancel()
+        progress = 0
+    }
+
+    fileprivate func handlePlaybackFinished() {
+        isPlaying = false
+        progress = 1
+        playTask?.cancel()
+    }
+
+    private func startMeter() {
+        meterTask?.cancel()
+        meterTask = Task { @MainActor in
+            while !Task.isCancelled {
+                guard state == .recording, let recorder else { return }
+                recorder.updateMeters()
+                let db = recorder.averagePower(forChannel: 0)
+                let linear = min(1, max(0, pow(10, Double(db) / 20)))
+                level = linear
+                levels.append(linear)
+                if levels.count > 96 {
+                    levels.removeFirst(levels.count - 96)
+                }
+                try? await Task.sleep(for: .milliseconds(70))
+            }
+        }
     }
 
     static func pending() -> Pending? {
@@ -199,6 +305,7 @@ final class BrewVoiceNote {
             try Self.activateSession()
             if recorder?.record() == true {
                 state = .recording
+                startMeter()
             } else {
                 state = .failed
             }
@@ -252,6 +359,16 @@ final class BrewVoiceNote {
 }
 
 /// AVAudioRecorder callbacks are not on the main actor.
+private final class PlayerHook: NSObject, AVAudioPlayerDelegate {
+    weak var owner: BrewVoiceNote?
+
+    func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
+        Task { @MainActor in
+            owner?.handlePlaybackFinished()
+        }
+    }
+}
+
 private final class RecorderHook: NSObject, AVAudioRecorderDelegate {
     weak var owner: BrewVoiceNote?
 

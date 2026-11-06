@@ -17,11 +17,49 @@ struct StepFlow<Content: View>: View {
     var onPrimary: (() -> Void)?
     var secondaryTitle: String?
     var onSecondary: (() -> Void)?
+    /// Replaces the primary button. The dial uses this for swipe-to-brew.
+    var bottom: AnyView? = nil
+    /// How far the paper sheet has been lifted off the bottom. The footer stays.
+    var sheetLift: CGFloat = 0
     @ViewBuilder var content: () -> Content
 
     @State private var fieldFocused = false
 
     var body: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            sheet
+                .background(Palette.paper)
+                .offset(y: bottom == nil ? 0 : -max(sheetLift, 0))
+
+            if let bottom, !fieldFocused {
+                bottom
+                    .transition(.opacity.combined(with: .move(edge: .bottom)))
+            } else if !fieldFocused {
+                footer
+                    .padding(.horizontal, 26)
+                    .padding(.bottom, 28)
+                    .padding(.top, 12)
+                    .background(Palette.paper)
+                    .transition(.opacity.combined(with: .move(edge: .bottom)))
+            }
+        }
+        .background {
+            if bottom == nil {
+                Palette.paper.ignoresSafeArea()
+            }
+        }
+        .onPreferenceChange(FieldFocusPreference.self) { fieldFocused = $0 }
+        .animation(Motion.snappy, value: fieldFocused)
+        .toolbar {
+            ToolbarItemGroup(placement: .keyboard) {
+                Spacer()
+                Button("Done") { dismissIfFocused() }
+                    .catalogueLabel()
+            }
+        }
+    }
+
+    private var sheet: some View {
         VStack(alignment: .leading, spacing: 0) {
             header
                 .padding(.horizontal, 26)
@@ -58,24 +96,6 @@ struct StepFlow<Content: View>: View {
             .scrollDismissesKeyboard(.immediately)
             .clipped()
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-
-            if !fieldFocused {
-                footer
-                    .padding(.horizontal, 26)
-                    .padding(.bottom, 28)
-                    .padding(.top, 12)
-                    .transition(.opacity.combined(with: .move(edge: .bottom)))
-            }
-        }
-        .background(Palette.paper.ignoresSafeArea())
-        .onPreferenceChange(FieldFocusPreference.self) { fieldFocused = $0 }
-        .animation(Motion.snappy, value: fieldFocused)
-        .toolbar {
-            ToolbarItemGroup(placement: .keyboard) {
-                Spacer()
-                Button("Done") { dismissIfFocused() }
-                    .catalogueLabel()
-            }
         }
     }
 

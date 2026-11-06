@@ -10,19 +10,32 @@ struct BrewDialView: View {
     var onAlreadyBrewed: () -> Void
 
     @Environment(SetupStore.self) private var setup
+    @State private var lift: CGFloat = 0
+    @State private var resizeTask: Task<Void, Never>?
 
     var body: some View {
-        StepFlow(
-            step: session.progressIndex,
-            total: session.progressTotal,
-            question: Copy.howMuch,
-            onBack: onBack,
-            onClose: onClose,
-            primaryTitle: "Brew",
-            onPrimary: onBrewNow,
-            secondaryTitle: Copy.logWithoutTimer,
-            onSecondary: onAlreadyBrewed
-        ) {
+        ZStack {
+            Palette.ink.ignoresSafeArea()
+            VStack {
+                Spacer()
+                brewPreview
+                    .padding(.bottom, 160)
+            }
+            StepFlow(
+                step: session.progressIndex,
+                total: session.progressTotal,
+                question: Copy.howMuch,
+                onBack: onBack,
+                onClose: onClose,
+                secondaryTitle: Copy.logWithoutTimer,
+                onSecondary: onAlreadyBrewed,
+                bottom: AnyView(
+                    SwipeToStart(lift: $lift) {
+                        withAnimation(Motion.Lift.commit) { onBrewNow() }
+                    }
+                ),
+                sheetLift: lift
+            ) {
             VStack(alignment: .leading, spacing: 22) {
                 if let applied = session.lastApplication {
                     AppliedFromLastBlock(
@@ -43,6 +56,78 @@ struct BrewDialView: View {
         .onAppear {
             BrewPrefill.ensureMatchingBrewer(on: &session.brew, setup: setup)
         }
+        .onDisappear { resizeTask?.cancel() }
+        }
+    }
+
+    private var brewPreview: some View {
+        VStack(spacing: 8) {
+            Text(sourceLine ?? "")
+                .font(Typography.tag)
+                .foregroundStyle(Palette.paper.opacity(0.55))
+            RollingDigits(
+                counts: RollMath.clockCounts(seconds: 0).counts,
+                bases: RollMath.clockCounts(seconds: 0).bases,
+                show: 3,
+                separators: [1: ":"],
+                cell: 48,
+                fontSize: 40,
+                color: Palette.paper
+            )
+        }
+    }
+
+    private var ratioRow: some View {
+        HStack {
+            Text("Ratio").catalogueLabel()
+            Spacer()
+            if let scaled = ratioScaled {
+                HStack(spacing: 0) {
+                    Text("1:")
+                        .font(.system(size: 20))
+                        .foregroundStyle(Palette.ink)
+                    RollingDigits(
+                        counts: RollMath.counts(of: scaled, places: 4),
+                        bases: Array(repeating: 10, count: 4),
+                        show: RollMath.shownPlaces(scaled: scaled, decimals: 1, places: 4),
+                        separators: [0: "."],
+                        cell: 28,
+                        fontSize: 20
+                    )
+                }
+            } else {
+                Text("—")
+                    .font(.system(size: 20))
+                    .foregroundStyle(Palette.hairline)
+            }
+        }
+        .frame(height: 44)
+        .overlay(alignment: .bottom) { Rectangle().fill(Palette.hairline).frame(height: 1) }
+    }
+
+    private var ratioScaled: Int? {
+        guard let dose = session.brew.dose, dose > 0,
+              let liquid = session.brew.water ?? session.brew.beverage, liquid > 0
+        else { return nil }
+        return Int(((liquid / dose) * 10).rounded())
+    }
+
+    /// Rinse comes from the paper and the brewer. Preheat and tare are the
+    /// rest of what has to be true before the first pour. Nothing here is saved.
+    private var prepItems: [String] {
+        var items: [String] = []
+        let brewer = session.brew.equipmentIDs
+            .compactMap { setup.equipment(id: $0) }
+            .first { BrewKit.isCupboard($0.kind) }
+        let stock = session.brew.filterStockId.flatMap { setup.filterStock(id: $0) }
+        if let brewer, let caption = RinseRule.caption(for: stock, brewer: brewer) {
+            items.append(caption.prefix(1).uppercased() + caption.dropFirst())
+        } else {
+            items.append(Copy.rinseTheFilter)
+        }
+        items.append(Copy.preheatTheServer)
+        items.append(Copy.tareTheScale)
+        return items
     }
 
     private var sourceLine: String? {
@@ -72,32 +157,32 @@ struct BrewDialView: View {
                 }
             }
 
-            HStack(spacing: 0) {
-                NumberRow(
-                    Copy.coffeeDose,
-                    value: doseBinding,
-                    unit: "g",
-                    placeholder: Placeholders.text(.brewDose),
-                    presence: .useful,
-                    compactWidth: 70
-                )
-                .frame(maxWidth: .infinity, alignment: .leading)
+            RollingCounter(
+                Copy.coffeeDose,
+                value: doseBinding,
+                range: .dose,
+                unit: "g",
+                placeholder: Placeholders.text(.brewDose),
+                presence: .useful,
+                hint: session.nominalRecipe?.dose.map { "Recipe \(GrindRange.number($0)) g" },
+                style: .brew
+            )
 
-                DerivedValue(text: session.brew.ratio ?? "—")
-                    .frame(maxWidth: .infinity)
+            ratioRow
 
-                NumberRow(
-                    session.brew.method == .espresso ? Copy.beverage : Copy.waterWeight,
-                    value: waterBinding,
-                    unit: "g",
-                    placeholder: session.brew.method == .espresso
-                        ? Placeholders.text(.brewBeverage)
-                        : Placeholders.text(.brewWater),
-                    presence: .useful,
-                    compactWidth: 70
-                )
-                .frame(maxWidth: .infinity, alignment: .leading)
-            }
+            RollingCounter(
+                session.brew.method == .espresso ? Copy.beverage : Copy.waterWeight,
+                value: waterBinding,
+                range: session.brew.method == .espresso ? .beverage : .water,
+                unit: "g",
+                placeholder: session.brew.method == .espresso
+                    ? Placeholders.text(.brewBeverage)
+                    : Placeholders.text(.brewWater),
+                presence: .useful,
+                style: .brew
+            )
+
+            TickList(title: Copy.beforeYouPour, items: prepItems)
 
             if let label = rescaledLabel {
                 Text(label)
@@ -144,7 +229,7 @@ struct BrewDialView: View {
                 set: { newVal in
                     session.brew.beverage = newVal
                     session.brew.captureSource = .typed
-                    session.resizeRecipeToBrew()
+                    scheduleResize()
                 }
             )
         }
@@ -153,9 +238,20 @@ struct BrewDialView: View {
             set: { newVal in
                 session.brew.water = newVal
                 session.brew.captureSource = .typed
-                session.resizeRecipeToBrew()
+                scheduleResize()
             }
         )
+    }
+
+    /// A held key steps the number every few dozen milliseconds. The binding
+    /// updates each step; the recipe resize waits until the finger pauses.
+    private func scheduleResize() {
+        resizeTask?.cancel()
+        resizeTask = Task { @MainActor in
+            try? await Task.sleep(for: .milliseconds(150))
+            guard !Task.isCancelled else { return }
+            session.resizeRecipeToBrew()
+        }
     }
 
     /// Confirmation line, shown only when the sequence actually moved off the

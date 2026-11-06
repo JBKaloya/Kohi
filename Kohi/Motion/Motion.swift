@@ -6,6 +6,13 @@ import SwiftUI
 ///
 /// Springs live at the top level. Everything else is grouped by the surface it
 /// belongs to.
+///
+/// One number, several readings. A check is a fill, a tick and a strike read
+/// off the same progress, not three transitions that have to agree. Overshoot
+/// is allowed only where it cannot draw past an edge: the fill of a checkbox
+/// may swell past full, the tick and the strike may not. Reduce Motion places
+/// the value with no spring — views read `accessibilityReduceMotion` and pass
+/// `nil` instead of one of these.
 enum Motion {
 
     // MARK: - Springs
@@ -24,6 +31,66 @@ enum Motion {
 
     /// Tracks a finger. Used while a drag is in flight so it stays interruptible.
     static let tracking = Animation.interactiveSpring(response: 0.28, dampingFraction: 0.86)
+
+    /// A digit column settling, and anything else that should land the way a
+    /// rolling counter does. Bounce 60 from the brew-controls study:
+    /// response 0.25, damping 0.36, a visible overshoot and no long ring.
+    static let roll = Animation.spring(response: 0.25, dampingFraction: 0.36)
+
+    /// How long the ones column moves before the tens, and each column after
+    /// that. A carry should read as a carry rippling up the number.
+    static let rollStagger: Double = 0.045
+
+    /// A column further than this from its target jumps whole turns first,
+    /// so a flick does not leave the ones column spinning for a second.
+    static let rollJumpTurns: Double = 24
+
+    /// The checkbox. The fill takes the raw spring, so it may pass 1.
+    /// `tickLag` and `tickRun` are the strike's window on that same number:
+    /// it starts a little late and finishes a little early.
+    static let tick = roll
+    static let tickLag: Double = 0.12
+    static let tickRun: Double = 0.72
+
+    /// A switch thumb. Stiffness 170, damping 21.5, mass 0.9 is a damping
+    /// ratio near 0.87: a hint of give, and nothing that shows off.
+    static let thumb = Animation.interpolatingSpring(mass: 0.9, stiffness: 170, damping: 21.5)
+
+    /// How far a thumb lengthens along its travel. Dividing velocity by 600
+    /// puts a normal crossing near 1.09; the cap leaves the top somewhere to go.
+    enum Thumb {
+        static let stretchDivisor: CGFloat = 600
+        static let stretchCap: CGFloat = 0.4
+        static let stretch: CGFloat = 0.36
+    }
+
+    /// A pill opening. The same spring as `roll`: width overshoots, then settles.
+    static let open = roll
+
+    /// A value with mass. The handle is rigid; the fill is a softer spring
+    /// behind it. Tuned so a fast drag throws the fill into the end stop.
+    enum Slosh {
+        /// 0 is a rigid fill, 100 is loose. 22 is a little give, not a wave.
+        static let viscosity: Double = 22
+        /// How far the handle coasts after release, 0…100.
+        static let momentum: Double = 55
+        /// How far the leading edge leans, 0…100.
+        static let tilt: Double = 45
+        /// What the end stop gives back. Without it the overshoot is swallowed.
+        static let wallRestitution: Double = 0.42
+    }
+
+    /// Lifting the dial sheet to start a brew.
+    enum Lift {
+        /// Past this, letting go commits. Short of it, the sheet drops back.
+        static let threshold: CGFloat = 120
+        /// How much of the travel past the threshold still follows the finger.
+        static let rubber: CGFloat = 0.35
+        /// The sheet leaving upward, revealing the timer.
+        static let commit = gentle
+        /// The sheet falling back onto the dial.
+        static let giveUp = land
+    }
 
     /// Staggered delay for a run of elements, capped so long lists never crawl.
     static func stagger(_ index: Int, step: Double = 0.035, cap: Double = 0.28) -> Double {
@@ -178,6 +245,8 @@ enum Motion {
         /// The empty state fades up slightly late, so it does not race the grid.
         static let emptyStateRise: CGFloat = 14
         static let emptyStateDelay: Double = 0.12
+        /// A key in a rolling counter, pressed. 0.9, back on `quick`.
+        static let keyPressScale: CGFloat = 0.9
     }
 }
 

@@ -24,6 +24,13 @@ enum Haptic: Sendable {
     case stepAdvance
     /// Dictation started or stopped listening.
     case listening
+    /// One step of a rolling counter or picker. Callers throttle this while a
+    /// key is repeating, so a hold does not buzz on every tick.
+    case step
+    /// The swipe-to-brew gesture crossed the point of no return.
+    case armed
+    /// A checklist row was ticked.
+    case check
 
     var feedback: SensoryFeedback {
         switch self {
@@ -37,6 +44,9 @@ enum Haptic: Sendable {
         case .tick: .impact(weight: .light)
         case .stepAdvance: .impact(weight: .light)
         case .listening: .selection
+        case .step: .selection
+        case .armed: .impact(weight: .medium)
+        case .check: .impact(flexibility: .soft)
         }
     }
 }

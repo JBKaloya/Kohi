@@ -148,11 +148,11 @@ struct WaterSheet: View {
         VStack(alignment: .leading, spacing: 16) {
             Text("What's in it")
                 .catalogueLabel()
-            NumberRow("ppm", value: $draft.tds, unit: "ppm", placeholder: Placeholders.text(.waterTDS))
-            NumberRow("Calcium", value: $draft.calcium, unit: "mg/L", placeholder: Placeholders.text(.waterCalcium))
-            NumberRow("Magnesium", value: $draft.magnesium, unit: "mg/L", placeholder: Placeholders.text(.waterMagnesium))
-            NumberRow("Sodium", value: $draft.sodium, unit: "mg/L", placeholder: Placeholders.text(.waterSodium))
-            NumberRow("Bicarbonate", value: $draft.bicarbonate, unit: "mg/L", placeholder: Placeholders.text(.waterBicarbonate))
+            RollingCounter("ppm", value: $draft.tds, range: .ppm, unit: "ppm", placeholder: Placeholders.text(.waterTDS))
+            RollingCounter("Calcium", value: $draft.calcium, range: .minerals, unit: "mg/L", placeholder: Placeholders.text(.waterCalcium))
+            RollingCounter("Magnesium", value: $draft.magnesium, range: .minerals, unit: "mg/L", placeholder: Placeholders.text(.waterMagnesium))
+            RollingCounter("Sodium", value: $draft.sodium, range: .minerals, unit: "mg/L", placeholder: Placeholders.text(.waterSodium))
+            RollingCounter("Bicarbonate", value: $draft.bicarbonate, range: .minerals, unit: "mg/L", placeholder: Placeholders.text(.waterBicarbonate))
 
             Text("""
             Off the bottle label or your water report. Leave blank what you \

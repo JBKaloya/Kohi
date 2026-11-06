@@ -7,7 +7,7 @@ Mid-fi map of the iOS app as shipped: sitemap, 11 journeys, iPhone frames (393×
 | | |
 | --- | --- |
 | File key | `kjMp5JEMr5xmZXlC3QYNEv` |
-| Last sync | 2026-09-19 · git `03c448a` · sync 1 |
+| Last sync | 2026-10-26 · git `c975c28` · sync 2 |
 | Source of truth | Swift + [fonctionnalites.md](../fonctionnalites.md), not PRD §5 |
 
 ## Present

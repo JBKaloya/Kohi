@@ -15,6 +15,8 @@ struct EquipmentSheet: View {
     @State private var isConfirmingDelete = false
     @State private var tapCount = 0
     @State private var showCatalog = false
+    @State private var nameError: String?
+    @State private var rejectTrigger = 0
 
     /// Editing an existing item.
     init(equipment: Equipment) {
@@ -30,57 +32,72 @@ struct EquipmentSheet: View {
 
     var body: some View {
         NavigationStack {
-            ScrollView {
-                VStack(alignment: .leading, spacing: 26) {
-                    VStack(spacing: 16) {
-                        TextRow(label: "Brand", text: $draft.brand, placeholder: brandPlaceholder, presence: .useful)
-                        TextRow(label: "Model", text: $draft.model, placeholder: modelPlaceholder, presence: .useful)
+            ScrollViewReader { scroller in
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 26) {
+                        VStack(spacing: 16) {
+                            TextRow(label: "Brand", text: $draft.brand, placeholder: brandPlaceholder, presence: .useful)
+                            TextRow(
+                                label: "Model",
+                                text: $draft.model,
+                                placeholder: modelPlaceholder,
+                                presence: .useful,
+                                error: nameError
+                            )
+                        }
+                        .id(Self.identityRow)
+
+                        if showingSuggestions { suggestionSection }
+                        if isNew, draft.kind == .grinder || draft.kind == .brewer {
+                            Button("Browse catalogue") { showCatalog = true }
+                                .catalogueLabel()
+                        }
+
+                        switch draft.kind {
+                        case .grinder: grinderSection
+                        case .brewer: brewerSection
+                        case .espressoMachine: espressoSection
+                        case .kettle: kettleSection
+                        case .scale: scaleSection
+                        case .accessory: EmptyView()
+                        }
+
+                        if draft.kind == .grinder { rangesSection }
+
+                        defaultsSection
+                        notesSection
+
+                        if !isNew { deleteRow }
                     }
-
-                    if showingSuggestions { suggestionSection }
-                    if isNew, draft.kind == .grinder || draft.kind == .brewer {
-                        Button("Browse catalogue") { showCatalog = true }
-                            .catalogueLabel()
-                    }
-
-                    switch draft.kind {
-                    case .grinder: grinderSection
-                    case .brewer: brewerSection
-                    case .espressoMachine: espressoSection
-                    case .kettle: kettleSection
-                    case .scale: scaleSection
-                    case .accessory: EmptyView()
-                    }
-
-                    if draft.kind == .grinder { rangesSection }
-
-                    defaultsSection
-                    notesSection
-
-                    if !isNew { deleteRow }
+                    .padding(.horizontal, 26)
+                    .padding(.top, 14)
+                    .padding(.bottom, 44)
+                    .fieldKeyboardClearance()
                 }
-                .padding(.horizontal, 26)
-                .padding(.top, 14)
-                .padding(.bottom, 44)
-                .fieldKeyboardClearance()
-            }
-            .scrollIndicators(.hidden)
-            .background(Palette.paper.ignoresSafeArea())
-            .navigationTitle(isNew ? "Add \(draft.kind.label.lowercased())" : draft.displayName)
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") { dismiss() }
+                .scrollIndicators(.hidden)
+                .background(Palette.paper.ignoresSafeArea())
+                .navigationTitle(isNew ? "Add \(draft.kind.label.lowercased())" : draft.displayName)
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    ToolbarItem(placement: .cancellationAction) {
+                        Button("Cancel") { dismiss() }
+                    }
+                    ToolbarItem(placement: .confirmationAction) {
+                        Button("Save", action: save)
+                            .fontWeight(.medium)
+                    }
                 }
-                ToolbarItem(placement: .confirmationAction) {
-                    Button("Save", action: save)
-                        .fontWeight(.medium)
-                        .disabled(draft.displayName == draft.kind.label)
+                .onChange(of: rejectTrigger) { _, _ in
+                    withAnimation(Motion.snappy) { scroller.scrollTo(Self.identityRow, anchor: .top) }
                 }
             }
         }
         .tint(Palette.ink)
         .haptic(.tap, trigger: tapCount)
+        .haptic(.deleted, trigger: rejectTrigger)
+        .onChange(of: draft.displayName) { _, _ in
+            if hasName { nameError = nil }
+        }
         .onChange(of: query) { _, new in
             if new.isEmpty { appliedRef = nil }
         }
@@ -220,7 +237,7 @@ struct EquipmentSheet: View {
                     onPick: { tapCount += 1 }
                 )
             }
-            NumberRow("Burr size", value: $draft.burrMm, unit: "mm")
+            RollingCounter("Burr size", value: $draft.burrMm, range: .burr, unit: "mm")
             FormField(label: "Adjustment") {
                 ChipPicker(
                     items: GrindAdjustment.allCases,
@@ -229,8 +246,8 @@ struct EquipmentSheet: View {
                     onPick: { tapCount += 1 }
                 )
             }
-            NumberRow("Steps / turn", value: $draft.stepsPerRotation)
-            NumberRow("Per step", value: $draft.makerMicronsPerStep, unit: "µm")
+            RollingCounter("Steps / turn", value: $draft.stepsPerRotation, range: .stepsPerTurn)
+            RollingCounter("Per step", value: $draft.makerMicronsPerStep, range: .micronsPerStep, unit: "µm")
 
             Text("""
             Microns per step is the maker's figure for how far the burr moves — \
@@ -263,8 +280,8 @@ struct EquipmentSheet: View {
 
     private var espressoSection: some View {
         VStack(spacing: 16) {
-            NumberRow("Basket", value: $draft.basketG, unit: "g", placeholder: Placeholders.text(.espressoBasket))
-            NumberRow("Pressure", value: $draft.pressureBar, unit: "bar", placeholder: Placeholders.text(.espressoPressure))
+            RollingCounter("Basket", value: $draft.basketG, range: .basket, unit: "g", placeholder: Placeholders.text(.espressoBasket))
+            RollingCounter("Pressure", value: $draft.pressureBar, range: .pressure, unit: "bar", placeholder: Placeholders.text(.espressoPressure))
         }
     }
 
@@ -283,7 +300,7 @@ struct EquipmentSheet: View {
 
     private var scaleSection: some View {
         VStack(spacing: 16) {
-            NumberRow("Resolution", value: $draft.resolutionG, unit: "g", placeholder: Placeholders.text(.scaleResolution))
+            RollingCounter("Resolution", value: $draft.resolutionG, range: .resolution, unit: "g", placeholder: Placeholders.text(.scaleResolution))
             FormField(label: "Timer") {
                 Toggle("Built-in timer", isOn: $draft.hasTimer.orFalse)
                     .labelsHidden()
@@ -304,7 +321,6 @@ struct EquipmentSheet: View {
                 Spacer()
                 Button("Later", action: save)
                     .catalogueLabel()
-                    .disabled(draft.displayName == draft.kind.label)
             }
 
             ForEach(BrewMethod.allCases) { method in
@@ -459,7 +475,16 @@ struct EquipmentSheet: View {
 
     // MARK: - Save
 
+    private static let identityRow = "identity"
+
+    private var hasName: Bool { draft.displayName != draft.kind.label }
+
     private func save() {
+        guard hasName else {
+            nameError = FieldCopy.equipmentNameMissing
+            rejectTrigger += 1
+            return
+        }
         // The default flags are applied through the store, which clears the
         // same role from anything else of this kind.
         let methods = draft.isDefaultFor

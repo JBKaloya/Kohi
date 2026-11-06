@@ -14,7 +14,17 @@ final class CardComposer {
 
     private(set) var renderCount = 0
     private var tail: Task<Void, Never>?
-    private let memory = NSCache<NSString, CacheBox>()
+    /// Full 1080 px tiles, only the last few: a mosaic draws the small copies in `display`.
+    private let memory: NSCache<NSString, CacheBox> = {
+        let cache = NSCache<NSString, CacheBox>()
+        cache.countLimit = 6
+        return cache
+    }()
+    private let display: NSCache<NSString, CacheBox> = {
+        let cache = NSCache<NSString, CacheBox>()
+        cache.totalCostLimit = 96 * 1024 * 1024
+        return cache
+    }()
     private let fields = NSCache<NSString, CacheBox>()
 
     func resetCountForTesting() {
@@ -23,7 +33,70 @@ final class CardComposer {
 
     func clearMemoryForTesting() {
         memory.removeAllObjects()
+        display.removeAllObjects()
         fields.removeAllObjects()
+    }
+
+    /// What a waiting tile shows: the field and the label, without grain or symbol.
+    struct Placeholder: Sendable {
+        var content: KohiCardContent
+        var field: CGImage
+        var tone: CardBackdrop.TextTone
+    }
+
+    /// The tile at the size the mosaic draws it, from memory or disk. Nil when it was never
+    /// rendered for the current token. Token, read and decode all stay off the main thread.
+    func cachedDisplayTile(for card: CoffeeCard, maxPixel: Int) async -> CGImage? {
+        let token = await backgroundToken(for: card)
+        let key = "\(token)-\(maxPixel)" as NSString
+        if let hit = display.object(forKey: key) { return hit.image }
+        let id = card.id
+        let image = await Task.detached(priority: .userInitiated) { () -> CGImage? in
+            let url = CardFiles.kohiTile(id: id, token: token)
+            guard FileManager.default.fileExists(atPath: url.path(percentEncoded: false)) else { return nil }
+            return ImageCodec.downsample(url, maxPixel: maxPixel)
+        }.value
+        guard let image else { return nil }
+        display.setObject(CacheBox(image), forKey: key, cost: image.width * image.height * 4)
+        return image
+    }
+
+    /// Renders when needed, then hands back the small copy.
+    func displayTile(for card: CoffeeCard, maxPixel: Int) async -> CGImage? {
+        if let hit = await cachedDisplayTile(for: card, maxPixel: maxPixel) { return hit }
+        guard await tile(for: card) != nil else { return nil }
+        return await cachedDisplayTile(for: card, maxPixel: maxPixel)
+    }
+
+    /// Draws the tiles that are missing on disk. Never decodes one that exists.
+    func ensureTile(for card: CoffeeCard) async {
+        let token = await backgroundToken(for: card)
+        if CardFiles.hasKohi(id: card.id, token: token) { return }
+        _ = await tile(for: card)
+    }
+
+    func placeholder(for card: CoffeeCard) async -> Placeholder? {
+        let token = await backgroundToken(for: card)
+        let key = token as NSString
+        let art = await Task.detached(priority: .userInitiated) {
+            CardArt.make(card, ink: CardFiles.loadStampFile(card.id))
+        }.value
+        let content = KohiCardContent.make(card, art: art)
+        if let hit = fields.object(forKey: key) {
+            return Placeholder(content: content, field: hit.image, tone: hit.tone)
+        }
+        guard let (low, tone) = await Task.detached(priority: .userInitiated, operation: {
+            CardBackdrop.lowField(art)
+        }).value else { return nil }
+        fields.setObject(CacheBox(low, tone: tone), forKey: key)
+        return Placeholder(content: content, field: low, tone: tone)
+    }
+
+    private func backgroundToken(for card: CoffeeCard) async -> String {
+        let layout = CardLayout.stored(for: card.id, defaults)
+        return await Task.detached(priority: .userInitiated) {
+            Self.token(for: card, file: CardFiles.loadStampFile(card.id), layout: layout)
+        }.value
     }
 
     /// Cache hit does not increment `renderCount`.
@@ -55,11 +128,18 @@ final class CardComposer {
     }
 
     func token(for card: CoffeeCard) -> String {
-        let file = CardFiles.loadStampFile(card.id)
+        Self.token(
+            for: card,
+            file: CardFiles.loadStampFile(card.id),
+            layout: CardLayout.stored(for: card.id, defaults)
+        )
+    }
+
+    nonisolated static func token(for card: CoffeeCard, file: StampFile?, layout: CardLayout) -> String {
         let art = CardArt.make(card, ink: file)
         return KohiCardContent.make(card, art: art).cacheToken(
-            symbol: Self.symbolSignature(file, art: art),
-            layout: CardLayout.stored(for: card.id, defaults),
+            symbol: symbolSignature(file, art: art),
+            layout: layout,
             density: .tile
         )
     }

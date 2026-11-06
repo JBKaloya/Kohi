@@ -84,7 +84,7 @@ struct KohiCard: View {
                 roasterLine
             }
             if !content.title.isEmpty {
-                Text(content.title)
+                Text(Self.titleText(content.title))
                     .font(.custom(AppFonts.angustaDemiBold, size: titleSize))
                     .foregroundStyle(titleColor)
                     .lineLimit(density == .tile ? 2 : 3)
@@ -122,7 +122,7 @@ struct KohiCard: View {
                 stickerImage(sticker, share: density == .tile ? 0.40 : 0.32)
                     .offset(
                         x: (content.stickerOnRight ? 1 : -1) * w(0.03),
-                        y: -(density == .tile ? w(0.26) : w(0.21))
+                        y: -(density == .tile ? w(0.33) : w(0.27))
                     )
             }
         }
@@ -185,7 +185,7 @@ struct KohiCard: View {
                         .lineLimit(1)
                 }
                 if !content.title.isEmpty {
-                    Text(content.title)
+                    Text(Self.titleText(content.title))
                         .font(.custom(AppFonts.angustaDemiBold, size: w(0.14)))
                         .foregroundStyle(bleedInk)
                         .lineLimit(density == .tile ? 3 : 4)
@@ -248,6 +248,17 @@ struct KohiCard: View {
         .font(.system(size: size))
         .lineLimit(density == .tile ? 1 : 2)
         .truncationMode(.tail)
+    }
+
+    /// The Angusta file in the app is the trial cut: no accented letters. A Latin letter loses
+    /// its accent rather than falling back to another face; other scripts are left alone.
+    static func titleText(_ title: String) -> String {
+        title.map { character -> String in
+            let original = String(character)
+            guard !original.unicodeScalars.allSatisfy(\.isASCII) else { return original }
+            let folded = original.folding(options: .diacriticInsensitive, locale: nil)
+            return folded.unicodeScalars.allSatisfy { $0.isASCII && CharacterSet.letters.contains($0) } ? folded : original
+        }.joined()
     }
 
     private var titleSize: CGFloat {

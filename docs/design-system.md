@@ -56,7 +56,7 @@ Toutes les couleurs d’archive viennent de `Palette`. Rien n’est « presque p
 | `hairline` | 0.886, 0.867, 0.827 | `#E2DDD3` | Filets de catalogue, contours de chips, empty-state |
 | `cardShadow` | 0.30, 0.26, 0.20 @ 22 % | — | Ombre portée des cartes sur le papier |
 | `scanBackdrop` | 0.055, 0.051, 0.047 | `#0E0D0C` | Fond du flux caméra / review |
-| `primary` | 130/255, 78/255, 52/255 | `#824E34` | Identité du café A sur un radar de comparaison |
+| `primary` | 130/255, 78/255, 52/255 | `#824E34` | Identité du café A sur un radar de comparaison ; champ requis manquant |
 | `secondary` | 61/255, 92/255, 86/255 | `#3D5C56` | Identité du café B sur un radar de comparaison |
 
 ### Usage
@@ -70,7 +70,7 @@ Toutes les couleurs d’archive viennent de `Palette`. Rien n’est « presque p
 - **Scan :** le papier disparaît. Blanc, blanc à ~40–85 % d’opacité, capsules noires translucides. Le bouton primaire « Use » est une capsule blanche, texte `ink`.
 - **Comparaison A/B :** `primary` et `secondary` uniquement quand deux séries se superposent — le radar de comparaison, le radar median/best de la fiche, la courbe cible/réel, les colonnes A/B. Une série seule reste encre. Jamais une troisième couleur. Pas sur les boutons, les tabs, ni la sélection. Chaque graphique porte sa légende en `tag`.
 
-Le chrome reste encre et papier. `primary` / `secondary` ne sont pas des accents d’interface : ils identifient deux séries sur un même graphique. **La couleur vit dans l’objet carte** (fond, relief, sticker), **jamais dans le chrome**. Le chrome reste encre et papier. L’étiquette d’une carte Kohi est du papier : texte encre, filet hairline.
+Le chrome reste encre et papier. `primary` / `secondary` ne sont pas des accents d’interface : ils identifient deux séries sur un même graphique. **Une seule exception :** `primary` marque un champ requis que Save attend (voir Formulaires → Champs requis). **La couleur vit dans l’objet carte** (fond, relief, sticker), **jamais dans le chrome**. Le chrome reste encre et papier. L’étiquette d’une carte Kohi est du papier : texte encre, filet hairline.
 
 ---
 
@@ -223,7 +223,7 @@ Vocabulaire fermé. Chaque cas *veut dire la même chose* partout. Warmup au lau
 | `capture` | impact medium | Le shutter a tiré |
 | `saved` | success | Une carte / un brew est écrit (pas sur un *nouveau* scan : l’atterrissage suffit) |
 | `landing` | impact soft | La carte touche le papier |
-| `deleted` | warning | Une carte quitte l’archive, ou un save impossible (nom trop court) |
+| `deleted` | warning | Une carte quitte l’archive, ou un save impossible (champ requis manquant, nom trop court) |
 | `densityChange` | selection | Le pinch a snappé un nouveau nombre de colonnes |
 | `tap` | impact medium | Chip, rating, axe, More, start/stop timer dans le parcours brew |
 | `tick` | impact light | Chaque seconde du timer de brew |
@@ -332,7 +332,7 @@ Rangée canonique :
 
 Espacement interne label/valeur : **16**. Stack verticale label→filet : **7**. Groupes : titre `catalogueLabel` + contenu, spacing **14**.
 
-Cinq visages, zéro chrome nouveau. `FieldPresence` est `useful` ou `optional` — pas d’astérisque, rien n’est obligatoire.
+Cinq visages, zéro chrome nouveau. `FieldPresence` est `useful` ou `optional` — pas d’astérisque. Les rares champs requis sont décrits plus bas.
 
 | État | Label | Placeholder / valeur | Filet |
 | --- | --- | --- | --- |
@@ -340,13 +340,22 @@ Cinq visages, zéro chrome nouveau. `FieldPresence` est `useful` ou `optional` �
 | Vide utile | `inkMuted` | placeholder `hairline` | `hairline` |
 | Plein | `inkMuted` | valeur `ink` | `hairline` |
 | Focus | `inkMuted` | `paperShade` sous la valeur | `ink` |
-| Invalide | `inkMuted` | bulle `paperShade` collée | `ink` |
+| Invalide / manquant | `primary` | bulle `paperShade` collée, texte `primary` | `primary` |
 
-L’indice (`Typography.tag`) n’existe qu’au focus, une ligne, et dit *pourquoi* le champ existe. Il disparaît au blur. Une erreur (nom trop court, température > 100 °C) prend sa place : pas de rouge, pas de rangée extra.
+L’indice (`Typography.tag`) n’existe qu’au focus, une ligne, et dit *pourquoi* le champ existe. Il disparaît au blur. Une erreur (nom trop court, champ requis vide) prend sa place : couleur café `primary`, jamais de rouge, pas de rangée extra.
 
 L’unité d’un `NumberRow` est `hairline` tant que le champ est vide, `inkMuted` une fois remplie.
 
 `FlowLayout` : spacing chips **7**, row spacing **8**.
+
+#### Champs requis
+
+Les pages sont denses : un bouton qui manque ou qui est grisé ne dit pas ce qu’il attend.
+
+- **Save n’est jamais caché ni grisé** à cause d’un champ requis. `.disabled` reste réservé à une action en cours (`isAsking`, `isSyncing`) ou déjà faite.
+- **Un tap sur Save trop tôt** n’écrit rien. Les champs qui manquent passent en `primary` (label, filet, bulle d’erreur courte), haptic `deleted`, et la page remonte au premier d’entre eux. Le marquage disparaît dès que le champ est rempli.
+- Hors `FormField`, un label se marque avec `catalogueLabel(missing:)`.
+- **Une suggestion sûre est déjà choisie.** Le lieu le plus proche d’une dégustation arrive présélectionné, affiché comme un fait avec « Change » à côté. Ce qui n’est qu’une hypothèse (pas de position) reste une question à taper.
 
 Edit d’une carte : épine toujours visible (Coffee, Roaster, Place, Process). Origin et On the bag se plient tant qu’ils sont vides, et s’ouvrent si le scan a trouvé quelque chose.
 

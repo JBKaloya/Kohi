@@ -70,11 +70,7 @@ struct GuidedBrewView: View {
                         }
                     }
                     Spacer(minLength: 8)
-                    Text(clock)
-                        .font(Typography.number)
-                        .foregroundStyle(Palette.ink)
-                        .monospacedDigit()
-                        .contentTransition(.numericText())
+                    rollingClock(size: 28)
                 }
                 .padding(.horizontal, 26)
                 .padding(.top, 18)
@@ -139,6 +135,9 @@ struct GuidedBrewView: View {
         }
         .haptic(.stepAdvance, trigger: stepTrigger)
         .haptic(.tick, trigger: tickTrigger)
+        .onChange(of: voiceNote.isRecording) { _, _ in
+            pushLiveActivity(force: true)
+        }
         .onChange(of: Int(elapsed)) { _, value in
             armAutoAdvanceIfNeeded()
             tickTrigger = value
@@ -203,9 +202,13 @@ struct GuidedBrewView: View {
                         .lineLimit(2)
                 }
             } else if let target = step.targetMass, step.action == .pour || step.action == .bloom {
-                Text("to \(GrindRange.number(target)) g")
-                    .font(Typography.number)
-                    .foregroundStyle(Palette.ink)
+                HStack(alignment: .firstTextBaseline, spacing: 6) {
+                    Text("to")
+                    rollingMass(target, size: 34)
+                    Text("g")
+                }
+                .font(Typography.number)
+                .foregroundStyle(Palette.ink)
 
                 Text("now \(GrindRange.number(nowMass(for: step))) g")
                     .font(Typography.value)
@@ -248,9 +251,7 @@ struct GuidedBrewView: View {
         VStack(alignment: .leading, spacing: 10) {
             Text(Copy.totalBrewTime)
                 .catalogueLabel()
-            Text(clock)
-                .font(Typography.number)
-                .foregroundStyle(Palette.ink)
+            rollingClock(size: 34)
             if let target = recipe.timeLabel {
                 Text("target \(target)")
                     .font(Typography.tag)
@@ -486,18 +487,31 @@ struct GuidedBrewView: View {
     }
 
     private var voiceNoteRow: some View {
-        VoiceNoteControl(note: voiceNote, action: toggleVoiceNote)
+        NarrationPill(note: voiceNote, brewID: brew.id, tone: .ink)
     }
 
-    private func toggleVoiceNote() {
-        if voiceNote.isRecording || voiceNote.state == .paused {
-            voiceNote.stop()
-            pushLiveActivity(force: true)
-            return
-        }
-        Task {
-            await voiceNote.start(brewID: brew.id)
-            pushLiveActivity(force: true)
-        }
+    private func rollingClock(size: CGFloat) -> some View {
+        let seconds = Int(elapsed)
+        let clock = RollMath.clockCounts(seconds: seconds)
+        return RollingDigits(
+            counts: clock.counts,
+            bases: clock.bases,
+            show: seconds >= 600 ? 4 : 3,
+            separators: [1: ":"],
+            cell: size + 6,
+            fontSize: size
+        )
+        .accessibilityLabel(self.clock)
+    }
+
+    private func rollingMass(_ mass: Double, size: CGFloat) -> some View {
+        let scaled = Int(mass.rounded())
+        return RollingDigits(
+            counts: RollMath.counts(of: scaled, places: 4),
+            bases: Array(repeating: 10, count: 4),
+            show: RollMath.shownPlaces(scaled: scaled, decimals: 0, places: 4),
+            cell: size + 4,
+            fontSize: size
+        )
     }
 }

@@ -16,6 +16,8 @@ nonisolated enum FieldTone: Equatable, Sendable {
     case ink
     case inkMuted
     case hairline
+    /// Only for a field Save is waiting on. The one place coffee brown is chrome.
+    case primary
 }
 
 /// Copy that lives on the field, never as a paragraph under the form.
@@ -23,6 +25,12 @@ nonisolated enum FieldCopy {
     static let roasterShared = "Shared. Adding one here spares everyone else the typing."
     static let roasterPlace = "City and country keep two roasteries apart."
     static let roasterNameTooShort = "Need at least two letters"
+    static let recipeNameMissing = "Name it to keep it"
+    static let filterNameMissing = "Name this paper"
+    static let filterModelMissing = "Pick a paper, or tap Custom"
+    static let shapeMissing = "Pick a shape"
+    static let settingMissing = "The setting is the reference"
+    static let equipmentNameMissing = "Name the brand or the model"
 
     static func boiling(_ temperature: Double) -> String? {
         guard temperature > 100 else { return nil }
@@ -36,8 +44,10 @@ nonisolated enum FieldChrome {
     static func label(
         presence: FieldPresence,
         isEmpty: Bool,
-        isFocused: Bool
+        isFocused: Bool,
+        hasError: Bool = false
     ) -> FieldTone {
+        if hasError { return .primary }
         if isFocused { return .inkMuted }
         if isEmpty, presence == .optional { return .hairline }
         return .inkMuted
@@ -51,7 +61,8 @@ nonisolated enum FieldChrome {
         isFocused: Bool,
         hasError: Bool
     ) -> (tone: FieldTone, opacity: Double) {
-        if isFocused || hasError { return (.ink, 1) }
+        if hasError { return (.primary, 1) }
+        if isFocused { return (.ink, 1) }
         if isEmpty, presence == .optional {
             return (.hairline, 0.55)
         }
@@ -69,6 +80,7 @@ extension FieldTone {
         case .ink: Palette.ink
         case .inkMuted: Palette.inkMuted
         case .hairline: Palette.hairline
+        case .primary: Palette.primary
         }
     }
 }
@@ -89,7 +101,7 @@ struct FormField<Value: View>: View {
         VStack(alignment: .leading, spacing: 7) {
             HStack(alignment: .firstTextBaseline, spacing: 16) {
                 Text(label)
-                    .catalogueLabel()
+                    .catalogueLabel(missing: error != nil)
                     .foregroundStyle(chromeLabel.color)
                     .lineLimit(1)
                     .minimumScaleFactor(0.85)
@@ -121,7 +133,7 @@ struct FormField<Value: View>: View {
     }
 
     private var chromeLabel: FieldTone {
-        FieldChrome.label(presence: presence, isEmpty: isEmpty, isFocused: isFocused)
+        FieldChrome.label(presence: presence, isEmpty: isEmpty, isFocused: isFocused, hasError: error != nil)
     }
 
     private var rule: (tone: FieldTone, opacity: Double) {
@@ -146,7 +158,7 @@ struct FormField<Value: View>: View {
     private func whisper(_ text: String) -> some View {
         Text(text)
             .font(Typography.tag)
-            .foregroundStyle(Palette.ink)
+            .foregroundStyle(Palette.primary)
             .padding(.horizontal, 10)
             .padding(.vertical, 8)
             .background {
@@ -219,183 +231,6 @@ struct TextRow: View {
         }
         .animation(Motion.snappy, value: isFocused)
         .animation(Motion.snappy, value: completions)
-    }
-}
-
-/// Numeric entry that writes nil back when cleared, with the unit trailing the
-/// number rather than crowding the label.
-struct NumberRow: View {
-    let label: String
-    @Binding var text: String
-    var unit = ""
-    var placeholder = ""
-    var labelWidth: CGFloat = 92
-    var keyboard: UIKeyboardType = .decimalPad
-    var presence: FieldPresence = .optional
-    var hint: String?
-    var error: String?
-    /// When set, label sits above the number (brew Dose / Out) instead of
-    /// the catalogue row.
-    var compactWidth: CGFloat?
-
-    @FocusState private var isFocused: Bool
-    /// What is on screen while typing. The bound number updates on blur,
-    /// so a half-typed "2" never rewrites the ratio or the step masses.
-    @State private var draft = ""
-
-    init(
-        _ label: String,
-        value: Binding<Double?>,
-        unit: String = "",
-        placeholder: String = "",
-        labelWidth: CGFloat = 92,
-        presence: FieldPresence = .optional,
-        hint: String? = nil,
-        error: String? = nil,
-        compactWidth: CGFloat? = nil
-    ) {
-        self.label = label
-        _text = NumberText.binding(value)
-        self.unit = unit
-        self.placeholder = placeholder
-        self.labelWidth = labelWidth
-        self.presence = presence
-        self.hint = hint
-        self.error = error
-        self.compactWidth = compactWidth
-    }
-
-    init(
-        _ label: String,
-        value: Binding<Int?>,
-        unit: String = "",
-        placeholder: String = "",
-        labelWidth: CGFloat = 92,
-        presence: FieldPresence = .optional,
-        hint: String? = nil,
-        error: String? = nil
-    ) {
-        self.label = label
-        _text = NumberText.binding(value)
-        self.unit = unit
-        self.placeholder = placeholder
-        self.labelWidth = labelWidth
-        self.presence = presence
-        self.hint = hint
-        self.error = error
-        keyboard = .numberPad
-    }
-
-    private var isEmpty: Bool { text.trimmingCharacters(in: .whitespaces).isEmpty }
-
-    var body: some View {
-        if let compactWidth {
-            compact(width: compactWidth)
-        } else {
-            FormField(
-                label: label,
-                labelWidth: labelWidth,
-                presence: presence,
-                isEmpty: isEmpty,
-                isFocused: isFocused,
-                hint: hint,
-                error: error
-            ) {
-                HStack(spacing: 6) {
-                    field
-                    unitLabel
-                }
-            }
-        }
-    }
-
-    private func compact(width: CGFloat) -> some View {
-        VStack(alignment: .leading, spacing: 4) {
-            Text(label)
-                .catalogueLabel()
-                .foregroundStyle(
-                    FieldChrome.label(presence: presence, isEmpty: isEmpty, isFocused: isFocused).color
-                )
-                .lineLimit(1)
-                .minimumScaleFactor(0.7)
-            HStack(spacing: 4) {
-                field
-                    .frame(width: width - 20)
-                    .multilineTextAlignment(.trailing)
-                unitLabel
-            }
-            .background { compactShade }
-            if let error {
-                Text(error)
-                    .font(Typography.tag)
-                    .foregroundStyle(Palette.ink)
-            } else if isFocused, let hint {
-                Text(hint)
-                    .font(Typography.tag)
-                    .foregroundStyle(Palette.inkMuted)
-                    .transition(
-                        .opacity.combined(with: .offset(y: Motion.Field.hintRise))
-                    )
-            }
-        }
-        .animation(Motion.quick, value: isFocused)
-        .animation(Motion.snappy, value: error)
-        .reportsFieldFocus(isFocused)
-    }
-
-    @ViewBuilder
-    private var compactShade: some View {
-        if isFocused {
-            RoundedRectangle(cornerRadius: Motion.Field.focusShadeRadius)
-                .fill(Palette.paperShade)
-                .padding(.horizontal, -Motion.Field.focusShadePad.h)
-                .padding(.vertical, -Motion.Field.focusShadePad.v)
-        }
-    }
-
-    private var field: some View {
-        TextField(
-            "",
-            text: $draft,
-            prompt: Text(placeholder).foregroundStyle(FieldChrome.placeholder().color)
-        )
-        .formValue()
-        .keyboardType(keyboard)
-        .focused($isFocused)
-        .onAppear { draft = text }
-        .onChange(of: text) { _, new in
-            if !isFocused { draft = new }
-        }
-        .onChange(of: isFocused) { _, focused in
-            if !focused { commitDraft() }
-        }
-        .onSubmit { commitDraft() }
-    }
-
-    /// Writes the number once, then shows the formatted value. An unparseable
-    /// fragment (a lone decimal mark is fine) falls back to what was committed.
-    private func commitDraft() {
-        let trimmed = draft.trimmingCharacters(in: .whitespaces)
-        if trimmed.isEmpty {
-            if !text.isEmpty { text = "" }
-            draft = ""
-            return
-        }
-        guard NumberText.parse(trimmed) != nil else {
-            draft = text
-            return
-        }
-        text = trimmed
-        draft = text
-    }
-
-    @ViewBuilder
-    private var unitLabel: some View {
-        if !unit.isEmpty {
-            Text(unit)
-                .font(Typography.tag)
-                .foregroundStyle(FieldChrome.unit(isEmpty: isEmpty).color)
-        }
     }
 }
 

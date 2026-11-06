@@ -19,6 +19,8 @@ struct FilterSheet: View {
     @State private var tapCount = 0
     @State private var didSave = false
     @State private var persistOnDismiss = true
+    @State private var showsMissing = false
+    @State private var rejectTrigger = 0
 
     init(
         stock: FilterStock? = nil,
@@ -38,7 +40,7 @@ struct FilterSheet: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 26) {
                     if isNew {
-                        TextRow(label: "Search", text: $query, placeholder: "Cafec, Hario, Sibarist…")
+                        TextRow(label: "Search", text: $query, placeholder: "Cafec, Hario, Sibarist…", error: searchError)
                         if !isCustom { seedList }
                         if filterMatch.unmatched {
                             Text(Copy.noPaperMatched)
@@ -61,9 +63,10 @@ struct FilterSheet: View {
                                 label: "Name",
                                 text: customNameBinding,
                                 placeholder: "Cafec Abaca+",
-                                presence: .useful
+                                presence: .useful,
+                                error: nameError
                             )
-                            FormField(label: "Shape") {
+                            FormField(label: "Shape", error: shapeError) {
                                 ChipPicker(
                                     items: Array(FilterShape.allCases),
                                     label: \.label,
@@ -116,12 +119,12 @@ struct FilterSheet: View {
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Save", action: save)
                         .fontWeight(.medium)
-                        .disabled(!canSave)
                 }
             }
         }
         .tint(Palette.ink)
         .haptic(.tap, trigger: tapCount)
+        .haptic(.deleted, trigger: rejectTrigger)
         .onDisappear {
             guard persistOnDismiss, !didSave, canSave else { return }
             persist()
@@ -216,7 +219,28 @@ struct FilterSheet: View {
         return FilterCalibration.of(brews, stock: setup.filterStock, focusing: draft.id)
     }
 
+    private var searchError: String? {
+        guard showsMissing, isNew, !isCustom, draft.modelId == nil else { return nil }
+        return FieldCopy.filterModelMissing
+    }
+
+    private var nameError: String? {
+        guard showsMissing, draft.modelId == nil,
+              (draft.customName ?? "").trimmingCharacters(in: .whitespaces).isEmpty else { return nil }
+        return FieldCopy.filterNameMissing
+    }
+
+    private var shapeError: String? {
+        guard showsMissing, draft.modelId == nil, draft.shape == nil else { return nil }
+        return FieldCopy.shapeMissing
+    }
+
     private func save() {
+        guard canSave else {
+            withAnimation(Motion.snappy) { showsMissing = true }
+            rejectTrigger += 1
+            return
+        }
         didSave = true
         persist()
         dismiss()
