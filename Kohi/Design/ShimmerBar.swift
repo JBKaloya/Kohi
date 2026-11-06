@@ -3,12 +3,16 @@ import SwiftUI
 /// A rounded bar that pulses with a travelling highlight, used as a field
 /// placeholder while the OCR read is in progress.
 struct ShimmerBar: View {
+    /// Nil picks a width between 60 and 120 points.
+    var width: CGFloat?
+
     @State private var phase: CGFloat = 0
+    @State private var randomWidth = CGFloat.random(in: 60...120)
 
     var body: some View {
         RoundedRectangle(cornerRadius: 4)
             .fill(Palette.hairline.opacity(0.55))
-            .frame(width: .random(in: 60...120), height: 14)
+            .frame(width: width ?? randomWidth, height: 14)
             .overlay {
                 GeometryReader { geo in
                     let w = geo.size.width

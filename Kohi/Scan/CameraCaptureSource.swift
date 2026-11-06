@@ -439,8 +439,15 @@ struct CameraCaptureView: View {
     }
 
     private var sampleDemoButton: some View {
-        Button {
-            Task { await loadSampleCard() }
+        Menu {
+            ForEach(DemoScan.allCases) { kind in
+                Button(kind.title) {
+                    Task { await loadDemo(kind) }
+                }
+            }
+            Button("Archive card") {
+                Task { await loadSampleCard() }
+            }
         } label: {
             ScanSideButton(
                 systemImage: "rectangle.portrait",
@@ -487,6 +494,21 @@ struct CameraCaptureView: View {
         engine.stop()
         defer { isLoadingPhoto = false }
         guard let captured = await Task.detached(priority: .userInitiated, operation: SampleArchive.sampleCapture).value else {
+            engine.resume()
+            return
+        }
+        onCapture(captured)
+    }
+
+    /// Drawn on the main actor, then laid on the surface off it.
+    private func loadDemo(_ kind: DemoScan) async {
+        isLoadingPhoto = true
+        engine.stop()
+        defer { isLoadingPhoto = false }
+        guard let image = kind.image(),
+              let captured = await Task.detached(priority: .userInitiated, operation: {
+                  SampleArchive.sampleCapture(image: image)
+              }).value else {
             engine.resume()
             return
         }

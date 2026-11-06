@@ -363,7 +363,7 @@ private struct ArchiveGrid: View {
     @State private var openCard: CoffeeCard?
 
     var body: some View {
-        GridScreen(onScan: {}, openCard: $openCard)
+        GridScreen(onScan: { _ in }, openCard: $openCard, cupScan: .constant(nil))
     }
 }
 

@@ -21,6 +21,12 @@ struct RootView: View {
     @State private var outbox = SyncOutbox()
     @State private var sync = SyncCoordinator(outbox: SyncOutbox())
     @State private var isScanning = false
+    /// What the open scanner is for. Set before it opens.
+    @State private var scanPurpose: ScanPurpose = .bag
+    /// A café card held until the scanner finishes dismissing, then handed
+    /// to the grid as `cupScan`. The same guard as `pendingScan`.
+    @State private var pendingCup: CupScan?
+    @State private var cupScan: CupScan?
     /// A scan that has been filed and read, but not yet named. Presenting it
     /// is what shows the edit sheet.
     @State private var draftScan: PendingScan?
@@ -63,20 +69,29 @@ struct RootView: View {
 
     var body: some View {
         GridScreen(
-            onScan: { isScanning = true },
+            onScan: { purpose in
+                scanPurpose = purpose
+                isScanning = true
+            },
             isIngesting: isIngesting,
-            openCard: $cardToOpen
+            openCard: $cardToOpen,
+            cupScan: $cupScan
         )
             .appEnvironment(env)
             .toggleStyle(.liquid)
             .fullScreenCover(isPresented: $isScanning, onDismiss: {
                 presentDraftIfReady()
+                presentCupIfReady()
             }) {
                 ScanScreen(
                     onScan: { scan in
                         isScanning = false
-                        isIngesting = true
-                        Task { await ingest(scan) }
+                        if case .cup(let place) = scanPurpose {
+                            pendingCup = CupScan(place: place, scan: scan)
+                        } else {
+                            isIngesting = true
+                            Task { await ingest(scan) }
+                        }
                     },
                     onCancel: { isScanning = false }
                 )
@@ -288,6 +303,13 @@ struct RootView: View {
         } else {
             draftScan = pending
         }
+    }
+
+    private func presentCupIfReady() {
+        guard !isScanning, let cup = pendingCup else { return }
+        pendingCup = nil
+        scanPurpose = .bag
+        cupScan = cup
     }
 
     /// Opens the card the scan matched. The new card's files go away with the

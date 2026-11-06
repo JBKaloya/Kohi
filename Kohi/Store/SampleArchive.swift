@@ -90,7 +90,11 @@ nonisolated enum SampleArchive {
             let url = Bundle.main.url(forResource: name, withExtension: "png"),
             let card = ImageCodec.decode(url)
         else { return nil }
+        return sampleCapture(image: card)
+    }
 
+    /// Lays `card` on a surface at a slight angle, as a photo of it would be.
+    static func sampleCapture(image card: CGImage) -> CapturedCard? {
         let canvas = CGSize(width: 2400, height: 3200)
         let quad = Quad(
             topLeft: CGPoint(x: 470, y: 690),

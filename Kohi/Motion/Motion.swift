@@ -198,6 +198,8 @@ enum Motion {
         static let minimumScaleDelta: CGFloat = 0.08
         /// How many cards to render at the next density before a pinch lands.
         static let prewarmCount = 40
+        /// The first page at the launch density, warmed before the first scroll.
+        static let launchPrewarmCount = 12
     }
 
     // MARK: - Scan overlay

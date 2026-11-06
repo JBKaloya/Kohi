@@ -14,9 +14,13 @@ final class NearbyPlaces {
     static let yoursRadius: CLLocationDistance = 150
     static let mapsRadius: CLLocationDistance = 300
 
-    let locator = PlaceLocator(accuracy: kCLLocationAccuracyHundredMeters)
+    let locator: PlaceLocator
     private(set) var cafes: [Place] = []
     @ObservationIgnored private var searchedAround: CLLocationCoordinate2D?
+
+    init(accuracy: CLLocationAccuracy = kCLLocationAccuracyHundredMeters) {
+        locator = PlaceLocator(accuracy: accuracy)
+    }
 
     var coordinate: CLLocationCoordinate2D? { locator.coordinate }
     var isDenied: Bool { locator.isDenied }

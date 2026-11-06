@@ -13,6 +13,8 @@ struct CardDetailView: View {
     var startsBrew = false
     /// Opened from Suggested, so the scroll lands on that section.
     var startsAtSuggested = false
+    /// The tab the card opens on. Opened from a brew, it is Brews.
+    var startsOn: CardDetailTab = .coffee
 
     @Environment(CardStore.self) private var store
     @Environment(TastingStore.self) private var tastings
@@ -39,9 +41,34 @@ struct CardDetailView: View {
     @State private var rangeGrinder: Equipment?
     @State private var pendingDelete: (brew: Brew, index: Int)?
     @State private var undoToken = 0
-    @State private var showFaceMenu = false
     @State private var showSymbolEditor = false
     @State private var openedTasting: Tasting?
+    /// Nil until a tab is tapped, so the first frame already shows the
+    /// opening tab.
+    @State private var chosenTab: CardDetailTab?
+    /// True once the rail has scrolled up under the top bar.
+    @State private var isPastRail = false
+    /// The brew count when the brew flow opened, to tell a saved brew from an
+    /// abandoned one when it closes.
+    @State private var brewCountAtFlowStart: Int?
+
+    private var tab: CardDetailTab {
+        chosenTab ?? (startsAtSuggested ? .coffee : startsOn)
+    }
+
+    private var tabSelection: Binding<CardDetailTab> {
+        Binding(get: { tab }, set: { chosenTab = $0 })
+    }
+
+    private var sectionFlags: CardDetailSections.Flags {
+        CardDetailSections.Flags(
+            hasRecipe: live.recipeSuggestion != nil || suggestion != nil,
+            kitIsEmpty: setup.kitIsEmpty,
+            showsProfile: lotFlags.isOn(.cardProfile),
+            tastedCount: tastings.tastings(forCard: live.id).count,
+            isIngestingAttachment: isIngestingAttachment
+        )
+    }
 
     /// Reads through the store so edits made elsewhere show up here.
     private var live: CoffeeCard { store.card(id: card.id) ?? card }
@@ -104,6 +131,7 @@ struct CardDetailView: View {
         start: BrewSession.Step = .scope,
         lastApplication: BrewPrefill.LastApplication? = nil
     ) {
+        if flow == nil { brewCountAtFlowStart = live.brews.count }
         flow = BrewSession(
             card: live,
             recipe: recipe,
@@ -171,9 +199,7 @@ struct CardDetailView: View {
         )
     }
 
-    @ViewBuilder
-    private var brewAndAsk: some View {
-        if live.recipeSuggestion != nil || suggestion != nil {
+    private var recipesBlock: some View {
             BrewRecipes(
                 card: live,
                 suggestion: suggestion,
@@ -193,63 +219,108 @@ struct CardDetailView: View {
                     }
                 }
             )
-        }
+    }
 
-        TastingsBlock(
-            card: live,
-            tasted: tastings.tastings(forCard: live.id),
-            onSelectBrew: { openFlow(existing: $0, mode: .edit, start: .after) },
-            onAgain: { brew in openAgain(from: brew) },
-            onCompare: lotFlags.isOn(.brewCompare) ? { brewToCompare = $0 } : nil,
-            onDeleteBrew: { brew in deleteBrew(brew) },
-            onRead: { brew in openRead(brew) },
-            onOpenTasting: { openedTasting = $0 }
-        )
-
-        if pendingDelete != nil {
-            Button("Undo") { restoreDeletedBrew() }
+    private var kitPrompt: some View {
+        Button { showProfile = true } label: {
+            Text("Set up your kit")
                 .catalogueLabel()
-                .padding(.top, 8)
         }
+        .buttonStyle(.plain)
+    }
 
-        kitPrompt
+    private var brewLog: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            BrewsSection(
+                card: live,
+                onSelectBrew: { openFlow(existing: $0, mode: .edit, start: .after) },
+                onAgain: { brew in openAgain(from: brew) },
+                onCompare: lotFlags.isOn(.brewCompare) ? { brewToCompare = $0 } : nil,
+                onDeleteBrew: { brew in deleteBrew(brew) },
+                onRead: { brew in openRead(brew) }
+            )
 
-        if flags.isOn(.ask) {
-            Button { isAsking = true } label: {
-                HStack(spacing: 8) {
-                    CoffeeCupIcon(size: 14, color: Palette.primary)
-                    Text("Ask about this coffee")
-                        .font(Typography.label)
-                        .tracking(Typography.labelTracking)
-                        .textCase(.uppercase)
-                        .foregroundStyle(Palette.primary)
-                }
+            if pendingDelete != nil {
+                Button("Undo") { restoreDeletedBrew() }
+                    .catalogueLabel()
             }
-            .buttonStyle(.plain)
-            .padding(.top, 8)
         }
     }
 
-    @ViewBuilder
-    private var kitPrompt: some View {
-        if setup.kitIsEmpty {
-            Button { showProfile = true } label: {
-                Text("Set up your kit")
+    /// The Brews tab stays visible with nothing in it, and says how to fill it.
+    private var noBrews: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            Text(Copy.noBrewsYet)
+                .font(Typography.subtitle)
+                .foregroundStyle(Palette.inkMuted)
+            Button {
+                if let suggestion { use(suggestion.recipe) } else { openFlow() }
+            } label: {
+                Text(Copy.brewThisCoffee)
                     .catalogueLabel()
             }
             .buttonStyle(.plain)
-            .padding(.top, 8)
+            .touchTarget()
+        }
+    }
+
+    private var rail: some View {
+        TabRail(
+            tabs: CardDetailTab.allCases,
+            selection: tabSelection,
+            title: { $0.label(brewCount: live.brews.count) }
+        ) {
+            if flags.isOn(.ask) {
+                Button { isAsking = true } label: {
+                    HStack(spacing: 6) {
+                        CoffeeCupIcon(size: 14, color: Palette.primary)
+                        Text(Copy.ask)
+                            .font(Typography.label)
+                            .tracking(Typography.labelTracking)
+                            .textCase(.uppercase)
+                            .foregroundStyle(Palette.primary)
+                    }
+                }
+                .buttonStyle(.plain)
+                .touchTarget()
+                .accessibilityLabel(Copy.askAboutThisCoffee)
+            }
+        }
+        .padding(.horizontal, 28)
+        .background(Palette.paper)
+    }
+
+    @ViewBuilder
+    private func section(_ section: CardDetailSection) -> some View {
+        switch section {
+        case .notes: notes
+        case .onTheWheel: onTheWheel
+        case .caption: CaptionBlock(card: live, placeTag: placeTag)
+        case .originals: originalSection
+        case .recipes: recipesBlock
+        case .kitPrompt: kitPrompt
+        case .attachments: attachmentSection
+        case .personalNote: personal
+        case .actions: actions
+        case .profile: CardProfile(card: live, tasted: tastings.tastings(forCard: live.id))
+        case .brewLog: brewLog
+        case .noBrews: noBrews
+        case .tastedAt:
+            TastedAtSection(
+                tasted: tastings.tastings(forCard: live.id),
+                onOpenTasting: { openedTasting = $0 }
+            )
         }
     }
 
     var body: some View {
-        GeometryReader { proxy in
-            let objectWidth = proxy.size.width * Motion.Object.widthFraction
-            let kohiWidth = max(120, proxy.size.width - 56)
+        GeometryReader { geometry in
+            let objectWidth = geometry.size.width * Motion.Object.widthFraction
+            let kohiWidth = max(120, geometry.size.width - 56)
 
             ScrollViewReader { proxy in
             ScrollView {
-                VStack(alignment: .leading, spacing: 0) {
+                LazyVStack(alignment: .leading, spacing: 0, pinnedViews: [.sectionHeaders]) {
                     tombstone
                         .padding(.horizontal, 28)
                         .padding(.top, 18)
@@ -269,43 +340,32 @@ struct CardDetailView: View {
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 52)
 
-                    VStack(alignment: .leading, spacing: 30) {
-                        Text(cardTitle)
-                            .font(Typography.title)
-                            .foregroundStyle(Palette.ink)
+                    Text(cardTitle)
+                        .font(Typography.title)
+                        .foregroundStyle(Palette.ink)
+                        .padding(.horizontal, 28)
+                        .padding(.bottom, 18)
 
-                        if !live.tastingNotes.isEmpty {
-                            notes
+                    Color.clear
+                        .frame(height: 0)
+                        .id("detail-rail")
+                        .onGeometryChange(for: Bool.self) { $0.frame(in: .scrollView).minY < -1 } action: {
+                            isPastRail = $0
                         }
 
-                        if !live.declaredFlavors.isEmpty {
-                            onTheWheel
+                    Section {
+                        VStack(alignment: .leading, spacing: 30) {
+                            ForEach(CardDetailSections.ordered(for: tab, card: live, flags: sectionFlags), id: \.self) {
+                                section($0)
+                            }
                         }
-
-                        CaptionBlock(card: live, placeTag: placeTag)
-
-                        if !live.originalFields.isEmpty {
-                            originalSection
-                        }
-
-                        brewAndAsk
-
-                        if lotFlags.isOn(.cardProfile) {
-                            CardProfile(card: live, tasted: tastings.tastings(forCard: live.id))
-                        }
-
-                        if !live.attachments.isEmpty || isIngestingAttachment {
-                            attachmentSection
-                        }
-
-                        if !live.personalNotes.trimmingCharacters(in: .whitespaces).isEmpty {
-                            personal
-                        }
-
-                        actions
+                        .padding(.horizontal, 28)
+                        .padding(.top, 24)
+                        .padding(.bottom, 72)
+                        .id(tab)
+                    } header: {
+                        rail
                     }
-                    .padding(.horizontal, 28)
-                    .padding(.bottom, 72)
                 }
             }
             .scrollIndicators(.hidden)
@@ -317,6 +377,11 @@ struct CardDetailView: View {
                     }
                 }
             }
+            .onChange(of: tab) { _, _ in
+                // A tab starts at its beginning, not halfway down the last one.
+                guard isPastRail else { return }
+                proxy.scrollTo("detail-rail", anchor: .top)
+            }
             }
         }
         .background(Palette.paper.ignoresSafeArea())
@@ -325,25 +390,20 @@ struct CardDetailView: View {
             HStack {
                 CatalogueBackButton(title: "COFFEES") { dismiss() }
                 Spacer()
-                Button { showFaceMenu = true } label: {
-                    Text(Copy.cards)
-                        .catalogueLabel()
-                }
-                .buttonStyle(.plain)
-                .touchTarget()
             }
             .padding(.horizontal, 16)
             .background(Palette.paper)
         }
         .haptic(.deleted, trigger: deleteTrigger)
+        .onChange(of: flow == nil) { _, closed in
+            guard closed, let before = brewCountAtFlowStart else { return }
+            brewCountAtFlowStart = nil
+            guard live.brews.count > before else { return }
+            withAnimation(Motion.quick) { chosenTab = .brews }
+        }
         .fullScreenCover(isPresented: $showSymbolEditor) {
             SymbolEditorView(card: live)
                 .appEnvironment(appEnvironment)
-        }
-        .confirmationDialog(Copy.cards, isPresented: $showFaceMenu, titleVisibility: .visible) {
-            Button(Copy.showTheScan) { looks.setOverride(.scan, for: live.id) }
-            Button(Copy.showTheKohiCard) { looks.setOverride(.kohi, for: live.id) }
-            Button("Cancel", role: .cancel) {}
         }
         .sheet(isPresented: $showProfile) {
             ProfileSheet()

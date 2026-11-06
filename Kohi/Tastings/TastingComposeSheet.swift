@@ -30,13 +30,8 @@ struct TastingComposeSheet: View {
     @State private var pickedCard: CoffeeCard?
     @State private var showsDetails: Bool
     @State private var showsMore = false
-    @State private var scanning: TastingScanKind?
-    @State private var isReading = false
-    @State private var menuCandidates: [MenuCandidate] = []
-    @State private var showsMenu = false
-    @State private var uncertain: [MenuField] = []
-    @State private var linkOffer: CoffeeCard?
-    @State private var photoItems: [PhotosPickerItem] = []
+    @State private var isScanning = false
+    @State private var reader = TastingReader()
     @State private var saveTrigger = 0
     @State private var rejectTrigger = 0
     @State private var flagged: Set<TastingField> = []
@@ -167,36 +162,41 @@ struct TastingComposeSheet: View {
             pickedCard = nil
             pickingFromCollection = false
         }
-        .fullScreenCover(item: $scanning) { kind in
+        .fullScreenCover(isPresented: $isScanning) {
             ScanScreen(
                 onScan: { scan in
-                    scanning = nil
-                    Task { await read(scan, as: kind) }
+                    isScanning = false
+                    Task {
+                        await reader.read(scan, into: $draft, roasters: knownRoasterNames(roasters), cards: store.cards)
+                        if reader.couldNotRead { nameFocused = true }
+                    }
                 },
-                onCancel: { scanning = nil }
+                onCancel: { isScanning = false }
             )
             .appEnvironment(appEnvironment)
         }
-        .sheet(isPresented: $showsMenu) {
+        .sheet(isPresented: $reader.showsMenu) {
             MenuPickSheet(
-                candidates: menuCandidates,
+                candidates: reader.candidates,
                 canAskModel: flags.isOn(.menuExtract),
-                onAskModel: askModelForMenu,
-                onPick: apply
+                onAskModel: { await reader.askModel(flags: flags, events: events) },
+                onPick: { candidate in
+                    reader.apply(candidate, into: $draft, cards: store.cards)
+                    if candidate.fields.contains(where: { $0.kind != .name && $0.confidence == .read }) {
+                        showsDetails = true
+                    }
+                }
             )
         }
         .alert(
             Copy.alreadyInCollection,
-            isPresented: Binding(get: { linkOffer != nil }, set: { if !$0 { linkOffer = nil } }),
-            presenting: linkOffer
+            isPresented: Binding(get: { reader.linkOffer != nil }, set: { if !$0 { reader.linkOffer = nil } }),
+            presenting: reader.linkOffer
         ) { card in
             Button("Link") { draft.link(card) }
             Button("Not now", role: .cancel) {}
         } message: { card in
             Text(store.title(for: card))
-        }
-        .onChange(of: photoItems) { _, items in
-            Task { await importPhotos(items) }
         }
     }
 
@@ -204,77 +204,30 @@ struct TastingComposeSheet: View {
 
     private var what: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text(Copy.coffeeName).catalogueLabel(missing: flagged.contains(.coffee))
-            TextField(Placeholders.text(.cardCoffee), text: $draft.coffee.name)
-                .font(Typography.subtitle)
-                .foregroundStyle(Palette.ink)
-                .textInputAutocapitalization(.words)
-                .autocorrectionDisabled()
-                .focused($nameFocused)
-                .submitLabel(.done)
+            TastingCoffeeFields(
+                draft: $draft,
+                reader: reader,
+                editingID: editing?.id,
+                nameFocused: $nameFocused,
+                nameMissing: flagged.contains(.coffee)
+            )
 
-            if nameFocused, !suggestions.isEmpty {
-                VStack(alignment: .leading, spacing: 0) {
-                    ForEach(suggestions) { suggestion in
-                        Button { take(suggestion) } label: {
-                            VStack(alignment: .leading, spacing: 2) {
-                                Text(suggestion.title)
-                                    .font(Typography.value)
-                                    .foregroundStyle(Palette.ink)
-                                    .lineLimit(1)
-                                Text([suggestion.subtitle, suggestion.label].filter { !$0.isEmpty }.joined(separator: " · "))
-                                    .font(Typography.tag)
-                                    .foregroundStyle(Palette.inkMuted)
-                                    .lineLimit(1)
-                            }
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .padding(.vertical, 8)
-                            .contentShape(Rectangle())
-                        }
-                        .buttonStyle(.plain)
-                    }
-                }
-                .transition(.opacity)
-            }
-
-            if let cardID = draft.cardID, let card = store.card(id: cardID) {
-                HStack(spacing: 8) {
-                    Text("\(Copy.inCoffeeCollection) · \(store.title(for: card))")
-                        .font(Typography.tag)
-                        .foregroundStyle(Palette.inkMuted)
-                        .lineLimit(1)
-                    Button("Unlink") { draft.cardID = nil }
-                        .font(Typography.tag)
-                        .foregroundStyle(Palette.ink)
-                }
-            }
-
-            if !uncertain.isEmpty {
-                VStack(alignment: .leading, spacing: 8) {
-                    Text(Copy.toConfirm).catalogueLabel()
-                    FlowLayout {
-                        ForEach(uncertain) { field in
-                            TagChip(text: "\(field.kind.label): \(field.value)?", isSelected: false) {
-                                draft.apply(field)
-                                uncertain.removeAll { $0.id == field.id }
-                            }
-                        }
-                    }
-                }
+            if reader.couldNotRead {
+                Text(Copy.couldntReadThis)
+                    .font(Typography.tag)
+                    .foregroundStyle(Palette.inkMuted)
             }
 
             HStack(spacing: 18) {
                 if !store.cards.isEmpty {
                     action(Copy.fromCoffeeCollection) { pickingFromCollection = true }
                 }
-                action(Copy.scanBag) { scanning = .bag }
-                action(Copy.scanMenu) { scanning = .menu }
-                if isReading {
+                action(Copy.scanTheCard) { isScanning = true }
+                if reader.isReading {
                     ProgressView().controlSize(.mini)
                 }
             }
         }
-        .animation(Motion.quick, value: nameFocused)
     }
 
     private func action(_ title: String, perform: @escaping () -> Void) -> some View {
@@ -283,29 +236,6 @@ struct TastingComposeSheet: View {
         }
         .buttonStyle(.plain)
         .touchTarget()
-    }
-
-    private var suggestions: [CoffeeSuggestions.Suggestion] {
-        CoffeeSuggestions.suggest(
-            draft.coffee.name,
-            cards: store.cards,
-            tastings: tastings.tastings.filter { $0.id != editing?.id },
-            roasters: roasters.roasters.map(\.name)
-        )
-        .filter { SeedPlace.fold($0.title) != SeedPlace.fold(draft.coffee.name) || $0.source != .tastedBefore }
-    }
-
-    private func take(_ suggestion: CoffeeSuggestions.Suggestion) {
-        switch suggestion.source {
-        case .collection(let cardID):
-            if let card = store.card(id: cardID) { draft.link(card) }
-        case .tastedBefore:
-            draft.coffee = suggestion.coffee
-        case .roaster:
-            draft.coffee.roaster = suggestion.title
-            showsDetails = true
-        }
-        nameFocused = false
     }
 
     // MARK: - Details
@@ -334,7 +264,7 @@ struct TastingComposeSheet: View {
 
             if showsDetails {
                 VStack(alignment: .leading, spacing: 20) {
-                    field("Roaster", text: $draft.coffee.roaster)
+                    TastingTextField(label: "Roaster", text: $draft.coffee.roaster)
 
                     Button {
                         withAnimation(Motion.snappy) { showsMore.toggle() }
@@ -346,131 +276,12 @@ struct TastingComposeSheet: View {
                     .buttonStyle(.plain)
 
                     if showsMore || draft.coffee.hasMore {
-                        VStack(alignment: .leading, spacing: 14) {
-                            field("Country", text: $draft.coffee.country, lexicon: CoffeeSuggestions.origins)
-                            field("Region", text: $draft.coffee.region)
-                            field("Farm", text: $draft.coffee.farm)
-                            field("Variety", text: $draft.coffee.variety, lexicon: CoffeeSuggestions.varieties)
-                            field("Process", text: $draft.coffee.process, lexicon: CoffeeSuggestions.processes)
-                            field(Copy.onThePack, text: $draft.notesText)
-                        }
+                        TastingIdentityFields(draft: $draft, showsRoaster: false)
                     }
 
-                    methodPicker
-                    pricePicker
-
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text("Date").catalogueLabel()
-                        DatePicker("", selection: $draft.date, in: ...Date.now, displayedComponents: .date)
-                            .labelsHidden()
-                    }
-
-                    photosRow
+                    TastingMadeFields(draft: $draft, showsDate: true)
                 }
                 .transition(.opacity)
-            }
-        }
-    }
-
-    private func field(
-        _ label: String,
-        text: Binding<String>,
-        lexicon: ((String) -> [String])? = nil
-    ) -> some View {
-        VStack(alignment: .leading, spacing: 6) {
-            Text(label).catalogueLabel()
-            TextField("", text: text)
-                .font(Typography.value)
-                .foregroundStyle(Palette.ink)
-                .textInputAutocapitalization(.words)
-                .autocorrectionDisabled()
-            if let lexicon {
-                let words = lexicon(text.wrappedValue)
-                if !words.isEmpty {
-                    HStack(spacing: 7) {
-                        ForEach(words, id: \.self) { word in
-                            TagChip(text: word, isSelected: false) { text.wrappedValue = word }
-                        }
-                    }
-                }
-            }
-            Rectangle().fill(Palette.hairline).frame(height: 1)
-        }
-    }
-
-    private var methodPicker: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            Text(Copy.method).catalogueLabel()
-            FlowLayout {
-                ForEach(TastingMethod.allCases) { method in
-                    TagChip(text: method.label, isSelected: draft.method == method) {
-                        draft.method = draft.method == method ? nil : method
-                    }
-                }
-            }
-            if draft.method == .other {
-                TextField(Copy.methodOtherPrompt, text: $draft.methodNote)
-                    .font(Typography.value)
-                    .foregroundStyle(Palette.ink)
-            }
-        }
-    }
-
-    private var pricePicker: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text(Copy.price).catalogueLabel()
-            HStack(spacing: 12) {
-                TextField("0,00", text: $draft.priceText)
-                    .font(Typography.value)
-                    .foregroundStyle(Palette.ink)
-                    .keyboardType(.decimalPad)
-                    .frame(maxWidth: 120, alignment: .leading)
-                Menu {
-                    ForEach(CupPrice.commonCurrencies, id: \.self) { code in
-                        Button(code) { draft.currency = code }
-                    }
-                } label: {
-                    Text(draft.currency).catalogueLabel().foregroundStyle(Palette.ink)
-                }
-                if let price = draft.price {
-                    Text(price.formatted)
-                        .font(Typography.tag)
-                        .foregroundStyle(Palette.inkMuted)
-                }
-            }
-        }
-    }
-
-    private var photosRow: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            Text(Copy.photos).catalogueLabel()
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 10) {
-                    ForEach(draft.photos, id: \.self) { name in
-                        TastingPhotoThumb(tastingID: draft.id, name: name)
-                            .overlay(alignment: .topTrailing) {
-                                Button {
-                                    draft.photos.removeAll { $0 == name }
-                                } label: {
-                                    Image(systemName: "xmark")
-                                        .font(.system(size: 9, weight: .bold))
-                                        .foregroundStyle(Palette.paper)
-                                        .padding(5)
-                                        .background(Palette.ink, in: Circle())
-                                }
-                                .buttonStyle(.plain)
-                                .padding(4)
-                            }
-                    }
-                    PhotosPicker(selection: $photoItems, maxSelectionCount: 4, matching: .images) {
-                        Image(systemName: "plus")
-                            .font(.system(size: 14, weight: .medium))
-                            .foregroundStyle(Palette.ink)
-                            .frame(width: 64, height: 64)
-                            .overlay(RoundedRectangle(cornerRadius: 4).stroke(Palette.hairline, lineWidth: 1))
-                    }
-                    .accessibilityLabel("Add a photo")
-                }
             }
         }
     }
@@ -500,65 +311,6 @@ struct TastingComposeSheet: View {
         ).first
     }
 
-    // MARK: - Capture
-
-    private func read(_ scan: ScanResult, as kind: TastingScanKind) async {
-        isReading = true
-        defer { isReading = false }
-        let lines = await TextExtractor.read(image: scan.image)
-        switch kind {
-        case .bag:
-            let parsed = FieldParser.parse(lines)
-            draft.fill(from: parsed)
-            if let hit = CardMatch.find(
-                roaster: parsed.roaster ?? draft.coffee.roaster,
-                name: parsed.name ?? draft.coffee.name,
-                origin: parsed,
-                in: store.cards
-            ), draft.cardID != hit.card.id {
-                linkOffer = hit.card
-            }
-        case .menu:
-            menuText = lines.map(\.text)
-            menuCandidates = MenuParser.parse(
-                menuText,
-                roasters: roasters.roasters.map(\.name) + ReferenceBase.roasterSeeds.map(\.name)
-            )
-            showsMenu = true
-        }
-    }
-
-    @State private var menuText: [String] = []
-
-    private func askModelForMenu() async -> [MenuCandidate] {
-        guard let read = await FieldExtract.menu(lines: menuText, flags: flags, events: events) else {
-            return menuCandidates
-        }
-        return MenuParser.grounded(read.value, in: menuText)
-    }
-
-    private func apply(_ candidate: MenuCandidate) {
-        showsMenu = false
-        for field in candidate.fields where field.confidence == .read {
-            draft.apply(field)
-        }
-        uncertain = candidate.fields.filter { $0.confidence == .uncertain }
-        if candidate.fields.contains(where: { $0.kind != .name && $0.confidence == .read }) {
-            showsDetails = true
-        }
-    }
-
-    private func importPhotos(_ items: [PhotosPickerItem]) async {
-        guard !items.isEmpty else { return }
-        for item in items {
-            guard let data = try? await item.loadTransferable(type: Data.self) else { continue }
-            if let name = TastingPhotos.save(data, tastingID: draft.id) {
-                draft.photos.append(name)
-            }
-        }
-        photoItems = []
-    }
-
     // MARK: - Save
 
     private func load() {
@@ -577,36 +329,10 @@ struct TastingComposeSheet: View {
             return
         }
         saveTrigger += 1
-        var tasting = draft.tasting(base: editing)
-        if tasting.coffee.roasterId == nil {
-            tasting.coffee.roasterId = roasters.roasters.first {
-                Roaster.fold($0.name) == Roaster.fold(tasting.coffee.roaster)
-            }?.id
-        }
-        if editing != nil {
-            tastings.update(tasting)
-        } else {
-            tasting = tastings.add(tasting)
-        }
-        rememberServes(tasting)
+        let tasting = TastingSaver.save(draft, editing: editing, tastings: tastings, roasters: roasters, places: places)
         onSaved(tasting)
         dismiss()
     }
-
-    /// A seed place now known to serve this roaster, as the card-era flow did.
-    private func rememberServes(_ tasting: Tasting) {
-        guard let placeID = tasting.placeID,
-              let roasterID = tasting.coffee.roasterId,
-              let roaster = roasters.roaster(id: roasterID) else { return }
-        places.remember(placeID: placeID, roasterID: roaster.seedID ?? roaster.id.uuidString)
-    }
-}
-
-enum TastingScanKind: String, Identifiable {
-    case bag
-    case menu
-
-    var id: String { rawValue }
 }
 
 /// How the cup was made, in the words a café uses. Maps onto the brew
@@ -820,6 +546,52 @@ struct TastingDraft: Equatable {
         fill(\.variety, parsed.variety)
         fill(\.process, parsed.process)
         if coffee.tastingNotes.isEmpty { coffee.tastingNotes = parsed.tastingNotes }
+    }
+
+    /// What a menu line adds to a card read: same rule as `fill`, only what is
+    /// still empty. Guesses are handed back to be confirmed, never applied.
+    @discardableResult
+    mutating func fill(extra fields: [MenuField]) -> [MenuField] {
+        var toConfirm: [MenuField] = []
+        for field in fields {
+            guard field.confidence == .read else {
+                toConfirm.append(field)
+                continue
+            }
+            switch field.kind {
+            case .method: if method == nil { apply(field) }
+            case .price: if priceText.trimmingCharacters(in: .whitespaces).isEmpty { apply(field) }
+            case .notes: if coffee.tastingNotes.isEmpty { apply(field) }
+            case .name, .roaster, .country, .process, .variety:
+                if value(of: field.kind).trimmingCharacters(in: .whitespaces).isEmpty { apply(field) }
+            }
+        }
+        return toConfirm
+    }
+
+    private func value(of kind: MenuField.Kind) -> String {
+        switch kind {
+        case .name: coffee.name
+        case .roaster: coffee.roaster
+        case .country: coffee.country
+        case .process: coffee.process
+        case .variety: coffee.variety
+        case .notes: notesText
+        case .method: method?.label ?? ""
+        case .price: priceText
+        }
+    }
+
+    /// Anything typed or chosen beyond the place the fix picked. Closing the
+    /// flow with this true asks first.
+    var hasContent: Bool {
+        !coffee.trimmedName.isEmpty || !coffee.roaster.trimmingCharacters(in: .whitespaces).isEmpty
+            || !coffee.country.isEmpty || !coffee.process.isEmpty || !coffee.variety.isEmpty
+            || !coffee.tastingNotes.isEmpty || cardID != nil || method != nil
+            || !priceText.trimmingCharacters(in: .whitespaces).isEmpty || !photos.isEmpty
+            || rating != nil || taste != TasteProfile() || !flavors.isEmpty
+            || !note.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+            || (place != nil && !placeIsAutomatic)
     }
 
     mutating func apply(_ field: MenuField) {

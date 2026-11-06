@@ -176,6 +176,12 @@ struct StepFlow<Content: View>: View {
                             .touchTarget()
                     }
                     Spacer()
+                    if let secondaryTitle, let onSecondary {
+                        Button(secondaryTitle, action: onSecondary)
+                            .catalogueLabel()
+                            .touchTarget()
+                            .padding(.trailing, 18)
+                    }
                     if let onNext {
                         Button(action: onNext) {
                             Image(systemName: "chevron.right")

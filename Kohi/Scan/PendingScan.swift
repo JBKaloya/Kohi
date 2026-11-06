@@ -14,6 +14,13 @@ struct PendingScan: Identifiable, Sendable {
     var id: UUID { card.id }
 }
 
+/// A café card scanned after *A cup at…*. It becomes a tasting, never a card.
+struct CupScan: Identifiable {
+    let id = UUID()
+    let place: PlaceSuggestion
+    let scan: ScanResult
+}
+
 /// A pending scan that looks like a card already on the shelf.
 struct DuplicateOffer: Identifiable {
     let pending: PendingScan

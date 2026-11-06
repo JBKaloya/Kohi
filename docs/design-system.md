@@ -268,7 +268,9 @@ Caméra, overlay, review. Fond `scanBackdrop`. Le chrome est blanc / translucide
 | Composant | Fichier | Rôle |
 | --- | --- | --- |
 | `BrewFlowHost` | `Kohi/Recipes/BrewFlowHost.swift` | Seul présentateur du parcours brew (Scope, Kit, Dial, Pour, After). Fermer garde un brouillon. |
-| `StepFlow` | `Kohi/Design/StepFlow.swift` | Chrome d'une question : segments 24×1, question 22 pt, Skip, Next 52 pt. Six ticks depuis le FAB, cinq depuis une carte. |
+| `StepFlow` | `Kohi/Design/StepFlow.swift` | Chrome d'une question : segments 24×1, question 22 pt, Skip, Next 52 pt. Six ticks depuis le FAB, cinq depuis une carte. Un `secondaryTitle` se pose entre Skip et Next (*Save now*, *Rescan*). |
+| `TastingFlow` | `Kohi/Tastings/TastingFlow.swift` | Nouvelle dégustation, une question par écran : *Where are you?*, *What's in the cup?*, *Which coffee?*, *How was it made?*, *How was it?*, *Anything to remember?* Six ticks, cinq quand le lieu est connu. *Save now* sur les deux étapes bonus dès que nom et lieu sont là. Fermer avec du contenu demande *Discard this tasting?*. L'édition reste sur `TastingComposeSheet(editing:)`. |
+| `ScanIntentSheet` | `Kohi/Grid/ScanIntentSheet.swift` | *What are you scanning?* Sheet papier courte, deux rangées de 52 pt qui nomment l'objet (*A cup at …* / *A bag for my collection*). Glisser vers le bas n'ouvre rien. |
 | `CatalogPicker` | `Kohi/Design/CatalogPicker.swift` | Catalogue unique dripper / moulin / papier. FROM YOUR KIT (une ligne par objet possédé), ALL par sous-famille, Add manually. |
 | `PourCurve` | `Kohi/Design/PourCurve.swift` | Masse cumulée contre le temps réel (`at`), pas la cible. Grille 50 g. |
 | `StepBuilderSheet` | `Kohi/Recipes/StepBuilderSheet.swift` | Recette express : nom, totaux, gabarits, blocs. |
@@ -300,7 +302,7 @@ Caméra, overlay, review. Fond `scanBackdrop`. Le chrome est blanc / translucide
 | `.three` | 3 | 24 | 22 |
 | `.four` | 4 | 17 | 16 |
 
-Le whitespace reste généreux même à 4 colonnes — c’est ce qui fait lire la grille comme un tapis, pas comme un feed. Densité par défaut : **3**.
+Le whitespace reste généreux même à 4 colonnes — c’est ce qui fait lire la grille comme un tapis, pas comme un feed. Densité au lancement : **2** (`GridDensity.launch`), à chaque lancement. Le pinch tient pour la session, rien n'est mémorisé.
 
 Search : n’apparaît qu’à partir de **20 cartes**, et seulement après un scroll > 200 pt (ou si une query est déjà là).
 
@@ -311,15 +313,27 @@ Transition grille → détail : zoom matched (`navigationTransition(.zoom)` iOS 
 1. Tombstone (catalogue, casse naturelle)
 2. Objet centré
 3. Titre Angusta
-4. Notes (chips outline, scroll horizontal)
-5. On the wheel (ids reconnus)
-6. `CaptionBlock` (filets)
-7. Originaux CJK repliés
-8. **Suggested recipe** (si aucun brew) ou `BrewList` (≥ 1 brew)
-9. `CardProfile` (≥ 2 brews comparables)
-10. Pages & documents
-11. Note to self
-12. Actions en `catalogueLabel` (Edit, Remove). Retour **COFFEES**.
+4. Rail `TabRail` **Coffee** / **Brews n**, épinglé sous la barre en scrollant, padding 28, fond papier. *Ask* en trailing (si le flag est on). Changer d'onglet une fois le rail épinglé remonte au rail.
+
+**Coffee** (ouverture par défaut, et avec `startsAtSuggested`) :
+
+1. Notes (chips outline, scroll horizontal)
+2. On the wheel (ids reconnus)
+3. `CaptionBlock` (filets)
+4. Originaux CJK repliés
+5. **Suggested recipe** / recettes
+6. Invitation au kit (si vide)
+7. Pages & documents
+8. Note to self
+9. Actions en `catalogueLabel` (Edit, Remove)
+
+**Brews** (ouverture quand un brew vous y envoie ; sélectionné à la fermeture d'un brew enregistré, pas d'un brew abandonné) :
+
+1. `CardProfile` (≥ 2 brews comparables)
+2. Journal (`BrewsSection`) ou « No brews yet. » + *Brew this coffee*
+3. *Tasted at* (dégustations en café)
+
+Aucun bloc de brew dans Coffee, aucune action de carte dans Brews. La barre du haut n'a que le retour **COFFEES** : plus de bouton *Cards*.
 
 ### Formulaires
 
@@ -455,7 +469,7 @@ Affordance circulaire en bas de catalogue. `viewfinder` 22 regular sur Coffees, 
 
 ### `ShimmerBar`
 
-Placeholder OCR. Capsule 4 pt, `hairline` 55 %, largeur aléatoire 60–120, hauteur 14. Highlight `paperShade` qui traverse en 1.2 s, `easeInOut` repeat. Une barre par champ encore vide.
+Placeholder OCR. Capsule 4 pt, `hairline` 55 %, largeur fixe si donnée (`width:`), sinon tirée une fois entre 60 et 120, hauteur 14. Highlight `paperShade` qui traverse en 1.2 s, `easeInOut` repeat. Une barre par champ encore vide.
 
 ### `AttachmentStrip`
 

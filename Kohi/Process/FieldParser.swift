@@ -3,7 +3,7 @@ import Foundation
 
 /// Best-effort metadata read off a card. Every field is optional and every field
 /// is wrong sometimes; the edit sheet is the real answer.
-nonisolated struct ParsedFields: Sendable {
+nonisolated struct ParsedFields: Equatable, Sendable {
     var name: String?
     var roaster: String?
     var country: String?

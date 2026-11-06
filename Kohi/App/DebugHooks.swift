@@ -9,6 +9,9 @@ import Foundation
 ///     SIMCTL_CHILD_KOHI_REVIEW=1       open the scan flow on the review step
 ///     SIMCTL_CHILD_KOHI_EMPTY=1        skip seeding, to see the empty state
 ///     SIMCTL_CHILD_KOHI_MIGRATION_REPORT=1  log the lot 2 archive report after migrate
+///     SIMCTL_CHILD_KOHI_FAKE_FIX=48.8638,2.3480,20   stand there (lat,lon,accuracy m);
+///                                     also `-kohi.fakeFix 48.8638,2.3480,20`
+///     SIMCTL_CHILD_KOHI_DEMO=bag|card|menu  the simulator shutter files that demo
 ///
 /// Debug builds only. There is no settings screen and this is not one.
 nonisolated enum DebugHooks {
@@ -19,6 +22,19 @@ nonisolated enum DebugHooks {
 
     static var bulkSeedCount: Int? {
         ProcessInfo.processInfo.environment["KOHI_BULK"].flatMap(Int.init)
+    }
+
+    /// A pretend location, so the scan question can be tried at a desk. Either
+    /// the launch argument `-kohi.fakeFix 48.8638,2.3480,20` or `KOHI_FAKE_FIX`.
+    /// The accuracy defaults to 20 metres.
+    static var fakeFix: (latitude: Double, longitude: Double, accuracy: Double)? {
+        guard let raw = UserDefaults.standard.string(forKey: "kohi.fakeFix")
+            ?? ProcessInfo.processInfo.environment["KOHI_FAKE_FIX"] else { return nil }
+        let parts = raw.split(separator: ",").compactMap {
+            Double($0.trimmingCharacters(in: .whitespaces))
+        }
+        guard parts.count >= 2 else { return nil }
+        return (parts[0], parts[1], parts.count > 2 ? parts[2] : 20)
     }
 
     static func sampleCapture() -> CapturedCard? {

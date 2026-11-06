@@ -146,12 +146,10 @@ struct DevBrief8SnapshotTests {
     }
 
     private static func section(_ card: CoffeeCard, tasted: [Tasting] = []) -> some View {
-        TastingsBlock(
-            card: card,
-            tasted: tasted,
-            onSelectBrew: { _ in },
-            onOpenTasting: { _ in }
-        )
+        VStack(alignment: .leading, spacing: 22) {
+            BrewsSection(card: card, onSelectBrew: { _ in })
+            TastedAtSection(tasted: tasted, onOpenTasting: { _ in })
+        }
     }
 
     private static let outTasting = Tasting(

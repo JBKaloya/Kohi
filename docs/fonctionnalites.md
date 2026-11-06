@@ -43,7 +43,7 @@ Un seul écran d’accueil : des cartes posées sur du papier, un wordmark « Ko
 | Fonction | Comportement |
 | --- | --- |
 | Grille | Cartes triées par date d’ajout (la plus récente en haut). Pas de labels, pas de badges : l’image et son ombre *sont* la tuile. |
-| Densité | Pincer pour passer de 1 à 4 colonnes. |
+| Densité | Deux colonnes à chaque lancement. Pincer pour passer de 1 à 4 colonnes ; le choix tient pour la session, pas au-delà. |
 | Recherche | Barre une fois l’archive assez grande (≥ 20 cartes) et qu’on a scrollé. Filtre texte (nom, torréfacteur, pays, région, variété, process, tasting notes, lieu) **plus chips** méthode / saveur (ids roue) / lieu. La grille hors recherche reste triée par date d’ajout. |
 | Ouverture | Tap → fiche détail. Transition zoom (iOS 26+). |
 | Atterrissage | Une carte tout juste scannée arrive en haut de la grille avec une animation de pose. |
@@ -56,13 +56,24 @@ Un seul écran d’accueil : des cartes posées sur du papier, un wordmark « Ko
 
 Le bouton viewfinder ouvre un plein écran caméra (fond sombre). C’est le seul flux d’ajout de café.
 
+### Près d’un café : une tasse ou un sachet ?
+
+Quand le signal est fort, le scan demande d’abord *What are you scanning?* : **A cup at <café>** (une dégustation) ou **A bag for my collection** (le flux ci-dessous). Il faut :
+
+- une localisation **déjà autorisée** (la home ne demande jamais la permission) ;
+- un fix de moins de 5 minutes, précis à 65 m ;
+- un café à proximité : un lieu de tes dégustations à 75 m, un lieu de la base à 75 m, ou un café Apple Maps à 40 m, dans cet ordre.
+
+Sinon, le scan part droit vers le sachet, comme avant. Deux réponses *A bag* de suite au même endroit (≈ 100 m) font taire la question ; une réponse *A cup* la rétablit. Ces endroits restent sur le téléphone (`scan.spots`, 20 au plus), jamais synchronisés. *A cup* ouvre la même caméra, puis la dégustation directement à *Which coffee?*, lieu déjà choisi ; à l’enregistrement, la home passe sur *Tastings*.
+
 ### Capture
 
 - Caméra arrière, détection de document en live (Vision). Overlay qui suit les coins.
 - Coaching d’une seule phrase à la fois : poser la carte, se rapprocher, tenir à plat, éviter le glare, rester immobile.
 - **Auto-capture** une fois la carte assez grande, droite, nette et stable (~0,6 s). Déclencheur manuel en plus.
 - Import depuis la photothèque (même revue que la capture live).
-- Simulateur : pas de caméra, le déclencheur renvoie un échantillon bundlé.
+- Simulateur : pas de caméra. Au-dessus du déclencheur, quatre choix : *Archive* (une carte bundlée), *Bag*, *Café card*, *Menu* (dessinés en code, posés sur la même surface).
+- Sur iPhone, le bouton **Demo** est un menu avec les mêmes démos plus *Archive card*.
 
 Si l’accès caméra est refusé, on peut toujours importer une photo.
 
@@ -105,6 +116,10 @@ Quand la lecture locale est faible — peu de champs, écriture manuscrite, japo
 
 Objet centré sur le papier, ombre, **inclinaison et reflet** selon le gyroscope. En dessous, la notice de catalogue. Une carte sans nom se titre par producteur / ferme / station, puis origine, puis torréfacteur ; la variété ne titre que s’il n’y a rien d’autre. Deux cartes au même titre reçoivent un suffixe `·` (torréfacteur, date de torréfaction, lot, date de scan).
 
+Sous le titre, un rail à deux onglets, **Coffee** et **Brews n**, qui reste épinglé en haut quand on scrolle ; **Ask** à droite du rail. La fiche s’ouvre sur *Coffee*, sauf quand un brew y envoie (raccourci *Log a brew*). Un brew enregistré depuis la fiche bascule sur *Brews* à la fermeture ; un brew abandonné ne change rien. La barre du haut n’a plus que le retour : le bouton *Cards* (scan / carte Kohi) a disparu.
+
+**Coffee** : notes, roue, caption, originaux, recettes, invitation au kit, pages, note to self, actions. **Brews** : profil, journal (ou « No brews yet. » + *Brew this coffee*), *Tasted at*.
+
 - **Tombstone** : nom (désambiguïsé), origine, altitude.
 - **Notes** : chips horizontaux des tasting notes.
 - **On the wheel** : chips outline des ids SCA 2016 reconnus dans ces notes. Toujours monté.
@@ -116,7 +131,17 @@ Objet centré sur le papier, ombre, **inclinaison et reflet** selon le gyroscope
 - **Profile** (flag `cardProfile`) : radar médian (≥ 2 brews comparables) + meilleur en `inkMuted`, saveurs trouvées avec `✓` si déclarées, `n brews · avg · best`.
 - **Pages & documents** : pièces jointes.
 - **Note to self**.
-- Actions : **Edit**, **Remove from archive**. Pas de bouton **Ask** sur la carte.
+- Actions : **Edit**, **Remove from archive**. *Ask* vit dans le rail, pas dans les actions.
+
+### Dégustations (onglet Tastings)
+
+Une nouvelle dégustation est un parcours d’une question par écran (`TastingFlow`) : *Where are you?* → *What's in the cup?* → *Which coffee?* → *How was it made?* → *How was it?* → *Anything to remember?* Cinq étapes quand le lieu est déjà connu.
+
+- *What's in the cup?* : **Scan the card** (carte de café, menu ou sachet : le tri se fait à la lecture), **From my Coffee Collection** (grisé si la collection est vide), **Type it in**.
+- Le scan d’une carte remplit les champs vides ; un menu demande lequel ; ce qui est deviné s’affiche en *Read, to confirm*. *Rescan* reste à portée.
+- *How was it made?* et *How was it?* ont **Skip** et **Save now** (dès que nom et lieu sont là).
+- Fermer avec du contenu demande *Discard this tasting?*
+- Modifier une dégustation garde le formulaire d’un écran (`TastingComposeSheet`).
 
 ---
 

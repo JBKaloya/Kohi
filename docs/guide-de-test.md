@@ -94,6 +94,47 @@ Après **Save**, la carte tombe en haut de la grille avec une animation de pose.
 
 ---
 
+## Parcours 2 bis — Une tasse au café, un sachet à la maison
+
+*10 minutes. Sur simulateur, ou sur iPhone avec le bouton **Demo**.*
+
+Trois démos sont dessinées dans l'app : un **sachet** (Fève, Ethiopia Chelchele), une **carte de café** (Kenya Tekangu, Belleville, V60 — 5,50 €) et un **menu** (trois cafés filtre). Sur simulateur, choisis-la au-dessus du déclencheur (*Archive*, *Bag*, *Café card*, *Menu*). Sur iPhone, **Demo** est un menu avec les mêmes choix, plus *Archive card*.
+
+### Se placer devant un café (debug)
+
+La question n'apparaît que près d'un café, avec une localisation déjà autorisée. Pour faire comme si tu étais chez Galata Bakery & Coffee (base parisienne) :
+
+```sh
+xcrun simctl launch booted studio.jbk.kohiapp -kohi.fakeFix 48.846148,2.351191,20
+# ou
+SIMCTL_CHILD_KOHI_FAKE_FIX=48.846148,2.351191,20 xcrun simctl launch booted studio.jbk.kohiapp
+```
+
+Le troisième nombre est la précision en mètres : au-dessus de 65, la question ne vient pas. `SIMCTL_CHILD_KOHI_DEMO=bag|card|menu` présélectionne la démo du déclencheur. *Profile → Developer → Reset scan spots* efface ce que l'app a appris des endroits.
+
+### À faire
+
+1. **La tasse.** Avec le faux fix, tape le viseur sur **Coffees**. La feuille *What are you scanning?* s'ouvre : tape **A cup at Galata Bakery & Coffee**.
+2. Choisis **Café card** et déclenche. Tape **Use**.
+3. La dégustation s'ouvre à *Which coffee?*, lieu déjà choisi (cinq ticks). Regarde le nom, le pays et le process se remplir ; *How was it made?* a déjà V60 et 5,50 €.
+4. Enchaîne jusqu'au bout, ou tape **Save now** à *How was it made?*. La home passe sur **Tastings**.
+5. **Le menu.** Recommence avec *A cup* et **Menu** : l'app demande lequel des trois cafés.
+6. **Le sachet.** Recommence et réponds **A bag for my collection**, puis **Bag** : c'est le flux habituel, la feuille **New card** se remplit.
+7. **Chez toi.** Réponds *A bag* une deuxième fois au même endroit. Au scan suivant, la question ne vient plus. *Reset scan spots* la fait revenir. (Une réponse *A cup* entre deux *A bag* remet le compteur à zéro.)
+8. Sans faux fix, ou avec la localisation refusée : le viseur ouvre directement la caméra, sans question.
+
+### Ce que tu devrais voir
+
+La question ne retarde jamais la caméra. Glisser la feuille vers le bas n'ouvre rien. Annuler la caméra après *A cup* ramène à la home sans rien créer.
+
+### Questions
+
+1. **Clair ?** *A cup at …* / *A bag for my collection* : tu comprends tout de suite ce que chaque réponse va faire ?
+2. **À modifier ?** La question vient-elle trop souvent, ou pas assez ?
+3. **Incorrect ?** Sur la carte de café et le menu, quels champs sont faux ou manquants ?
+
+---
+
 ## Parcours 3 — Déclarer ton matériel
 
 *5 minutes. Enchaîne directement depuis le parcours 2.*

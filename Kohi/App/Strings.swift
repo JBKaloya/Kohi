@@ -45,8 +45,6 @@ nonisolated enum Copy {
     static let addPlaceByHand = "Add it by hand"
     static let coffeeName = "Coffee"
     static let fromCoffeeCollection = "From Coffee Collection"
-    static let scanBag = "Scan bag"
-    static let scanMenu = "Scan menu"
     static let inCoffeeCollection = "In Coffee Collection"
     static let tastedBefore = "Tasted before"
     static let details = "Details"
@@ -57,7 +55,7 @@ nonisolated enum Copy {
     static let price = "Price"
     static let method = "Method"
     static let photos = "Photos"
-    static let toConfirm = "Read on the menu, to confirm"
+    static let toConfirm = "Read, to confirm"
     static let methodOtherPrompt = "How it was made"
     static let menuTitle = "Which coffee?"
     static let menuNothingRead = "Nothing on this menu read as a coffee. Type the name instead."
@@ -185,8 +183,6 @@ nonisolated enum Copy {
     static let scans = "Scans"
     static let kohiCards = "Kohi cards"
     static let kohiCardsSubtitle = "Kohi cards are drawn on your iPhone from what's on the pack."
-    static let showTheScan = "Show the scan for this coffee"
-    static let showTheKohiCard = "Show the Kohi card"
     static let symbol = "Symbol"
     static let symbolAuto = "Auto"
     static let symbolEmboss = "Emboss"
@@ -205,6 +201,40 @@ nonisolated enum Copy {
     static let fromThePack = "FROM THE PACK"
     static let roasted = "ROASTED"
     static let added = "ADDED"
+
+    // Card detail tabs
+    static let coffee = "Coffee"
+    static let ask = "Ask"
+    static let askAboutThisCoffee = "Ask about this coffee"
+    static let noBrewsYet = "No brews yet."
+    static let brewThisCoffee = "Brew this coffee"
+
+    // Tasting flow
+    static let whereAreYou = "Where are you?"
+    static let whatsInTheCup = "What's in the cup?"
+    static let howWasItMade = "How was it made?"
+    static let howWasIt = "How was it?"
+    static let anythingToRemember = "Anything to remember?"
+    static let scanTheCard = "Scan the card"
+    static let scanTheCardSubtitle = "Card, menu or bag"
+    static let fromMyCoffeeCollection = "From my Coffee Collection"
+    static let typeItIn = "Type it in"
+    static let collectionIsEmpty = "Your collection is empty"
+    static let readingTheCard = "Reading the card…"
+    static let couldntReadThis = "Couldn't read this one. Type it, or rescan."
+    static let rescan = "Rescan"
+    static let saveNow = "Save now"
+    static let discardTasting = "Discard this tasting?"
+    static let discard = "Discard"
+    static let keepGoing = "Keep going"
+    static let unlink = "Unlink"
+
+    // Scan from home
+    static let whatAreYouScanning = "What are you scanning?"
+    static func aCupAt(_ place: String) -> String { "A cup at \(place)" }
+    static let aBagForMyCollection = "A bag for my collection"
+    static let addATasting = "Add a tasting"
+    static let addToCoffeeCollection = "Add to Coffee Collection"
 }
 
 nonisolated extension String {

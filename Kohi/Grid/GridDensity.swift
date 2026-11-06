@@ -8,6 +8,9 @@ enum GridDensity: Int, CaseIterable, Comparable, Sendable {
     case three = 3
     case four = 4
 
+    /// Every launch opens here. A pinch holds for the session only.
+    static let launch: GridDensity = .two
+
     var columns: Int { rawValue }
 
     /// Whitespace is what makes the grid read as endless, so it stays generous

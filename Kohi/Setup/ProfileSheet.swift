@@ -324,6 +324,7 @@ struct ProfileSheet: View {
                 Button("Run onboarding") { isShowingFlow = true }
                 Button("Reset first-scan flag") { flow.resetFirstScanFlag() }
                 Button("Reset kit") { confirmResetKit = true }
+                Button("Reset scan spots") { ScanSpots.clear() }
             }
             .font(Typography.tag)
             .foregroundStyle(Palette.inkMuted)

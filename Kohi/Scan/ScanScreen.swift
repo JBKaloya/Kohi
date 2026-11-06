@@ -54,6 +54,9 @@ struct SimulatedCaptureView: View {
     let onCapture: (CapturedCard) -> Void
     let onCancel: () -> Void
 
+    /// Nil is a card from the bundled archive.
+    @State private var demo: DemoScan? = DemoScan.requested
+
     var body: some View {
         ZStack {
             Palette.scanBackdrop.ignoresSafeArea()
@@ -63,7 +66,7 @@ struct SimulatedCaptureView: View {
                     .font(.system(size: 34, weight: .light))
                 Text("No camera in the simulator")
                     .font(Typography.coaching)
-                Text("Capture returns a sample card on a surface")
+                Text("Capture returns the chosen sample on a surface")
                     .font(Typography.subtitle)
                     .foregroundStyle(.white.opacity(0.55))
             }
@@ -80,6 +83,14 @@ struct SimulatedCaptureView: View {
                 .padding(.top, 16)
 
                 Spacer()
+
+                HStack(spacing: 8) {
+                    demoChoice("Archive", nil)
+                    ForEach(DemoScan.allCases) { kind in
+                        demoChoice(kind.title, kind)
+                    }
+                }
+                .padding(.bottom, 24)
 
                 Button(action: shoot) {
                     Circle()
@@ -98,8 +109,24 @@ struct SimulatedCaptureView: View {
         }
     }
 
+    private func demoChoice(_ title: String, _ kind: DemoScan?) -> some View {
+        let isOn = demo == kind
+        return Button {
+            demo = kind
+        } label: {
+            Text(title)
+                .font(Typography.subtitle)
+                .foregroundStyle(isOn ? Palette.scanBackdrop : .white.opacity(0.8))
+                .padding(.horizontal, 12)
+                .padding(.vertical, 7)
+                .background(Capsule().fill(isOn ? .white : .white.opacity(0.12)))
+        }
+        .buttonStyle(.plain)
+    }
+
     private func shoot() {
-        guard let captured = SampleArchive.sampleCapture() else {
+        let captured = if let demo { demo.capture() } else { SampleArchive.sampleCapture() }
+        guard let captured else {
             onCancel()
             return
         }

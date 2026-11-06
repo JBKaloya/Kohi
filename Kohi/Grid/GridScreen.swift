@@ -1,12 +1,15 @@
+import CoreLocation
 import SwiftUI
 
 /// The one main screen. A vertical grid of cards on paper, a pinch to change how
 /// many fit across, and a single button to add another.
 struct GridScreen: View {
-    let onScan: () -> Void
+    let onScan: (ScanPurpose) -> Void
     var isIngesting = false
     /// Set by a scan that recognised a coffee already on the shelf.
     @Binding var openCard: CoffeeCard?
+    /// A café card scanned after *A cup at…*, waiting for its tasting.
+    @Binding var cupScan: CupScan?
 
     @Environment(RecipeStore.self) private var recipes
     @Environment(CardStore.self) private var store
@@ -17,8 +20,10 @@ struct GridScreen: View {
     @Environment(IntentRouter.self) private var router
     @Environment(\.appEnvironment) private var appEnvironment
     @Environment(\.displayScale) private var displayScale
+    @Environment(\.scenePhase) private var scenePhase
+    @Environment(PlaceIndex.self) private var places
 
-    @State private var density: GridDensity = .three
+    @State private var density: GridDensity = .launch
     @State private var densityChanges = 0
     @State private var gridWidth: CGFloat = 0
     /// Live magnification during a pinch. `@GestureState` resets to 1 when the
@@ -45,6 +50,10 @@ struct GridScreen: View {
     @State private var isAskingFromFAB = false
     @State private var brewCoffee: CoffeeCard?
     @State private var flow: BrewSession?
+    /// One precise fix, taken only when location is already allowed.
+    @State private var nearby = NearbyPlaces(accuracy: kCLLocationAccuracyNearestTenMeters)
+    @State private var askingScan: PlaceSuggestion?
+    @State private var answeredScan: ScanPurpose?
     @Namespace private var namespace
 
     private var filteredCards: [CoffeeCard] {
@@ -156,7 +165,7 @@ struct GridScreen: View {
                         ProgressView().tint(Palette.inkMuted)
                     }
                     if tab == .coffees {
-                        ScanButton(action: onScan)
+                        ScanButton(action: scanTapped)
                     } else if tab == .tastings {
                         if !tastings.isEmpty {
                             CircleButton(
@@ -278,7 +287,8 @@ struct GridScreen: View {
                     seedRecipe: pendingRecipe,
                     seedSize: pendingScale,
                     startsBrew: startsBrew,
-                    startsAtSuggested: scrollToSuggested
+                    startsAtSuggested: scrollToSuggested,
+                    startsOn: startsBrew ? .brews : .coffee
                 )
                     .appEnvironment(appEnvironment)
                     .modifier(ZoomTransitionModifier(id: card.id, namespace: namespace))
@@ -306,9 +316,35 @@ struct GridScreen: View {
                 PlaceTastingsView(place: group.place, placeID: group.placeID)
                     .appEnvironment(appEnvironment)
             }
-            .sheet(isPresented: $composesTasting) {
-                TastingComposeSheet()
+            .fullScreenCover(isPresented: $composesTasting) {
+                TastingFlow(onSaved: { _ in showTastings() })
                     .appEnvironment(appEnvironment)
+            }
+            .fullScreenCover(item: $cupScan) { cup in
+                TastingFlow(place: cup.place, scan: cup.scan, onSaved: { _ in showTastings() })
+                    .appEnvironment(appEnvironment)
+            }
+            .sheet(item: $askingScan, onDismiss: {
+                guard let purpose = answeredScan else { return }
+                answeredScan = nil
+                onScan(purpose)
+            }) { suggestion in
+                ScanIntentSheet(suggestion: suggestion) { answer in
+                    if let fix = nearby.locator.fix {
+                        ScanSpots.record(answer, at: fix)
+                    }
+                    answeredScan = answer == .cup ? .cup(suggestion) : .bag
+                    askingScan = nil
+                }
+            }
+            .task(id: tab) { refreshFix() }
+            .onChange(of: scenePhase) { _, phase in
+                if phase == .active { refreshFix() }
+            }
+            .task(id: nearby.coordinate?.latitude) {
+                guard nearby.coordinate != nil else { return }
+                places.beginGeocoding()
+                await nearby.searchCafes()
             }
             .task { await openFirstCardIfRequested() }
             .onReceive(NotificationCenter.default.publisher(for: BrewDraft.resumeNotification)) { _ in
@@ -321,6 +357,34 @@ struct GridScreen: View {
             .onChange(of: router.pending) { _, _ in handleIntent() }
         }
         .tint(Palette.ink)
+    }
+
+    /// The fix is already there, or the home does not ask for one.
+    private func refreshFix() {
+        guard tab == .coffees else { return }
+        HomeFix.refresh(nearby.locator, isAuthorized: PlaceLocator.isAuthorized)
+    }
+
+    /// Never waits for the GPS: whatever fix is there decides.
+    private func scanTapped() {
+        let around = nearby.suggestions(roaster: "", index: places, tastings: tastings.tastings)
+        let intent = ScanIntent.decide(
+            fix: nearby.locator.fix,
+            yours: around.filter { $0.source == .yours },
+            seeds: around.filter { $0.source == .seed },
+            maps: nearby.cafes,
+            spots: ScanSpots.load(),
+            now: .now
+        )
+        switch intent {
+        case .bag: onScan(.bag)
+        case .ask(let suggestion): askingScan = suggestion
+        }
+    }
+
+    /// A saved tasting lands at the top of the Tastings tab.
+    private func showTastings() {
+        withAnimation(Motion.snappy) { tab = .tastings }
     }
 
     /// A shortcut asked for a brew. It opens the coffee it named, or the one
@@ -476,7 +540,20 @@ struct GridScreen: View {
                 Color.clear.preference(key: WidthKey.self, value: geo.size.width)
             }
         }
-        .onPreferenceChange(WidthKey.self) { gridWidth = $0 }
+        .onPreferenceChange(WidthKey.self) { width in
+            let isFirstLayout = gridWidth == 0 && width > 0
+            gridWidth = width
+            if isFirstLayout { prewarmFirstPage() }
+        }
+    }
+
+    /// Two columns read from the 1024 bucket, so the first page decodes large
+    /// tiles. Starting them before the cells ask keeps the first scroll smooth.
+    private func prewarmFirstPage() {
+        let bucket = ThumbnailCache.bucket(forWidth: tileWidth(for: density), scale: displayScale)
+        for card in store.cards.prefix(Motion.Grid.launchPrewarmCount) {
+            ThumbnailCache.shared.warm(card, buckets: [bucket])
+        }
     }
 
     /// Damped so a wild pinch does not throw the grid off screen before it snaps.

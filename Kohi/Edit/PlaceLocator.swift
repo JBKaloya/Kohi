@@ -8,10 +8,23 @@ import os
 /// you are in, and a card gets scanned once. Nothing here is stored on the card
 /// — the coordinates that end up in `Place` come from Apple Maps, not from you.
 @Observable
-final class PlaceLocator: NSObject, CLLocationManagerDelegate {
+final class PlaceLocator: NSObject, CLLocationManagerDelegate, FixSource {
     private(set) var coordinate: CLLocationCoordinate2D?
+    /// Metres. Only meaningful alongside `coordinate`.
+    private(set) var horizontalAccuracy: CLLocationAccuracy?
+    private(set) var fixedAt: Date?
     /// True once the request has been answered with a no. Search still works.
     private(set) var isDenied = false
+
+    var fix: Fix? {
+        guard let coordinate, let horizontalAccuracy, let fixedAt else { return nil }
+        return Fix(
+            latitude: coordinate.latitude,
+            longitude: coordinate.longitude,
+            accuracy: horizontalAccuracy,
+            at: fixedAt
+        )
+    }
 
     @ObservationIgnored private let manager = CLLocationManager()
 
@@ -28,7 +41,10 @@ final class PlaceLocator: NSObject, CLLocationManagerDelegate {
     /// Whether a fix can be taken without asking. The tasting capture only
     /// locates on its own when this is already true.
     static var isAuthorized: Bool {
-        switch CLLocationManager().authorizationStatus {
+        #if DEBUG
+        if DebugHooks.fakeFix != nil { return true }
+        #endif
+        return switch CLLocationManager().authorizationStatus {
         case .authorizedWhenInUse, .authorizedAlways: true
         default: false
         }
@@ -36,6 +52,14 @@ final class PlaceLocator: NSObject, CLLocationManagerDelegate {
 
     /// Asks the first time, then simply reuses the answer.
     func start() {
+        #if DEBUG
+        if let fake = DebugHooks.fakeFix {
+            coordinate = CLLocationCoordinate2D(latitude: fake.latitude, longitude: fake.longitude)
+            horizontalAccuracy = fake.accuracy
+            fixedAt = .now
+            return
+        }
+        #endif
         switch manager.authorizationStatus {
         case .notDetermined:
             manager.requestWhenInUseAuthorization()
@@ -70,7 +94,13 @@ final class PlaceLocator: NSObject, CLLocationManagerDelegate {
     ) {
         guard let location = locations.last else { return }
         let fix = location.coordinate
-        Task { @MainActor in coordinate = fix }
+        let accuracy = location.horizontalAccuracy
+        let at = location.timestamp
+        Task { @MainActor in
+            coordinate = fix
+            horizontalAccuracy = accuracy
+            fixedAt = at
+        }
     }
 
     nonisolated func locationManager(
