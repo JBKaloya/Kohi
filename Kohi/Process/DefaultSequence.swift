@@ -35,7 +35,7 @@ nonisolated enum DefaultSequence {
         var filled = recipe
         filled.steps = make(
             family: recipe.method.family,
-            brewerType: type,
+            brewerType: type ?? legacyType(for: recipe.method),
             dose: recipe.dose,
             water: recipe.water,
             beverage: recipe.beverage,
@@ -87,9 +87,21 @@ nonisolated enum DefaultSequence {
 
     private static func fallbackType(family: BrewerFamily) -> BrewerType {
         switch family {
-        case .pourOver: .v60
-        case .immersion: .frenchPress
+        case .handBrew: .v60
+        case .batch: .batch
         case .espresso: .espresso
+        case .coldBrew: .coldBrew
+        }
+    }
+
+    /// The sequence a recipe without kit got before Hand brew grouped the
+    /// drippers with the immersion brewers: AeroPress, French press and cold
+    /// brew recipes still steep rather than pour.
+    private static func legacyType(for method: BrewMethod) -> BrewerType {
+        switch method {
+        case .v60, .filter: .v60
+        case .aeropress, .frenchPress, .coldBrew: .frenchPress
+        case .espresso, .moka: .espresso
         }
     }
 

@@ -116,7 +116,7 @@ struct WaterSheet: View {
         VStack(alignment: .leading, spacing: 12) {
             Text("Known waters")
                 .catalogueLabel()
-            FlowLayout {
+            ChipRail {
                 ForEach(ReferenceBase.waters) { water in
                     TagChip(text: water.name, isSelected: draft.waterRef == water.id) {
                         tapCount += 1
@@ -253,7 +253,7 @@ struct WaterSheet: View {
             Text("Minerals")
                 .catalogueLabel()
 
-            FlowLayout {
+            ChipRail {
                 ForEach(ReferenceBase.mineralProducts) { product in
                     TagChip(
                         text: product.name,

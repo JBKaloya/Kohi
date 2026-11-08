@@ -131,7 +131,7 @@ struct RecipeFilterSheet: View {
                     }
                     if !grinders.isEmpty {
                         block("Grinder") {
-                            FlowLayout {
+                            ChipRail {
                                 ForEach(grinders, id: \.self) { name in
                                     TagChip(text: name, isSelected: state.authorGrinder == name) {
                                         state.authorGrinder = state.authorGrinder == name ? nil : name

@@ -336,7 +336,7 @@ struct StepBuilderSheet: View {
         let accessories = setup.accessories
         if !accessories.isEmpty {
             FormField(label: "Accessories") {
-                FlowLayout {
+                ChipRail {
                     ForEach(accessories) { item in
                         let selected = stepBinding.wrappedValue.accessoryIDs.contains(item.id)
                         TagChip(text: item.displayName, isSelected: selected) {

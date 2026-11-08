@@ -41,7 +41,9 @@ struct RoasterSheet: View {
                             labelWidth: 74,
                             presence: .useful,
                             hint: FieldCopy.roasterShared,
-                            error: nameError
+                            error: nameError,
+                            completions: nameOffers.map(\.name),
+                            onComplete: acceptName
                         )
                         TextRow(
                             label: "City",
@@ -143,6 +145,22 @@ struct RoasterSheet: View {
 
     private var resolvedCountry: String {
         PlaceCompletion.canonicalCountry(country, known: knownCountries)
+    }
+
+    /// Roasteries the index already has under a close name. Picking one
+    /// copies where it is too, so the form lands on "Use existing".
+    private var nameOffers: [Roaster] {
+        let folded = Roaster.fold(trimmedName)
+        return roasters.suggestions(for: trimmedName).filter { Roaster.fold($0.name) != folded }
+    }
+
+    private func acceptName(_ picked: String) {
+        guard let roaster = nameOffers.first(where: { $0.name == picked }) else { return }
+        withAnimation(Motion.snappy) {
+            name = roaster.name
+            city = roaster.city
+            country = roaster.country
+        }
     }
 
     private func acceptCity(_ title: String) {

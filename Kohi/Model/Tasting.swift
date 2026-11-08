@@ -118,11 +118,13 @@ nonisolated struct Tasting: Identifiable, Codable, Hashable, Sendable {
         return name.isEmpty ? fallback : name
     }
 
-    /// "V60", "Batch", "Espresso", or the free text.
+    /// "Hand brew · V60", "Batch brew", "Espresso · Moka", or the free text.
     var methodLine: String? {
-        if isBatch { return BrewerType.batch.label }
-        if let brewer { return brewer.label }
-        if let method { return method.label }
+        if isBatch { return BrewerFamily.batch.label }
+        if let brewer { return brewer.methodLine }
+        if let method {
+            return method == .filter ? method.family.label : DefaultSequence.type(for: method).methodLine
+        }
         let note = methodNote?.trimmingCharacters(in: .whitespaces) ?? ""
         return note.isEmpty ? nil : note
     }

@@ -40,6 +40,8 @@ struct NumberRange: Equatable, Sendable {
     static let pressure = NumberRange(min: 1, max: 15, step: 0.1, decimals: 1, default: 9)
     static let resolution = NumberRange(min: 0.1, max: 1, step: 0.1, decimals: 1, default: 0.1)
     static let price = NumberRange(min: 0, max: 999, step: 1, decimals: 0, default: 0)
+    /// A cup at a café: 4.50, 5.20. Ten cents a step.
+    static let cupPrice = NumberRange(min: 0, max: 99, step: 0.1, decimals: 2, default: 4)
     static let bagWeight = NumberRange(min: 50, max: 2000, step: 1, decimals: 0, default: 250)
     static let cupping = NumberRange(min: 0, max: 100, step: 0.1, decimals: 1, default: 85)
     static let brewTDS = NumberRange(min: 0, max: 5, step: 0.01, decimals: 2, default: 1.3)

@@ -4,7 +4,7 @@ import Foundation
 /// A brewer here is a dripper **or** an espresso machine.
 @MainActor
 enum BrewKit {
-    static let journeyTabs: [BrewerFamily] = [.pourOver, .immersion, .espresso]
+    static let journeyTabs: [BrewerFamily] = [.handBrew, .batch, .espresso, .coldBrew]
 
     static func isCupboard(_ kind: EquipmentKind) -> Bool {
         kind == .brewer || kind == .espressoMachine
@@ -17,19 +17,24 @@ enum BrewKit {
 
     /// Each family matches only itself — no absorption rules.
     static func matches(_ family: BrewerFamily, _ itemFamily: BrewerFamily?) -> Bool {
-        let resolved = itemFamily ?? .pourOver
+        let resolved = itemFamily ?? .handBrew
         return resolved == family
     }
 
     static func matches(_ family: BrewerFamily, _ item: Equipment) -> Bool {
-        if item.kind == .espressoMachine { return family == .espresso }
-        if let itemFamily = item.family {
-            return matches(family, itemFamily)
-        }
-        if let inferred = inferredType(for: item) {
-            return matches(family, inferred.family)
-        }
-        return family == .pourOver
+        self.family(of: item) == family
+    }
+
+    static func family(of item: Equipment) -> BrewerFamily {
+        if item.kind == .espressoMachine { return .espresso }
+        return item.family ?? inferredType(for: item)?.family ?? .handBrew
+    }
+
+    /// Whether a brew recording `method` can sit in `family`. A batch brew
+    /// records `.filter`, so `.filter` fits Hand brew and Batch brew.
+    nonisolated static func accepts(_ family: BrewerFamily, _ method: BrewMethod?) -> Bool {
+        guard let method else { return true }
+        return method.family == family || (family == .batch && method == .filter)
     }
 
     /// Method a cupboard item should write, even when `brewerType` was never stored.
@@ -48,14 +53,28 @@ enum BrewKit {
 
     static func fallbackMethod(_ family: BrewerFamily) -> BrewMethod {
         switch family {
-        case .pourOver: .v60
-        case .immersion: .frenchPress
+        case .handBrew: .v60
+        case .batch: .filter
         case .espresso: .espresso
+        case .coldBrew: .coldBrew
         }
     }
 
-    static func tab(for method: BrewMethod?) -> BrewerFamily {
-        method?.journeyTab ?? .pourOver
+    /// The tab a brew sits in: its brewer when known, then the tab just
+    /// chosen, then its method. Without the brewer a batch brew would read
+    /// as Hand brew, since both record `.filter`.
+    static func tab(
+        for method: BrewMethod?,
+        brewer: Equipment? = nil,
+        hint: BrewerFamily? = nil
+    ) -> BrewerFamily {
+        if let brewer, accepts(family(of: brewer), method) { return family(of: brewer) }
+        if let hint, accepts(hint, method) { return hint }
+        return method?.journeyTab ?? .handBrew
+    }
+
+    static func tab(for brew: Brew, in setup: SetupStore, hint: BrewerFamily? = nil) -> BrewerFamily {
+        tab(for: brew.method, brewer: activeBrewer(on: brew, in: setup), hint: hint)
     }
 
     static func clearCupboard(from brew: inout Brew, setup: SetupStore) {
@@ -65,7 +84,7 @@ enum BrewKit {
         }
     }
 
-    /// Switch Filter / Espresso: drop the other family's dripper, never leave a V60 on espresso.
+    /// Switch tab: drop the other family's brewer, never leave a V60 on espresso.
     static func applyFamily(
         _ family: BrewerFamily,
         to brew: inout Brew,
@@ -75,13 +94,13 @@ enum BrewKit {
     ) {
         if let current = activeBrewer(on: brew, in: setup),
            matches(family, current),
-           tab(for: brew.method) == family {
+           accepts(family, brew.method) {
             return
         }
         clearCupboard(from: &brew, setup: setup)
         if let match = setup.equipment.first(where: { isCupboard($0.kind) && matches(family, $0) }) {
             assign(match, to: &brew, setup: setup, card: card, recipe: recipe)
-            if tab(for: brew.method) != family {
+            if !accepts(family, brew.method) {
                 brew.method = method(for: match) ?? fallbackMethod(family)
             }
             return

@@ -42,9 +42,11 @@ final class TastingReader {
         couldNotRead = false
         defer { isReading = false }
         let tastingID = draft.wrappedValue.id
+        let image = scan.image
         async let photo = Task.detached(priority: .userInitiated) {
             TastingPhotos.save(scan: scan, tastingID: tastingID)
         }.value
+        async let codes = LabelCodeReader.readAll(image: image)
         let read = await TextExtractor.read(image: scan.image)
         if let name = await photo, !draft.wrappedValue.photos.contains(name) {
             draft.wrappedValue.photos.append(name)
@@ -58,12 +60,33 @@ final class TastingReader {
             await askModelForMenu(flags: flags, events: events)
         case .fields(var local, _):
             local.linesRead = read.count
+            local = await follow(await codes, local: local, into: draft, cards: cards)
             await askForSecondOpinion(scan, local: local, into: draft, cards: cards, flags: flags, events: events)
         case .nothing:
             var local = ParsedFields()
             local.linesRead = read.count
+            local = await follow(await codes, local: local, into: draft, cards: cards)
             await askForSecondOpinion(scan, local: local, into: draft, cards: cards, flags: flags, events: events)
         }
+    }
+
+    /// A code on the card, and the product page it points to, before any
+    /// model: when the page fills the gaps, the second opinion is not asked.
+    private func follow(
+        _ codes: [LabelCodeReader.Found],
+        local: ParsedFields,
+        into draft: Binding<TastingDraft>,
+        cards: [CoffeeCard]
+    ) async -> ParsedFields {
+        guard !codes.isEmpty else { return local }
+        let linked = await ScanPipeline.linked(codes: codes, local: local)
+        let before = FieldValues.of(draft.wrappedValue.coffee)
+        draft.wrappedValue.fill(from: linked)
+        if FieldValues.of(draft.wrappedValue.coffee) != before {
+            couldNotRead = false
+            offerLink(for: draft.wrappedValue, origin: linked, cards: cards)
+        }
+        return linked
     }
 
     private func askModelForMenu(flags: AIFlags, events: AIEventLog) async {
@@ -280,7 +303,7 @@ struct TastingCoffeeFields: View {
             if !reader.uncertain.isEmpty {
                 VStack(alignment: .leading, spacing: 8) {
                     Text(Copy.toConfirm).catalogueLabel()
-                    FlowLayout {
+                    ChipRail {
                         ForEach(reader.uncertain) { field in
                             TagChip(text: "\(field.kind.label): \(field.value)?", isSelected: false) {
                                 reader.confirm(field, into: $draft)
@@ -329,15 +352,93 @@ struct TastingIdentityFields: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
             if showsRoaster {
-                TastingTextField(label: "Roaster", text: $draft.coffee.roaster)
+                TastingRoasterField(draft: $draft)
             }
             TastingTextField(label: "Country", text: $draft.coffee.country, lexicon: CoffeeSuggestions.origins)
             TastingTextField(label: "Region", text: $draft.coffee.region)
             TastingTextField(label: "Farm", text: $draft.coffee.farm)
             TastingTextField(label: "Variety", text: $draft.coffee.variety, lexicon: CoffeeSuggestions.varieties)
             TastingTextField(label: "Process", text: $draft.coffee.process, lexicon: CoffeeSuggestions.processes)
-            TastingTextField(label: Copy.onThePack, text: $draft.notesText)
+            TastingNotesField(draft: $draft)
         }
+    }
+}
+
+/// The pack's notes as chips, one entry line to add more, and wheel flavours
+/// offered under it. A comma or Return turns the entry into a chip; anything
+/// left in the entry is kept on save. Free text stays possible.
+struct TastingNotesField: View {
+    @Binding var draft: TastingDraft
+
+    private var offers: [String] {
+        FlavorSuggestions.suggest(draft.notesEntry, excluding: draft.coffee.tastingNotes)
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text(Copy.onThePack).catalogueLabel()
+            if !draft.coffee.tastingNotes.isEmpty {
+                FlowLayout {
+                    ForEach(draft.coffee.tastingNotes, id: \.self) { note in
+                        TagChip(text: note, showsRemove: true) {
+                            withAnimation(Motion.quick) { draft.removeNote(note) }
+                        }
+                    }
+                }
+            }
+            TextField("", text: $draft.notesEntry)
+                .font(Typography.value)
+                .foregroundStyle(Palette.ink)
+                .textInputAutocapitalization(.words)
+                .autocorrectionDisabled()
+                .submitLabel(.done)
+                .onSubmit { withAnimation(Motion.snappy) { draft.commitNotesEntry() } }
+                .onChange(of: draft.notesEntry) { _, value in
+                    if value.contains(",") || value.contains("\n") {
+                        withAnimation(Motion.snappy) { draft.commitNotesEntry() }
+                    }
+                }
+            if !offers.isEmpty {
+                ChipRail {
+                    ForEach(offers, id: \.self) { flavor in
+                        TagChip(text: flavor) {
+                            withAnimation(Motion.snappy) { draft.pick(suggestion: flavor) }
+                        }
+                    }
+                }
+            }
+            Rectangle().fill(Palette.hairline).frame(height: 1)
+        }
+    }
+}
+
+/// The roaster, with the index offered underneath: the roasters this place
+/// serves while it is empty, the closest names once typing starts. Picking
+/// only fixes the spelling; the save links the entry by name.
+struct TastingRoasterField: View {
+    @Binding var draft: TastingDraft
+
+    @Environment(RoasterStore.self) private var roasters
+    @Environment(PlaceIndex.self) private var places
+
+    var body: some View {
+        TastingTextField(label: "Roaster", text: $draft.coffee.roaster, lexicon: offers)
+    }
+
+    private func offers(_ typed: String) -> [String] {
+        let folded = Roaster.fold(typed)
+        guard !folded.isEmpty else { return servedHere }
+        return roasters.suggestions(for: typed)
+            .map(\.name)
+            .filter { Roaster.fold($0) != folded }
+    }
+
+    private var servedHere: [String] {
+        guard let placeID = draft.placeID else { return [] }
+        return places.servedRoasterIDs(for: placeID)
+            .compactMap { roasters.roaster(servedID: $0)?.name }
+            .prefix(4)
+            .map { $0 }
     }
 }
 
@@ -358,7 +459,7 @@ struct TastingTextField: View {
             if let lexicon {
                 let words = lexicon(text)
                 if !words.isEmpty {
-                    HStack(spacing: 7) {
+                    ChipRail {
                         ForEach(words, id: \.self) { word in
                             TagChip(text: word, isSelected: false) { text = word }
                         }
@@ -401,10 +502,20 @@ struct TastingMadeFields: View {
     private var methodPicker: some View {
         VStack(alignment: .leading, spacing: 10) {
             Text(Copy.method).catalogueLabel()
-            FlowLayout {
-                ForEach(TastingMethod.allCases) { method in
-                    TagChip(text: method.label, isSelected: draft.method == method) {
-                        draft.method = draft.method == method ? nil : method
+            ChipRail {
+                ForEach(TastingMethod.families) { family in
+                    TagChip(text: family.label, isSelected: draft.method?.root == family) {
+                        draft.method = draft.method?.root == family ? nil : family
+                    }
+                }
+            }
+            if let root = draft.method?.root, !root.devices.isEmpty {
+                Rectangle().fill(Palette.hairline).frame(height: 1)
+                ChipRail {
+                    ForEach(root.devices) { device in
+                        TagChip(text: device.deviceLabel, isSelected: draft.method == device) {
+                            draft.method = draft.method == device ? root : device
+                        }
                     }
                 }
             }
@@ -413,25 +524,23 @@ struct TastingMadeFields: View {
                     .font(Typography.value)
                     .foregroundStyle(Palette.ink)
             }
+            Rectangle().fill(Palette.hairline).frame(height: 1)
         }
     }
 
     private var pricePicker: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text(Copy.price).catalogueLabel()
-            HStack(spacing: 12) {
-                TextField("0,00", text: $draft.priceText)
-                    .font(Typography.value)
-                    .foregroundStyle(Palette.ink)
-                    .keyboardType(.decimalPad)
-                    .frame(maxWidth: 120, alignment: .leading)
-                if let price = draft.price {
-                    Text(price.formatted)
-                        .font(Typography.tag)
-                        .foregroundStyle(Palette.inkMuted)
-                }
+            CounterRow(
+                value: Binding(
+                    get: { draft.price.map { NSDecimalNumber(decimal: $0.amount).doubleValue } },
+                    set: { draft.priceText = $0.map { String(format: "%.2f", $0) } ?? "" }
+                ),
+                range: .cupPrice,
+                placeholder: "0.00"
+            ) {
+                CurrencyPicker(code: $draft.currency)
             }
-            CurrencyPicker(code: $draft.currency)
         }
     }
 

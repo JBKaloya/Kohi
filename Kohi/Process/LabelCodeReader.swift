@@ -29,16 +29,33 @@ nonisolated enum LabelCodeReader {
         }
 
         do {
-            var request = DetectBarcodesRequest()
-            request.symbologies = [.qr, .microQR, .dataMatrix, .ean13, .ean8, .code128]
-            let observations = try await request.perform(on: url)
-            return observations.compactMap { observation in
-                guard let payload = observation.payloadString else { return nil }
-                return Found(payload: payload, bounds: observation.boundingBox.cgRect)
-            }
+            return found(in: try await request.perform(on: url))
         } catch {
             Log.app.notice("barcode detection failed: \(error)")
             return []
+        }
+    }
+
+    /// The same read on a photo still in memory: a cup's card, never filed.
+    static func readAll(image: CGImage) async -> [Found] {
+        do {
+            return found(in: try await request.perform(on: image))
+        } catch {
+            Log.app.notice("barcode detection failed: \(error)")
+            return []
+        }
+    }
+
+    private static var request: DetectBarcodesRequest {
+        var request = DetectBarcodesRequest()
+        request.symbologies = [.qr, .microQR, .dataMatrix, .ean13, .ean8, .code128]
+        return request
+    }
+
+    private static func found(in observations: [BarcodeObservation]) -> [Found] {
+        observations.compactMap { observation in
+            guard let payload = observation.payloadString else { return nil }
+            return Found(payload: payload, bounds: observation.boundingBox.cgRect)
         }
     }
 }

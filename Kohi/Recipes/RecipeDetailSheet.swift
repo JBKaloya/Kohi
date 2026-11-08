@@ -186,7 +186,7 @@ struct RecipeDetailSheet: View {
     private var brewThis: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text("Brew this").catalogueLabel()
-            FlowLayout {
+            ChipRail {
                 ForEach(recentCoffees) { coffee in
                     TagChip(
                         text: store.title(for: coffee),

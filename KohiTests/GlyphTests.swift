@@ -24,7 +24,7 @@ struct GlyphTests {
         #expect(BrewerType.espresso.equipmentKind == .espressoMachine)
         #expect(BrewerType.v60.equipmentKind == .brewer)
         #expect(BrewerType.moka.family == .espresso)
-        #expect(BrewerType.aeropress.family == .immersion)
+        #expect(BrewerType.aeropress.family == .handBrew)
     }
 
     @Test func brewerTypeRoundTripsThroughTheFamily() {

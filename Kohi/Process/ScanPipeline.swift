@@ -3,9 +3,9 @@ import Foundation
 
 /// Everything that runs on a photo after the local text read: barcodes, the
 /// label link, and the vision model when that read is weak. One module, two
-/// ways in. A bag filed in the collection goes through every pass; a cup
-/// photographed for a tasting has no code or product page, so it only gets
-/// the second opinion. Either way the result only fills what is empty.
+/// ways in: a bag filed in the collection, and a cup's card photographed for
+/// a tasting. Both go through every pass, and the result only fills what is
+/// empty.
 nonisolated enum ScanPipeline {
     /// The collection path. Starts from the read `ingest` already did, and is
     /// detached so the edit sheet does not freeze while it runs.
@@ -26,20 +26,7 @@ nonisolated enum ScanPipeline {
                 lines: pending.lines,
                 barcodes: found.map(\.bounds)
             )
-            let payloads = found.map(\.payload)
-            let code = payloads.first { $0.hasPrefix("https://") || $0.hasPrefix("http://") } ?? payloads.first
-            if let code, code.hasPrefix("http") {
-                if parsed.productURL == nil {
-                    parsed.productURL = code
-                }
-            } else {
-                parsed.labelCode = code
-            }
-
-            if let code, code.hasPrefix("http"),
-               let linked = await LabelLink.fetch(code) {
-                parsed.mergeLinked(linked)
-            }
+            parsed = await following(found, from: parsed)
 
             if parsed.wantsVisionAssist, visionAllowed, CardVision.isAvailable,
                let reading = await CardVision.read(cardID: pending.card.id) {
@@ -50,8 +37,34 @@ nonisolated enum ScanPipeline {
         }.value
     }
 
-    /// The tasting path: the vision model only, on the photo in memory, and
-    /// only when the local read is weak or found nothing at all.
+    /// The tasting path's first pass, on the codes read off the photo in
+    /// memory. Never asks a model; the page fetch gives up after 8 s.
+    static func linked(codes: [LabelCodeReader.Found], local: ParsedFields) async -> ParsedFields {
+        await Task.detached(priority: .userInitiated) {
+            await following(codes, from: local)
+        }.value
+    }
+
+    /// Keeps the code, prefers a link, and fills what the product page says.
+    private static func following(_ codes: [LabelCodeReader.Found], from local: ParsedFields) async -> ParsedFields {
+        var parsed = local
+        let payloads = codes.map(\.payload)
+        let code = payloads.first { $0.hasPrefix("https://") || $0.hasPrefix("http://") } ?? payloads.first
+        if let code, code.hasPrefix("http") {
+            if parsed.productURL == nil {
+                parsed.productURL = code
+            }
+            if let linked = await LabelLink.fetch(code) {
+                parsed.mergeLinked(linked)
+            }
+        } else {
+            parsed.labelCode = code
+        }
+        return parsed
+    }
+
+    /// The tasting path's second pass: the vision model, on the photo in
+    /// memory, only when what the text and the code gave is weak or empty.
     static func secondOpinion(
         image: CGImage,
         local: ParsedFields,

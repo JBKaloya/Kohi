@@ -157,7 +157,7 @@ struct CurrencyTests {
         #expect(LocalCurrency(defaults: defaults).proposed == "JPY")
     }
 
-    @Test func aCurrencyOutsideTheListGetsItsOwnChip() {
+    @Test func aCurrencyOutsideTheListHeadsTheList() {
         #expect(CurrencyPicker.options(including: nil) == CupPrice.commonCurrencies)
         #expect(CurrencyPicker.options(including: "EUR") == CupPrice.commonCurrencies)
         #expect(CurrencyPicker.options(including: "BRL") == ["BRL"] + CupPrice.commonCurrencies)
@@ -250,11 +250,20 @@ struct ScanPipelineTests {
 
     /// A café cup has no QR and no product page: the tasting path never
     /// reaches for either.
-    @Test func theTastingPathSkipsCodesAndLinks() throws {
+    /// Build 14 (Q4, Q5): the tasting path reads codes and follows the link,
+    /// before the second opinion and never on a menu.
+    @Test func theTastingPathReadsCodesAndLinks() throws {
         let reader = try String(contentsOf: DevBrief10.kohiRoot.appending(path: "Tastings/TastingFields.swift"))
         #expect(reader.contains("ScanPipeline.secondOpinion("))
-        #expect(!reader.contains("LabelCodeReader"))
-        #expect(!reader.contains("LabelLink"))
+        #expect(reader.contains("LabelCodeReader.readAll(image: image)"))
+        #expect(reader.contains("ScanPipeline.linked(codes: codes, local: local)"))
+        let read = try #require(reader.range(of: "case .fields(var local, _):"))
+        let tail = reader[read.lowerBound...]
+        let follow = try #require(tail.range(of: "local = await follow("))
+        let second = try #require(tail.range(of: "await askForSecondOpinion("))
+        #expect(follow.lowerBound < second.lowerBound)
+        let menu = try #require(reader.range(of: "case .menu:\n            await askModelForMenu"))
+        #expect(!reader[menu.lowerBound..<read.lowerBound].contains("follow("))
     }
 
     @Test func readingAMenuIsNative() throws {

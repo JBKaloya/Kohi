@@ -66,7 +66,7 @@ struct PrdBrewV2Tests {
         let named = Brew(method: .v60, recipeName: "Ultimate")
         #expect(named.title == "Ultimate")
         let family = Brew(method: .v60)
-        #expect(family.title == BrewerFamily.pourOver.label)
+        #expect(family.title == BrewerFamily.handBrew.label)
         #expect(!family.title.localizedCaseInsensitiveContains("hario"))
     }
 
@@ -143,8 +143,8 @@ struct PrdBrewV2Tests {
     @Test func brewerTypeMapsOntoBrewMethod() {
         #expect(BrewerType.v60.method == .v60)
         #expect(BrewerType.moka.family == .espresso)
-        #expect(BrewerType.aeropress.family == .immersion)
-        #expect(BrewerType.coldBrew.family == .immersion)
+        #expect(BrewerType.aeropress.family == .handBrew)
+        #expect(BrewerType.coldBrew.family == .coldBrew)
     }
 
     @Test func expressSourceSurvivesARowRoundTrip() {
@@ -212,36 +212,36 @@ struct PrdBrewV2Tests {
     }
 
     @MainActor
-    @Test func switchingFromMokaToPourOverRestoresTheDripper() {
+    @Test func switchingFromMokaToHandBrewRestoresTheDripper() {
         let setup = SetupStore(files: JSONDocumentStore(filename: "kit-moka-\(UUID().uuidString).json"))
         let v60 = Equipment(kind: .brewer, brand: "Hario", model: "V60", brewerType: "V60")
         let moka = Equipment(kind: .brewer, brand: "Bialetti", model: "Moka Express", brewerType: "Moka")
         setup.add(v60)
         setup.add(moka)
         var brew = Brew(method: .moka, equipmentIDs: [moka.id])
-        BrewKit.applyFamily(.pourOver, to: &brew, setup: setup, card: CoffeeCard(name: "Test"), recipe: nil)
+        BrewKit.applyFamily(.handBrew, to: &brew, setup: setup, card: CoffeeCard(name: "Test"), recipe: nil)
         #expect(brew.equipmentIDs.contains(v60.id))
         #expect(!brew.equipmentIDs.contains(moka.id))
-        #expect(BrewKit.tab(for: brew.method) == .pourOver)
-        #expect(!BrewKit.matches(.pourOver, moka))
+        #expect(BrewKit.tab(for: brew.method) == .handBrew)
+        #expect(!BrewKit.matches(.handBrew, moka))
         #expect(BrewKit.matches(.espresso, moka))
         let nameless = Equipment(kind: .brewer, brand: "Bialetti", model: "Moka Express 1 cup")
         #expect(BrewKit.matches(.espresso, nameless))
-        #expect(!BrewKit.matches(.pourOver, nameless))
+        #expect(!BrewKit.matches(.handBrew, nameless))
     }
 
     @MainActor
-    @Test func aNamelessV60StillMovesTheJourneyToPourOver() {
+    @Test func aNamelessV60StillMovesTheJourneyToHandBrew() {
         let setup = SetupStore(files: JSONDocumentStore(filename: "kit-nameless-v60-\(UUID().uuidString).json"))
         let v60 = Equipment(kind: .brewer, brand: "Hario", model: "V60")
         let moka = Equipment(kind: .brewer, brand: "Bialetti", model: "Moka Express 1 cup")
         setup.add(v60)
         setup.add(moka)
         var brew = Brew(method: .moka, equipmentIDs: [moka.id])
-        BrewKit.applyFamily(.pourOver, to: &brew, setup: setup, card: CoffeeCard(name: "Test"), recipe: nil)
+        BrewKit.applyFamily(.handBrew, to: &brew, setup: setup, card: CoffeeCard(name: "Test"), recipe: nil)
         #expect(brew.equipmentIDs.contains(v60.id))
         #expect(brew.method == .v60)
-        #expect(BrewKit.tab(for: brew.method) == .pourOver)
+        #expect(BrewKit.tab(for: brew.method) == .handBrew)
         BrewKit.applyFamily(.espresso, to: &brew, setup: setup, card: CoffeeCard(name: "Test"), recipe: nil)
         #expect(brew.equipmentIDs.contains(moka.id))
         #expect(BrewKit.tab(for: brew.method) == .espresso)
@@ -339,13 +339,13 @@ struct PrdBrewV2Tests {
         let v60 = Recipe(name: "Ultimate", method: .v60, dose: 15, water: 250)
         let aero = Recipe(name: "AeroPress", method: .aeropress, dose: 15, water: 200)
         let moka = Recipe(name: "Moka 3 cup", method: .moka, dose: 16, water: 150)
-        // V60 is Pour Over; AeroPress is Immersion; Moka is Espresso.
+        // V60 and AeroPress are both Hand brew; Moka is Espresso.
         #expect(RecipePickerMatch.belongs(v60, to: .v60))
-        #expect(!RecipePickerMatch.belongs(v60, to: .aeropress))
+        #expect(RecipePickerMatch.belongs(v60, to: .aeropress))
         #expect(!RecipePickerMatch.belongs(v60, to: .moka))
         #expect(RecipePickerMatch.belongs(aero, to: .aeropress))
         #expect(RecipePickerMatch.belongs(aero, to: .frenchPress))
-        #expect(!RecipePickerMatch.belongs(aero, to: .v60))
+        #expect(RecipePickerMatch.belongs(aero, to: .v60))
         #expect(RecipePickerMatch.belongs(moka, to: .espresso))
         #expect(!RecipePickerMatch.belongs(moka, to: .v60))
     }
@@ -363,9 +363,9 @@ struct PrdBrewV2Tests {
             setup: setup
         )
         #expect(session.brew.method == .moka)
-        session.apply(family: .pourOver, setup: setup)
+        session.apply(family: .handBrew, setup: setup)
         #expect(session.recipe == nil)
-        #expect(BrewKit.tab(for: session.brew.method) == .pourOver)
+        #expect(BrewKit.tab(for: session.brew.method) == .handBrew)
         #expect(BrewKit.activeBrewer(on: session.brew, in: setup)?.id == v60.id)
         session.apply(family: .espresso, setup: setup)
         #expect(BrewKit.tab(for: session.brew.method) == .espresso)
@@ -537,29 +537,32 @@ struct PrdBrewV2Tests {
         #expect(maxMass >= 240)
     }
 
-    // MARK: - Three families
+    // MARK: - Four families
 
-    @Test func aeropressIsImmersionNotPourOver() {
-        #expect(BrewerType.aeropress.family == .immersion)
-        #expect(BrewerType.frenchPress.family == .immersion)
-        #expect(BrewerType.coldBrew.family == .immersion)
-        #expect(BrewerType.v60.family == .pourOver)
-        #expect(BrewerType.chemex.family == .pourOver)
-        #expect(BrewerType.batch.family == .pourOver)
+    @Test func everythingManualIsHandBrew() {
+        #expect(BrewerType.aeropress.family == .handBrew)
+        #expect(BrewerType.frenchPress.family == .handBrew)
+        #expect(BrewerType.immersionSwitch.family == .handBrew)
+        #expect(BrewerType.v60.family == .handBrew)
+        #expect(BrewerType.chemex.family == .handBrew)
+        #expect(BrewerType.flat.family == .handBrew)
+        #expect(BrewerType.batch.family == .batch)
+        #expect(BrewerType.coldBrew.family == .coldBrew)
+        #expect(BrewerType.moka.family == .espresso)
     }
 
-    @Test func journeyTabsHasThreeFamilies() {
-        #expect(BrewKit.journeyTabs.count == 3)
-        #expect(BrewKit.journeyTabs.contains(.pourOver))
-        #expect(BrewKit.journeyTabs.contains(.immersion))
-        #expect(BrewKit.journeyTabs.contains(.espresso))
+    @Test func journeyTabsFollowTheDecidedOrder() {
+        #expect(BrewKit.journeyTabs == [.handBrew, .batch, .espresso, .coldBrew])
+        #expect(BrewKit.journeyTabs.map(\.label) == ["Hand brew", "Batch brew", "Espresso", "Cold brew"])
     }
 
     @Test func methodFamilyMapsCorrectly() {
-        #expect(BrewMethod.aeropress.family == .immersion)
-        #expect(BrewMethod.frenchPress.family == .immersion)
-        #expect(BrewMethod.v60.family == .pourOver)
+        #expect(BrewMethod.aeropress.family == .handBrew)
+        #expect(BrewMethod.frenchPress.family == .handBrew)
+        #expect(BrewMethod.v60.family == .handBrew)
+        #expect(BrewMethod.filter.family == .handBrew)
         #expect(BrewMethod.moka.family == .espresso)
+        #expect(BrewMethod.coldBrew.family == .coldBrew)
     }
 
     // MARK: - Step accessories Codable
@@ -583,13 +586,13 @@ struct PrdBrewV2Tests {
 
     @Test func expressTitleIncludesCoffeeName() {
         let card = CoffeeCard(name: "Geera")
-        let title = Recipe.expressTitle(family: .pourOver, card: card)
-        #expect(title.hasPrefix("Geera · Pour Over ·"))
+        let title = Recipe.expressTitle(family: .handBrew, card: card)
+        #expect(title.hasPrefix("Geera · Hand brew ·"))
     }
 
     @Test func expressTitleWithoutCardUsesFamily() {
-        let title = Recipe.expressTitle(family: .pourOver)
-        #expect(title.hasPrefix("Pour Over ·"))
+        let title = Recipe.expressTitle(family: .handBrew)
+        #expect(title.hasPrefix("Hand brew ·"))
     }
 
     // MARK: - Scaling: the 60 kg rinse

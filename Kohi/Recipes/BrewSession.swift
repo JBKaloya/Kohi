@@ -27,6 +27,10 @@ final class BrewSession: Identifiable {
     var dialReturn: Step?
     /// Skip the timer and go to After — logging a cup that already happened.
     var logged = false
+    /// The tab last tapped on Which recipe or With what. Only read when the
+    /// brew has no brewer: a batch brew without its machine records `.filter`,
+    /// which alone reads as Hand brew.
+    var familyHint: BrewerFamily?
     /// Set when Brew again already applied the move chosen last time.
     var lastApplication: BrewPrefill.LastApplication?
     /// Suggestion captured once, when the cup is saved. Read does not recompute it.
@@ -256,13 +260,18 @@ final class BrewSession: Identifiable {
         BrewPrefill.fill(&brew, card: card, recipe: recipe, setup: setup)
     }
 
-    /// Filter | Espresso on What you're doing and With what. Drops a recipe
-    /// that belongs to the other tab so the list and the cupboard stay in step.
+    /// The tabs on Which recipe and With what. Drops a recipe that belongs
+    /// to another tab so the list and the cupboard stay in step.
     func apply(family: BrewerFamily, setup: SetupStore) {
+        familyHint = family
         BrewKit.applyFamily(family, to: &brew, setup: setup, card: card, recipe: recipe)
-        if let recipe, recipe.method.journeyTab != family {
+        if let recipe, !BrewKit.accepts(family, recipe.method) {
             adopt(recipe: nil)
         }
+    }
+
+    func tab(in setup: SetupStore) -> BrewerFamily {
+        BrewKit.tab(for: brew, in: setup, hint: familyHint)
     }
 
     /// Edit a recipe immediately before the timer.

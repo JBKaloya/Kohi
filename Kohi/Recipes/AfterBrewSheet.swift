@@ -247,7 +247,7 @@ struct AfterBrewSheet: View {
             }
         }
         if recipe.name.isEmpty {
-            recipe.name = Recipe.expressTitle(family: (session.brew.method ?? .v60).family)
+            recipe.name = Recipe.expressTitle(family: session.tab(in: setup))
         }
         return recipe
     }

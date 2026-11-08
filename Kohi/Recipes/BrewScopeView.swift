@@ -33,7 +33,7 @@ struct BrewScopeView: View {
                     TabRail(
                         tabs: BrewKit.journeyTabs,
                         selection: Binding(
-                            get: { BrewKit.tab(for: session.brew.method) },
+                            get: { session.tab(in: setup) },
                             set: { family in
                                 tapCount += 1
                                 session.apply(family: family, setup: setup)
@@ -54,6 +54,7 @@ struct BrewScopeView: View {
                 RecipePickerList(
                     card: session.card,
                     method: session.brew.method,
+                    family: session.tab(in: setup),
                     size: nil,
                     selected: session.recipe,
                     lane: session.recipeLane
@@ -120,7 +121,7 @@ struct BrewScopeView: View {
 
     private var expressDraft: Recipe {
         var recipe = Recipe(
-            name: Recipe.expressTitle(family: (session.brew.method ?? .v60).family, card: session.card),
+            name: Recipe.expressTitle(family: session.tab(in: setup), card: session.card),
             method: session.brew.method ?? .v60,
             dose: session.brew.dose,
             water: session.brew.water,

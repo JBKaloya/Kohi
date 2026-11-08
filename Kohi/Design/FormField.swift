@@ -221,7 +221,7 @@ struct TextRow: View {
             }
 
             if isFocused, !completions.isEmpty {
-                FlowLayout {
+                ChipRail {
                     ForEach(completions, id: \.self) { item in
                         TagChip(text: item) { onComplete?(item) }
                     }
@@ -405,7 +405,7 @@ struct ChipPicker<Item: Identifiable & Equatable>: View {
     var onPick: () -> Void = {}
 
     var body: some View {
-        FlowLayout {
+        ChipRail {
             ForEach(items) { item in
                 TagChip(text: label(item), isSelected: selection == item) {
                     if selection == item, allowsDeselect {
@@ -428,7 +428,7 @@ struct ChipToggles<Item: Identifiable & Hashable>: View {
     let toggle: (Item, Bool) -> Void
 
     var body: some View {
-        FlowLayout {
+        ChipRail {
             ForEach(items) { item in
                 TagChip(text: label(item), isSelected: isOn(item)) {
                     toggle(item, !isOn(item))

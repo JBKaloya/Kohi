@@ -48,6 +48,23 @@ struct FlowLayout: Layout {
     }
 }
 
+/// Options to pick from, on one line that scrolls sideways. Wrapping is kept
+/// for what you own (your notes, your flavours); a row of choices never
+/// spills onto a second line.
+struct ChipRail<Content: View>: View {
+    var spacing: CGFloat = 7
+    @ViewBuilder let content: Content
+
+    var body: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: spacing) {
+                content
+            }
+        }
+        .scrollClipDisabled()
+    }
+}
+
 /// A tag, either sitting in a list or offered as a quick pick.
 struct TagChip: View {
     let text: String

@@ -288,7 +288,7 @@ struct TastingComposeSheet: View {
 
             if showsDetails {
                 VStack(alignment: .leading, spacing: 20) {
-                    TastingTextField(label: "Roaster", text: $draft.coffee.roaster)
+                    TastingRoasterField(draft: $draft)
 
                     Button {
                         withAnimation(Motion.snappy) { showsMore.toggle() }
@@ -362,47 +362,111 @@ struct TastingComposeSheet: View {
 
 /// How the cup was made, in the words a café uses. Maps onto the brew
 /// vocabulary without adding a method: V60 is filter on a V60, batch is
-/// filter with `isBatch`.
+/// filter with `isBatch`. Classified in docs/methodes-extraction.md.
 enum TastingMethod: String, CaseIterable, Identifiable, Sendable {
-    case espresso
+    case handBrew
     case v60
+    /// Shown as Flat dripper. The raw value is never stored.
     case kalita
     case chemex
     case aeropress
+    case frenchPress
     case batch
+    case espresso
+    case moka
+    case coldBrew
     case other
 
     var id: String { rawValue }
 
+    /// First level of the picker, in screen order.
+    static let families: [TastingMethod] = [.handBrew, .batch, .espresso, .coldBrew, .other]
+
     var label: String {
         switch self {
-        case .espresso: "Espresso"
+        case .handBrew: BrewerFamily.handBrew.label
         case .v60: "V60"
-        case .kalita: "Kalita"
+        case .kalita: BrewerType.flat.label
         case .chemex: "Chemex"
         case .aeropress: "AeroPress"
-        case .batch: "Batch"
+        case .frenchPress: BrewerType.frenchPress.label
+        case .batch: BrewerFamily.batch.label
+        case .espresso: "Espresso"
+        case .moka: "Moka"
+        case .coldBrew: BrewerFamily.coldBrew.label
         case .other: "Other"
+        }
+    }
+
+    /// Nil for Other, which sits outside the four families.
+    var family: BrewerFamily? {
+        switch self {
+        case .handBrew, .v60, .kalita, .chemex, .aeropress, .frenchPress: .handBrew
+        case .batch: .batch
+        case .espresso, .moka: .espresso
+        case .coldBrew: .coldBrew
+        case .other: nil
+        }
+    }
+
+    /// The first-level chip this method sits under.
+    var root: TastingMethod {
+        switch family {
+        case .handBrew: .handBrew
+        case .batch: .batch
+        case .espresso: .espresso
+        case .coldBrew: .coldBrew
+        case nil: .other
+        }
+    }
+
+    /// The optional second level under a first-level chip.
+    var devices: [TastingMethod] {
+        switch self {
+        case .handBrew: [.v60, .kalita, .chemex, .aeropress, .frenchPress]
+        case .espresso: [.espresso, .moka]
+        default: []
+        }
+    }
+
+    /// On the second level the machine reads Machine: Espresso is already the
+    /// family's chip above it.
+    var deviceLabel: String {
+        self == .espresso ? "Machine" : label
+    }
+
+    /// "Hand brew · V60", "Espresso · Moka", or the family alone. Nil for Other.
+    var line: String? {
+        switch self {
+        case .other: nil
+        case .handBrew, .batch: label
+        default: brewer?.methodLine
         }
     }
 
     var method: BrewMethod? {
         switch self {
-        case .espresso: .espresso
-        case .v60, .kalita, .chemex, .batch: .filter
+        case .handBrew, .v60, .kalita, .chemex, .batch: .filter
         case .aeropress: .aeropress
+        case .frenchPress: .frenchPress
+        case .espresso: .espresso
+        case .moka: .moka
+        case .coldBrew: .coldBrew
         case .other: nil
         }
     }
 
     var brewer: BrewerType? {
         switch self {
-        case .espresso: .espresso
         case .v60: .v60
         case .kalita: .flat
         case .chemex: .chemex
         case .aeropress: .aeropress
-        case .batch, .other: nil
+        case .frenchPress: .frenchPress
+        case .espresso: .espresso
+        case .moka: .moka
+        case .coldBrew: .coldBrew
+        case .handBrew, .batch, .other: nil
         }
     }
 
@@ -414,14 +478,22 @@ enum TastingMethod: String, CaseIterable, Identifiable, Sendable {
         case .flat: self = .kalita; return
         case .chemex: self = .chemex; return
         case .aeropress: self = .aeropress; return
+        case .frenchPress: self = .frenchPress; return
+        case .moka: self = .moka; return
+        case .coldBrew: self = .coldBrew; return
         case .batch: self = .batch; return
-        default: break
+        case .immersionSwitch: self = .handBrew; return
+        case nil: break
         }
         switch method {
         case .espresso: self = .espresso
         case .v60: self = .v60
         case .aeropress: self = .aeropress
-        default:
+        case .frenchPress: self = .frenchPress
+        case .moka: self = .moka
+        case .coldBrew: self = .coldBrew
+        case .filter: self = .handBrew
+        case nil:
             if let note, !note.trimmingCharacters(in: .whitespaces).isEmpty {
                 self = .other
             } else {
@@ -515,6 +587,42 @@ struct TastingDraft: Equatable {
         }
     }
 
+    /// What is being typed under On the pack, before it becomes a chip.
+    var notesEntry = ""
+
+    /// Each comma-separated part of the entry becomes a chip; a duplicate is
+    /// dropped, whatever its case.
+    mutating func commitNotesEntry() {
+        let parts = notesEntry.split(whereSeparator: { $0 == "," || $0 == "\n" })
+        notesEntry = ""
+        for part in parts { addNote(String(part)) }
+    }
+
+    mutating func addNote(_ note: String) {
+        let value = note.trimmingCharacters(in: .whitespaces)
+        guard !value.isEmpty else { return }
+        let key = FlavorMatcher.normalize(value)
+        guard !coffee.tastingNotes.contains(where: { FlavorMatcher.normalize($0) == key }) else { return }
+        coffee.tastingNotes.append(value)
+    }
+
+    /// A wheel flavour tapped under the entry replaces what was being typed.
+    mutating func pick(suggestion flavor: String) {
+        notesEntry = ""
+        addNote(flavor)
+    }
+
+    mutating func removeNote(_ note: String) {
+        coffee.tastingNotes.removeAll { $0 == note }
+    }
+
+    /// The notes as saved: the chips, then whatever was left in the entry.
+    var committedNotes: [String] {
+        var copy = self
+        copy.commitNotesEntry()
+        return copy.coffee.tastingNotes
+    }
+
     var price: CupPrice? {
         let cleaned = priceText
             .replacingOccurrences(of: ",", with: ".")
@@ -529,7 +637,7 @@ struct TastingDraft: Equatable {
         var parts: [String] = []
         let roaster = coffee.roaster.trimmingCharacters(in: .whitespaces)
         if !roaster.isEmpty { parts.append(roaster) }
-        if let method { parts.append(method == .other ? methodNote : method.label) }
+        if let method { parts.append(method.line ?? methodNote) }
         if let price { parts.append(price.formatted) }
         return parts.isEmpty ? nil : parts.joined(separator: " · ")
     }
@@ -612,7 +720,8 @@ struct TastingDraft: Equatable {
     var hasContent: Bool {
         !coffee.trimmedName.isEmpty || !coffee.roaster.trimmingCharacters(in: .whitespaces).isEmpty
             || !coffee.country.isEmpty || !coffee.process.isEmpty || !coffee.variety.isEmpty
-            || !coffee.tastingNotes.isEmpty || cardID != nil || method != nil
+            || !coffee.tastingNotes.isEmpty || !notesEntry.trimmingCharacters(in: .whitespaces).isEmpty
+            || cardID != nil || method != nil
             || !priceText.trimmingCharacters(in: .whitespaces).isEmpty || !photos.isEmpty
             || rating != nil || taste != TasteProfile() || !flavors.isEmpty
             || !note.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
@@ -642,6 +751,7 @@ struct TastingDraft: Equatable {
         if let place { tasting.context = .out(place: place, placeID: placeID) }
         tasting.cardID = cardID
         var coffee = coffee
+        coffee.tastingNotes = committedNotes
         coffee.name = coffee.trimmedName
         coffee.roaster = coffee.roaster.trimmingCharacters(in: .whitespaces)
         tasting.coffee = coffee

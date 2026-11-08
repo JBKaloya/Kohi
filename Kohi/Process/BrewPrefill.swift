@@ -77,15 +77,18 @@ enum BrewPrefill {
     /// default, Dial would otherwise have nothing to hang a filter list on.
     /// Espresso never borrows a filter dripper.
     static func ensureMatchingBrewer(on brew: inout Brew, setup: SetupStore) {
-        let tab = BrewKit.tab(for: brew.method)
-        if let current = BrewKit.activeBrewer(on: brew, in: setup) {
+        let current = BrewKit.activeBrewer(on: brew, in: setup)
+        let tab = BrewKit.tab(for: brew.method, brewer: current)
+        if let current {
             if BrewKit.matches(tab, current) { return }
             BrewKit.clearCupboard(from: &brew, setup: setup)
             brew.filterStockId = nil
         }
         guard let method = brew.method else { return }
         let match = setup.equipment.first {
-            BrewKit.isCupboard($0.kind) && BrewKit.matches(tab, $0) && $0.brewerKind?.method == method
+            BrewKit.isCupboard($0.kind)
+                && BrewKit.accepts(BrewKit.family(of: $0), method)
+                && $0.brewerKind?.method == method
         } ?? setup.equipment.first {
             BrewKit.isCupboard($0.kind) && BrewKit.matches(tab, $0)
         }
@@ -228,8 +231,9 @@ enum BrewPrefill {
 
     private static func fillFilter(_ brew: inout Brew, setup: SetupStore) {
         guard brew.filterStockId == nil else { return }
-        let tab = BrewKit.tab(for: brew.method)
-        let brewer = BrewKit.activeBrewer(on: brew, in: setup)
+        let active = BrewKit.activeBrewer(on: brew, in: setup)
+        let tab = BrewKit.tab(for: brew.method, brewer: active)
+        let brewer = active
             ?? setup.defaults(for: brew.method ?? .v60).first {
                 BrewKit.isCupboard($0.kind) && BrewKit.matches(tab, $0)
             }

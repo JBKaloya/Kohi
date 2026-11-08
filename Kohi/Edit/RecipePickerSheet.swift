@@ -23,6 +23,9 @@ struct RecipePickerList: View {
 
     let card: CoffeeCard
     let method: BrewMethod?
+    /// The journey's tab, when it knows more than the method: a batch brew
+    /// records `.filter` like a flat dripper.
+    var family: BrewerFamily? = nil
     /// When set, rows show the recipe at this cup size and keep a "scaled from"
     /// line rather than hiding a 15 g recipe from a 30 g brew.
     var size: RecipeSize? = nil
@@ -61,10 +64,13 @@ struct RecipePickerList: View {
         return result
     }
 
-    /// Filtered by family (Pour Over / Immersion / Espresso), not the exact method.
-    /// A Chemex is still a candidate after a V60; an AeroPress won't show up
-    /// under Pour Over, and Moka sits with Espresso.
+    /// Filtered by family (Hand brew / Batch brew / Espresso / Cold brew), not
+    /// the exact method. A Chemex or an AeroPress is still a candidate after a
+    /// V60, and Moka sits with Espresso.
     private func filtered(_ pool: [Recipe]) -> [Recipe] {
+        if let family {
+            return pool.filter { RecipePickerMatch.belongs($0, to: family) }
+        }
         guard let method else { return pool }
         return pool.filter { RecipePickerMatch.belongs($0, to: method) }
     }
@@ -166,5 +172,9 @@ nonisolated enum RecipePickerMatch {
     static func belongs(_ recipe: Recipe, to method: BrewMethod?) -> Bool {
         guard let method else { return true }
         return recipe.method.journeyTab == method.journeyTab
+    }
+
+    static func belongs(_ recipe: Recipe, to family: BrewerFamily) -> Bool {
+        BrewKit.accepts(family, recipe.method)
     }
 }

@@ -1,26 +1,39 @@
 import SwiftUI
 
-/// The one way to pick a currency: chips over `CupPrice.commonCurrencies`.
-/// A code outside that list, read off a pack or proposed from where you are,
-/// gets a chip of its own in front so it can be seen and kept.
+/// The one way to pick a currency: the code in use, which opens
+/// `CupPrice.commonCurrencies`. A code outside that list, read off a pack or
+/// proposed from where you are, heads the list so it can be seen and kept.
 struct CurrencyPicker: View {
     @Binding var code: String?
     /// A card can say nothing about its currency; a tasting always has one.
     var allowsNone = true
 
     var body: some View {
-        FlowLayout {
+        Menu {
             ForEach(Self.options(including: code), id: \.self) { option in
-                TagChip(text: option, isSelected: code == option) {
+                Button {
+                    code = option
+                } label: {
                     if code == option {
-                        if allowsNone { code = nil }
+                        Label(option, systemImage: "checkmark")
                     } else {
-                        code = option
+                        Text(option)
                     }
                 }
             }
+            if allowsNone {
+                Divider()
+                Button(Self.noneLabel) { code = nil }
+            }
+        } label: {
+            WellMenuLabel(text: code ?? "—")
+                .touchTarget()
         }
+        .accessibilityLabel("Currency")
+        .accessibilityValue(code ?? Self.noneLabel)
     }
+
+    static let noneLabel = "No currency"
 
     nonisolated static func options(including code: String?) -> [String] {
         let common = CupPrice.commonCurrencies

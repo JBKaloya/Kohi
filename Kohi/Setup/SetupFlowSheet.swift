@@ -267,7 +267,7 @@ struct SetupFlowSheet: View {
             if !paperFamilies.isEmpty {
                 VStack(alignment: .leading, spacing: 10) {
                     Text(Copy.whichPaper).catalogueLabel()
-                    FlowLayout {
+                    ChipRail {
                         ForEach(PaperChoice.allCases) { choice in
                             TagChip(
                                 text: choice == .brand
@@ -344,7 +344,7 @@ struct SetupFlowSheet: View {
             )
 
             if waterChoice == .bottled {
-                FlowLayout {
+                ChipRail {
                     ForEach(ReferenceBase.waters) { water in
                         TagChip(text: water.name, isSelected: bottled?.id == water.id) {
                             bottled = bottled?.id == water.id ? nil : water
@@ -354,7 +354,7 @@ struct SetupFlowSheet: View {
             }
 
             if waterChoice == .recipe {
-                FlowLayout {
+                ChipRail {
                     ForEach(ReferenceBase.mineralProducts) { product in
                         TagChip(text: product.name, isSelected: additive?.id == product.id) {
                             additive = additive?.id == product.id ? nil : product

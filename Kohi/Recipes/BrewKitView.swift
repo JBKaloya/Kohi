@@ -20,10 +20,10 @@ struct BrewKitView: View {
         var id: String { rawValue }
     }
 
-    /// Always the cupboard that `brew.method` actually names. A free State
-    /// could sit on Espresso while the dripper was still a V60.
+    /// Always the cupboard the brew actually names. A free State could sit
+    /// on Espresso while the dripper was still a V60.
     private var family: BrewerFamily {
-        BrewKit.tab(for: session.brew.method)
+        session.tab(in: setup)
     }
 
     var body: some View {
@@ -96,7 +96,7 @@ struct BrewKitView: View {
     private var accessoriesRow: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text("Accessories").catalogueLabel()
-            FlowLayout {
+            ChipRail {
                 ForEach(setup.accessories) { item in
                     let selected = session.brew.equipmentIDs.contains(item.id)
                     TagChip(text: item.displayName, isSelected: selected) {

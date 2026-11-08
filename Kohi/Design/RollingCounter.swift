@@ -121,10 +121,21 @@ struct RollingCounter: View {
             } else {
                 VStack(alignment: .leading, spacing: 4) {
                     HStack(alignment: .center, spacing: 12) {
-                        Text(label)
-                            .scalingCatalogueLabel(missing: error != nil)
-                            .foregroundStyle(labelTone)
+                        if !label.isEmpty {
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text(label)
+                                    .scalingCatalogueLabel(missing: error != nil)
+                                    .foregroundStyle(labelTone)
+                                if let hint {
+                                    Text(hint)
+                                        .font(Typography.tag)
+                                        .foregroundStyle(Palette.inkMuted)
+                                        .lineLimit(1)
+                                        .minimumScaleFactor(0.7)
+                                }
+                            }
                             .frame(width: labelWidth, alignment: .leading)
+                        }
                         slab
                     }
                     message
@@ -369,6 +380,80 @@ struct RollingCounter: View {
     }
 }
 
+/// A counter with a well beside it on the same line: most of the width for
+/// the number, a quarter for what qualifies it, such as a price's currency.
+/// With an empty label the counter starts at the edge, under a label above.
+struct CounterRow<Accessory: View>: View {
+    let label: String
+    @Binding var value: Double?
+    var range: NumberRange
+    var placeholder: String = ""
+    var labelWidth: CGFloat = 92
+    var hint: String?
+    @ViewBuilder let accessory: Accessory
+
+    init(
+        _ label: String = "",
+        value: Binding<Double?>,
+        range: NumberRange,
+        placeholder: String = "",
+        labelWidth: CGFloat = 92,
+        hint: String? = nil,
+        @ViewBuilder accessory: () -> Accessory
+    ) {
+        self.label = label
+        self._value = value
+        self.range = range
+        self.placeholder = placeholder
+        self.labelWidth = labelWidth
+        self.hint = hint
+        self.accessory = accessory()
+    }
+
+    var body: some View {
+        HStack(spacing: 8) {
+            RollingCounter(
+                label,
+                value: $value,
+                range: range,
+                placeholder: placeholder,
+                labelWidth: labelWidth,
+                hint: hint
+            )
+            accessory
+                .frame(width: WellMenuLabel.width)
+        }
+    }
+}
+
+/// The face of a menu that sits beside a counter: same well, same height, the
+/// value on the left and a key with a chevron where the plus would be.
+struct WellMenuLabel: View {
+    let text: String
+
+    static let width: CGFloat = 92
+
+    var body: some View {
+        HStack(spacing: 0) {
+            Text(text)
+                .font(.system(size: 15, weight: .regular))
+                .monospacedDigit()
+                .foregroundStyle(Palette.ink)
+                .lineLimit(1)
+                .minimumScaleFactor(0.8)
+                .frame(maxWidth: .infinity)
+            Image(systemName: "chevron.down")
+                .font(.system(size: 12, weight: .semibold))
+                .foregroundStyle(Palette.ink)
+                .frame(width: 30, height: 34)
+                .background(Palette.paper, in: RoundedRectangle(cornerRadius: 7, style: .continuous))
+        }
+        .padding(5)
+        .background(Palette.well, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+        .contentShape(Rectangle())
+    }
+}
+
 /// An upright key. Pressing scales it to 0.9; holding repeats through the
 /// caller's `onBegin`, which is expected to arm `HoldRepeat`.
 private struct RepeatKey: View {
@@ -391,8 +476,7 @@ private struct RepeatKey: View {
             .frame(width: width, height: height)
             .background(Palette.paper, in: RoundedRectangle(cornerRadius: max(0, corner), style: .continuous))
             .scaleEffect(down && enabled ? Motion.Chrome.keyPressScale : 1)
-            .opacity(enabled ? 1 : 0.35)
-            .animation(down ? .easeOut(duration: 0.11) : Motion.quick, value: down)
+                .animation(down ? .easeOut(duration: 0.11) : Motion.quick, value: down)
             .contentShape(Rectangle())
             .gesture(
                 DragGesture(minimumDistance: 0)

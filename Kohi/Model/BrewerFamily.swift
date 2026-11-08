@@ -1,27 +1,30 @@
 import Foundation
 
-/// The three cupboard groups shown on With what and in recipe filters.
+/// The four groups of methods, in screen order: the tabs on Which recipe and
+/// With what, and the first level of a tasting's method. Never stored; always
+/// read off a `BrewerType` or a `BrewMethod`. See docs/methodes-extraction.md.
 nonisolated enum BrewerFamily: String, Codable, CaseIterable, Identifiable, Sendable {
-    /// V60, Chemex, Kalita, flat drippers, batch/cold-brew kit.
-    case pourOver
-    /// AeroPress, French press, immersion switch, cold brew.
-    case immersion
+    /// Anything done by hand: drippers, AeroPress, French press, immersion switch.
+    case handBrew
+    case batch
+    /// The machine and the moka.
     case espresso
+    case coldBrew
 
     var id: String { rawValue }
 
     var label: String {
         switch self {
-        case .pourOver: "Pour Over"
-        case .immersion: "Immersion"
+        case .handBrew: "Hand brew"
+        case .batch: "Batch brew"
         case .espresso: "Espresso"
+        case .coldBrew: "Cold brew"
         }
     }
 
     var kitTitle: String {
         switch self {
-        case .pourOver: "Dripper"
-        case .immersion: "Brewer"
+        case .handBrew, .batch, .coldBrew: "Dripper"
         case .espresso: "Machine"
         }
     }
@@ -31,7 +34,7 @@ nonisolated enum BrewerFamily: String, Codable, CaseIterable, Identifiable, Send
 ///
 /// Distinct from `BrewMethod`, which is what a brew and a recipe record and is
 /// pinned by a database check. A type is a piece of kit: a Kalita and a
-/// Chemex are both `pourOver` to a brew, and two different shapes on a shelf.
+/// Chemex are both `.filter` to a brew, and two different shapes on a shelf.
 nonisolated enum BrewerType: String, Codable, CaseIterable, Identifiable, Sendable {
     case espresso
     case v60
@@ -61,11 +64,21 @@ nonisolated enum BrewerType: String, Codable, CaseIterable, Identifiable, Sendab
         }
     }
 
+    /// "Hand brew · V60", "Espresso · Moka"; the family alone when the device
+    /// adds nothing ("Espresso", "Batch brew", "Cold brew").
+    var methodLine: String {
+        switch self {
+        case .espresso, .batch, .coldBrew: family.label
+        default: "\(family.label) · \(label)"
+        }
+    }
+
     var family: BrewerFamily {
         switch self {
+        case .v60, .flat, .chemex, .aeropress, .immersionSwitch, .frenchPress: .handBrew
+        case .batch: .batch
         case .espresso, .moka: .espresso
-        case .aeropress, .immersionSwitch, .frenchPress, .coldBrew: .immersion
-        case .v60, .flat, .chemex, .batch: .pourOver
+        case .coldBrew: .coldBrew
         }
     }
 
@@ -163,7 +176,7 @@ nonisolated extension Equipment {
         return BrewerType.parse(brewerType)
     }
 
-    /// Cupboard group for the three With-what tabs.
+    /// Cupboard group for the With-what tabs.
     var family: BrewerFamily? { brewerKind?.family }
 
     /// Seeded `acceptsFilterShapes`, or inferred from the dripper's name.

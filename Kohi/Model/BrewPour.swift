@@ -169,12 +169,13 @@ nonisolated extension Brew {
 nonisolated extension BrewMethod {
     var family: BrewerFamily {
         switch self {
+        case .v60, .filter, .aeropress, .frenchPress: .handBrew
         case .espresso, .moka: .espresso
-        case .aeropress, .frenchPress, .coldBrew: .immersion
-        case .v60, .filter: .pourOver
+        case .coldBrew: .coldBrew
         }
     }
 
-    /// Which tab a method belongs to in the journey (Pour Over / Immersion / Espresso).
+    /// Which tab a method belongs to in the journey, without its brewer. A
+    /// batch brew records `.filter`, so only its brewer says Batch brew.
     var journeyTab: BrewerFamily { family }
 }

@@ -85,7 +85,7 @@ struct CardEditSheet: View {
                         field("Coffee", text: $draft.name, placeholder: Placeholders.text(.cardCoffee), presence: .useful)
                         roasterField
                         field("Process", text: $draft.process, placeholder: Placeholders.text(.cardProcess), presence: .useful)
-                        FlowLayout {
+                        ChipRail {
                             ForEach(Self.processPicks, id: \.self) { pick in
                                 TagChip(text: pick, isSelected: draft.process == pick) {
                                     draft.process = draft.process == pick ? "" : pick
@@ -337,13 +337,13 @@ struct CardEditSheet: View {
                 }
             } else if roasterIsEmpty, !servedHere.isEmpty {
                 Text(Copy.servedHere).catalogueLabel()
-                FlowLayout {
+                ChipRail {
                     ForEach(servedHere) { roaster in
                         TagChip(text: roaster.name) { link(roaster) }
                     }
                 }
             } else if !roasterSuggestions.isEmpty {
-                FlowLayout {
+                ChipRail {
                     ForEach(roasterSuggestions) { roaster in
                         TagChip(text: roaster.name) { link(roaster) }
                     }
@@ -574,7 +574,7 @@ struct CardEditSheet: View {
 
     private var decafMethodPicker: some View {
         group("Decaf method") {
-            FlowLayout {
+            ChipRail {
                 ForEach(DecafMethod.allCases) { method in
                     TagChip(text: method.label, isSelected: draft.decafMethod == method) {
                         draft.decafMethod = draft.decafMethod == method ? nil : method
@@ -645,19 +645,19 @@ struct CardEditSheet: View {
         }
     }
 
+    /// The currency sits beside the price from the start, so the counter
+    /// never changes width; it only opens once there is a price to qualify.
     private var priceRow: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            RollingCounter(
-                "Price",
-                value: $draft.price,
-                range: .price,
-                unit: draft.currency ?? "—",
-                placeholder: Placeholders.text(.bagPrice),
-                labelWidth: 74
-            )
-            if draft.price != nil {
-                CurrencyPicker(code: $draft.currency)
-            }
+        CounterRow(
+            "Price",
+            value: $draft.price,
+            range: .price,
+            placeholder: Placeholders.text(.bagPrice),
+            labelWidth: 74
+        ) {
+            CurrencyPicker(code: $draft.currency)
+                .disabled(draft.price == nil)
+                .opacity(draft.price == nil ? 0.35 : 1)
         }
     }
 
@@ -671,9 +671,10 @@ struct CardEditSheet: View {
                 range: .bagWeight,
                 unit: "g",
                 placeholder: Placeholders.text(.bagWeight),
-                labelWidth: 74
+                labelWidth: 74,
+                hint: draft.pricePerKilo.map { CoffeeCard.money($0, currency: draft.currency) + "/kg" }
             )
-            FlowLayout {
+            ChipRail {
                 ForEach(Self.bagWeightPicks, id: \.self) { grams in
                     TagChip(
                         text: CoffeeCard.grams(grams),
@@ -682,11 +683,6 @@ struct CardEditSheet: View {
                         draft.bagWeightG = draft.bagWeightG == grams ? nil : grams
                     }
                 }
-            }
-            if let perKilo = draft.pricePerKilo {
-                Text(CoffeeCard.money(perKilo, currency: draft.currency) + "/kg")
-                    .font(Typography.tag)
-                    .foregroundStyle(Palette.inkMuted)
             }
         }
     }
@@ -701,7 +697,7 @@ struct CardEditSheet: View {
 
     private var placeTypePicker: some View {
         group("Place type") {
-            FlowLayout {
+            ChipRail {
                 ForEach(PlaceType.allCases) { type in
                     TagChip(text: type.label, isSelected: draft.placeType == type) {
                         draft.placeType = draft.placeType == type ? nil : type
