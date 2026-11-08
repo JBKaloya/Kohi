@@ -16,14 +16,28 @@ final class TastingReader {
     /// Read as a guess: offered as chips, applied only on a tap.
     var uncertain: [MenuField] = []
     var linkOffer: CoffeeCard?
+    /// The menu model is reading; the local candidates are already shown.
+    var isAskingModel = false
     private var lines: [String] = []
+    private var events: AIEventLog?
+    /// The menu read the sheet is showing came from the model, unanswered yet.
+    private var menuEventID: UUID?
+    /// What the vision model put in the draft, answered for at save.
+    private var modelFills: [ModelFill] = []
 
+    /// Reads the photo on device, then lets a model help where that read is
+    /// thin: a menu goes to the menu reader, a weak card to the vision model.
+    /// Neither asks first, and both only ever fill what is still empty.
     func read(
         _ scan: ScanResult,
         into draft: Binding<TastingDraft>,
         roasters: [String],
-        cards: [CoffeeCard]
+        cards: [CoffeeCard],
+        flags: AIFlags,
+        events: AIEventLog
     ) async {
+        self.events = events
+        menuDismissed()
         isReading = true
         couldNotRead = false
         defer { isReading = false }
@@ -36,7 +50,79 @@ final class TastingReader {
             draft.wrappedValue.photos.append(name)
         }
         lines = read.map(\.text)
-        take(TastingCapture.sort(read, roasters: roasters), into: draft, cards: cards)
+        let reading = TastingCapture.sort(read, roasters: roasters)
+        take(reading, into: draft, cards: cards)
+
+        switch reading {
+        case .menu:
+            await askModelForMenu(flags: flags, events: events)
+        case .fields(var local, _):
+            local.linesRead = read.count
+            await askForSecondOpinion(scan, local: local, into: draft, cards: cards, flags: flags, events: events)
+        case .nothing:
+            var local = ParsedFields()
+            local.linesRead = read.count
+            await askForSecondOpinion(scan, local: local, into: draft, cards: cards, flags: flags, events: events)
+        }
+    }
+
+    private func askModelForMenu(flags: AIFlags, events: AIEventLog) async {
+        guard flags.isOn(.menuExtract) else { return }
+        isAskingModel = true
+        defer { isAskingModel = false }
+        guard let read = await FieldExtract.menu(lines: lines, flags: flags, events: events) else { return }
+        let grounded = MenuParser.grounded(read.value, in: lines)
+        // Picked from the local list, or closed, before the model answered.
+        guard showsMenu, !grounded.isEmpty else {
+            events.setAccepted(false, for: read.eventID)
+            return
+        }
+        candidates = grounded
+        menuEventID = read.eventID
+    }
+
+    private func askForSecondOpinion(
+        _ scan: ScanResult,
+        local: ParsedFields,
+        into draft: Binding<TastingDraft>,
+        cards: [CoffeeCard],
+        flags: AIFlags,
+        events: AIEventLog
+    ) async {
+        guard let parsed = await ScanPipeline.secondOpinion(
+            image: scan.image,
+            local: local,
+            visionAllowed: flags.isOn(.cardVision),
+            events: events
+        ), let fill = parsed.modelFill else { return }
+        let before = FieldValues.of(draft.wrappedValue.coffee)
+        draft.wrappedValue.fill(from: parsed)
+        let narrowed = fill.narrowed(before: before, after: FieldValues.of(draft.wrappedValue.coffee))
+        modelFills.append(narrowed)
+        if !narrowed.values.isEmpty {
+            couldNotRead = false
+            offerLink(for: draft.wrappedValue, origin: parsed, cards: cards)
+        }
+    }
+
+    /// Says whether what the models offered survived: the menu pick when one
+    /// was made from the model's list, the filled fields when saved unchanged.
+    /// Called with nil when the draft is thrown away.
+    func answerModels(saved: TastingDraft?) {
+        guard let events else { return }
+        let current = saved.map { FieldValues.of($0.coffee) } ?? [:]
+        for fill in modelFills {
+            events.setAccepted(fill.kept(in: current), for: fill.eventID)
+        }
+        modelFills = []
+        menuDismissed()
+    }
+
+    /// The menu sheet closed without a pick from the model's list.
+    func menuDismissed() {
+        guard let menuEventID, let events else { return }
+        events.setAccepted(false, for: menuEventID)
+        self.menuEventID = nil
     }
 
     func take(_ reading: TastingCapture.Reading, into draft: Binding<TastingDraft>, cards: [CoffeeCard]) {
@@ -55,6 +141,10 @@ final class TastingReader {
 
     func apply(_ candidate: MenuCandidate, into draft: Binding<TastingDraft>, cards: [CoffeeCard]) {
         showsMenu = false
+        if let menuEventID {
+            events?.setAccepted(true, for: menuEventID)
+            self.menuEventID = nil
+        }
         for field in candidate.fields where field.confidence == .read {
             draft.wrappedValue.apply(field)
         }
@@ -335,19 +425,13 @@ struct TastingMadeFields: View {
                     .foregroundStyle(Palette.ink)
                     .keyboardType(.decimalPad)
                     .frame(maxWidth: 120, alignment: .leading)
-                Menu {
-                    ForEach(CupPrice.commonCurrencies, id: \.self) { code in
-                        Button(code) { draft.currency = code }
-                    }
-                } label: {
-                    Text(draft.currency).catalogueLabel().foregroundStyle(Palette.ink)
-                }
                 if let price = draft.price {
                     Text(price.formatted)
                         .font(Typography.tag)
                         .foregroundStyle(Palette.inkMuted)
                 }
             }
+            CurrencyPicker(code: $draft.currency)
         }
     }
 

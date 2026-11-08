@@ -35,6 +35,8 @@ struct TastingComposeSheet: View {
     @State private var saveTrigger = 0
     @State private var rejectTrigger = 0
     @State private var flagged: Set<TastingField> = []
+    /// The currency put on a new tasting, while nobody has picked another.
+    @State private var proposedCurrency: String?
     @FocusState private var nameFocused: Bool
 
     init(
@@ -48,7 +50,10 @@ struct TastingComposeSheet: View {
         self.requestsLocation = requestsLocation
         self.onSaved = onSaved
         var draft = editing.map(TastingDraft.init) ?? TastingDraft()
-        if editing == nil { draft.currency = CupPrice.localCurrency }
+        if editing == nil {
+            draft.currency = LocalCurrency.shared.proposed
+            _proposedCurrency = State(initialValue: draft.currency)
+        }
         _draft = State(initialValue: draft)
         _showsDetails = State(initialValue: editing != nil && draft.detailSummary != nil)
     }
@@ -94,7 +99,9 @@ struct TastingComposeSheet: View {
                                     .font(Typography.body)
                                     .foregroundStyle(Palette.ink)
                                     .lineLimit(2...6)
-                                DictationField(text: $draft.note)
+                                DictationField(text: $draft.note, vocabulary: {
+                                    CoffeeLexicon.coffees(cards: store.cards, roasters: roasters.roasters.map(\.name))
+                                })
                             }
                         }
                     }
@@ -110,6 +117,7 @@ struct TastingComposeSheet: View {
                 .navigationBarTitleDisplayMode(.inline)
                 .toolbarColorScheme(.light, for: .navigationBar)
                 .tint(Palette.ink)
+                .keyboardDoneButton()
                 .toolbar {
                     ToolbarItem(placement: .cancellationAction) {
                         Button("Cancel") { dismiss() }
@@ -125,9 +133,19 @@ struct TastingComposeSheet: View {
         .haptic(.saved, trigger: saveTrigger)
         .haptic(.deleted, trigger: rejectTrigger)
         .onAppear(perform: load)
+        .onDisappear {
+            // The scanner covers the sheet without closing it.
+            guard !isScanning else { return }
+            reader.answerModels(saved: nil)
+        }
         .onChange(of: topSuggestion, initial: true) { _, suggestion in
             guard !isEditing, nearby.coordinate != nil, let suggestion else { return }
             draft.autofill(suggestion.place, suggestion.placeID)
+        }
+        .onChange(of: LocalCurrency.shared.proposed) { _, proposed in
+            guard let proposedCurrency, draft.currency == proposedCurrency else { return }
+            draft.currency = proposed
+            self.proposedCurrency = proposed
         }
         .onChange(of: draft.missing) { _, missing in
             withAnimation(Motion.snappy) { flagged.formIntersection(missing) }
@@ -167,7 +185,14 @@ struct TastingComposeSheet: View {
                 onScan: { scan in
                     isScanning = false
                     Task {
-                        await reader.read(scan, into: $draft, roasters: knownRoasterNames(roasters), cards: store.cards)
+                        await reader.read(
+                            scan,
+                            into: $draft,
+                            roasters: knownRoasterNames(roasters),
+                            cards: store.cards,
+                            flags: flags,
+                            events: events
+                        )
                         if reader.couldNotRead { nameFocused = true }
                     }
                 },
@@ -175,11 +200,10 @@ struct TastingComposeSheet: View {
             )
             .appEnvironment(appEnvironment)
         }
-        .sheet(isPresented: $reader.showsMenu) {
+        .sheet(isPresented: $reader.showsMenu, onDismiss: reader.menuDismissed) {
             MenuPickSheet(
                 candidates: reader.candidates,
-                canAskModel: flags.isOn(.menuExtract),
-                onAskModel: { await reader.askModel(flags: flags, events: events) },
+                isModelReading: reader.isAskingModel,
                 onPick: { candidate in
                     reader.apply(candidate, into: $draft, cards: store.cards)
                     if candidate.fields.contains(where: { $0.kind != .name && $0.confidence == .read }) {
@@ -329,6 +353,7 @@ struct TastingComposeSheet: View {
             return
         }
         saveTrigger += 1
+        reader.answerModels(saved: draft)
         let tasting = TastingSaver.save(draft, editing: editing, tastings: tastings, roasters: roasters, places: places)
         onSaved(tasting)
         dismiss()

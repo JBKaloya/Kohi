@@ -88,6 +88,8 @@ struct TastingFlow: View {
     @State private var pickedCard: CoffeeCard?
     @State private var confirmsDiscard = false
     @State private var saveTrigger = 0
+    /// The currency put on a new tasting, while nobody has picked another.
+    @State private var proposedCurrency: String?
     @FocusState private var nameFocused: Bool
 
     init(
@@ -107,7 +109,10 @@ struct TastingFlow: View {
         self.requestsLocation = requestsLocation
         self.onSaved = onSaved
         var initial = draft ?? TastingDraft()
-        if draft == nil { initial.currency = CupPrice.localCurrency }
+        if draft == nil {
+            initial.currency = LocalCurrency.shared.proposed
+            _proposedCurrency = State(initialValue: initial.currency)
+        }
         if let place { initial.autofill(place.place, place.placeID) }
         _draft = State(initialValue: initial)
         _steps = State(initialValue: TastingFlowSteps(
@@ -138,6 +143,11 @@ struct TastingFlow: View {
         .task {
             if let scan { await read(scan) }
         }
+        .onDisappear {
+            // The scanner covers the flow without ending it.
+            guard !isScanning else { return }
+            reader.answerModels(saved: nil)
+        }
         .task {
             guard place == nil, requestsLocation, previewSuggestions == nil, PlaceLocator.isAuthorized else { return }
             nearby.start()
@@ -150,6 +160,11 @@ struct TastingFlow: View {
         .onChange(of: topSuggestion, initial: true) { _, suggestion in
             guard place == nil, nearby.coordinate != nil || previewSuggestions != nil, let suggestion else { return }
             draft.autofill(suggestion.place, suggestion.placeID)
+        }
+        .onChange(of: LocalCurrency.shared.proposed) { _, proposed in
+            guard let proposedCurrency, draft.currency == proposedCurrency else { return }
+            draft.currency = proposed
+            self.proposedCurrency = proposed
         }
         .sheet(isPresented: $choosingPlace) {
             WhereSheet(
@@ -195,11 +210,10 @@ struct TastingFlow: View {
             )
             .appEnvironment(appEnvironment)
         }
-        .sheet(isPresented: $reader.showsMenu) {
+        .sheet(isPresented: $reader.showsMenu, onDismiss: reader.menuDismissed) {
             MenuPickSheet(
                 candidates: reader.candidates,
-                canAskModel: flags.isOn(.menuExtract),
-                onAskModel: { await reader.askModel(flags: flags, events: events) },
+                isModelReading: reader.isAskingModel,
                 onPick: { reader.apply($0, into: $draft, cards: store.cards) }
             )
         }
@@ -328,7 +342,6 @@ struct TastingFlow: View {
                     nameFocused: $nameFocused,
                     showsIdentity: true
                 )
-                DictationField(text: $draft.coffee.name, mode: .replace)
             }
             .padding(.bottom, 24)
         }
@@ -400,7 +413,9 @@ struct TastingFlow: View {
                         .font(Typography.body)
                         .foregroundStyle(Palette.ink)
                         .lineLimit(2...6)
-                    DictationField(text: $draft.note)
+                    DictationField(text: $draft.note, vocabulary: {
+                        CoffeeLexicon.coffees(cards: store.cards, roasters: roasters.roasters.map(\.name))
+                    })
                 }
             }
             .padding(.bottom, 24)
@@ -482,13 +497,21 @@ struct TastingFlow: View {
     }
 
     private func read(_ scan: ScanResult) async {
-        await reader.read(scan, into: $draft, roasters: knownRoasterNames(roasters), cards: store.cards)
+        await reader.read(
+            scan,
+            into: $draft,
+            roasters: knownRoasterNames(roasters),
+            cards: store.cards,
+            flags: flags,
+            events: events
+        )
         if reader.couldNotRead { nameFocused = true }
     }
 
     private func save() {
         guard draft.canSave else { return }
         saveTrigger += 1
+        reader.answerModels(saved: draft)
         let tasting = TastingSaver.save(draft, editing: nil, tastings: tastings, roasters: roasters, places: places)
         onSaved(tasting)
         dismiss()

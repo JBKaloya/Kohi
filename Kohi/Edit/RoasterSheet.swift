@@ -43,7 +43,6 @@ struct RoasterSheet: View {
                             hint: FieldCopy.roasterShared,
                             error: nameError
                         )
-                        DictationField(text: $name)
                         TextRow(
                             label: "City",
                             text: $city,

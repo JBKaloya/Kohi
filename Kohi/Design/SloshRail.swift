@@ -5,8 +5,9 @@ import SwiftUI
 /// handle, into the end stop, and rocks it back. The leading edge leans
 /// in the direction of travel, so the lag reads as liquid rather than latency.
 ///
-/// Taste scores stay whole numbers. The release snaps to 0…10, and a tap
-/// on the current score clears it.
+/// Taste scores stay whole numbers. The score follows the finger in whole
+/// steps, so the number and the radar move with the drag; a tap on the
+/// current score clears it.
 struct SloshRail: View {
     var label: String
     @Binding var value: Int?
@@ -17,6 +18,9 @@ struct SloshRail: View {
     @State private var sim = SloshSim(value: 0)
     @State private var running = false
     @State private var lastDate: Date?
+    /// The score before the finger came down. The binding follows the finger,
+    /// so by the time a tap ends it already holds the tapped score.
+    @State private var startValue: Int?
 
     var body: some View {
         HStack(alignment: .center, spacing: 16) {
@@ -121,10 +125,12 @@ struct SloshRail: View {
                 if !sim.held {
                     sim.held = true
                     sim.velocity = 0
+                    startValue = value
                 }
                 let percent = min(100, max(0, gesture.location.x / width * 100))
                 sim.velocity = percent - sim.value
                 sim.value = percent
+                set(SloshSim.snap(percent))
                 wake()
             }
             .onEnded { gesture in
@@ -134,7 +140,7 @@ struct SloshRail: View {
                 let tapped = abs(gesture.translation.width) < 8 && abs(gesture.translation.height) < 8
                 if tapped {
                     let snapped = SloshSim.snap(percent)
-                    set(value == snapped ? nil : snapped)
+                    set(startValue == snapped ? nil : snapped)
                     sim.velocity = 0
                 } else {
                     sim.velocity = reduceMotion ? 0 : min(6, max(-6, sim.velocity))

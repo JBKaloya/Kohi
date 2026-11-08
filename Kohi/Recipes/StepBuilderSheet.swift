@@ -7,6 +7,7 @@ import SwiftUI
 struct StepBuilderSheet: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(SetupStore.self) private var setup
+    @Environment(RecipeStore.self) private var recipes
 
     @State private var draft: Recipe
     var onSave: (Recipe) -> Void
@@ -35,6 +36,7 @@ struct StepBuilderSheet: View {
             .background(Palette.paper.ignoresSafeArea())
             .navigationTitle("Steps")
             .navigationBarTitleDisplayMode(.inline)
+            .keyboardDoneButton()
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") { dismiss() }
@@ -59,7 +61,7 @@ struct StepBuilderSheet: View {
                 placeholder: "Name this recipe",
                 presence: .useful
             )
-            DictationField(text: $draft.name)
+            DictationField(text: $draft.name, vocabulary: { CoffeeLexicon.recipes(recipes.recipes) })
         }
     }
 

@@ -1,3 +1,4 @@
+import CoreGraphics
 import Foundation
 import Supabase
 import os
@@ -16,20 +17,43 @@ nonisolated enum CardVision {
     /// small enough to stay cheap and quick on cellular.
     private static let uploadMaxPixel = 1280
 
-    static func read(cardID: UUID) async -> ParsedFields? {
-        guard let client = SupabaseConfig.current else { return nil }
+    /// What one call returned, and what it cost. The event is the caller's to
+    /// record, since the log lives on the main actor and this does not.
+    struct Reading: Sendable {
+        /// Nil when the call failed or the model saw no coffee label.
+        var fields: ParsedFields?
+        var event: AIEvent
+    }
 
+    /// The card's flattened photo, from disk. The collection path.
+    static func read(cardID: UUID) async -> Reading? {
         let url = ImageStore.shared.url(for: cardID, kind: .flat)
         guard let image = ImageCodec.downsample(url, maxPixel: uploadMaxPixel),
               let jpeg = ImageCodec.encodeJPEG(image, quality: 0.8) else {
             return nil
         }
+        return await read(jpeg: jpeg)
+    }
+
+    /// A photo still in memory. The tasting path, which files no card.
+    static func read(image: CGImage) async -> Reading? {
+        guard let full = ImageCodec.encodeJPEG(image, quality: 0.9),
+              let small = ImageCodec.decodeOriented(full, maxPixel: uploadMaxPixel),
+              let jpeg = ImageCodec.encodeJPEG(small, quality: 0.8) else {
+            return nil
+        }
+        return await read(jpeg: jpeg)
+    }
+
+    private static func read(jpeg: Data) async -> Reading? {
+        guard let client = SupabaseConfig.current else { return nil }
 
         struct Payload: Encodable {
             let image: String
             let mime: String
         }
 
+        let started = Date.now
         do {
             let extraction: Extraction = try await client.functions.invoke(
                 "card-vision",
@@ -37,15 +61,33 @@ nonisolated enum CardVision {
                     body: Payload(image: jpeg.base64EncodedString(), mime: "image/jpeg")
                 )
             )
+            var event = AIEvent(
+                feature: .cardVision,
+                model: extraction.model ?? "unknown",
+                inputTokens: extraction.inputTokens,
+                outputTokens: extraction.outputTokens,
+                latencyMs: extraction.latencyMs ?? elapsed(since: started)
+            )
             guard extraction.isCoffeeLabel == true else {
                 Log.app.notice("card vision: model says this is not a coffee label")
-                return nil
+                event.accepted = false
+                return Reading(fields: nil, event: event)
             }
-            return fields(from: extraction)
+            return Reading(fields: fields(from: extraction), event: event)
         } catch {
             Log.app.notice("card vision failed, keeping the local read (\(error))")
-            return nil
+            return Reading(fields: nil, event: AIEvent(
+                feature: .cardVision,
+                model: "unknown",
+                latencyMs: elapsed(since: started),
+                accepted: false,
+                failure: "\(error)"
+            ))
         }
+    }
+
+    private static func elapsed(since start: Date) -> Int {
+        Int(Date.now.timeIntervalSince(start) * 1000)
     }
 
     // MARK: - Response mapping
@@ -74,6 +116,12 @@ nonisolated enum CardVision {
         var isDecaf: Bool?
         var recipe: Recipe?
         var original: Original?
+        /// Usage, sent alongside the fields by the edge function. Absent from
+        /// older deployments, which only ever sent the fields.
+        var model: String?
+        var inputTokens: Int?
+        var outputTokens: Int?
+        var latencyMs: Int?
 
         struct Recipe: Decodable, Sendable {
             var doseGrams: Double?

@@ -30,6 +30,7 @@ final class NearbyPlaces {
     /// Maps cafés around the fix, once per fix.
     func searchCafes() async {
         guard let coordinate else { return }
+        Task { await LocalCurrency.shared.learn(from: coordinate) }
         if let searchedAround,
            CLLocation(latitude: searchedAround.latitude, longitude: searchedAround.longitude)
             .distance(from: CLLocation(latitude: coordinate.latitude, longitude: coordinate.longitude)) < 50 {

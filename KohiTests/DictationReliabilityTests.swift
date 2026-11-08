@@ -27,10 +27,10 @@ struct DictationReliabilityTests {
             > SpeechLocales.score(text: "hi", segments: []))
     }
 
-    @Test func appendAndReplaceAreExplicit() {
-        #expect(DictationTranscript.apply("swirl", to: "bloom", mode: .replace) == "swirl")
-        #expect(DictationTranscript.apply("swirl", to: "bloom", mode: .append) == "bloom swirl")
-        #expect(DictationTranscript.apply("swirl", to: "", mode: .append) == "swirl")
+    @Test func dictationOnlyEverAppends() {
+        #expect(DictationTranscript.apply("swirl", to: "bloom") == "bloom swirl")
+        #expect(DictationTranscript.apply("swirl", to: "") == "swirl")
+        #expect(DictationTranscript.apply("", to: " bloom ") == "bloom")
     }
 
     @Test func noSpeechIsARetry() {

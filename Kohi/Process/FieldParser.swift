@@ -41,6 +41,9 @@ nonisolated struct ParsedFields: Equatable, Sendable {
     /// Lines OCR found before any parsing. Tells a photo that is not a card
     /// apart from a card this parser could not make sense of.
     var linesRead = 0
+    /// What the vision model filled, when it ran. Carried to the edit sheet
+    /// so the save can say whether those values were kept.
+    var modelFill: ModelFill?
 
     var isEmpty: Bool {
         name == nil && roaster == nil && country == nil && region == nil

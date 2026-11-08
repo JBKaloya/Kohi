@@ -6,7 +6,9 @@ import SwiftUI
 struct DictationField: View {
     @Binding var text: String
     var prompt: String = Copy.dictate
-    var mode: DictationMode = .append
+    /// Words this field expects, from `CoffeeLexicon`. Built when the mic
+    /// opens rather than on every render of the form around it.
+    var vocabulary: () -> [String] = { [] }
 
     @State private var dictation = Dictation()
     @State private var trigger = 0
@@ -51,12 +53,13 @@ struct DictationField: View {
             guard !spoken.isEmpty else { return }
             before = text
             withAnimation(Motion.snappy) {
-                text = DictationTranscript.apply(spoken, to: text, mode: mode)
+                text = DictationTranscript.apply(spoken, to: text)
                 trigger += 1
             }
             return
         }
         dictation.reset()
+        dictation.contextualStrings = vocabulary()
         await dictation.start()
     }
 

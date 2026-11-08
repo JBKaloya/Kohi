@@ -15,6 +15,7 @@ struct CardEditSheet: View {
     @Environment(PlaceIndex.self) private var places
     @Environment(CardStore.self) private var cards
     @Environment(AccountStore.self) private var account
+    @Environment(AIEventLog.self) private var events
     @Environment(\.appEnvironment) private var appEnvironment
     @Environment(\.dismiss) private var dismiss
     @State private var isReading = false
@@ -36,6 +37,9 @@ struct CardEditSheet: View {
     @State private var willRememberServe = false
     /// Non-nil starts an on-device translation of the CJK fields.
     @State private var translationConfig: TranslationSession.Configuration?
+    /// What the vision model put in this draft, answered for when the sheet
+    /// closes: kept if a value is still there at save, refused otherwise.
+    @State private var modelFills: [ModelFill] = []
 
     /// What the scan turned up, once the read has finished. Only the two
     /// unhelpful cases are worth saying out loud.
@@ -146,7 +150,9 @@ struct CardEditSheet: View {
                         TextField(Placeholders.text(.cardNoteToSelf), text: $draft.personalNotes, axis: .vertical)
                             .font(Typography.body)
                             .lineLimit(3...8)
-                        DictationField(text: $draft.personalNotes)
+                        DictationField(text: $draft.personalNotes, vocabulary: {
+                            CoffeeLexicon.coffees(cards: cards.cards, roasters: roasters.roasters.map(\.name))
+                        })
                     }
 
                     attachmentSection
@@ -172,6 +178,7 @@ struct CardEditSheet: View {
             .background(Palette.paper.ignoresSafeArea())
             .navigationTitle(isNew ? "New card" : "Edit")
             .navigationBarTitleDisplayMode(.inline)
+            .keyboardDoneButton()
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Save") {
@@ -182,6 +189,7 @@ struct CardEditSheet: View {
                             places.remember(placeID: offer.placeID, roasterID: offer.roasterID)
                         }
                         matchRoasterIfObvious()
+                        answerModelFills(saved: draft)
                         onSave(draft)
                         dismiss()
                     }
@@ -224,6 +232,15 @@ struct CardEditSheet: View {
         .tint(Palette.ink)
         .haptic(.saved, trigger: saveTrigger)
         .task { await prefill() }
+        .onDisappear {
+            // The attachment scanner covers the sheet without closing it.
+            guard !isScanningAttachment else { return }
+            answerModelFills(saved: nil)
+        }
+        .onChange(of: draft.price) { old, new in
+            guard isNew, old == nil, new != nil, draft.currency == nil else { return }
+            draft.currency = LocalCurrency.shared.proposed
+        }
         .translationTask(translationConfig) { session in
             if let translated = await FieldTranslator.translate(draft, using: session) {
                 withAnimation(Motion.snappy) { draft = translated }
@@ -628,8 +645,6 @@ struct CardEditSheet: View {
         }
     }
 
-    private static let currencyPicks = ["EUR", "USD", "GBP", "JPY"]
-
     private var priceRow: some View {
         VStack(alignment: .leading, spacing: 10) {
             RollingCounter(
@@ -641,13 +656,7 @@ struct CardEditSheet: View {
                 labelWidth: 74
             )
             if draft.price != nil {
-                FlowLayout {
-                    ForEach(Self.currencyPicks, id: \.self) { code in
-                        TagChip(text: code, isSelected: draft.currency == code) {
-                            draft.currency = draft.currency == code ? nil : code
-                        }
-                    }
-                }
+                CurrencyPicker(code: $draft.currency)
             }
         }
     }
@@ -729,18 +738,30 @@ struct CardEditSheet: View {
         }
         let cardID = draft.id
         Task {
-            let vision = await Task.detached(priority: .userInitiated) {
+            let reading = await Task.detached(priority: .userInitiated) {
                 await CardVision.read(cardID: cardID)
             }.value
+            let eventID = reading.map { events.record($0.event) }
             withAnimation(Motion.snappy) {
                 isReading = false
-                if let vision {
-                    merge(vision)
+                if let vision = reading?.fields, let eventID {
+                    var fields = vision
+                    fields.modelFill = ModelFill(eventID: eventID, values: FieldValues.of(vision))
+                    merge(fields)
                 } else {
                     readOutcome = .unreadable
                 }
             }
         }
+    }
+
+    /// Once per fill: the first close answers, a second is a no-op.
+    private func answerModelFills(saved: CoffeeCard?) {
+        let current = saved.map(FieldValues.of) ?? [:]
+        for fill in modelFills {
+            events.setAccepted(fill.kept(in: current), for: fill.eventID)
+        }
+        modelFills = []
     }
 
     // MARK: - OCR
@@ -764,6 +785,12 @@ struct CardEditSheet: View {
     }
 
     private func merge(_ parsed: ParsedFields) {
+        let before = FieldValues.of(draft)
+        defer {
+            if let fill = parsed.modelFill {
+                modelFills.append(fill.narrowed(before: before, after: FieldValues.of(draft)))
+            }
+        }
         func fill(_ keyPath: WritableKeyPath<CoffeeCard, String>, _ value: String?) {
             guard let value, draft[keyPath: keyPath].isEmpty else { return }
             draft[keyPath: keyPath] = value

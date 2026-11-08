@@ -4,7 +4,8 @@ import SwiftUI
 struct FlavorPicker: View {
     @Binding var selection: [FlavorTag]
     var recent: [FlavorTag] = []
-    var suggested: [FlavorTag] = []
+    /// What the pack announces. Shown in its own row above, so Quick leaves it out.
+    var declared: [FlavorTag] = []
 
     @State private var query = ""
     @State private var showAll = false
@@ -78,12 +79,16 @@ struct FlavorPicker: View {
     }
 
     private var quick: some View {
-        let quickNodes = recent + suggested + FlavorWheel.shared.quick.map { FlavorTag(id: $0.id) }
-        let unique = unique(quickNodes)
+        let tags = QuickFlavors.compose(
+            recent: recent,
+            standard: FlavorWheel.shared.quick.map { FlavorTag(id: $0.id) },
+            declared: declared,
+            selection: selection
+        )
         return VStack(alignment: .leading, spacing: 10) {
             Text("Quick").catalogueLabel()
             FlowLayout {
-                ForEach(unique) { tag in
+                ForEach(tags) { tag in
                     chip(tag)
                 }
             }
@@ -172,11 +177,6 @@ struct FlavorPicker: View {
         }
     }
 
-    private func unique(_ tags: [FlavorTag]) -> [FlavorTag] {
-        var seen = Set<String>()
-        return tags.filter { seen.insert($0.id).inserted }
-    }
-
     private func commitQuery() {
         let trimmed = query.trimmingCharacters(in: .whitespaces)
         guard !trimmed.isEmpty else { return }
@@ -185,5 +185,33 @@ struct FlavorPicker: View {
             selection.append(tag)
         }
         query = ""
+    }
+}
+
+/// The Quick row: your recent flavours, then the standard set, never what the
+/// pack already shows. Capped, so the row stays a shortcut and search reaches
+/// the rest of the wheel.
+nonisolated enum QuickFlavors {
+    static let cap = 12
+
+    /// A ticked flavour beyond the cap is kept at the end: the summary above
+    /// the picker is text, so this chip is the only way to untick it.
+    static func compose(
+        recent: [FlavorTag],
+        standard: [FlavorTag],
+        declared: [FlavorTag],
+        selection: [FlavorTag],
+        cap: Int = cap
+    ) -> [FlavorTag] {
+        var seen = Set(declared.map(\.id))
+        let pool = (recent + standard).filter { seen.insert($0.id).inserted }
+        let shown = Array(pool.prefix(cap))
+        let shownIDs = Set(shown.map(\.id))
+        let declaredIDs = Set(declared.map(\.id))
+        var extraSeen = Set<String>()
+        let ticked = selection.filter {
+            !shownIDs.contains($0.id) && !declaredIDs.contains($0.id) && extraSeen.insert($0.id).inserted
+        }
+        return shown + ticked
     }
 }

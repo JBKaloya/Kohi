@@ -8,6 +8,9 @@ struct MenuPickSheet: View {
     let candidates: [MenuCandidate]
     var canAskModel = false
     var onAskModel: () async -> [MenuCandidate] = { [] }
+    /// The model is reading the menu on its own; its list replaces this one
+    /// when it lands.
+    var isModelReading = false
     let onPick: (MenuCandidate) -> Void
 
     @Environment(\.dismiss) private var dismiss
@@ -80,6 +83,11 @@ struct MenuPickSheet: View {
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") { dismiss() }
+                }
+                if isModelReading {
+                    ToolbarItem(placement: .confirmationAction) {
+                        ProgressView().controlSize(.mini)
+                    }
                 }
             }
         }

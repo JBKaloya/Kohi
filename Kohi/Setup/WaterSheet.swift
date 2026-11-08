@@ -78,6 +78,7 @@ struct WaterSheet: View {
             .background(Palette.paper.ignoresSafeArea())
             .navigationTitle(isNew ? "Add water" : draft.displayName)
             .navigationBarTitleDisplayMode(.inline)
+            .keyboardDoneButton()
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") { dismiss() }

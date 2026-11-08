@@ -108,7 +108,7 @@ struct TagField: View {
                 .autocorrectionDisabled()
                 .submitLabel(.done)
                 .onSubmit(commit)
-            DictationField(text: $entry)
+            DictationField(text: $entry, vocabulary: { CoffeeLexicon.flavors() })
                 .onChange(of: entry) { _, value in
                     if value.contains("\n") { commit() }
                 }

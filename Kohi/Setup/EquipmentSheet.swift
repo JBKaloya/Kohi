@@ -78,6 +78,7 @@ struct EquipmentSheet: View {
                 .background(Palette.paper.ignoresSafeArea())
                 .navigationTitle(isNew ? "Add \(draft.kind.label.lowercased())" : draft.displayName)
                 .navigationBarTitleDisplayMode(.inline)
+                .keyboardDoneButton()
                 .toolbar {
                     ToolbarItem(placement: .cancellationAction) {
                         Button("Cancel") { dismiss() }

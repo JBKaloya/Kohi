@@ -37,7 +37,7 @@ struct RecipeEditSheet: View {
                             presence: .useful,
                             error: nameError
                         )
-                        DictationField(text: $draft.name)
+                        DictationField(text: $draft.name, vocabulary: { CoffeeLexicon.recipes(recipes.recipes) })
                         RollingPicker(
                             label: "Method",
                             options: BrewMethod.allCases.map {
@@ -87,6 +87,7 @@ struct RecipeEditSheet: View {
             .background(Palette.paper.ignoresSafeArea())
             .navigationTitle(title)
             .navigationBarTitleDisplayMode(.inline)
+            .keyboardDoneButton()
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") { dismiss() }

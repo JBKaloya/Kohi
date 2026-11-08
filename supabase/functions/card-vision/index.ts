@@ -135,6 +135,7 @@ Deno.serve(async (req) => {
   }
 
   const model = Deno.env.get("GEMINI_MODEL") ?? "gemini-3.6-flash";
+  const started = Date.now();
   const response = await fetch(
     `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`,
     {
@@ -180,7 +181,22 @@ Deno.serve(async (req) => {
     return json({ error: "empty model response" }, 502);
   }
 
-  return new Response(text, {
-    headers: { "Content-Type": "application/json" },
+  // The usage figures ride along at the top level, next to the fields, so
+  // builds that decode the fields alone keep working and newer ones can log
+  // what the call cost.
+  let fields: Record<string, unknown>;
+  try {
+    fields = JSON.parse(text);
+  } catch {
+    console.error("gemini returned text that is not JSON");
+    return json({ error: "unreadable model response" }, 502);
+  }
+  const usage = data?.usageMetadata ?? {};
+  return json({
+    ...fields,
+    model,
+    inputTokens: usage.promptTokenCount ?? null,
+    outputTokens: usage.candidatesTokenCount ?? null,
+    latencyMs: Date.now() - started,
   });
 });

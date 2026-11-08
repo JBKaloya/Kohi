@@ -55,11 +55,12 @@ nonisolated enum AIFeature: String, Codable, CaseIterable, Identifiable, Sendabl
     /// Reading a label shipped before this section existed and is part of
     /// what the app does; putting it behind a switch that starts off would
     /// quietly remove a working feature. It stays on, and stays individually
-    /// refusable.
+    /// refusable. Reading a menu joined it in build 13: a scan reads with the
+    /// model by itself, with nothing to opt into.
     var isExperimental: Bool {
         switch self {
-        case .cardVision, .aiFeedback: false
-        case .fieldExtract, .recipeAdapt, .ask, .suggestedCorrection, .menuExtract: true
+        case .cardVision, .menuExtract, .aiFeedback: false
+        case .fieldExtract, .recipeAdapt, .ask, .suggestedCorrection: true
         }
     }
 

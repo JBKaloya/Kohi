@@ -315,7 +315,14 @@ struct AfterBrewSheet: View {
                 .focused($commentFocused)
                 .reportsFieldFocus(commentFocused)
                 .guessHighlight(trigger: voiceNoteTrigger, onUndo: undoVoiceNote)
-            DictationField(text: $session.brew.notes)
+            DictationField(text: $session.brew.notes, vocabulary: {
+                CoffeeLexicon.brew(
+                    session.brew,
+                    recipe: session.recipe,
+                    equipment: setup.equipment,
+                    filters: setup.filterStock
+                )
+            })
         }
     }
 
@@ -506,11 +513,7 @@ struct AfterBrewSheet: View {
                 filters: setup.filterStock
             )
             SpokenBrewParser.apply(parsed, to: &session.brew, appendLeftover: false)
-            session.brew.notes = DictationTranscript.apply(
-                rewritten,
-                to: brewBeforeVoice?.notes ?? "",
-                mode: .append
-            )
+            session.brew.notes = DictationTranscript.apply(rewritten, to: brewBeforeVoice?.notes ?? "")
             voiceTranscript = rewritten
             if session.brew.actualSource == .timer || session.brew.actualSource == .none {
                 session.brew.actualSource = .narration
@@ -524,11 +527,7 @@ struct AfterBrewSheet: View {
                 events: events
             ), tidied != rewritten {
                 voiceTranscript = tidied
-                session.brew.notes = DictationTranscript.apply(
-                    tidied,
-                    to: brewBeforeVoice?.notes ?? "",
-                    mode: .append
-                )
+                session.brew.notes = DictationTranscript.apply(tidied, to: brewBeforeVoice?.notes ?? "")
             }
         } catch {
             Log.app.notice("voice note transcription: \(error)")

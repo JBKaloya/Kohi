@@ -100,14 +100,28 @@ struct FlavorsBlock: View {
                     .foregroundStyle(Palette.inkMuted)
                 FlowLayout {
                     ForEach(declared) { tag in
-                        TagChip(text: tag.displayName, isSelected: false) {}
+                        declaredChip(tag)
                     }
                 }
             }
             Text(Copy.inYourCup)
                 .font(Typography.tag)
                 .foregroundStyle(Palette.inkMuted)
-            FlavorPicker(selection: $selection, recent: recent, suggested: declared)
+            FlavorPicker(selection: $selection, recent: recent, declared: declared)
+        }
+    }
+
+    /// Tapping a word the pack printed says you tasted it, same as in the picker.
+    private func declaredChip(_ tag: FlavorTag) -> some View {
+        let selected = selection.contains { $0.id == tag.id }
+        return TagChip(text: tag.displayName, isSelected: selected) {
+            withAnimation(Motion.quick) {
+                if selected {
+                    selection.removeAll { $0.id == tag.id }
+                } else {
+                    selection.append(tag)
+                }
+            }
         }
     }
 }

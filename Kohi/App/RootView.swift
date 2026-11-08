@@ -224,7 +224,7 @@ struct RootView: View {
                     filters: setup.filterStock
                 )
                 SpokenBrewParser.apply(parsed, to: &brew)
-                brew.notes = DictationTranscript.apply(spoken, to: original, mode: .append)
+                brew.notes = DictationTranscript.apply(spoken, to: original)
                 card.brews[index] = brew
                 store.update(card)
             }
@@ -238,13 +238,14 @@ struct RootView: View {
 
     private func draftSheet(_ pending: PendingScan) -> some View {
         let visionAllowed = flags.isOn(.cardVision)
+        let events = aiEvents
         return CardEditSheet(
             card: pending.card,
             isNew: true,
             // The local read already ran. What remains is the barcode, the
             // label link and, when that read is weak, vision.
             extract: {
-                await ScanEnrichment.fields(of: pending, visionAllowed: visionAllowed)
+                await ScanPipeline.fields(of: pending, visionAllowed: visionAllowed, events: events)
             },
             onSave: { saved in
                 store.markLanding(saved)
@@ -385,46 +386,5 @@ struct RootView: View {
             "bulk seeded \(generated.count) cards in \(started.duration(to: .now).description)"
         )
         #endif
-    }
-}
-
-/// Barcode, label link and vision, starting from the read `ingest` already did.
-/// Detached so the edit sheet does not freeze while it runs.
-private enum ScanEnrichment {
-    static func fields(of pending: PendingScan, visionAllowed: Bool) async -> ParsedFields {
-        await Task.detached(priority: .userInitiated) {
-            async let foundCodes = LabelCodeReader.readAll(cardID: pending.card.id)
-
-            var parsed = pending.parsed
-            parsed.linesRead = pending.lines.count
-
-            let found = await foundCodes
-            OCRSidecar.write(
-                cardID: pending.card.id,
-                lines: pending.lines,
-                barcodes: found.map(\.bounds)
-            )
-            let payloads = found.map(\.payload)
-            let code = payloads.first { $0.hasPrefix("https://") || $0.hasPrefix("http://") } ?? payloads.first
-            if let code, code.hasPrefix("http") {
-                if parsed.productURL == nil {
-                    parsed.productURL = code
-                }
-            } else {
-                parsed.labelCode = code
-            }
-
-            if let code, code.hasPrefix("http"),
-               let linked = await LabelLink.fetch(code) {
-                parsed.mergeLinked(linked)
-            }
-
-            if parsed.wantsVisionAssist, visionAllowed, CardVision.isAvailable,
-               let vision = await CardVision.read(cardID: pending.card.id) {
-                parsed.fillMissing(from: vision)
-            }
-
-            return parsed
-        }.value
     }
 }

@@ -289,6 +289,18 @@ extension View {
         )
     }
 
+    /// The Done key above the keyboard, for sheets outside StepFlow, which has its own.
+    /// Without it a number pad cannot be closed short of tapping another field.
+    func keyboardDoneButton() -> some View {
+        toolbar {
+            ToolbarItemGroup(placement: .keyboard) {
+                Spacer()
+                Button("Done") { dismissKeyboard() }
+                    .catalogueLabel()
+            }
+        }
+    }
+
     /// Extra inset while any catalogue field in this subtree is focused.
     /// Kept as a hook; iOS already lifts the scroll view for the keyboard.
     func fieldKeyboardClearance() -> some View {

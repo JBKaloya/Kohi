@@ -250,17 +250,24 @@ struct DictationFieldInventoryTests {
             "Recipes/AfterBrewSheet.swift",
             "Recipes/StepBuilderSheet.swift",
             "Recipes/RecipeEditSheet.swift",
-            "Edit/RoasterSheet.swift",
             "Edit/TagField.swift",
             "Setup/GrindConverterSheet.swift",
             "Setup/EquipmentSheet.swift",
             "Setup/WaterSheet.swift",
             "AI/AIFeedbackScale.swift",
+            "Tastings/TastingComposeSheet.swift",
         ]
         for file in files {
             let text = try String(contentsOf: VocabTests.kohiRoot.appending(path: file))
             #expect(text.contains("DictationField"), "missing in \(file)")
         }
+        // Names are spelled, not spoken: the coffee name and the roaster name
+        // lost their mic in build 13. The tasting keeps it on the note only.
+        let flow = try String(contentsOf: VocabTests.kohiRoot.appending(path: "Tastings/TastingFlow.swift"))
+        #expect(flow.contains("DictationField(text: $draft.note"))
+        #expect(!flow.contains("DictationField(text: $draft.coffee.name"))
+        let roaster = try String(contentsOf: VocabTests.kohiRoot.appending(path: "Edit/RoasterSheet.swift"))
+        #expect(!roaster.contains("DictationField"))
         let guided = try String(contentsOf: VocabTests.kohiRoot.appending(path: "Recipes/GuidedBrewView.swift"))
         #expect(guided.contains("NarrationPill"))
         #expect(!guided.contains("DictationField"))
@@ -424,7 +431,6 @@ struct DictationQueueTests {
         let files = [
             "Design/DictationField.swift",
             "Edit/CardEditSheet.swift",
-            "Edit/RoasterSheet.swift",
             "Edit/TagField.swift",
             "Recipes/AfterBrewSheet.swift",
             "Recipes/RecipeEditSheet.swift",
@@ -433,6 +439,8 @@ struct DictationQueueTests {
             "Setup/WaterSheet.swift",
             "AI/AskSheet.swift",
             "AI/AIFeedbackScale.swift",
+            "Tastings/TastingFlow.swift",
+            "Tastings/TastingComposeSheet.swift",
         ]
         for file in files {
             let text = try String(contentsOf: VocabTests.kohiRoot.appending(path: file))

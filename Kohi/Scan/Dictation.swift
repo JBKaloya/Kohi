@@ -68,6 +68,9 @@ final class Dictation {
     private(set) var state: State = .idle
     /// Settled words plus the live tail, updated as you speak.
     private(set) var transcript = ""
+    /// Phrases to bias recognition toward, set before `start()`. Each new
+    /// request picks them up, rolling restarts included.
+    var contextualStrings: [String] = []
 
     /// Fresh each listen. Reusing a stopped engine and calling `prepare()` on
     /// an empty graph is the CoreAudio abort above.
@@ -279,6 +282,7 @@ final class Dictation {
             let request = SFSpeechAudioBufferRecognitionRequest()
             request.shouldReportPartialResults = true
             request.addsPunctuation = true
+            request.contextualStrings = contextualStrings
             if recognizer.supportsOnDeviceRecognition {
                 request.requiresOnDeviceRecognition = true
             }
@@ -813,14 +817,6 @@ nonisolated enum DictationRouteChange: Equatable, Sendable {
     }
 }
 
-/// How a finished transcript lands in a field.
-nonisolated enum DictationMode: Equatable, Sendable {
-    /// The spoken text replaces whatever was there.
-    case replace
-    /// The spoken text is appended, with a space if both sides have content.
-    case append
-}
-
 /// Joining spoken fragments. Isolated from the audio graph so tests can pin it.
 nonisolated enum DictationTranscript {
     static func join(_ settled: String, _ live: String) -> String {
@@ -831,17 +827,14 @@ nonisolated enum DictationTranscript {
         return settled + " " + live
     }
 
-    static func apply(_ spoken: String, to existing: String, mode: DictationMode) -> String {
+    /// A finished transcript always lands after what is already in the field,
+    /// with a space if both sides have content. Dictation never erases.
+    static func apply(_ spoken: String, to existing: String) -> String {
         let spoken = spoken.trimmingCharacters(in: .whitespacesAndNewlines)
-        switch mode {
-        case .replace:
-            return spoken
-        case .append:
-            let existing = existing.trimmingCharacters(in: .whitespacesAndNewlines)
-            if existing.isEmpty { return spoken }
-            if spoken.isEmpty { return existing }
-            return existing + " " + spoken
-        }
+        let existing = existing.trimmingCharacters(in: .whitespacesAndNewlines)
+        if existing.isEmpty { return spoken }
+        if spoken.isEmpty { return existing }
+        return existing + " " + spoken
     }
 }
 

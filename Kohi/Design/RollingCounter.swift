@@ -79,7 +79,11 @@ struct RollingCounter: View {
     }
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    @FocusState private var editing: Bool
+    /// Whether the keyboard field is on screen. Kept apart from the focus:
+    /// focus can only land on a field that already exists, so the field is
+    /// shown first and takes focus once it has appeared.
+    @State private var editing = false
+    @FocusState private var focused: Bool
     @State private var draft = ""
     @State private var holdTask: Task<Void, Never>?
     @State private var flingTask: Task<Void, Never>?
@@ -182,11 +186,12 @@ struct RollingCounter: View {
                 .monospacedDigit()
                 .multilineTextAlignment(.center)
                 .keyboardType(range.decimals > 0 ? .decimalPad : .numberPad)
-                .focused($editing)
+                .focused($focused)
                 .frame(height: cell)
-                .onSubmit { commitDraft() }
-                .onChange(of: editing) { _, focused in
-                    if !focused { commitDraft() }
+                .onAppear { focused = true }
+                .onSubmit { endEditing() }
+                .onChange(of: focused) { _, isFocused in
+                    if !isFocused { endEditing() }
                 }
         } else if value == nil, !placeholder.isEmpty {
             Text(placeholder)
@@ -340,6 +345,13 @@ struct RollingCounter: View {
         flingTask?.cancel()
         draft = value.map { GrindRange.number($0) } ?? ""
         editing = true
+    }
+
+    private func endEditing() {
+        guard editing else { return }
+        commitDraft()
+        editing = false
+        focused = false
     }
 
     private func commitDraft() {

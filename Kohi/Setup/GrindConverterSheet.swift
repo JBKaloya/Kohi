@@ -43,6 +43,7 @@ struct GrindConverterSheet: View {
             .background(Palette.paper.ignoresSafeArea())
             .navigationTitle("Grind")
             .navigationBarTitleDisplayMode(.inline)
+            .keyboardDoneButton()
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Done") { dismiss() }.fontWeight(.medium)
@@ -335,6 +336,7 @@ struct CalibrationSheet: View {
             .background(Palette.paper.ignoresSafeArea())
             .navigationTitle("\(method.label) reference")
             .navigationBarTitleDisplayMode(.inline)
+            .keyboardDoneButton()
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") { dismiss() }
