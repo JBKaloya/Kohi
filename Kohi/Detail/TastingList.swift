@@ -3,11 +3,10 @@ import SwiftUI
 /// "4.0 · 3 tastings". Nil when nothing was scored.
 enum TastingScore {
     static func line(_ tastings: [Tasting]) -> String? {
-        let ratings = tastings.compactMap(\.rating)
-        guard !ratings.isEmpty else { return nil }
-        let average = Double(ratings.reduce(0, +)) / Double(ratings.count)
+        let ratings = tastings.compactMap(\.ratingHalves)
+        guard let average = HalfRating.mean(ratings) else { return nil }
         let noun = ratings.count == 1 ? "tasting" : "tastings"
-        return String(format: "%.1f", average) + " · \(ratings.count) \(noun)"
+        return HalfRating.meanText(average) + " · \(ratings.count) \(noun)"
     }
 }
 
@@ -51,8 +50,8 @@ struct TastingLine: View {
                     .foregroundStyle(Palette.ink)
                     .lineLimit(1)
                 Spacer(minLength: 4)
-                if let rating = tasting.rating {
-                    RatingDots(rating: rating)
+                if let halves = tasting.ratingHalves {
+                    RatingDots(halves: halves)
                 }
             }
             if let line = context {

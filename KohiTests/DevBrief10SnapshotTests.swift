@@ -57,6 +57,19 @@ struct DevBrief10SnapshotTests {
         SnapshotSupport.image(of: Self.flow(at: .rating, draft: Self.named()), height: 852, named: "flow-5-rating")
     }
 
+    @Test func flowStepHowWasItWithNotesAndIntensity() {
+        var draft = Self.named()
+        draft.coffee.tastingNotes = ["Jasmine", "Peach", "Black Tea"]
+        draft.ratingHalves = 5
+        draft.flavors = [
+            FlavorTag(id: "fruity-berry-blackberry", intensity: 4),
+            FlavorTag(id: "fruity-berry-raspberry"),
+            FlavorTag(id: "fruity-dried-fruit-raisin", intensity: 2),
+            FlavorTag(id: "floral-floral-jasmine"),
+        ]
+        SnapshotSupport.image(of: Self.flow(at: .rating, draft: draft), height: 1_100, named: "flow-5-rating-notes")
+    }
+
     @Test func flowStepAnythingToRemember() {
         SnapshotSupport.image(of: Self.flow(at: .remember, draft: Self.named()), height: 1_000, named: "flow-6-remember")
     }

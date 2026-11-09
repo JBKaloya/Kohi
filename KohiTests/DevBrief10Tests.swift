@@ -228,7 +228,7 @@ struct TastingFlowStepsTests {
         var draft = TastingDraft()
         draft.choose(Self.crible, "crible")
         draft.coffee.name = "Chelbesa"
-        draft.rating = 4
+        draft.ratingHalves = 8
         #expect(draft.canSave)
 
         let saved = TastingSaver.save(draft, editing: nil, tastings: tastings, roasters: roasters, places: places)

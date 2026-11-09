@@ -6,7 +6,7 @@ import SwiftUI
 /// score the same. What to change next time is a different question and lives
 /// elsewhere: after a brew, in its own step.
 struct SensoryEvaluationSection: View {
-    @Binding var rating: Int?
+    @Binding var ratingHalves: Int?
     @Binding var taste: TasteProfile
     @Binding var flavors: [FlavorTag]
     var previousTaste: TasteProfile?
@@ -18,7 +18,7 @@ struct SensoryEvaluationSection: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 28) {
-            RatingPicker(rating: $rating, enabled: enabled, onChange: onChange)
+            RatingPicker(halves: $ratingHalves, enabled: enabled)
             TasteBlock(
                 taste: $taste,
                 previous: previousTaste,
@@ -43,7 +43,7 @@ nonisolated enum SensoryScored {
         var seen = Set<String>()
         var tags: [FlavorTag] = []
         for tag in logged.joined() where seen.insert(tag.id).inserted {
-            tags.append(tag)
+            tags.append(tag.unrated)
         }
         return Array(tags.prefix(8))
     }

@@ -146,6 +146,8 @@ nonisolated enum Copy {
     static let resumeBrew = "Resume"
     static let onThePack = "On the pack"
     static let inYourCup = "In your cup"
+    static let intensityOptional = "How strong · optional"
+    static let intensityNotSet = "Not set"
     static let pourRateIsAgitation = "Pour rate ≈ agitation"
     static let noPaperMatched = "No paper matched this brewer — showing all"
     static let addedToYourKit = "Added to your kit"

@@ -24,8 +24,13 @@ nonisolated struct Tasting: Identifiable, Codable, Hashable, Sendable {
     var price: CupPrice?
     /// File names under `tastings/<id>/`.
     var photos: [String]
-    /// 1...5, same scale as `Brew.rating`. Nil when the cup was not scored.
-    var rating: Int?
+    /// Half points, 1...10, same scale as `Brew.ratingHalves`. Nil when the
+    /// cup was not scored. The one to read and write.
+    var ratingHalves: Int? {
+        didSet { rating = HalfRating.whole(ratingHalves) }
+    }
+    /// Whole dots for builds before half points. Follows `ratingHalves`.
+    private(set) var rating: Int?
     /// Seven axes, 0 to 10, the same profile a brew carries.
     var taste: TasteProfile
     var flavors: [FlavorTag]
@@ -60,6 +65,7 @@ nonisolated struct Tasting: Identifiable, Codable, Hashable, Sendable {
         price: CupPrice? = nil,
         photos: [String] = [],
         rating: Int? = nil,
+        ratingHalves: Int? = nil,
         taste: TasteProfile = TasteProfile(),
         flavors: [FlavorTag] = [],
         acidity: Int = 0,
@@ -81,7 +87,10 @@ nonisolated struct Tasting: Identifiable, Codable, Hashable, Sendable {
         self.methodNote = methodNote
         self.price = price
         self.photos = photos
-        self.rating = rating
+        let halves = ratingHalves.flatMap { HalfRating.range.contains($0) ? $0 : nil }
+            ?? HalfRating.resolve(halves: nil, whole: rating)
+        self.ratingHalves = halves
+        self.rating = HalfRating.whole(halves)
         self.taste = taste
         self.flavors = flavors
         self.acidity = acidity
@@ -107,7 +116,7 @@ nonisolated struct Tasting: Identifiable, Codable, Hashable, Sendable {
 
     /// Nothing worth showing beyond the date and the place.
     var isBlank: Bool {
-        rating == nil && taste.isEmpty && flavors.isEmpty
+        ratingHalves == nil && taste.isEmpty && flavors.isEmpty
             && acidity == 0 && bitterness == 0 && body == 0
             && (note ?? "").isEmpty
     }
@@ -146,7 +155,12 @@ nonisolated extension Tasting {
         methodNote = try c.decodeIfPresent(String.self, forKey: .methodNote)
         price = try c.decodeIfPresent(CupPrice.self, forKey: .price)
         photos = try c.decodeIfPresent([String].self, forKey: .photos) ?? []
-        rating = try c.decodeIfPresent(Int.self, forKey: .rating)
+        let halves = HalfRating.resolve(
+            halves: try? c.decodeIfPresent(Int.self, forKey: .ratingHalves),
+            whole: try c.decodeIfPresent(Int.self, forKey: .rating)
+        )
+        ratingHalves = halves
+        rating = HalfRating.whole(halves)
         taste = try c.decodeIfPresent(TasteProfile.self, forKey: .taste) ?? TasteProfile()
         flavors = try c.decodeIfPresent([FlavorTag].self, forKey: .flavors) ?? []
         acidity = try c.decodeIfPresent(Int.self, forKey: .acidity) ?? 0

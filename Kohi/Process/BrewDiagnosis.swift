@@ -281,14 +281,14 @@ nonisolated enum BrewDiagnosis {
             ))
         }
 
-        if let card, let rating = brew.rating {
+        if let card, let rating = brew.ratingHalves {
             let better = card.brews
-                .filter { $0.id != brew.id && ($0.rating ?? 0) > rating && $0.method == brew.method }
-                .max { ($0.rating ?? 0) < ($1.rating ?? 0) }
+                .filter { $0.id != brew.id && ($0.ratingHalves ?? 0) > rating && $0.method == brew.method }
+                .max { ($0.ratingHalves ?? 0) < ($1.ratingHalves ?? 0) }
             if let better, let theirs = better.temperature, let ours = brew.temperature, abs(theirs - ours) >= 2 {
                 found.append(NextTime(
                     change: theirs > ours ? "hotter water, \(GrindRange.number(theirs)) °C" : "cooler water, \(GrindRange.number(theirs)) °C",
-                    reason: "your \(better.rating ?? 0)-dot brew of this coffee ran at \(GrindRange.number(theirs)) °C",
+                    reason: "your \(HalfRating.text(better.ratingHalves ?? 0))-dot brew of this coffee ran at \(GrindRange.number(theirs)) °C",
                     variable: .temperature,
                     direction: theirs > ours ? 1 : -1,
                     evidence: .partial
@@ -296,7 +296,7 @@ nonisolated enum BrewDiagnosis {
             } else if let better, let theirs = setting(in: better.grind), let ours = setting(in: brew.grind), theirs != ours {
                 found.append(NextTime(
                     change: theirs < ours ? "grind finer" : "grind coarser",
-                    reason: "your \(better.rating ?? 0)-dot brew of this coffee ground at \(GrindRange.number(theirs))",
+                    reason: "your \(HalfRating.text(better.ratingHalves ?? 0))-dot brew of this coffee ground at \(GrindRange.number(theirs))",
                     variable: .grind,
                     direction: theirs < ours ? -1 : 1,
                     evidence: .partial

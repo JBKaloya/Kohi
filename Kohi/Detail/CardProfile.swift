@@ -135,7 +135,7 @@ nonisolated struct CardProfilePlace: Equatable, Sendable, Identifiable {
 
     var scoreLine: String {
         guard let average else { return "\(count)" }
-        return "\(String(format: "%.1f", average)) · \(count)"
+        return "\(HalfRating.meanText(average)) · \(count)"
     }
 }
 
@@ -154,14 +154,14 @@ nonisolated struct CardProfileData: Equatable, Sendable {
         let comparable = card.brews.filter(\.isComparable)
         let out = out.filter { !$0.isDeleted && $0.place != nil }
         let byPlace = places(in: card, out: out)
-        let tasted = (homeNotes(in: card) + out).filter { $0.rating != nil || !$0.taste.isEmpty }
+        let tasted = (homeNotes(in: card) + out).filter { $0.ratingHalves != nil || !$0.taste.isEmpty }
         guard comparable.count >= 2 || byPlace.count >= 2 || tasted.count >= 2 else { return nil }
 
         let median = comparable.count >= 2
             ? medianTaste(comparable.map(\.taste))
             : medianTaste(tasted.map(\.taste) + card.brews.map(\.taste))
 
-        let bestBrew = comparable.max { ($0.rating ?? 0, $0.date) < ($1.rating ?? 0, $1.date) }
+        let bestBrew = comparable.max { ($0.ratingHalves ?? 0, $0.date) < ($1.ratingHalves ?? 0, $1.date) }
         let declaredIDs = Set(card.declaredFlavors.map(\.id))
         var counts: [String: (tag: FlavorTag, n: Int)] = [:]
         for brew in card.brews {
@@ -174,28 +174,26 @@ nonisolated struct CardProfileData: Equatable, Sendable {
             CardProfileFound(tag: $0.tag, declared: declaredIDs.contains($0.tag.id))
         }
 
-        let ratings = comparable.compactMap(\.rating)
+        let ratings = comparable.compactMap(\.ratingHalves)
         let summary: String
         if comparable.count >= 2 {
-            let avg = ratings.isEmpty ? 0 : Double(ratings.reduce(0, +)) / Double(ratings.count)
-            let bestRating = ratings.max() ?? 0
-            summary = "\(card.brews.count) brews · avg \(String(format: "%.1f", avg)) · best \(bestRating)/5"
+            let avg = HalfRating.mean(ratings) ?? 0
+            let best = ratings.max().map(HalfRating.text) ?? "0"
+            summary = "\(card.brews.count) brews · avg \(HalfRating.meanText(avg)) · best \(best)/5"
         } else {
-            let scores = tasted.compactMap(\.rating)
-            let avg = scores.isEmpty ? 0 : Double(scores.reduce(0, +)) / Double(scores.count)
-            summary = "\(tasted.count) tastings · avg \(String(format: "%.1f", avg))"
+            let avg = HalfRating.mean(tasted.compactMap(\.ratingHalves)) ?? 0
+            summary = "\(tasted.count) tastings · avg \(HalfRating.meanText(avg))"
         }
 
         var byMethod: [CardProfileMethod] = []
         for method in BrewMethod.allCases {
-            let scores = comparable.filter { $0.method == method }.compactMap(\.rating)
-            if !scores.isEmpty {
-                let mean = Double(scores.reduce(0, +)) / Double(scores.count)
-                byMethod.append(CardProfileMethod(method: method.label, average: String(format: "%.1f/5", mean)))
+            let scores = comparable.filter { $0.method == method }.compactMap(\.ratingHalves)
+            if let mean = HalfRating.mean(scores) {
+                byMethod.append(CardProfileMethod(method: method.label, average: HalfRating.meanText(mean) + "/5"))
             }
         }
 
-        let bestTaste = bestBrew?.taste ?? tasted.max { ($0.rating ?? 0, $0.date) < ($1.rating ?? 0, $1.date) }?.taste
+        let bestTaste = bestBrew?.taste ?? tasted.max { ($0.ratingHalves ?? 0, $0.date) < ($1.ratingHalves ?? 0, $1.date) }?.taste
 
         return CardProfileData(
             median: median,
@@ -222,6 +220,7 @@ nonisolated struct CardProfileData: Equatable, Sendable {
         struct Bucket {
             var id: String
             var name: String
+            /// Half points.
             var ratings: [Int] = []
             var tastes: [TasteProfile] = []
             var count = 0
@@ -239,23 +238,21 @@ nonisolated struct CardProfileData: Equatable, Sendable {
             buckets[id] = bucket
         }
 
-        for brew in card.brews where brew.rating != nil || !brew.taste.isEmpty {
-            bump("home", name: Copy.atHome, rating: brew.rating, taste: brew.taste)
+        for brew in card.brews where brew.ratingHalves != nil || !brew.taste.isEmpty {
+            bump("home", name: Copy.atHome, rating: brew.ratingHalves, taste: brew.taste)
         }
-        for tasting in homeNotes(in: card) where tasting.rating != nil || !tasting.taste.isEmpty {
-            bump("home", name: Copy.atHome, rating: tasting.rating, taste: tasting.taste)
+        for tasting in homeNotes(in: card) where tasting.ratingHalves != nil || !tasting.taste.isEmpty {
+            bump("home", name: Copy.atHome, rating: tasting.ratingHalves, taste: tasting.taste)
         }
         for group in PlaceKey.group(out) {
             for tasting in group.tastings.reversed() {
-                bump(group.id, name: group.place.name, rating: tasting.rating, taste: tasting.taste)
+                bump(group.id, name: group.place.name, rating: tasting.ratingHalves, taste: tasting.taste)
             }
         }
 
         return order.compactMap { key -> CardProfilePlace? in
             guard let bucket = buckets[key], bucket.count > 0 else { return nil }
-            let average = bucket.ratings.isEmpty
-                ? nil
-                : Double(bucket.ratings.reduce(0, +)) / Double(bucket.ratings.count)
+            let average = HalfRating.mean(bucket.ratings)
             return CardProfilePlace(
                 id: bucket.id,
                 name: bucket.name,

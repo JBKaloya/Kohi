@@ -80,7 +80,7 @@ struct SyncParityTests {
             ],
             nextTimeSuggestion: "grind two clicks finer",
             captureSource: .dictated,
-            rating: 4,
+            ratingHalves: 9,
             acidity: -1,
             bitterness: 1,
             body: -1,
@@ -260,7 +260,7 @@ struct SyncParityTests {
                 "waterProfileID", "agitation", "filterStockId", "steps", "plannedSteps",
                 "actualSource", "flowGs", "recipeName", "pourRates",
                 "taste", "legacyTaste", "flavors",
-                "nextTimeSuggestion", "captureSource", "rating", "acidity",
+                "nextTimeSuggestion", "captureSource", "ratingHalves", "rating", "acidity",
                 "bitterness", "body", "complexity", "notes",
             ]
         )
@@ -303,7 +303,7 @@ struct SyncParityTests {
             methodNote: "Orea",
             price: CupPrice(amount: Decimal(string: "5.50")!, currency: "EUR"),
             photos: ["cup.heic"],
-            rating: 4,
+            ratingHalves: 7,
             taste: TasteProfile(acidity: 7, sweetness: 6),
             flavors: [FlavorTag(custom: "Strawberry")],
             acidity: 1,
@@ -346,7 +346,7 @@ struct SyncParityTests {
         #expect(
             Self.properties(of: Self.fullTasting()) == [
                 "id", "date", "context", "cardID", "coffee", "method", "brewer",
-                "isBatch", "methodNote", "price", "photos", "rating", "taste",
+                "isBatch", "methodNote", "price", "photos", "ratingHalves", "rating", "taste",
                 "flavors", "acidity", "bitterness", "body", "note", "createdAt",
                 "updatedAt", "deletedAt",
             ]

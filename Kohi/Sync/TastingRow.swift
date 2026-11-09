@@ -22,7 +22,10 @@ struct TastingRow: Codable, Sendable, Equatable {
     var method_note: String?
     var price_amount: Decimal?
     var price_currency: String?
+    /// Whole dots, for builds before half points.
     var rating: Int?
+    /// Half points, 1...10 (migration 0030). Read only when it agrees with `rating`.
+    var rating_halves: Int?
     var taste: TasteProfile
     var flavors: [FlavorTag]
     var legacy: Legacy?
@@ -55,6 +58,7 @@ struct TastingRow: Codable, Sendable, Equatable {
         price_amount = tasting.price?.amount
         price_currency = tasting.price?.currency
         rating = tasting.rating
+        rating_halves = tasting.ratingHalves
         taste = tasting.taste
         flavors = tasting.flavors
         let hasAxes = tasting.acidity != 0 || tasting.bitterness != 0 || tasting.body != 0
@@ -96,7 +100,7 @@ struct TastingRow: Codable, Sendable, Equatable {
             methodNote: method_note,
             price: price,
             photos: photos,
-            rating: rating,
+            ratingHalves: HalfRating.resolve(halves: rating_halves, whole: rating),
             taste: taste,
             flavors: flavors,
             acidity: legacy?.acidity ?? 0,
@@ -129,6 +133,7 @@ extension TastingRow {
         price_currency = try c.decodeIfPresent(String.self, forKey: .price_currency)?
             .trimmingCharacters(in: .whitespaces)
         rating = try c.decodeIfPresent(Int.self, forKey: .rating)
+        rating_halves = try? c.decodeIfPresent(Int.self, forKey: .rating_halves)
         taste = try c.decodeIfPresent(TasteProfile.self, forKey: .taste) ?? TasteProfile()
         flavors = try c.decodeIfPresent([FlavorTag].self, forKey: .flavors) ?? []
         legacy = try? c.decodeIfPresent(Legacy.self, forKey: .legacy)

@@ -65,23 +65,22 @@ nonisolated struct CoffeeCard: Identifiable, Codable, Hashable, Sendable {
 
     /// Tastings that carry a score. Brew ratings are a different question.
     var ratedTastings: [Tasting] {
-        tastings.filter { $0.rating != nil }
+        tastings.filter { $0.ratingHalves != nil }
     }
 
-    /// Mean of the tasting ratings, and how many there were. Nil when none
-    /// of the tastings were scored, even if the brews were.
+    /// Mean of the tasting ratings, in points, and how many there were. Nil
+    /// when none of the tastings were scored, even if the brews were.
     var tastingScore: (average: Double, count: Int)? {
-        let ratings = ratedTastings.compactMap(\.rating)
-        guard !ratings.isEmpty else { return nil }
-        let total = ratings.reduce(0, +)
-        return (Double(total) / Double(ratings.count), ratings.count)
+        let ratings = ratedTastings.compactMap(\.ratingHalves)
+        guard let average = HalfRating.mean(ratings) else { return nil }
+        return (average, ratings.count)
     }
 
     /// "4.0 · 3 tastings". Nil when nothing was scored.
     var tastingScoreLine: String? {
         guard let tastingScore else { return nil }
         let noun = tastingScore.count == 1 ? "tasting" : "tastings"
-        return String(format: "%.1f", tastingScore.average) + " · \(tastingScore.count) \(noun)"
+        return HalfRating.meanText(tastingScore.average) + " · \(tastingScore.count) \(noun)"
     }
 
     /// Linked pages, recipes, or documents. Newest first.

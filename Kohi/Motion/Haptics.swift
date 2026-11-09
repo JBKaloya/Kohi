@@ -16,7 +16,7 @@ enum Haptic: Sendable {
     case deleted
     /// Grid density snapped to a new column count.
     case densityChange
-    /// A discrete button press in the brew sheet (chips, rating, axes, More, timer start/stop).
+    /// A press that is not a stepped value: an axis, More, a timer start or stop.
     case tap
     /// One second elapsed on the running brew timer.
     case tick
@@ -24,8 +24,9 @@ enum Haptic: Sendable {
     case stepAdvance
     /// Dictation started or stopped listening.
     case listening
-    /// One step of a rolling counter or picker. Callers throttle this while a
-    /// key is repeating, so a hold does not buzz on every tick.
+    /// One notch of a value: a rolling counter, the rating, a flavour's
+    /// intensity. Attach it to the value, so a tap, a slide and VoiceOver
+    /// each tick once. A hold on a counter is throttled by its caller.
     case step
     /// The swipe-to-brew gesture crossed the point of no return.
     case armed

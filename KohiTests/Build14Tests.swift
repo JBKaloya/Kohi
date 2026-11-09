@@ -77,7 +77,7 @@ struct CompactCurrencyTests {
     @Test func eachScreenPlacesItBesideThePrice() throws {
         let tasting = try String(contentsOf: DevBrief10.kohiRoot.appending(path: "Tastings/TastingFields.swift"))
         #expect(tasting.contains("CounterRow(\n                value:"))
-        #expect(tasting.contains("range: .cupPrice"))
+        #expect(tasting.contains("range: .cupPrice(in: draft.currency)"))
         #expect(!tasting.contains("TextField(\"0,00\""))
         let card = try String(contentsOf: DevBrief10.kohiRoot.appending(path: "Edit/CardEditSheet.swift"))
         #expect(card.contains("CounterRow(\n            \"Price\""))

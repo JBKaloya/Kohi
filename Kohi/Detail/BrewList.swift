@@ -270,8 +270,8 @@ struct BrewLog: View {
                     .foregroundStyle(Palette.ink)
                     .lineLimit(1)
                 Spacer(minLength: 4)
-                if let rating = brew.rating {
-                    RatingDots(rating: rating)
+                if let halves = brew.ratingHalves {
+                    RatingDots(halves: halves)
                 }
             }
 
@@ -317,18 +317,29 @@ struct BrewLog: View {
     }
 }
 
-/// Five dots, filled up to the score. Shared by a brew row and a tasting row.
+/// Five dots, filled up to the score, the last one by half when it is a half
+/// point. Shared by a brew row and a tasting row.
 struct RatingDots: View {
-    let rating: Int
+    let halves: Int
 
     var body: some View {
         HStack(spacing: 2) {
-            ForEach(1...5, id: \.self) { step in
-                Circle()
-                    .fill(step <= rating ? Palette.ink : Palette.hairline)
-                    .frame(width: 5, height: 5)
+            ForEach(1...5, id: \.self) { dot in
+                let fill = HalfRating.dot(dot, of: halves)
+                ZStack {
+                    Circle().fill(fill == .full ? Palette.ink : Palette.hairline)
+                    if fill == .half {
+                        Circle()
+                            .fill(Palette.ink)
+                            .mask(alignment: .leading) { Rectangle().frame(width: 2.5) }
+                    }
+                }
+                .frame(width: 5, height: 5)
             }
         }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(Copy.rating)
+        .accessibilityValue(HalfRating.spoken(halves))
     }
 }
 

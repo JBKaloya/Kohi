@@ -21,7 +21,10 @@ struct BrewRow: Codable, Sendable {
     var temperature: Double?
 
     var tds: Double?
+    /// Whole dots, for builds before half points.
     var rating: Int?
+    /// Half points, 1...10 (migration 0030). Read only when it agrees with `rating`.
+    var rating_halves: Int?
 
     var recipe_id: UUID?
     var recipe_ref: String?
@@ -69,6 +72,7 @@ struct BrewRow: Codable, Sendable {
         self.temperature = brew.temperature
         self.tds = brew.tds
         self.rating = brew.rating
+        self.rating_halves = brew.ratingHalves
         self.recipe_id = brew.recipeID
         self.recipe_ref = brew.recipeRef
         self.recipe_snapshot = brew.recipeSnapshot
@@ -142,7 +146,7 @@ struct BrewRow: Codable, Sendable {
             flavors: tags,
             nextTimeSuggestion: next_time_suggestion,
             captureSource: capture_source.flatMap { CaptureSource(rawValue: $0) },
-            rating: rating,
+            ratingHalves: HalfRating.resolve(halves: rating_halves, whole: rating),
             acidity: acidity,
             bitterness: bitterness,
             body: body,

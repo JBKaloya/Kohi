@@ -18,7 +18,7 @@ struct CounterKeyboardTests {
     }
 
     @Test func typedValuesLandInsideTheRange() {
-        #expect(NumberRange.price.clamp(1200) == 999)
+        #expect(NumberRange.price(in: "EUR").clamp(1200) == 999)
         #expect(NumberRange.agtron.clamp(70.4) == 70)
         #expect(NumberRange.dose.clamp(15.26) == 15.3)
         #expect(NumberRange.bagWeight.clamp(10) == 50)
@@ -121,7 +121,7 @@ struct QuickFlavorTests {
         let blocks = try String(contentsOf: DevBrief10.kohiRoot.appending(path: "Design/TastingBlocks.swift"))
         #expect(!blocks.contains("TagChip(text: tag.displayName, isSelected: false) {}"))
         #expect(blocks.contains("declaredChip(tag)"))
-        #expect(blocks.contains("FlavorPicker(selection: $selection, recent: recent, declared: declared)"))
+        #expect(blocks.contains("FlavorPicker(selection: $selection, recent: recent, declared: declared, showsSummary: false)"))
     }
 }
 

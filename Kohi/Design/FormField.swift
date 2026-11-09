@@ -393,6 +393,28 @@ nonisolated enum NumberText {
         guard !cleaned.isEmpty else { return nil }
         return Double(cleaned)
     }
+
+    /// For a number that has no decimals, such as a price in yen, a comma or
+    /// a point before three digits groups thousands: "1,100" and "1.100" are
+    /// 1100, not 1.1. With decimals, the last separator is the decimal one.
+    static func parse(_ text: String, decimals: Int) -> Double? {
+        let trimmed = text
+            .replacingOccurrences(of: "\u{00A0}", with: " ")
+            .replacingOccurrences(of: "\u{202F}", with: " ")
+            .trimmingCharacters(in: .whitespaces)
+        guard !trimmed.isEmpty else { return nil }
+        let grouped = #"^\d{1,3}([ ,.]\d{3})+$"#
+        if decimals == 0, trimmed.range(of: grouped, options: .regularExpression) != nil {
+            return Double(trimmed.filter(\.isNumber))
+        }
+        let separators = trimmed.filter { $0 == "," || $0 == "." }
+        if separators.count > 1, let last = trimmed.lastIndex(where: { $0 == "," || $0 == "." }) {
+            let whole = trimmed[..<last].filter(\.isNumber)
+            let fraction = trimmed[trimmed.index(after: last)...].filter(\.isNumber)
+            return Double("\(whole).\(fraction)")
+        }
+        return parse(trimmed.replacingOccurrences(of: " ", with: ""))
+    }
 }
 
 /// Single-choice chips over `TagChip`. Tapping the selected one clears it.

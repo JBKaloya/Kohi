@@ -225,7 +225,7 @@ struct BrewReadView: View {
     private var compareBlock: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text("Compare").catalogueLabel()
-            if session.brew.rating == nil {
+            if session.brew.ratingHalves == nil {
                 Text(Copy.addRatingToCompareLater)
                     .font(Typography.tag)
                     .foregroundStyle(Palette.inkMuted)

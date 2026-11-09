@@ -85,7 +85,7 @@ struct TastingComposeSheet: View {
                         VStack(alignment: .leading, spacing: 28) {
                             Text(Copy.yourTasting).catalogueLabel()
                             SensoryEvaluationSection(
-                                rating: $draft.rating,
+                                ratingHalves: $draft.ratingHalves,
                                 taste: $draft.taste,
                                 flavors: $draft.flavors,
                                 previousTaste: previousTaste,
@@ -536,7 +536,7 @@ struct TastingDraft: Equatable {
     var priceText = ""
     var currency = "EUR"
     var photos: [String] = []
-    var rating: Int?
+    var ratingHalves: Int?
     var taste = TasteProfile()
     var flavors: [FlavorTag] = []
     var note = ""
@@ -557,7 +557,7 @@ struct TastingDraft: Equatable {
             currency = price.currency
         }
         photos = tasting.photos
-        rating = tasting.rating
+        ratingHalves = tasting.ratingHalves
         taste = tasting.taste
         flavors = tasting.flavors
         note = tasting.note ?? ""
@@ -624,12 +624,17 @@ struct TastingDraft: Equatable {
     }
 
     var price: CupPrice? {
-        let cleaned = priceText
-            .replacingOccurrences(of: ",", with: ".")
-            .trimmingCharacters(in: .whitespaces)
-        guard let amount = Decimal(string: cleaned, locale: Locale(identifier: "en_US_POSIX")),
+        guard let value = NumberText.parse(priceText, decimals: CupPrice.fractionDigits(currency)),
+              let amount = Decimal(string: String(value), locale: Locale(identifier: "en_US_POSIX")),
               amount > 0 else { return nil }
         return CupPrice(amount: amount, currency: currency)
+    }
+
+    /// A price the bounds of its currency do not allow, kept as typed and said.
+    var priceNotice: String? {
+        guard let price else { return nil }
+        let value = NSDecimalNumber(decimal: price.amount).doubleValue
+        return NumberRange.cupPrice(in: currency).priceNotice(for: value, currency: currency)
     }
 
     /// Collapsed Details header: "Fève · V60 · 5,50 €".
@@ -723,7 +728,7 @@ struct TastingDraft: Equatable {
             || !coffee.tastingNotes.isEmpty || !notesEntry.trimmingCharacters(in: .whitespaces).isEmpty
             || cardID != nil || method != nil
             || !priceText.trimmingCharacters(in: .whitespaces).isEmpty || !photos.isEmpty
-            || rating != nil || taste != TasteProfile() || !flavors.isEmpty
+            || ratingHalves != nil || taste != TasteProfile() || !flavors.isEmpty
             || !note.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
             || (place != nil && !placeIsAutomatic)
     }
@@ -738,8 +743,9 @@ struct TastingDraft: Equatable {
         case .notes: notesText = field.value
         case .method: method = TastingMethod(word: field.value) ?? method
         case .price:
-            if let parsed = BagFieldParser.price(in: field.value) {
-                priceText = String(format: "%.2f", parsed.0)
+            if let parsed = BagFieldParser.price(in: field.value),
+               NumberRange.cupPrice(in: parsed.1).contains(parsed.0) {
+                priceText = String(parsed.0)
                 currency = parsed.1
             }
         }
@@ -762,7 +768,7 @@ struct TastingDraft: Equatable {
         tasting.methodNote = method == .other && !note.isEmpty ? note : nil
         tasting.price = price
         tasting.photos = photos
-        tasting.rating = rating
+        tasting.ratingHalves = ratingHalves
         tasting.taste = taste
         tasting.flavors = flavors
         let trimmed = self.note.trimmingCharacters(in: .whitespacesAndNewlines)

@@ -7,12 +7,34 @@ nonisolated struct FlavorTag: Codable, Hashable, Sendable, Identifiable {
     var id: String
     /// The words as typed, when this is a custom tag.
     var custom: String?
+    /// How strong it was in the cup, 1 (very faint) to 5 (very strong). Nil
+    /// until someone says; never set on what a pack announces. An ordinal
+    /// step, not a share: five notes can all be strong.
+    var intensity: Int?
 
     var isCustom: Bool { id.hasPrefix("custom:") || custom != nil }
 
-    init(id: String, custom: String? = nil) {
+    static let intensities = 1...5
+
+    init(id: String, custom: String? = nil, intensity: Int? = nil) {
         self.id = id
         self.custom = custom
+        self.intensity = intensity.flatMap { Self.intensities.contains($0) ? $0 : nil }
+    }
+
+    /// The same flavour with no intensity, as it is offered again.
+    var unrated: FlavorTag {
+        FlavorTag(id: id, custom: custom)
+    }
+
+    static func intensityLabel(_ level: Int) -> String {
+        switch level {
+        case 1: "Very faint"
+        case 2: "Faint"
+        case 3: "Clear"
+        case 4: "Strong"
+        default: "Very strong"
+        }
     }
 
     init(custom text: String) {
@@ -44,6 +66,17 @@ nonisolated struct FlavorTag: Codable, Hashable, Sendable, Identifiable {
         let c = try decoder.container(keyedBy: CodingKeys.self)
         id = try c.decode(String.self, forKey: .id)
         custom = try c.decodeIfPresent(String.self, forKey: .custom)
+        intensity = (try? c.decodeIfPresent(Int.self, forKey: .intensity))
+            .flatMap { $0 }
+            .flatMap { Self.intensities.contains($0) ? $0 : nil }
+    }
+}
+
+nonisolated extension [FlavorTag] {
+    /// Sets the intensity of the tag with this id; nil clears it.
+    mutating func setIntensity(_ level: Int?, of id: String) {
+        guard let index = firstIndex(where: { $0.id == id }) else { return }
+        self[index].intensity = level.flatMap { FlavorTag.intensities.contains($0) ? $0 : nil }
     }
 }
 

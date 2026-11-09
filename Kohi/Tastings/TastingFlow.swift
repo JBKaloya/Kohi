@@ -380,7 +380,7 @@ struct TastingFlow: View {
             onSecondary: saveNowAction
         ) {
             VStack(alignment: .leading, spacing: 28) {
-                RatingPicker(rating: $draft.rating)
+                RatingPicker(halves: $draft.ratingHalves)
                 FlavorsBlock(
                     selection: $draft.flavors,
                     declared: draft.coffee.declaredFlavors,

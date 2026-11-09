@@ -74,7 +74,7 @@ struct BrewCompareSheet: View {
                 chip("Previous", selected: other?.id == eligible.first?.id) {
                     other = eligible.first
                 }
-                if let best = eligible.max(by: { ($0.rating ?? 0) < ($1.rating ?? 0) }) {
+                if let best = eligible.max(by: { ($0.ratingHalves ?? 0) < ($1.ratingHalves ?? 0) }) {
                     chip("Best", selected: other?.id == best.id) {
                         other = best
                     }

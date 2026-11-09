@@ -39,13 +39,51 @@ struct NumberRange: Equatable, Sendable {
     static let basket = NumberRange(min: 5, max: 30, step: 1, decimals: 0, default: 18)
     static let pressure = NumberRange(min: 1, max: 15, step: 0.1, decimals: 1, default: 9)
     static let resolution = NumberRange(min: 0.1, max: 1, step: 0.1, decimals: 1, default: 0.1)
-    static let price = NumberRange(min: 0, max: 999, step: 1, decimals: 0, default: 0)
-    /// A cup at a café: 4.50, 5.20. Ten cents a step.
-    static let cupPrice = NumberRange(min: 0, max: 99, step: 0.1, decimals: 2, default: 4)
     static let bagWeight = NumberRange(min: 50, max: 2000, step: 1, decimals: 0, default: 250)
     static let cupping = NumberRange(min: 0, max: 100, step: 0.1, decimals: 1, default: 85)
     static let brewTDS = NumberRange(min: 0, max: 5, step: 0.01, decimals: 2, default: 1.3)
     static let microns = NumberRange(min: 0, max: 2000, step: 1, decimals: 0, default: 400)
+
+    /// A price in `currency`, the same bounds for a bag and for a cup: up to
+    /// 99 000 in yen, 999 in anything else, with the currency's own decimals.
+    /// No conversion: the bounds follow the code, the number stays the number.
+    static func price(in currency: String?, default start: Double = 0) -> NumberRange {
+        let code = (currency ?? CupPrice.localCurrency).uppercased()
+        let decimals = CupPrice.fractionDigits(code)
+        let max: Double = code == "JPY" ? 99_000 : 999
+        let step: Double = code == "JPY" ? 10 : decimals == 0 ? 1 : 0.1
+        return NumberRange(min: 0, max: max, step: step, decimals: decimals, default: start)
+    }
+
+    /// A cup at a café: 4.50 €, 600 ¥. Where the first tap lands.
+    static func cupPrice(in currency: String?) -> NumberRange {
+        let code = (currency ?? CupPrice.localCurrency).uppercased()
+        return price(in: code, default: code == "JPY" ? 600 : 4)
+    }
+
+    /// The number as the keyboard shows it, with no more decimals than the
+    /// range keeps and none it does not need: 4.55, 15, 1100.
+    func text(_ value: Double) -> String {
+        var text = String(format: "%.\(decimals)f", value)
+        if text.contains(".") {
+            while text.hasSuffix("0") { text.removeLast() }
+            if text.hasSuffix(".") { text.removeLast() }
+        }
+        return text
+    }
+
+    func contains(_ value: Double) -> Bool {
+        value >= min && value <= max
+    }
+
+    /// Said under a price the bounds do not allow, typically after the
+    /// currency changed under it. The number itself is left alone.
+    func priceNotice(for value: Double?, currency: String?) -> String? {
+        guard let value, value > max else { return nil }
+        let code = (currency ?? "").uppercased()
+        let limit = max.formatted(.number.precision(.fractionLength(0)))
+        return code.isEmpty ? "Over \(limit). Check the amount." : "Over \(limit) \(code). Check the currency."
+    }
 }
 
 /// How a held key repeats. The first fire is the caller's; this is everything after.

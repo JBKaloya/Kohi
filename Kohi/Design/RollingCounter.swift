@@ -24,6 +24,10 @@ struct RollingCounter: View {
     var hint: String?
     var error: String?
     var style: Style = .row
+    /// A typed number over the max is said and dropped, never cut down to it.
+    var refusesOutOfRange = false
+    /// Said under the counter without marking the field as missing.
+    var notice: String?
 
     init(
         _ label: String,
@@ -35,7 +39,9 @@ struct RollingCounter: View {
         presence: FieldPresence = .optional,
         hint: String? = nil,
         error: String? = nil,
-        style: Style = .row
+        style: Style = .row,
+        refusesOutOfRange: Bool = false,
+        notice: String? = nil
     ) {
         self.label = label
         self._value = value
@@ -47,6 +53,8 @@ struct RollingCounter: View {
         self.hint = hint
         self.error = error
         self.style = style
+        self.refusesOutOfRange = refusesOutOfRange
+        self.notice = notice
     }
 
     init(
@@ -88,6 +96,8 @@ struct RollingCounter: View {
     @State private var holdTask: Task<Void, Never>?
     @State private var flingTask: Task<Void, Never>?
     @State private var stepTick = 0
+    /// What was typed and not kept, said until the next change.
+    @State private var refused: String?
     @State private var dragSteps = 0
     @State private var dragAxis: DragAxis = .undecided
 
@@ -231,10 +241,11 @@ struct RollingCounter: View {
 
     private var digits: some View {
         let scaled = scaledValue(value ?? range.default)
+        let places = max(range.places, String(abs(scaled)).count)
         return RollingDigits(
-            counts: RollMath.counts(of: scaled, places: range.places),
-            bases: Array(repeating: 10, count: range.places),
-            show: RollMath.shownPlaces(scaled: scaled, decimals: range.decimals, places: range.places),
+            counts: RollMath.counts(of: scaled, places: places),
+            bases: Array(repeating: 10, count: places),
+            show: RollMath.shownPlaces(scaled: scaled, decimals: range.decimals, places: places),
             separators: range.decimals > 0 ? [range.decimals - 1: "."] : [:],
             cell: cell,
             fontSize: fontSize
@@ -255,6 +266,10 @@ struct RollingCounter: View {
     private var message: some View {
         if let error {
             Text(error)
+                .font(Typography.tag)
+                .foregroundStyle(Palette.primary)
+        } else if let notice = refused ?? notice {
+            Text(notice)
                 .font(Typography.tag)
                 .foregroundStyle(Palette.primary)
         }
@@ -321,6 +336,8 @@ struct RollingCounter: View {
             next = range.clamp(origin + Double(steps) * range.step)
         }
         guard next != value else { return }
+        if steps > 0, let value, next < value { return }
+        refused = nil
         value = next
         if audible { stepTick += 1 }
     }
@@ -330,6 +347,7 @@ struct RollingCounter: View {
         let next = value == nil
             ? range.clamp(range.default)
             : range.clamp(origin + Double(direction) * range.step)
+        if direction > 0, let value, next < value { return false }
         return next != value
     }
 
@@ -354,7 +372,8 @@ struct RollingCounter: View {
     private func beginEditing() {
         holdTask?.cancel()
         flingTask?.cancel()
-        draft = value.map { GrindRange.number($0) } ?? ""
+        draft = value.map { range.text($0) } ?? ""
+        refused = nil
         editing = true
     }
 
@@ -371,7 +390,11 @@ struct RollingCounter: View {
             value = nil
             return
         }
-        guard let parsed = NumberText.parse(trimmed) else { return }
+        guard let parsed = NumberText.parse(trimmed, decimals: range.decimals) else { return }
+        if refusesOutOfRange, parsed > range.max {
+            refused = "\(range.text(parsed)) is over \(range.max.formatted(.number.precision(.fractionLength(0)))). Not kept."
+            return
+        }
         value = range.clamp(parsed)
     }
 
@@ -390,6 +413,7 @@ struct CounterRow<Accessory: View>: View {
     var placeholder: String = ""
     var labelWidth: CGFloat = 92
     var hint: String?
+    var notice: String?
     @ViewBuilder let accessory: Accessory
 
     init(
@@ -399,6 +423,7 @@ struct CounterRow<Accessory: View>: View {
         placeholder: String = "",
         labelWidth: CGFloat = 92,
         hint: String? = nil,
+        notice: String? = nil,
         @ViewBuilder accessory: () -> Accessory
     ) {
         self.label = label
@@ -407,18 +432,21 @@ struct CounterRow<Accessory: View>: View {
         self.placeholder = placeholder
         self.labelWidth = labelWidth
         self.hint = hint
+        self.notice = notice
         self.accessory = accessory()
     }
 
     var body: some View {
-        HStack(spacing: 8) {
+        HStack(alignment: .top, spacing: 8) {
             RollingCounter(
                 label,
                 value: $value,
                 range: range,
                 placeholder: placeholder,
                 labelWidth: labelWidth,
-                hint: hint
+                hint: hint,
+                refusesOutOfRange: true,
+                notice: notice
             )
             accessory
                 .frame(width: WellMenuLabel.width)

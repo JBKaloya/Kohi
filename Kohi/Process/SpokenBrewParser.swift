@@ -161,7 +161,7 @@ nonisolated enum SpokenBrewParser {
             brew.grind = GrindSetting(raw: grind)
         }
         if brew.method == nil { brew.method = result.method }
-        if brew.rating == nil { brew.rating = result.rating }
+        if brew.ratingHalves == nil { brew.ratingHalves = result.rating.map { $0 * 2 } }
         if brew.agitation == nil { brew.agitation = result.agitation }
         if brew.waterProfileID == nil { brew.waterProfileID = result.waterProfileId }
         if brew.filterStockId == nil { brew.filterStockId = result.filterStockId }
@@ -170,7 +170,7 @@ nonisolated enum SpokenBrewParser {
         }
         for flavor in result.flavors {
             let tag = FlavorMatcher.match(flavor).tags.first ?? FlavorTag(custom: flavor)
-            if !brew.flavors.contains(tag) { brew.flavors.append(tag) }
+            if !brew.flavors.contains(where: { $0.id == tag.id }) { brew.flavors.append(tag) }
         }
         applySpokenSteps(result.spokenSteps, to: &brew)
         if appendLeftover {

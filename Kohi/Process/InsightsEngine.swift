@@ -83,17 +83,17 @@ nonisolated enum InsightsEngine {
     static func bestBrew(in cards: [CoffeeCard]) -> Insight? {
         let rated = cards.compactMap { card -> (CoffeeCard, Brew)? in
             guard let best = card.brews
-                .filter({ $0.rating != nil })
-                .max(by: { ($0.rating ?? 0, $0.date) < ($1.rating ?? 0, $1.date) })
+                .filter({ $0.ratingHalves != nil })
+                .max(by: { ($0.ratingHalves ?? 0, $0.date) < ($1.ratingHalves ?? 0, $1.date) })
             else { return nil }
             return (card, best)
         }
 
         guard let (card, brew) = rated.max(by: { lhs, rhs in
-            (lhs.1.rating ?? 0, lhs.0.brews.count) < (rhs.1.rating ?? 0, rhs.0.brews.count)
+            (lhs.1.ratingHalves ?? 0, lhs.0.brews.count) < (rhs.1.ratingHalves ?? 0, rhs.0.brews.count)
         }) else { return nil }
 
-        let comparable = card.brews.filter { $0.rating != nil }.count
+        let comparable = card.brews.filter { $0.ratingHalves != nil }.count
 
         return Insight(
             kind: .bestBrew,
@@ -119,10 +119,11 @@ nonisolated enum InsightsEngine {
             let setting: Double
         }
 
+        /// Half points, so a median of 7 reads as 3.5.
         var ratings: [Key: [Int]] = [:]
         for card in cards {
             for brew in card.brews {
-                guard let rating = brew.rating,
+                guard let rating = brew.ratingHalves,
                       let method = brew.method,
                       let setting = BrewDiagnosis.setting(in: brew.grind)
                 else { continue }
@@ -165,7 +166,7 @@ nonisolated enum InsightsEngine {
             scope: scope,
             finding: tried >= minimumSample ? "\(GrindRange.number(best.setting)) on \(grinderName)" : "",
             detail: tried >= minimumSample
-                ? "\(pairing.method.label) · median \(GrindRange.number(best.median)) of 5 over \(tried) settings"
+                ? "\(pairing.method.label) · median \(GrindRange.number(best.median / 2)) of 5 over \(tried) settings"
                 : "",
             sampleSize: tried,
             threshold: minimumSample
@@ -187,7 +188,7 @@ nonisolated enum InsightsEngine {
 
         for card in cards {
             for brew in card.brews {
-                guard let rating = brew.rating, let id = brew.waterProfileID else { continue }
+                guard let rating = brew.ratingHalves, let id = brew.waterProfileID else { continue }
                 byProfile[id, default: []].append(rating)
                 if !card.process.isEmpty { processes[id, default: []].insert(card.process) }
                 if let roast = card.roastLevel { roasts[id, default: []].insert(roast) }
@@ -207,7 +208,7 @@ nonisolated enum InsightsEngine {
             scope: name,
             finding: ratings.count >= minimumSample ? name : "",
             detail: ratings.count >= minimumSample
-                ? "median \(GrindRange.number(median(ratings))) of 5 over \(ratings.count) brews\(segment)"
+                ? "median \(GrindRange.number(median(ratings) / 2)) of 5 over \(ratings.count) brews\(segment)"
                 : "",
             sampleSize: ratings.count,
             threshold: minimumSample

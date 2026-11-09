@@ -22,4 +22,13 @@ nonisolated struct CupPrice: Codable, Hashable, Sendable {
     }
 
     static let commonCurrencies = ["EUR", "USD", "GBP", "JPY", "CHF", "AUD", "CAD", "SEK", "DKK", "NOK"]
+
+    /// ISO 4217 minor units: 0 for yen, 2 for euros.
+    static func fractionDigits(_ code: String) -> Int {
+        let formatter = NumberFormatter()
+        formatter.locale = Locale(identifier: "en_US")
+        formatter.numberStyle = .currency
+        formatter.currencyCode = code.uppercased()
+        return formatter.maximumFractionDigits
+    }
 }

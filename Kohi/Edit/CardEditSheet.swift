@@ -651,9 +651,10 @@ struct CardEditSheet: View {
         CounterRow(
             "Price",
             value: $draft.price,
-            range: .price,
+            range: .price(in: draft.currency),
             placeholder: Placeholders.text(.bagPrice),
-            labelWidth: 74
+            labelWidth: 74,
+            notice: NumberRange.price(in: draft.currency).priceNotice(for: draft.price, currency: draft.currency)
         ) {
             CurrencyPicker(code: $draft.currency)
                 .disabled(draft.price == nil)
@@ -829,7 +830,9 @@ struct CardEditSheet: View {
         fill(\.roastedOn, parsed.roastedOn)
         fill(\.harvest, parsed.harvest)
         fill(\.cuppingScore, parsed.cuppingScore)
-        fill(\.price, parsed.price)
+        if let price = parsed.price, NumberRange.price(in: parsed.currency ?? draft.currency).contains(price) {
+            fill(\.price, price)
+        }
         fill(\.currency, parsed.currency)
         fill(\.bagWeightG, parsed.bagWeightG)
         fill(\.lot, parsed.lot)

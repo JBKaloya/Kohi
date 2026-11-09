@@ -54,8 +54,13 @@ nonisolated struct Brew: Identifiable, Codable, Hashable, Sendable {
     var nextTimeSuggestion: String?
     var captureSource: CaptureSource?
 
-    /// 1...5, displayed as filled/empty dots.
-    var rating: Int?
+    /// Half points, 1...10, displayed as full, half and empty dots. The one
+    /// to read and write; see `HalfRating`.
+    var ratingHalves: Int? {
+        didSet { rating = HalfRating.whole(ratingHalves) }
+    }
+    /// Whole dots for builds before half points. Follows `ratingHalves`.
+    private(set) var rating: Int?
 
     /// Each axis is −1 (under), 0 (balanced), or +1 (over).
     var acidity: Int
@@ -98,6 +103,7 @@ nonisolated struct Brew: Identifiable, Codable, Hashable, Sendable {
         nextTimeSuggestion: String? = nil,
         captureSource: CaptureSource? = nil,
         rating: Int? = nil,
+        ratingHalves: Int? = nil,
         acidity: Int = 0,
         bitterness: Int = 0,
         body: Int = 0,
@@ -133,7 +139,10 @@ nonisolated struct Brew: Identifiable, Codable, Hashable, Sendable {
         self.flavors = flavors
         self.nextTimeSuggestion = nextTimeSuggestion
         self.captureSource = captureSource
-        self.rating = rating
+        let halves = ratingHalves.flatMap { HalfRating.range.contains($0) ? $0 : nil }
+            ?? HalfRating.resolve(halves: nil, whole: rating)
+        self.ratingHalves = halves
+        self.rating = HalfRating.whole(halves)
         self.acidity = acidity
         self.bitterness = bitterness
         self.body = body
@@ -155,7 +164,7 @@ nonisolated struct Brew: Identifiable, Codable, Hashable, Sendable {
         if water == nil && beverage == nil { missing.append(.output) }
         if seconds == nil { missing.append(.time) }
         if grind.isEmpty { missing.append(.grind) }
-        if rating == nil { missing.append(.rating) }
+        if ratingHalves == nil { missing.append(.rating) }
         return missing.isEmpty ? .complete : .missing(missing)
     }
 
@@ -353,7 +362,12 @@ nonisolated extension Brew {
         }
         nextTimeSuggestion = try c.decodeIfPresent(String.self, forKey: .nextTimeSuggestion)
         captureSource = try c.decodeIfPresent(CaptureSource.self, forKey: .captureSource)
-        rating = try c.decodeIfPresent(Int.self, forKey: .rating)
+        let halves = HalfRating.resolve(
+            halves: try? c.decodeIfPresent(Int.self, forKey: .ratingHalves),
+            whole: try c.decodeIfPresent(Int.self, forKey: .rating)
+        )
+        ratingHalves = halves
+        rating = HalfRating.whole(halves)
         acidity = try c.decodeIfPresent(Int.self, forKey: .acidity) ?? 0
         bitterness = try c.decodeIfPresent(Int.self, forKey: .bitterness) ?? 0
         body = try c.decodeIfPresent(Int.self, forKey: .body) ?? 0

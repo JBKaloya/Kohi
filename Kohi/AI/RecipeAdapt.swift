@@ -37,8 +37,8 @@ nonisolated enum RecipeAdapt {
     }
 
     static func cacheKey(recipe: Recipe, card: CoffeeCard) -> String {
-        let history = card.brews.filter { $0.rating != nil }.prefix(5).map {
-            "\($0.id.uuidString):\($0.rating ?? 0):\($0.grind.display()):\(String($0.dose ?? 0))"
+        let history = card.brews.filter { $0.ratingHalves != nil }.prefix(5).map {
+            "\($0.id.uuidString):\($0.ratingHalves ?? 0):\($0.grind.display()):\(String($0.dose ?? 0))"
         }.joined(separator: ",")
         return [
             recipe.id.uuidString,
@@ -97,7 +97,8 @@ nonisolated enum RecipeAdapt {
             let water: Double?
             let temperature: Double?
             let grind: String
-            let rating: Int?
+            /// Out of 5, in half points: 3.5.
+            let rating: Double?
         }
 
         let payload = Payload(
@@ -123,13 +124,13 @@ nonisolated enum RecipeAdapt {
             ),
             // Only rated brews: an unrated one says nothing about whether the
             // variant would be a repeat.
-            history: card.brews.filter { $0.rating != nil }.prefix(5).map {
+            history: card.brews.filter { $0.ratingHalves != nil }.prefix(5).map {
                 HistoryBody(
                     dose: $0.dose,
                     water: $0.water,
                     temperature: $0.temperature,
                     grind: $0.grind.display(),
-                    rating: $0.rating
+                    rating: $0.ratingHalves.map(HalfRating.points)
                 )
             }
         )

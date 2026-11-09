@@ -216,21 +216,75 @@ Le filet interpolé `hairline` → `ink` au focus est `quick`. Pas d’anneau. P
 
 ## 6. Haptiques
 
-Vocabulaire fermé. Chaque cas *veut dire la même chose* partout. Warmup au launch (`Haptics.prepare()`) pour que le premier tap de session arrive à l’heure. Les vues utilisent `.haptic(_:trigger:)`.
+Vocabulaire fermé. Chaque cas veut dire la même chose partout. Warmup au launch (`Haptics.prepare()`) pour que le premier tap de session arrive à l’heure. Les vues passent par `.haptic(_:trigger:)`, jamais par `sensoryFeedback` directement. Les snapshots coupent le retour avec `kohiHapticsEnabled` à false : le moteur haptique du simulateur piège quand il est encore froid.
 
 | Nom | Feedback | Moment |
 | --- | --- | --- |
 | `detectionLock` | impact light | Le tracker a verrouillé une carte |
 | `capture` | impact medium | Le shutter a tiré |
-| `saved` | success | Une carte / un brew est écrit (pas sur un *nouveau* scan : l’atterrissage suffit) |
+| `saved` | success | Une carte, un brew ou un tasting est écrit (pas sur un *nouveau* scan : l’atterrissage suffit) |
 | `landing` | impact soft | La carte touche le papier |
 | `deleted` | warning | Une carte quitte l’archive, ou un save impossible (champ requis manquant, nom trop court) |
 | `densityChange` | selection | Le pinch a snappé un nouveau nombre de colonnes |
-| `tap` | impact medium | Chip, rating, axe, More, start/stop timer dans le parcours brew |
+| `tap` | impact medium | Un bouton qui n’est pas une valeur à crans : axe −/·/+, More, start/stop du timer |
 | `tick` | impact light | Chaque seconde du timer de brew |
 | `stepAdvance` | impact light | Next d’une étape guidée |
+| `listening` | selection | La dictée commence ou s’arrête |
+| `step` | selection | Un cran d’une valeur : compteur, note, intensité d’une saveur, saveur cochée ou décochée |
+| `armed` | impact medium | Le geste *swipe to brew* a passé le point de non-retour |
+| `check` | impact soft | Une ligne de checklist est cochée |
 
 Ne pas ajouter un impact « pour le plaisir ». Si le moment n’est pas dans cette liste, soit il n’a pas de haptic, soit on étend l’enum avec un nom qui décrit le *pourquoi*.
+
+### Où l’accrocher
+
+Deux façons, et on n’en pose pas deux sur le même geste.
+
+- **Sur la valeur**, `.haptic(.step, trigger: valeur)`. Le retour part quand la valeur change, qu’elle vienne d’un tap, d’un glissé ou de VoiceOver. Un geste qui ne change rien ne vibre pas. C’est le compteur (`stepTick`), la note (`halves`) et les saveurs (`selection`, intensité comprise).
+- **Sur le geste**, un compteur incrémenté dans l’action, puis `.haptic(.tap, trigger: compteur)`. Pour un bouton qui n’est pas une valeur à crans.
+
+La note et les saveurs ne rappellent pas `onChange` : le parcours brew compte déjà ses taps, et un second haptic sur le même geste doublerait le retour.
+
+### Contrôle à crans
+
+Un réglage par crans — la note, l’intensité d’une saveur — se construit toujours pareil. On ne réinvente pas le geste dans la vue.
+
+- Une rangée de cases égales. `StepHit.index(x:width:count:)` (`HalfRating.swift`) donne le cran sous le doigt, de 1 à `count`, et reste sur le premier ou le dernier si le doigt dépasse.
+- Tap : `SpatialTapGesture`.
+- Glissé : `DragGesture(minimumDistance: 6)`, pris seulement s’il est plus horizontal que vertical. L’animation du changement est `Motion.quick`.
+- Le haptic est `.step` sur la valeur, pas un compteur dans le geste.
+- Désactivé : opacité 0.5, gestes à `.none`.
+
+### Note
+
+`RatingPicker` (`Kohi/Design/TastingBlocks.swift`) est le seul éditeur de note, dans un tasting comme après un brew. Cinq points, en demi-points. La valeur stockée est un nombre de demis, de 1 à 10 (`HalfRating`). Le chiffre s’affiche à côté des points : `3`, `2.5`, ou `—`.
+
+- Tap sur un point vide : la note entière de ce point.
+- Retap sur le dernier point plein : il passe en demi.
+- Tap sur un demi-point : la note s’efface.
+- Glisser règle au demi-point. Il ne descend jamais sous 0,5 et n’efface pas : seul un tap efface.
+- VoiceOver lit « 2.5 out of 5 » ou « Not rated », et ajuste d’un demi-point.
+- La note entière (`rating`, de 1 à 5, jamais sous 1) est encore écrite à côté, pour qu’un build qui ne connaît pas les demis lise quelque chose. Si les deux divergent, l’entière gagne : c’est un ancien build qui l’a changée.
+
+En lecture, `RatingDots` dessine les mêmes cinq points en 5 pt, demi compris. Le point vide y est un disque `hairline`, pas un contour.
+
+### Intensité d’une saveur
+
+`FlavorIntensityList`, dans le même fichier, sous *In your cup*, dès qu’une note est cochée. Une ligne par note : le nom, cinq capsules de 6 pt sur 130 pt, le libellé sur 78 pt. *How strong · optional* se pose à droite du titre.
+
+| Cran | Libellé |
+| --- | --- |
+| 1 | Very faint |
+| 2 | Faint |
+| 3 | Clear |
+| 4 | Strong |
+| 5 | Very strong |
+
+- Rien n’est choisi tant qu’on ne le dit pas : « Not set ».
+- Tap ou glissé posent le cran. Retap du cran actif l’efface. Glisser n’efface pas.
+- Une note annoncée par le sachet n’a jamais d’intensité. Une note retirée puis recochée repart sans. Les notes récentes proposées non plus.
+- On reconnaît une note par son `id`, jamais par l’égalité du tag : l’intensité fait partie de la valeur, et deux tags de même note avec deux intensités sont la même note.
+- Là où le résumé *In your cup* s’affiche encore, c’est une seule ligne, et chaque note est séparée par ` · `.
 
 ---
 
@@ -480,9 +534,9 @@ Thumbs H **80**, radius 4 continuous. Badge rôle : cercle `ink` 60 %, mono 8 bo
 
 Rectangle 132×176, radius 3, stroke `hairline` 1.2. Trois capsules de filet en haut (64 / 44 / 54). Titre `value` + `ink`, sous-titre `subtitle` + `inkMuted`. Spacing 26 / 7.
 
-### Rating (brew)
+### Rating
 
-Lecture : dots 5 pt. Édition : cercles 22 pt, fill `ink` ou stroke `hairline`. Toggle off si on retape la même note.
+L’édition est `RatingPicker`, décrite au §6 : cinq points de 22 pt, demi-points, tap et glissé, haptic `step`. La lecture est `RatingDots`, points de 5 pt.
 
 ### Axes de correction (brew → More)
 
@@ -561,4 +615,4 @@ Les labels de champs sont le vocabulaire du café (Roaster, Producer, Process…
 
 **Nouveau composant d’archive** — partir de la grammaire : label catalogue, valeur SF, filet hairline, fond paper, tint ink. Un champ passe par `FormField` / `FieldChrome`, jamais une rangée privée. Si ça a besoin d’une card UIKit, d’un divider système ou d’un accent color, ce n’est probablement pas une surface Kohi.
 
-**Nouveau haptic** — un cas dans `Haptic` avec un nom d’événement, pas un `sensoryFeedback` anonyme dans la vue.
+**Nouveau haptic** — un cas dans `Haptic` avec un nom d’événement, pas un `sensoryFeedback` anonyme dans la vue. Un réglage par crans reprend le contrôle du §6 (`StepHit`, haptic `step` sur la valeur) au lieu d’un glissé local.

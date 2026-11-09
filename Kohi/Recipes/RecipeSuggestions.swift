@@ -27,7 +27,7 @@ nonisolated enum RecipeSuggestions {
         let eligible = cards
             .filter { card in
                 guard let last = card.lastBrew else { return true }
-                return (last.rating ?? 0) <= 2
+                return (last.ratingHalves ?? 0) <= 4
             }
             .sorted { a, b in
                 let aEmpty = a.brews.isEmpty

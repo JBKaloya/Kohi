@@ -6,6 +6,8 @@ struct FlavorPicker: View {
     var recent: [FlavorTag] = []
     /// What the pack announces. Shown in its own row above, so Quick leaves it out.
     var declared: [FlavorTag] = []
+    /// Off when the caller lists the selection itself.
+    var showsSummary = true
 
     @State private var query = ""
     @State private var showAll = false
@@ -13,7 +15,7 @@ struct FlavorPicker: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
-            if !selection.isEmpty {
+            if showsSummary, !selection.isEmpty {
                 selected
             }
 
@@ -38,21 +40,16 @@ struct FlavorPicker: View {
                 .flatMap { FlavorWheel.shared.node(id: $0) }
                 .map { family(of: $0) } ?? "other"
         }
-        let families = FlavorWheel.shared.families
-        return HStack(spacing: 6) {
-            ForEach(families, id: \.id) { family in
-                if let tags = grouped[family.id], !tags.isEmpty {
-                    Text(tags.map(\.displayName).joined(separator: " · "))
-                        .font(Typography.tag)
-                        .foregroundStyle(Palette.ink)
-                }
-            }
-            if let custom = grouped["other"] {
-                Text(custom.map(\.displayName).joined(separator: " · "))
-                    .font(Typography.tag)
-                    .foregroundStyle(Palette.inkMuted)
-            }
+        let wheel = FlavorWheel.shared.families.flatMap { grouped[$0.id] ?? [] }
+        let custom = grouped["other"] ?? []
+        var line = AttributedString(wheel.map(\.displayName).joined(separator: " · "))
+        line.foregroundColor = Palette.ink
+        if !custom.isEmpty {
+            var rest = AttributedString((wheel.isEmpty ? "" : " · ") + custom.map(\.displayName).joined(separator: " · "))
+            rest.foregroundColor = Palette.inkMuted
+            line += rest
         }
+        return Text(line).font(Typography.tag)
     }
 
     private func family(of node: FlavorNode) -> String {
@@ -171,7 +168,7 @@ struct FlavorPicker: View {
                 if selected {
                     selection.removeAll { $0.id == tag.id }
                 } else {
-                    selection.append(tag)
+                    selection.append(tag.unrated)
                 }
             }
         }

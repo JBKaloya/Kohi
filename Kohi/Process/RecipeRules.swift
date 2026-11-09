@@ -344,8 +344,8 @@ nonisolated enum RecipeRules {
         var best: (card: CoffeeCard, brew: Brew)?
         for neighbour in neighbours where isComparable(card, to: neighbour) {
             for brew in neighbour.brews
-            where brew.method == method && (brew.rating ?? 0) >= 4 && brew.dose != nil {
-                if let current = best, (current.brew.rating ?? 0) >= (brew.rating ?? 0) { continue }
+            where brew.method == method && (brew.ratingHalves ?? 0) >= 8 && brew.dose != nil {
+                if let current = best, (current.brew.ratingHalves ?? 0) >= (brew.ratingHalves ?? 0) { continue }
                 best = (neighbour, brew)
             }
         }

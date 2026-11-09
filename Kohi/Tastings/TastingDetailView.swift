@@ -179,13 +179,20 @@ struct TastingDetailView: View {
 
     @ViewBuilder
     private func evaluation(_ tasting: Tasting) -> some View {
-        let scored = tasting.rating != nil || !tasting.taste.isEmpty || !tasting.flavors.isEmpty
+        let scored = tasting.ratingHalves != nil || !tasting.taste.isEmpty || !tasting.flavors.isEmpty
         let note = tasting.note?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
         if scored || !note.isEmpty {
             VStack(alignment: .leading, spacing: 18) {
                 Text(Copy.yourTasting).catalogueLabel()
-                if let rating = tasting.rating {
-                    RatingDots(rating: rating)
+                if let halves = tasting.ratingHalves {
+                    HStack(spacing: 8) {
+                        RatingDots(halves: halves)
+                        Text(HalfRating.text(halves))
+                            .font(Typography.tag)
+                            .monospacedDigit()
+                            .foregroundStyle(Palette.inkMuted)
+                            .accessibilityHidden(true)
+                    }
                 }
                 if !tasting.taste.isEmpty {
                     TasteRadar(taste: tasting.taste)
@@ -194,7 +201,11 @@ struct TastingDetailView: View {
                 if !tasting.flavors.isEmpty {
                     FlowLayout {
                         ForEach(tasting.flavors, id: \.id) { flavor in
-                            TagChip(text: flavor.displayName, isSelected: true) {}
+                            TagChip(
+                                text: flavor.intensity.map { "\(flavor.displayName) · \(FlavorTag.intensityLabel($0).lowercased())" }
+                                    ?? flavor.displayName,
+                                isSelected: true
+                            ) {}
                                 .allowsHitTesting(false)
                         }
                     }

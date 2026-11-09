@@ -534,10 +534,11 @@ struct TastingMadeFields: View {
             CounterRow(
                 value: Binding(
                     get: { draft.price.map { NSDecimalNumber(decimal: $0.amount).doubleValue } },
-                    set: { draft.priceText = $0.map { String(format: "%.2f", $0) } ?? "" }
+                    set: { draft.priceText = $0.map { String($0) } ?? "" }
                 ),
-                range: .cupPrice,
-                placeholder: "0.00"
+                range: .cupPrice(in: draft.currency),
+                placeholder: CupPrice.fractionDigits(draft.currency) == 0 ? "0" : "0.00",
+                notice: draft.priceNotice
             ) {
                 CurrencyPicker(code: $draft.currency)
             }

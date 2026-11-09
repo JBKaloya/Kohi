@@ -272,7 +272,7 @@ struct AfterBrewSheet: View {
 
     private var sensory: some View {
         SensoryEvaluationSection(
-            rating: $session.brew.rating,
+            ratingHalves: $session.brew.ratingHalves,
             taste: $session.brew.taste,
             flavors: $session.brew.flavors,
             previousTaste: previousTaste,

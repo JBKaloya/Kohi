@@ -52,8 +52,8 @@ struct BrewsSection: View {
                     .font(Typography.tag)
                     .foregroundStyle(Palette.ink)
                 Spacer(minLength: 4)
-                if let rating = tasting.rating {
-                    RatingDots(rating: rating)
+                if let halves = tasting.ratingHalves {
+                    RatingDots(halves: halves)
                 }
             }
             TastingSummary(tasting: tasting)
