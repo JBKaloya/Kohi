@@ -16,6 +16,8 @@ enum BrewDraft {
         var step: String
         var fromCard: Bool
         var logged: Bool
+        /// True for a brew started without a coffee. Absent in older drafts.
+        var loose: Bool?
     }
 
     static func save(_ session: BrewSession) {
@@ -26,7 +28,8 @@ enum BrewDraft {
             size: session.size,
             step: String(describing: session.step),
             fromCard: session.fromCard,
-            logged: session.logged
+            logged: session.logged,
+            loose: session.hasCard ? nil : true
         )
         if let data = try? JSONEncoder().encode(payload) {
             UserDefaults.standard.set(data, forKey: key)
@@ -50,9 +53,11 @@ enum BrewDraft {
         from payload: Payload,
         store: CardStore,
         recipes: RecipeStore,
+        looseBrews: LooseBrewStore,
         setup: SetupStore
     ) -> BrewSession? {
-        guard let card = store.card(id: payload.cardID) else { return nil }
+        let card = store.card(id: payload.cardID)
+        guard card != nil || payload.loose == true else { return nil }
         let recipe = payload.recipeID.flatMap { id in recipes.recipes.first { $0.id == id } }
         let step: BrewSession.Step = switch payload.step {
         case "start": .start
@@ -64,11 +69,12 @@ enum BrewDraft {
         default: .scope
         }
         let session = BrewSession(
-            card: card,
+            card: card ?? .standIn(),
             recipe: recipe,
             existing: payload.brew,
             start: step,
             fromCard: payload.fromCard,
+            loose: card == nil ? looseBrews : nil,
             setup: setup
         )
         session.brew = payload.brew

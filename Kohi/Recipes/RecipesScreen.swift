@@ -6,20 +6,21 @@ struct RecipesScreen: View {
     @Environment(RecipeStore.self) private var recipes
     @Environment(SetupStore.self) private var setup
     @Environment(AIFlags.self) private var flags
+    @Environment(LooseBrewStore.self) private var looseBrews
     @Environment(\.appEnvironment) private var appEnvironment
 
     var onOpen: ((CoffeeCard) -> Void)?
-    var onOpenBrew: ((CoffeeCard, Brew) -> Void)?
-    var onAgainBrew: ((CoffeeCard, Brew) -> Void)?
-    var onReadBrew: ((CoffeeCard, Brew) -> Void)?
+    var onOpenBrew: ((CoffeeCard?, Brew) -> Void)?
+    var onAgainBrew: ((CoffeeCard?, Brew) -> Void)?
+    var onReadBrew: ((CoffeeCard?, Brew) -> Void)?
     /// Set for the parcours export. The remembered tab is left untouched.
     private let locksTab: Bool
 
     init(
         onOpen: ((CoffeeCard) -> Void)? = nil,
-        onOpenBrew: ((CoffeeCard, Brew) -> Void)? = nil,
-        onAgainBrew: ((CoffeeCard, Brew) -> Void)? = nil,
-        onReadBrew: ((CoffeeCard, Brew) -> Void)? = nil,
+        onOpenBrew: ((CoffeeCard?, Brew) -> Void)? = nil,
+        onAgainBrew: ((CoffeeCard?, Brew) -> Void)? = nil,
+        onReadBrew: ((CoffeeCard?, Brew) -> Void)? = nil,
         initialTab: RecipeTab? = nil
     ) {
         self.onOpen = onOpen
@@ -42,6 +43,13 @@ struct RecipesScreen: View {
     @State private var showFilters = false
     @State private var isNewRecipe = false
     @State private var editingRecipe: Recipe?
+    /// A brew with no coffee yet, open on Add the coffee.
+    @State private var addingCoffee: LooseCoffee?
+
+    private struct LooseCoffee: Identifiable {
+        let id: UUID
+        var coffee: TastedCoffee
+    }
 
     private struct OpenedRecipe: Identifiable {
         let id = UUID()
@@ -139,16 +147,40 @@ struct RecipesScreen: View {
             RecipeEditSheet(recipe: recipe)
                 .appEnvironment(appEnvironment)
         }
+        .sheet(item: $addingCoffee, onDismiss: keepToldCoffee) { _ in
+            LinkCoffeeSheet(coffee: toldCoffee) { card in
+                guard let id = addingCoffee?.id else { return }
+                looseBrews.link(id, to: card.id, in: store)
+                addingCoffee = nil
+            }
+            .appEnvironment(appEnvironment)
+        }
+    }
+
+    private var toldCoffee: Binding<TastedCoffee> {
+        Binding(
+            get: { addingCoffee?.coffee ?? TastedCoffee() },
+            set: { addingCoffee?.coffee = $0 }
+        )
+    }
+
+    /// What was written about the coffee stays on the brew, linked or not.
+    private func keepToldCoffee() {
+        guard let told = addingCoffee, var brew = looseBrews.brew(id: told.id) else { return }
+        addingCoffee = nil
+        guard brew.coffee != told.coffee else { return }
+        brew.coffee = told.coffee
+        looseBrews.save(brew)
     }
 
     // MARK: - All
 
     private var hasBrew: Bool {
-        store.cards.contains { !$0.brews.isEmpty }
+        store.cards.contains { !$0.brews.isEmpty } || !looseBrews.isEmpty
     }
 
     private var logged: [LoggedBrew] {
-        BrewArchive.recent(in: store.cards)
+        BrewArchive.recent(in: store.cards, loose: looseBrews.brews)
     }
 
     /// The per-coffee block. On All the recipe filters are hidden, so they
@@ -216,18 +248,26 @@ struct RecipesScreen: View {
         return BrewLog(
             brews: rows.map(\.brew),
             coffeeName: { brew in
-                guard let card = rows.first(where: { $0.brew.id == brew.id })?.card else { return nil }
+                guard let row = rows.first(where: { $0.brew.id == brew.id }) else { return nil }
+                guard let card = row.card else {
+                    let told = row.brew.coffee?.trimmedName ?? ""
+                    return told.isEmpty ? Copy.noCoffeeYet : told
+                }
                 return store.title(for: card)
             },
             onSelect: { brew in open(brew, with: onOpenBrew) },
             onAgain: onAgainBrew == nil ? nil : { brew in open(brew, with: onAgainBrew) },
-            onRead: onReadBrew == nil ? nil : { brew in open(brew, with: onReadBrew) }
+            onRead: onReadBrew == nil ? nil : { brew in open(brew, with: onReadBrew) },
+            onAddCoffee: { brew in
+                addingCoffee = LooseCoffee(id: brew.id, coffee: brew.coffee ?? TastedCoffee())
+            },
+            needsCoffee: { brew in rows.first { $0.brew.id == brew.id }?.card == nil }
         )
     }
 
-    private func open(_ brew: Brew, with action: ((CoffeeCard, Brew) -> Void)?) {
-        guard let card = logged.first(where: { $0.brew.id == brew.id })?.card else { return }
-        action?(card, brew)
+    private func open(_ brew: Brew, with action: ((CoffeeCard?, Brew) -> Void)?) {
+        guard let row = logged.first(where: { $0.brew.id == brew.id }) else { return }
+        action?(row.card, brew)
     }
 
     // MARK: - Reference

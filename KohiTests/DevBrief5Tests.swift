@@ -10,7 +10,7 @@ struct DevBrief5Tests {
         #expect(Copy.change == "Change")
         #expect(Copy.addThePaperYouUse == "Add the paper you use")
         #expect(Copy.addTheWaterYouUse == "Add the water you use")
-        #expect(Copy.logWithoutTimer == "Log without timer")
+        #expect(Copy.logWithoutTimer == "Already brewed? Log it")
         #expect(Copy.rinseMore == "Rinse more")
         #expect(Copy.whichPaper == "Which paper?")
         #expect(Copy.addAFilter == "Add a filter")
@@ -32,7 +32,7 @@ struct DevBrief5Tests {
     }
 
     @Test func kitOpensTheCatalogueByFamily() throws {
-        let kit = try String(contentsOf: BrewJourneySupport.kohiRoot().appending(path: "Recipes/BrewKitView.swift"))
+        let kit = try String(contentsOf: BrewJourneySupport.kohiRoot().appending(path: "Recipes/BrewKitSheet.swift"))
         #expect(kit.contains("Copy.withWhat"))
         #expect(kit.contains("CatalogPicker"))
         #expect(kit.contains("BrewKit.journeyTabs"))

@@ -295,8 +295,7 @@ extension View {
         toolbar {
             ToolbarItemGroup(placement: .keyboard) {
                 Spacer()
-                Button("Done") { dismissKeyboard() }
-                    .catalogueLabel()
+                KeyboardDoneKey()
             }
         }
     }
@@ -457,5 +456,31 @@ struct ChipToggles<Item: Identifiable & Hashable>: View {
                 }
             }
         }
+    }
+}
+
+/// Ink, not muted: it is the only way out of a number pad, so it must read
+/// as a key and take a full tap.
+struct KeyboardDoneKey: View {
+    var body: some View {
+        Button {
+            UIApplication.shared.sendAction(
+                #selector(UIResponder.resignFirstResponder),
+                to: nil,
+                from: nil,
+                for: nil
+            )
+        } label: {
+            Text("Done")
+                .font(Typography.label)
+                .tracking(Typography.labelTracking)
+                .textCase(.uppercase)
+                .foregroundStyle(Palette.ink)
+                .frame(minWidth: 44, minHeight: 44)
+                .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel("Done")
+        .accessibilityHint("Closes the keyboard")
     }
 }

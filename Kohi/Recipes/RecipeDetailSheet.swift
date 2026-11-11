@@ -431,7 +431,8 @@ struct RecipeDetailSheet: View {
             attribution: shown.attribution,
             notes: shown.notes,
             referenceID: shown.referenceID,
-            autoAdvance: false
+            autoAdvance: shown.advanceMode == .auto,
+            advanceMode: shown.advanceMode
         )
         editingCopy = copy
     }
@@ -489,6 +490,8 @@ struct RecipeDetailSheet: View {
 struct RecipeCoffeePicker: View {
     @Binding var picked: CoffeeCard?
     var showsJourneyChrome = false
+    /// Brew without choosing: the coffee is added after, from It's done or the log.
+    var onSkip: (() -> Void)? = nil
     @Environment(CardStore.self) private var store
     @Environment(\.dismiss) private var dismiss
 
@@ -498,7 +501,9 @@ struct RecipeCoffeePicker: View {
                 step: 0,
                 total: 6,
                 question: Copy.whichCoffee,
-                onClose: { dismiss() }
+                onClose: { dismiss() },
+                onSkip: onSkip.map { skip in { skip(); dismiss() } },
+                skipTitle: Copy.skipCoffee
             ) {
                 coffeeList
                     .padding(.bottom, 24)

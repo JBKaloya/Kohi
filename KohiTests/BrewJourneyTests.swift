@@ -65,6 +65,19 @@ enum BrewJourneySupport {
             .environment(LotFlags(defaults: defaults))
             .environment(AIEventLog())
             .environment(AIFeedbackStore(files: JSONFileStore(filename: "feedback-journey-\(UUID().uuidString).json")))
+            .environment(looseBrews())
+    }
+
+    static func looseBrews() -> LooseBrewStore {
+        let name = UUID().uuidString
+        return LooseBrewStore(
+            files: JSONFileStore(filename: "loose-brews-journey-\(name).json"),
+            ledgerFile: JSONDocumentStore(filename: "loose-brews-ledger-journey-\(name).json")
+        )
+    }
+
+    static func cards() -> CardStore {
+        CardStore(files: CardFileStore(url: FileManager.default.temporaryDirectory.appending(path: "cards-\(UUID().uuidString).json")))
     }
 
     static func kohiRoot() -> URL {

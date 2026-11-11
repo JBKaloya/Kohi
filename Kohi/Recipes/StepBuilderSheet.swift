@@ -13,6 +13,12 @@ struct StepBuilderSheet: View {
     var onSave: (Recipe) -> Void
 
     @State private var tapCount = 0
+    @FocusState private var focus: Field?
+    @State private var keyboardUp = false
+
+    private enum Field: Hashable {
+        case at(UUID), until(UUID)
+    }
 
     init(draft: Recipe, onSave: @escaping (Recipe) -> Void) {
         _draft = State(initialValue: draft)
@@ -21,17 +27,50 @@ struct StepBuilderSheet: View {
 
     var body: some View {
         NavigationStack {
-            ScrollView {
-                VStack(alignment: .leading, spacing: 22) {
-                    headerGroup
-                    totalsGroup
-                    stepsGroup
+            ScrollViewReader { proxy in
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 22) {
+                        headerGroup
+                        totalsGroup
+                        stepsGroup
+                    }
+                    .padding(.horizontal, 26)
+                    .padding(.top, 16)
+                    .padding(.bottom, 44)
+                    .background {
+                        Color.clear
+                            .contentShape(Rectangle())
+                            .onTapGesture { dismissKeyboard() }
+                    }
                 }
-                .padding(.horizontal, 26)
-                .padding(.top, 16)
-                .padding(.bottom, 44)
-                .fieldKeyboardClearance()
+                .scrollDismissesKeyboard(.interactively)
+                .onChange(of: focus) { _, field in
+                    guard let field else { return }
+                    withAnimation(Motion.snappy) {
+                        proxy.scrollTo(field, anchor: Self.focusAnchor)
+                    }
+                }
             }
+            .safeAreaInset(edge: .bottom, spacing: 0) {
+                if !keyboardUp {
+                    stepFooter
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.horizontal, 26)
+                        .padding(.vertical, 12)
+                        .background(Palette.paper)
+                        .overlay(alignment: .top) {
+                            Rectangle().fill(Palette.hairline).frame(height: 1)
+                        }
+                        .transition(.opacity)
+                }
+            }
+            .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillShowNotification)) { _ in
+                keyboardUp = true
+            }
+            .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillHideNotification)) { _ in
+                keyboardUp = false
+            }
+            .animation(Motion.snappy, value: keyboardUp)
             .scrollIndicators(.hidden)
             .background(Palette.paper.ignoresSafeArea())
             .navigationTitle("Steps")
@@ -49,6 +88,13 @@ struct StepBuilderSheet: View {
         }
         .tint(Palette.ink)
         .haptic(.tap, trigger: tapCount)
+        #if DEBUG
+        .task {
+            guard DebugHooks.keyboardRepro != nil, let last = draft.steps.last else { return }
+            try? await Task.sleep(for: .milliseconds(900))
+            focus = .at(last.id)
+        }
+        #endif
     }
 
     // MARK: - Header
@@ -113,12 +159,12 @@ struct StepBuilderSheet: View {
             }
 
             addStepButtons
-
-            // Footer: running total and target warning.
-            stepFooter
-                .padding(.top, 12)
         }
     }
+
+    /// The focused time lands in the upper third, with the rest of its step
+    /// visible under it rather than pressed against the keyboard bar.
+    static let focusAnchor = UnitPoint(x: 0.5, y: 0.3)
 
     // MARK: - Step row
 
@@ -262,7 +308,9 @@ struct StepBuilderSheet: View {
                 )))
                 .formValue()
                 .keyboardType(.numbersAndPunctuation)
+                .focused($focus, equals: .at(step.id))
                 .frame(width: 56)
+                .id(Field.at(step.id))
             }
 
             if step.action.hasUntil {
@@ -274,7 +322,9 @@ struct StepBuilderSheet: View {
                     )))
                     .formValue()
                     .keyboardType(.numbersAndPunctuation)
+                    .focused($focus, equals: .until(step.id))
                     .frame(width: 56)
+                    .id(Field.until(step.id))
                 }
             }
 
@@ -466,7 +516,6 @@ struct StepBuilderSheet: View {
         }
         draft.source = .express
         draft.evidence = .unverified
-        draft.autoAdvance = false
         onSave(draft)
         dismiss()
     }

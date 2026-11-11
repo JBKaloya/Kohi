@@ -148,23 +148,19 @@ struct SetupFlowSheet: View {
     }
 
     private var header: some View {
-        VStack(alignment: .leading, spacing: 18) {
-            HStack {
-                if let number = stage.questionNumber {
-                    HStack(spacing: 4) {
-                        ForEach(0..<3, id: \.self) { i in
-                            Rectangle()
-                                .fill(i == number - 1 ? Palette.ink : Palette.hairline)
-                                .frame(width: 24, height: 1)
-                        }
-                    }
-                }
-                Spacer()
-            }
+        HStack(alignment: .center, spacing: 10) {
             Text(stage == .entry ? "Bring what you have" : questionTitle)
                 .font(Typography.question)
                 .foregroundStyle(Palette.ink)
+                .lineLimit(2)
+                .minimumScaleFactor(0.85)
+                .accessibilityAddTraits(.isHeader)
+            Spacer(minLength: 8)
+            if let number = stage.questionNumber {
+                StepProgress(step: number - 1, total: 3)
+            }
         }
+        .frame(minHeight: 44)
     }
 
     private var questionTitle: String {

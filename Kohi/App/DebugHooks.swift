@@ -12,6 +12,8 @@ import Foundation
 ///     SIMCTL_CHILD_KOHI_FAKE_FIX=48.8638,2.3480,20   stand there (lat,lon,accuracy m);
 ///                                     also `-kohi.fakeFix 48.8638,2.3480,20`
 ///     SIMCTL_CHILD_KOHI_DEMO=bag|card|menu  the simulator shutter files that demo
+///     SIMCTL_CHILD_KOHI_KEYBOARD=sheet|after  open Steps over the grid, or from
+///                                     It's done, with the last step's At focused
 ///
 /// Debug builds only. There is no settings screen and this is not one.
 nonisolated enum DebugHooks {
@@ -19,6 +21,7 @@ nonisolated enum DebugHooks {
     static var autoScans: Bool { flag("KOHI_AUTOSCAN") }
     static var opensReview: Bool { flag("KOHI_REVIEW") }
     static var skipsSeed: Bool { flag("KOHI_EMPTY") }
+    static var keyboardRepro: String? { ProcessInfo.processInfo.environment["KOHI_KEYBOARD"] }
 
     static var bulkSeedCount: Int? {
         ProcessInfo.processInfo.environment["KOHI_BULK"].flatMap(Int.init)

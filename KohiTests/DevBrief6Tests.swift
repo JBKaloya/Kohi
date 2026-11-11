@@ -19,7 +19,7 @@ struct DevBrief6CorrectionTests {
         let session = BrewSession(
             card: CoffeeCard(name: "Test"),
             existing: prepared.brew,
-            start: .kit,
+            start: .dial,
             lastApplication: prepared.application,
             setup: setup
         )

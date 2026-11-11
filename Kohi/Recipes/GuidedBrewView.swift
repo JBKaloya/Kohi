@@ -54,22 +54,10 @@ struct GuidedBrewView: View {
             )
 
             VStack(alignment: .leading, spacing: 0) {
-                HStack(spacing: 12) {
-                    Button(action: onCancel) {
-                        Image(systemName: "chevron.left")
-                            .font(.system(size: 10, weight: .semibold))
-                            .foregroundStyle(Palette.ink)
-                            .touchTarget()
-                    }
-                    .buttonStyle(.plain)
-                    HStack(spacing: 4) {
-                        ForEach(0..<max(journeyTotal, 1), id: \.self) { index in
-                            Rectangle()
-                                .fill(index == journeyStep ? Palette.ink : Palette.hairline)
-                                .frame(width: 24, height: 1)
-                        }
-                    }
+                HStack(spacing: 10) {
+                    StepBackButton(action: onCancel)
                     Spacer(minLength: 8)
+                    StepProgress(step: journeyStep, total: journeyTotal)
                     rollingClock(size: 28)
                 }
                 .padding(.horizontal, 26)
@@ -117,6 +105,9 @@ struct GuidedBrewView: View {
             }
         }
         .clipped()
+        .background(Palette.paper.ignoresSafeArea())
+        .statusBarHidden(true)
+        .persistentSystemOverlays(.hidden)
         .animation(Motion.snappy, value: notesFocused)
         .fieldKeyboardClearance()
         .opacity(appeared ? 1 : 0)

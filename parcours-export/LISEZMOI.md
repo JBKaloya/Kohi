@@ -22,7 +22,7 @@ La visée caméra n'est pas là : au simulateur ce n'est pas l'écran réel. L'I
 ## Brew
 - `04-brew-scope.png` — Scope
 - `04-brew-kit.png` — Kit
-- `04-brew-dial.png` — Today's settings
+- `04-brew-dial.png` — How much?
 - `04-brew-pour.png` — Pour, arrêté sur le bloc en cours
 - `04-brew-after.png` — After
 - `06-compare.png` — comparaison de deux tasses

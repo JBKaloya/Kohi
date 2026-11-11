@@ -12,7 +12,7 @@ struct BrewArchiveTests {
         let rows = BrewArchive.recent(in: [gedeb, chelbesa])
 
         #expect(rows.map(\.brew.id) == [newer.id, older.id])
-        #expect(rows.map(\.card.name) == ["Chelbesa", "Gedeb"])
+        #expect(rows.map(\.card?.name) == ["Chelbesa", "Gedeb"])
     }
 
     @Test func aRememberedSuggestedTabIsNoLongerATab() {

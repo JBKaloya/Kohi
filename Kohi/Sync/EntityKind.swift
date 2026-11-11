@@ -13,6 +13,9 @@ nonisolated enum EntityKind: String, Codable, CaseIterable, Sendable {
     case grindCalibration
     case filterStock
     case tasting
+    /// A brew logged before its coffee was chosen. Same table as a card's
+    /// brews, with `card_id` null.
+    case looseBrew
 
     /// The Supabase table this kind upserts into.
     var table: String {
@@ -25,6 +28,7 @@ nonisolated enum EntityKind: String, Codable, CaseIterable, Sendable {
         case .grindCalibration: "grind_calibrations"
         case .filterStock: "filter_stock"
         case .tasting: "tastings"
+        case .looseBrew: "brews"
         }
     }
 
@@ -39,6 +43,7 @@ nonisolated enum EntityKind: String, Codable, CaseIterable, Sendable {
         case .grindCalibration: "Calibrations"
         case .filterStock: "Filters"
         case .tasting: "Tastings"
+        case .looseBrew: "Brews"
         }
     }
 
@@ -47,7 +52,7 @@ nonisolated enum EntityKind: String, Codable, CaseIterable, Sendable {
     var isShared: Bool {
         switch self {
         case .roaster: true
-        case .card, .equipment, .waterProfile, .recipe, .grindCalibration, .filterStock, .tasting: false
+        case .card, .equipment, .waterProfile, .recipe, .grindCalibration, .filterStock, .tasting, .looseBrew: false
         }
     }
 }

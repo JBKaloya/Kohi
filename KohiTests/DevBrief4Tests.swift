@@ -326,7 +326,7 @@ struct RecipeFlowScreenTests {
         #expect(String(describing: RecipeDetailSheet.self).isEmpty == false)
         #expect(String(describing: BrewFlowHost.self).isEmpty == false)
         #expect(String(describing: BrewScopeView.self).isEmpty == false)
-        #expect(String(describing: BrewKitView.self).isEmpty == false)
+        #expect(String(describing: BrewKitSheet.self).isEmpty == false)
         #expect(String(describing: BrewDialView.self).isEmpty == false)
         #expect(String(describing: GuidedBrewView.self).isEmpty == false)
         #expect(String(describing: AfterBrewSheet.self).isEmpty == false)
@@ -355,7 +355,7 @@ struct RecipeFlowScreenTests {
     }
 
     @Test func grindIsARailAndTheKeyboardHidesTheFooter() throws {
-        let kit = try String(contentsOf: VocabTests.kohiRoot.appending(path: "Recipes/BrewKitView.swift"))
+        let kit = try String(contentsOf: VocabTests.kohiRoot.appending(path: "Recipes/BrewKitSheet.swift"))
         #expect(!kit.contains("GrindRail"))
         #expect(!kit.contains("keyboardType(.decimalPad)"))
         #expect(kit.contains("CatalogPicker"))

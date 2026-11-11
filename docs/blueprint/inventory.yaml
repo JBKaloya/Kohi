@@ -2,9 +2,9 @@ file:
   name: Kohi Blueprint
   key: kjMp5JEMr5xmZXlC3QYNEv
   url: https://www.figma.com/design/kjMp5JEMr5xmZXlC3QYNEv
-  lastSyncedAt: 2026-10-26
-  lastSyncedGitSha: c975c28
-  sync: 2
+  lastSyncedAt: 2026-11-11
+  lastSyncedGitSha: 3894307
+  sync: 3
   device: { width: 393, height: 852 }
 
 pages:
@@ -156,6 +156,14 @@ screens:
     journeys: [J5]
     source:
       - Kohi/Detail/AttachmentDetailSheet.swift
+  - id: brew-start
+    figmaNodeId: "25:51"
+    page: "06 Brew"
+    presentation: fullScreenCover
+    journeys: [J6]
+    source:
+      - Kohi/Recipes/BrewStartView.swift
+      - Kohi/Recipes/BrewFlowHost.swift
   - id: brew-scope
     figmaNodeId: "6:242"
     page: "06 Brew"
@@ -167,10 +175,10 @@ screens:
   - id: brew-kit
     figmaNodeId: "6:279"
     page: "06 Brew"
-    presentation: fullScreenCover
+    presentation: sheet
     journeys: [J6, J8]
     source:
-      - Kohi/Recipes/BrewKitView.swift
+      - Kohi/Recipes/BrewKitSheet.swift
   - id: brew-dial
     figmaNodeId: "6:306"
     page: "06 Brew"
@@ -200,6 +208,20 @@ screens:
     journeys: [J6, J8]
     source:
       - Kohi/Recipes/AfterBrewSheet.swift
+  - id: brew-after-saved
+    figmaNodeId: "25:128"
+    page: "06 Brew"
+    presentation: fullScreenCover
+    journeys: [J6]
+    source:
+      - Kohi/Recipes/AfterBrewSheet.swift
+  - id: link-coffee
+    figmaNodeId: "25:226"
+    page: "06 Brew"
+    presentation: sheet
+    journeys: [J6]
+    source:
+      - Kohi/Recipes/LinkCoffeeSheet.swift
   - id: brew-compare
     figmaNodeId: "6:407"
     page: "06 Brew"

@@ -10,6 +10,7 @@ struct BrewDialView: View {
     var onAlreadyBrewed: () -> Void
 
     @Environment(SetupStore.self) private var setup
+    @Environment(RecipeStore.self) private var recipes
     @State private var lift: CGFloat = 0
     @State private var resizeTask: Task<Void, Never>?
 
@@ -27,16 +28,15 @@ struct BrewDialView: View {
                 question: Copy.howMuch,
                 onBack: onBack,
                 onClose: onClose,
-                secondaryTitle: Copy.logWithoutTimer,
-                onSecondary: onAlreadyBrewed,
-                bottom: AnyView(
-                    SwipeToStart(lift: $lift) {
-                        withAnimation(Motion.Lift.commit) { onBrewNow() }
-                    }
-                ),
+                bottom: AnyView(brewBar),
                 sheetLift: lift
             ) {
             VStack(alignment: .leading, spacing: 22) {
+                if session.logsElsewhere {
+                    Text(Copy.logWithoutTimerHint)
+                        .font(Typography.body)
+                        .foregroundStyle(Palette.ink)
+                }
                 if let applied = session.lastApplication {
                     AppliedFromLastBlock(
                         change: applied.change,
@@ -49,7 +49,14 @@ struct BrewDialView: View {
                         .font(Typography.tag)
                         .foregroundStyle(Palette.inkMuted)
                 }
+                KitSummaryRow(session: session)
+                advanceRow
                 parameters
+                if !session.logsElsewhere {
+                    Text(Copy.logWithoutTimerHint)
+                        .font(Typography.tag)
+                        .foregroundStyle(Palette.inkMuted)
+                }
             }
             .padding(.bottom, 24)
         }
@@ -57,6 +64,53 @@ struct BrewDialView: View {
             BrewPrefill.ensureMatchingBrewer(on: &session.brew, setup: setup)
         }
         .onDisappear { resizeTask?.cancel() }
+        }
+    }
+
+    /// The swipe lives on the ink bar, and logging without the timer sits on
+    /// that same bar: the swipe replaces the sheet's footer, so a control left
+    /// up in the sheet scrolls out of reach.
+    private var brewBar: some View {
+        VStack(spacing: 0) {
+            if !session.logsElsewhere {
+                Button(action: onAlreadyBrewed) {
+                    Text(Copy.logWithoutTimer)
+                        .catalogueLabel()
+                        .foregroundStyle(Palette.paper)
+                        .frame(maxWidth: .infinity, minHeight: 44)
+                }
+                .buttonStyle(.plain)
+                .padding(.top, 8)
+            }
+            SwipeToStart(lift: $lift) {
+                withAnimation(Motion.Lift.commit) { onBrewNow() }
+            }
+        }
+        .background(Palette.ink)
+    }
+
+    /// Auto by default. Tap waits for you, Cues shows what to look for.
+    private var advanceRow: some View {
+        HStack(alignment: .center, spacing: 12) {
+            Text(Copy.advance).catalogueLabel()
+                .frame(width: 74, alignment: .leading)
+            ChipRail {
+                ForEach(AdvanceMode.allCases) { mode in
+                    TagChip(text: Self.advanceLabel(mode), isSelected: session.advanceMode == mode) {
+                        session.setAdvanceMode(mode, store: recipes)
+                    }
+                }
+            }
+        }
+        .accessibilityElement(children: .contain)
+        .accessibilityLabel(Copy.advance)
+    }
+
+    static func advanceLabel(_ mode: AdvanceMode) -> String {
+        switch mode {
+        case .auto: "Auto"
+        case .manual: "Tap"
+        case .cues: "Cues"
         }
     }
 

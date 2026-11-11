@@ -10,6 +10,7 @@ struct StepFlow<Content: View>: View {
     var onBack: (() -> Void)?
     var onClose: (() -> Void)?
     var onSkip: (() -> Void)?
+    var skipTitle: String = "Skip"
     var nextTitle: String = "Next"
     var nextEnabled: Bool = true
     var onNext: (() -> Void)?
@@ -65,15 +66,6 @@ struct StepFlow<Content: View>: View {
                 .padding(.horizontal, 26)
                 .padding(.top, 14)
 
-            Text(question)
-                .font(Typography.question)
-                .foregroundStyle(Palette.ink)
-                .fixedSize(horizontal: false, vertical: true)
-                .padding(.horizontal, 26)
-                .padding(.top, 28)
-                .contentShape(Rectangle())
-                .onTapGesture { dismissIfFocused() }
-
             ScrollView(.vertical) {
                 VStack(alignment: .leading, spacing: 0) {
                     content()
@@ -104,48 +96,46 @@ struct StepFlow<Content: View>: View {
         dismissKeyboard()
     }
 
+    /// Back, the question, then the steps and close on the right: one line.
     private var header: some View {
-        HStack(spacing: 12) {
+        HStack(alignment: .center, spacing: 10) {
             if let onBack {
-                Button {
+                StepBackButton {
                     if fieldFocused {
                         dismissKeyboard()
                     } else {
                         onBack()
                     }
-                } label: {
-                    Image(systemName: "chevron.left")
-                        .font(.system(size: 10, weight: .semibold))
-                        .foregroundStyle(Palette.ink)
-                        .touchTarget()
                 }
-                .buttonStyle(.plain)
             }
 
-            progress
+            Text(question)
+                .font(Typography.question)
+                .foregroundStyle(Palette.ink)
+                .lineLimit(2)
+                .minimumScaleFactor(0.85)
+                .fixedSize(horizontal: false, vertical: true)
+                .layoutPriority(1)
+                .contentShape(Rectangle())
+                .onTapGesture { dismissIfFocused() }
+                .accessibilityAddTraits(.isHeader)
+
             Spacer(minLength: 8)
+
+            StepProgress(step: step, total: total)
 
             if let onClose {
                 Button(action: onClose) {
                     Image(systemName: "xmark")
                         .font(.system(size: 10, weight: .semibold))
                         .foregroundStyle(Palette.inkMuted)
-                        .touchTarget()
+                        .frame(width: 28, height: 44, alignment: .trailing)
+                        .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
+                .accessibilityLabel("Close")
             }
         }
-    }
-
-    private var progress: some View {
-        HStack(spacing: 4) {
-            ForEach(0..<max(total, 1), id: \.self) { index in
-                Rectangle()
-                    .fill(index == step ? Palette.ink : Palette.hairline)
-                    .frame(width: 24, height: 1)
-            }
-        }
-        .accessibilityLabel("\(step + 1) of \(total)")
     }
 
     private var footer: some View {
@@ -171,9 +161,17 @@ struct StepFlow<Content: View>: View {
             } else {
                 HStack {
                     if let onSkip {
-                        Button("Skip", action: onSkip)
-                            .catalogueLabel()
-                            .touchTarget()
+                        Button(action: onSkip) {
+                            Text(skipTitle)
+                                .catalogueLabel()
+                                .multilineTextAlignment(.leading)
+                                .frame(
+                                    maxWidth: onNext == nil && secondaryTitle == nil ? .infinity : nil,
+                                    alignment: .leading
+                                )
+                                .frame(minHeight: 44)
+                        }
+                        .buttonStyle(.plain)
                     }
                     Spacer()
                     if let secondaryTitle, let onSecondary {
@@ -197,6 +195,47 @@ struct StepFlow<Content: View>: View {
                 }
             }
         }
+    }
+}
+
+/// The glyph sits on the page margin, so it lines up with the text under it.
+/// The hit area reaches back into the margin rather than pushing the title
+/// away: 44 pt wide, 16 pt of layout.
+struct StepBackButton: View {
+    var action: () -> Void
+
+    private static let reach: CGFloat = 28
+
+    var body: some View {
+        Button(action: action) {
+            Image(systemName: "chevron.left")
+                .font(.system(size: 10, weight: .semibold))
+                .foregroundStyle(Palette.ink)
+                .padding(.leading, Self.reach)
+                .frame(width: Self.reach + 16, height: 44, alignment: .leading)
+                .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .padding(.leading, -Self.reach)
+        .accessibilityLabel("Back")
+    }
+}
+
+/// Hairline steps, short enough to share the line with the question.
+struct StepProgress: View {
+    var step: Int
+    var total: Int
+
+    var body: some View {
+        HStack(spacing: 3) {
+            ForEach(0..<max(total, 1), id: \.self) { index in
+                Rectangle()
+                    .fill(index == step ? Palette.ink : Palette.hairline)
+                    .frame(width: 10, height: 1)
+            }
+        }
+        .accessibilityElement()
+        .accessibilityLabel("Step \(step + 1) of \(total)")
     }
 }
 

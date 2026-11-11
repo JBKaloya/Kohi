@@ -336,6 +336,9 @@ struct CardDetailView: View {
                             ink: stamps.file(for: live.id),
                             onFlip: { looks.setOverride($0, for: live.id) }
                         )
+                        #if DEBUG
+                        CardLookSwitch(card: live)
+                        #endif
                     }
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 52)

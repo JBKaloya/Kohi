@@ -9,6 +9,9 @@ struct CardImageView: View {
     /// When set, the view is that ratio regardless of the scan. The home
     /// grid locks 4:5 so tiles do not jump as cards land.
     var aspect: Double? = nil
+    /// With a fixed ratio: crop the scan to it instead of stretching it.
+    /// The home grid always crops.
+    var fills = false
 
     @Environment(\.displayScale) private var displayScale
     @State private var image: CGImage?
@@ -27,17 +30,26 @@ struct CardImageView: View {
     }
 
     var body: some View {
-        ZStack {
+        Color.clear
+        .aspectRatio(aspectRatio, contentMode: .fit)
+        .overlay {
             if let image {
-                Image(decorative: image, scale: 1)
-                    .resizable()
-                    .interpolation(.high)
+                if fills, aspect != nil {
+                    Image(decorative: image, scale: 1)
+                        .resizable()
+                        .interpolation(.high)
+                        .scaledToFill()
+                } else {
+                    Image(decorative: image, scale: 1)
+                        .resizable()
+                        .interpolation(.high)
+                }
             } else {
                 Rectangle()
                     .fill(Palette.paperShade)
             }
         }
-        .aspectRatio(aspectRatio, contentMode: .fit)
+        .clipped()
         .animation(Motion.quick, value: image == nil)
         .task(id: TaskKey(id: card.id, bucket: bucket)) {
             let currentKey = TaskKey(id: card.id, bucket: bucket)

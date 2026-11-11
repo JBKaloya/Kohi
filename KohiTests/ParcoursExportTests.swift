@@ -57,6 +57,10 @@ struct ParcoursExportTests {
                 files: JSONFileStore(filename: "tastings-parcours-\(token).json"),
                 ledgerFile: JSONDocumentStore(filename: "tastings-ledger-parcours-\(token).json")
             ),
+            looseBrews: LooseBrewStore(
+                files: JSONFileStore(filename: "loose-brews-parcours-\(token).json"),
+                ledgerFile: JSONDocumentStore(filename: "loose-brews-ledger-parcours-\(token).json")
+            ),
             account: AccountStore(),
             setupFlow: SetupFlowController(),
             sync: SyncCoordinator(outbox: SyncOutbox()),
@@ -160,22 +164,26 @@ struct ParcoursExportTests {
             ("03-setup-profil", 2800, .milliseconds(900), true, AnyView(
                 ProfileSheet().appEnvironment(world)
             )),
+            ("04-brew-start", 852, .milliseconds(800), false, AnyView(
+                BrewStepPage(session: BrewSession(card: featured, start: .start, setup: setup))
+                    .appEnvironment(world)
+            )),
             ("04-brew-scope", 852, .milliseconds(800), false, AnyView(
                 BrewStepPage(session: BrewSession(card: featured, recipe: reference, start: .scope, setup: setup))
                     .appEnvironment(world)
             )),
             ("04-brew-kit", 852, .milliseconds(800), false, AnyView(
-                BrewStepPage(session: BrewSession(card: featured, recipe: reference, start: .kit, setup: setup))
+                BrewKitSheet(session: BrewSession(card: featured, recipe: reference, start: .dial, setup: setup))
                     .appEnvironment(world)
             )),
-            ("04-brew-dial", 852, .milliseconds(800), false, AnyView(
+            ("04-brew-dial", 852, .milliseconds(800), true, AnyView(
                 BrewStepPage(session: BrewSession(card: featured, recipe: reference, start: .dial, setup: setup))
                     .appEnvironment(world)
             )),
             ("04-brew-pour", 852, .milliseconds(800), false, AnyView(
                 Self.pour(featured, recipe: reference, setup: setup).appEnvironment(world)
             )),
-            ("04-brew-after", 852, .milliseconds(800), false, AnyView(
+            ("04-brew-after", 852, .milliseconds(800), true, AnyView(
                 Self.after(featured, brew: newer, recipe: reference, setup: setup).appEnvironment(world)
             )),
             ("05-recettes-suggested", 852, .milliseconds(900), false, AnyView(RecipePage(tab: .all).appEnvironment(bareWorld))),
@@ -195,15 +203,23 @@ struct ParcoursExportTests {
             )),
         ]
 
+        var failed: [String] = []
         for page in pages {
-            let image = try await ParcoursPNG.render(
-                page.4,
-                height: page.1,
-                settle: page.2,
-                cropPaper: page.3,
-                name: page.0
-            )
-            try ParcoursPNG.write(image, named: page.0, to: folder)
+            do {
+                let image = try await ParcoursPNG.render(
+                    page.4,
+                    height: page.1,
+                    settle: page.2,
+                    cropPaper: page.3,
+                    name: page.0
+                )
+                try ParcoursPNG.write(image, named: page.0, to: folder)
+            } catch {
+                failed.append("\(page.0): \(error)")
+            }
+        }
+        if !failed.isEmpty {
+            Issue.record("pages not exported: \(failed.joined(separator: "; "))")
         }
 
         let schema = try await ParcoursPNG.render(
@@ -220,6 +236,56 @@ struct ParcoursExportTests {
             atomically: true,
             encoding: .utf8
         )
+    }
+
+    /// The card visuals prototype, one row per sample coffee, for
+    /// review/card-visuals.html. Runs when `review/img/card-visuals/.run` exists.
+    @Test func exportCardVisuals() async throws {
+        let folder = URL(fileURLWithPath: #filePath)
+            .deletingLastPathComponent()
+            .deletingLastPathComponent()
+            .appending(path: "review/img/card-visuals", directoryHint: .isDirectory)
+        let marker = folder.appending(path: ".run")
+        guard FileManager.default.fileExists(atPath: marker.path) else { return }
+        try? FileManager.default.removeItem(at: marker)
+
+        let cards = SampleArchive.seed()
+        try #require(!cards.isEmpty, "Sample cards did not load from the app bundle.")
+        let width: CGFloat = 176
+        for card in cards.prefix(4) {
+            let pixels = Int((width / CardTileLayout.aspectRatio * 3).rounded(.up))
+            let kohi = await CardComposer.shared.displayTile(for: card, maxPixel: pixels)
+            let row = HStack(alignment: .top, spacing: 16) {
+                Group {
+                    if let kohi {
+                        Image(decorative: kohi, scale: 1)
+                            .resizable()
+                            .frame(width: width, height: width / CardTileLayout.aspectRatio)
+                    } else {
+                        KohiCardPlaceholder(card: card, width: width)
+                    }
+                }
+                CardImageView(card: card, targetWidth: width, aspect: CardTileLayout.aspectRatio)
+                    .frame(width: width)
+                CardImageView(card: card, targetWidth: width, aspect: CardTileLayout.aspectRatio, fills: true)
+                    .frame(width: width)
+                HybridCardFace(card: card, width: width)
+            }
+            .padding(16)
+            .background(Palette.paper)
+            let slug = card.name.lowercased()
+                .replacingOccurrences(of: " ", with: "-")
+                .filter { $0.isLetter || $0.isNumber || $0 == "-" }
+            let image = try await ParcoursPNG.render(
+                row,
+                width: width * 4 + 16 * 5,
+                height: width / CardTileLayout.aspectRatio + 32,
+                settle: .milliseconds(1200),
+                cropPaper: false,
+                name: slug
+            )
+            try ParcoursPNG.write(image, named: slug, to: folder)
+        }
     }
 
     private static func pour(_ card: CoffeeCard, recipe: Recipe, setup: SetupStore) -> some View {
@@ -417,9 +483,10 @@ private struct ParcoursSchema: View {
                 .font(Typography.tag)
                 .foregroundStyle(Palette.inkMuted)
             lane("Brew", steps: [
+                ("Start", "04-brew-start"),
                 ("Scope", "04-brew-scope"),
-                ("Kit", "04-brew-kit"),
                 ("Dial", "04-brew-dial"),
+                ("Kit, en feuille", "04-brew-kit"),
                 ("Pour", "04-brew-pour"),
                 ("After", "04-brew-after"),
                 ("Comparaison", "06-compare"),

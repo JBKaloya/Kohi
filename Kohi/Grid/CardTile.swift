@@ -24,7 +24,7 @@ struct CardTile: View {
         Button(action: action) {
             Group {
                 if face == .scan {
-                    CardImageView(card: card, targetWidth: width, aspect: CardTileLayout.aspectRatio)
+                    HybridCardFace(card: card, width: width)
                 } else {
                     ZStack {
                         if let kohiImage {

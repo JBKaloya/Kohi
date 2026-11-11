@@ -38,6 +38,7 @@ struct AfterBrewSheet: View {
     @State private var droppedTasting: Set<String> = []
     @State private var editingTasting = false
     @State private var acceptedNarration: Set<String> = []
+    @State private var addingCoffee = false
 
     private var card: CoffeeCard { session.card }
     private var isLocked: Bool { session.mode == .edit && !isEditingSaved }
@@ -53,23 +54,26 @@ struct AfterBrewSheet: View {
             onPrimary: save
         ) {
             VStack(alignment: .leading, spacing: 28) {
-                if isLocked {
-                    Button { isEditingSaved = true } label: {
-                        Text(Copy.savedTapToEdit).catalogueLabel()
-                    }
-                    .buttonStyle(.plain)
-                }
+                if isLocked { unlock }
                 Text(session.brew.completeness.tag)
                     .font(Typography.tag)
                     .foregroundStyle(Palette.inkMuted)
                     .onTapGesture { completenessTrigger += 1 }
-                summary
-                whatYouDid
+                Group {
+                    if !session.hasCard { coffeeRow }
+                    summary
+                    saveAsRecipe
+                    whatYouDid
+                }
+                .disabled(isLocked)
                 sensory
-                comment
-                tastingUnderstood
-                more
-                dateSection
+                Group {
+                    comment
+                    tastingUnderstood
+                    more
+                    dateSection
+                }
+                .disabled(isLocked)
                 if onDelete != nil { deleteButton }
             }
             .padding(.bottom, 24)
@@ -79,6 +83,12 @@ struct AfterBrewSheet: View {
         .haptic(.tap, trigger: tapCount)
         .haptic(.saved, trigger: saveTrigger)
         .task {
+            #if DEBUG
+            if DebugHooks.keyboardRepro == "after" {
+                try? await Task.sleep(for: .milliseconds(800))
+                showStepEditor = true
+            }
+            #endif
             await transcribeVoiceNoteIfNeeded()
         }
         .sheet(isPresented: $showCompare) {
@@ -96,6 +106,12 @@ struct AfterBrewSheet: View {
                 .appEnvironment(appEnvironment)
             }
         }
+        .sheet(isPresented: $addingCoffee) {
+            LinkCoffeeSheet(coffee: toldCoffee) { linked in
+                session.link(to: linked, store: store)
+            }
+            .appEnvironment(appEnvironment)
+        }
         .sheet(isPresented: $showStepEditor) {
             StepBuilderSheet(draft: editedRecipe) { recipe in
                 applyEdited(recipe)
@@ -103,6 +119,79 @@ struct AfterBrewSheet: View {
             }
             .appEnvironment(appEnvironment)
         }
+    }
+
+    /// A saved brew opens read-only. One tap opens all of it, counters included.
+    private var unlock: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text(Copy.savedTapToEdit)
+                .font(Typography.tag)
+                .foregroundStyle(Palette.inkMuted)
+            Button {
+                tapCount += 1
+                isEditingSaved = true
+            } label: {
+                Label(Copy.editThisBrew, systemImage: "pencil")
+                    .font(Typography.value)
+                    .foregroundStyle(Palette.ink)
+                    .frame(minHeight: 44)
+            }
+            .buttonStyle(.plain)
+        }
+    }
+
+    /// Under the summary: what you just did can be the recipe next time.
+    @ViewBuilder
+    private var saveAsRecipe: some View {
+        if session.brew.dose != nil, session.brew.water != nil || session.brew.beverage != nil {
+            VStack(alignment: .leading, spacing: 4) {
+                Button(savedAsRecipe ? "Saved as a recipe" : "Save as recipe") {
+                    guard !savedAsRecipe else { return }
+                    tapCount += 1
+                    var saved = recipes.save(brew: session.brew, from: card)
+                    if !session.hasCard {
+                        saved.cardID = nil
+                        recipes.update(saved)
+                    }
+                    session.brew.recipeID = saved.id
+                    savedAsRecipe = true
+                }
+                .font(Typography.value)
+                .foregroundStyle(savedAsRecipe ? Palette.inkMuted : Palette.ink)
+                .frame(minHeight: 44)
+                .disabled(savedAsRecipe)
+                Text(Copy.keepTheseSteps)
+                    .font(Typography.tag)
+                    .foregroundStyle(Palette.inkMuted)
+            }
+        }
+    }
+
+    /// Only on a brew started without a coffee. The brew saves either way.
+    private var coffeeRow: some View {
+        Button { addingCoffee = true } label: {
+            HStack(alignment: .firstTextBaseline) {
+                Text(Copy.coffee).catalogueLabel()
+                Spacer()
+                if let name = session.coffeeTitle {
+                    Text(name)
+                        .font(Typography.value)
+                        .foregroundStyle(Palette.ink)
+                        .lineLimit(1)
+                }
+                Text(Copy.addTheCoffee).catalogueLabel(missing: true)
+            }
+            .frame(minHeight: 44)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+    }
+
+    private var toldCoffee: Binding<TastedCoffee> {
+        Binding(
+            get: { session.brew.coffee ?? TastedCoffee() },
+            set: { session.brew.coffee = $0 }
+        )
     }
 
     private var summary: some View {
@@ -121,19 +210,16 @@ struct AfterBrewSheet: View {
                     Spacer()
                     DerivedValue(text: session.brew.ratio ?? "—")
                 }
-                HStack(spacing: 16) {
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text("Grind").catalogueLabel()
-                        Text(session.brew.grind.display())
-                            .font(Typography.value)
-                            .foregroundStyle(Palette.ink)
-                            .lineLimit(1)
-                            .minimumScaleFactor(0.7)
-                    }
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    timeRow
-                        .frame(maxWidth: .infinity, alignment: .leading)
+                KitSummaryRow(session: session, correcting: true)
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Grind").catalogueLabel()
+                    GrindRail(
+                        setting: $session.brew.grind,
+                        grinder: grindGrinder,
+                        method: session.brew.method
+                    ) { tapCount += 1 }
                 }
+                timeRow
                 RollingCounter("Temp", value: $session.brew.temperature, range: .temperature, unit: "°C", style: .row)
             }
         }
@@ -382,18 +468,6 @@ struct AfterBrewSheet: View {
                 } else {
                     Text("—").font(Typography.value).foregroundStyle(Palette.hairline)
                 }
-            }
-            if session.brew.dose != nil, session.brew.water != nil || session.brew.beverage != nil {
-                Button(savedAsRecipe ? "Saved as a recipe" : "Save as recipe") {
-                    guard !savedAsRecipe else { return }
-                    tapCount += 1
-                    let saved = recipes.save(brew: session.brew, from: card)
-                    session.brew.recipeID = saved.id
-                    savedAsRecipe = true
-                }
-                .font(Typography.tag)
-                .foregroundStyle(savedAsRecipe ? Palette.inkMuted : Palette.ink)
-                .disabled(savedAsRecipe)
             }
             if lotFlags.isOn(.brewCompare) {
                 Button {

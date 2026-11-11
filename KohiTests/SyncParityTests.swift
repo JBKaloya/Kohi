@@ -261,7 +261,7 @@ struct SyncParityTests {
                 "actualSource", "flowGs", "recipeName", "pourRates",
                 "taste", "legacyTaste", "flavors",
                 "nextTimeSuggestion", "captureSource", "ratingHalves", "rating", "acidity",
-                "bitterness", "body", "complexity", "notes",
+                "bitterness", "body", "complexity", "notes", "coffee",
             ]
         )
     }

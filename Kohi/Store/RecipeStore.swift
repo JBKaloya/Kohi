@@ -42,6 +42,24 @@ final class RecipeStore {
         return recipe
     }
 
+    /// Once per install: yours and the express recipes move to Auto unless
+    /// you picked a mode. References already advance on their own.
+    func moveToAutoAdvanceIfNeeded(defaults: UserDefaults = .standard) {
+        let key = "kohi.recipes.autoAdvanceDefault"
+        guard !defaults.bool(forKey: key) else { return }
+        defaults.set(true, forKey: key)
+        for recipe in recipes
+        where (recipe.source == .mine || recipe.source == .express)
+            && !recipe.advanceModeChosen
+            && recipe.advanceMode != .auto
+        {
+            var moved = recipe
+            moved.advanceMode = .auto
+            moved.autoAdvance = true
+            update(moved)
+        }
+    }
+
     func update(_ recipe: Recipe) {
         guard let index = recipes.firstIndex(where: { $0.id == recipe.id }) else { return }
         var updated = recipe

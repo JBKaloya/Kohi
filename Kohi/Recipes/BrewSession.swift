@@ -27,6 +27,8 @@ final class BrewSession: Identifiable {
     var dialReturn: Step?
     /// Skip the timer and go to After — logging a cup that already happened.
     var logged = false
+    /// Opened from Log a brew made elsewhere: How much? leads with the log.
+    var logsElsewhere = false
     /// The tab last tapped on Which recipe or With what. Only read when the
     /// brew has no brewer: a batch brew without its machine records `.filter`,
     /// which alone reads as Hand brew.
@@ -41,12 +43,15 @@ final class BrewSession: Identifiable {
     let voiceNote = BrewVoiceNote()
     /// False when the journey started from the cup FAB (coffee was picked first).
     var fromCard: Bool
+    /// Set while the brew has no coffee. `card` is then a stand-in that is
+    /// never saved, and the brew goes to this store instead.
+    private(set) var looseStore: LooseBrewStore?
+    var hasCard: Bool { looseStore == nil }
 
     enum Step: Hashable {
         case start
         case previous
         case scope
-        case kit
         case dial
         case pour
         case after
@@ -67,8 +72,10 @@ final class BrewSession: Identifiable {
         start: Step = .scope,
         fromCard: Bool = true,
         lastApplication: BrewPrefill.LastApplication? = nil,
+        loose: LooseBrewStore? = nil,
         setup: SetupStore
     ) {
+        self.looseStore = loose
         let opensLauncher = mode == .create
             && recipe == nil
             && existing == nil
@@ -116,7 +123,7 @@ final class BrewSession: Identifiable {
         let choice = coffee + (includesLauncher ? 1 : 0)
         switch step {
         case .start: return coffee
-        case .previous, .scope, .kit: return choice
+        case .previous, .scope: return choice
         case .dial: return choice + 1
         case .pour: return choice + 2
         case .after: return choice + 1 + ((mode == .edit || logged) ? 0 : 1)
@@ -161,10 +168,8 @@ final class BrewSession: Identifiable {
 
         let stock = brew.filterStockId.flatMap { setup.filterStock(id: $0) }
         var guided = RinseRule.injecting(into: stripped, brewer: brewer, stock: stock)
-        if let mode = recipe?.advanceMode ?? nominalRecipe?.advanceMode {
-            guided.advanceMode = mode
-            guided.autoAdvance = mode == .auto
-        }
+        guided.advanceMode = advanceMode
+        guided.autoAdvance = advanceMode == .auto
         return guided
     }
 
@@ -221,12 +226,32 @@ final class BrewSession: Identifiable {
         lastApplication = nil
     }
 
-    func setAdvanceMode(_ mode: AdvanceMode) {
+    /// How the timer leaves a step on this brew. A brew without a recipe
+    /// holds its own; it starts on Auto like everything else.
+    var advanceMode: AdvanceMode {
+        recipe?.advanceMode ?? nominalRecipe?.advanceMode ?? freeAdvanceMode
+    }
+
+    private var freeAdvanceMode: AdvanceMode = .auto
+
+    /// The choice on How much?. Kept on your own and express recipes;
+    /// a reference recipe only changes for this brew.
+    func setAdvanceMode(_ mode: AdvanceMode, store: RecipeStore? = nil) {
+        freeAdvanceMode = mode
         recipe?.advanceMode = mode
         recipe?.autoAdvance = mode == .auto
+        recipe?.advanceModeChosen = true
         if nominalRecipe != nil {
             nominalRecipe?.advanceMode = mode
             nominalRecipe?.autoAdvance = mode == .auto
+            nominalRecipe?.advanceModeChosen = true
+        }
+        if let store, let recipe, recipe.source == .mine || recipe.source == .express,
+           var stored = store.recipe(id: recipe.id) {
+            stored.advanceMode = mode
+            stored.autoAdvance = mode == .auto
+            stored.advanceModeChosen = true
+            store.update(stored)
         }
     }
 
@@ -270,6 +295,13 @@ final class BrewSession: Identifiable {
         }
     }
 
+    /// A correction on It's done. Only this brew moves: the recipe it was
+    /// made from and the defaults of the kit stay as they were.
+    func correct(family: BrewerFamily, setup: SetupStore) {
+        familyHint = family
+        BrewKit.applyFamily(family, to: &brew, setup: setup, card: card, recipe: nil)
+    }
+
     func tab(in setup: SetupStore) -> BrewerFamily {
         BrewKit.tab(for: brew, in: setup, hint: familyHint)
     }
@@ -284,7 +316,6 @@ final class BrewSession: Identifiable {
     func applyEdited(_ edited: Recipe, store: RecipeStore) {
         var saved = edited
         saved.source = .express
-        saved.autoAdvance = false
         if let current = recipe, current.source == .mine || current.source == .express,
            store.recipe(id: current.id) != nil
         {
@@ -301,7 +332,6 @@ final class BrewSession: Identifiable {
             updated.steps = saved.steps
             updated.source = saved.source
             updated.evidence = saved.evidence
-            updated.autoAdvance = saved.autoAdvance
             store.update(updated)
             saved = updated
         } else {
@@ -319,7 +349,9 @@ final class BrewSession: Identifiable {
                 steps: saved.steps,
                 source: .express,
                 evidence: .unverified,
-                autoAdvance: false
+                autoAdvance: saved.advanceMode == .auto,
+                advanceMode: saved.advanceMode,
+                advanceModeChosen: saved.advanceModeChosen
             )
             store.add(copy)
             saved = copy
@@ -337,8 +369,6 @@ final class BrewSession: Identifiable {
         if let temp = saved.temperature { brew.temperature = temp }
     }
 
-    func goToKit() { step = .kit }
-
     /// How much? remembers the screen that opened it, so Back returns there.
     func goToDial() {
         if step != .dial { dialReturn = step }
@@ -351,6 +381,12 @@ final class BrewSession: Identifiable {
     }
 
     func openPrevious() { step = .previous }
+
+    /// A brew made with another app or on another day: amounts first, no timer.
+    func logElsewhere() {
+        logsElsewhere = true
+        goToDial()
+    }
 
     func repeatBrew(_ source: Brew, setup: SetupStore) {
         let prepared = BrewPrefill.preparedAgain(from: source, setup: setup)
@@ -376,6 +412,7 @@ final class BrewSession: Identifiable {
         case .dial:
             guard let target = dialReturn else { return false }
             dialReturn = nil
+            logsElsewhere = false
             step = target
             return true
         case .previous:
@@ -384,9 +421,6 @@ final class BrewSession: Identifiable {
         case .scope:
             guard includesLauncher else { return false }
             step = .start
-            return true
-        case .kit:
-            step = includesLauncher ? .start : .scope
             return true
         case .start, .pour, .after:
             return false
@@ -434,36 +468,88 @@ final class BrewSession: Identifiable {
     /// onto the saved cup straight away, so reopening it still shows the move.
     func recordSuggestion(_ change: String, store: CardStore, events: AIEventLog) {
         brew.nextTimeSuggestion = change
-        BrewPrefill.persist(
-            brew,
-            onto: card,
-            replacing: true,
-            store: store,
-            events: events,
-            dictationEventID: dictationEventID
-        )
+        persist(replacing: true, store: store, events: events)
     }
 
     /// The wishes in For next time save as they change, onto the saved cup.
     func saveEdits(store: CardStore, events: AIEventLog) {
+        persist(replacing: true, store: store, events: events)
+    }
+
+    func finish(store: CardStore, events: AIEventLog) {
+        persist(replacing: mode == .edit, store: store, events: events)
+    }
+
+    private func persist(replacing: Bool, store: CardStore, events: AIEventLog) {
+        if let looseStore {
+            var saved = BrewPrefill.finish(brew, events: events, dictationEventID: dictationEventID)
+            if saved.coffee == nil { saved.coffee = TastedCoffee() }
+            looseStore.save(saved)
+            return
+        }
         BrewPrefill.persist(
             brew,
             onto: card,
-            replacing: true,
+            replacing: replacing,
             store: store,
             events: events,
             dictationEventID: dictationEventID
         )
     }
 
-    func finish(store: CardStore, events: AIEventLog) {
-        BrewPrefill.persist(
-            brew,
-            onto: card,
-            replacing: mode == .edit,
-            store: store,
-            events: events,
-            dictationEventID: dictationEventID
+    // MARK: - Coffee added later
+
+    /// The name the journey shows for the coffee.
+    var coffeeTitle: String? {
+        if hasCard { return card.displayName.isEmpty ? nil : card.displayName }
+        let told = brew.coffee?.trimmedName ?? ""
+        return told.isEmpty ? nil : told
+    }
+
+    /// Gives the brew its coffee. A brew already saved without one moves
+    /// onto the card; one still in progress simply saves there.
+    func link(to linked: CoffeeCard, store: CardStore) {
+        if let looseStore, looseStore.brew(id: brew.id) != nil {
+            looseStore.link(brew.id, to: linked.id, in: store)
+        }
+        brew.coffee = nil
+        card = store.card(id: linked.id) ?? linked
+        looseStore = nil
+    }
+}
+
+extension CoffeeCard {
+    /// What a brew without a coffee prefills from: nothing of its own, so the
+    /// kit and the recipe decide. Never added to the archive.
+    static func standIn() -> CoffeeCard {
+        CoffeeCard(name: "")
+    }
+}
+
+extension BrewSession {
+    /// A journey started without choosing a coffee. The order of the screens
+    /// is the same as with one; only the save goes elsewhere.
+    static func withoutCoffee(
+        recipe: Recipe? = nil,
+        existing: Brew? = nil,
+        mode: Mode = .create,
+        start: Step = .scope,
+        lastApplication: BrewPrefill.LastApplication? = nil,
+        store: LooseBrewStore,
+        setup: SetupStore
+    ) -> BrewSession {
+        let session = BrewSession(
+            card: .standIn(),
+            recipe: recipe,
+            existing: existing,
+            mode: mode,
+            start: start,
+            fromCard: false,
+            lastApplication: lastApplication,
+            loose: store,
+            setup: setup
         )
+        if session.brew.coffee == nil { session.brew.coffee = TastedCoffee() }
+        return session
     }
 }

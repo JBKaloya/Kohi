@@ -105,5 +105,9 @@ struct RecipesArchiveSnapshotTests {
             .environment(AIFlags(defaults: defaults))
             .environment(LotFlags(defaults: defaults))
             .environment(AIEventLog())
+            .environment(LooseBrewStore(
+                files: JSONFileStore(filename: "loose-brews-shot-\(name).json"),
+                ledgerFile: JSONDocumentStore(filename: "loose-brews-ledger-shot-\(name).json")
+            ))
     }
 }

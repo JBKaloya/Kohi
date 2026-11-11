@@ -3,7 +3,8 @@ import Foundation
 /// DTO matching the `public.brews` table schema (snake_case).
 struct BrewRow: Codable, Sendable {
     let id: UUID
-    let card_id: UUID
+    /// Nil for a brew logged before its coffee was chosen (migration 0031).
+    let card_id: UUID?
     let user_id: UUID
 
     var date: Date
@@ -53,8 +54,11 @@ struct BrewRow: Codable, Sendable {
     var complexity: Int?
 
     var notes: String
+    /// Only on a brew with no card. Omitted otherwise, so a card's brews
+    /// never depend on the column.
+    var coffee: TastedCoffee?
 
-    init(brew: Brew, cardID: UUID, userID: UUID) {
+    init(brew: Brew, cardID: UUID?, userID: UUID) {
         self.id = brew.id
         self.card_id = cardID
         self.user_id = userID
@@ -98,6 +102,7 @@ struct BrewRow: Codable, Sendable {
         self.body = brew.body
         self.complexity = brew.complexity
         self.notes = brew.notes
+        self.coffee = cardID == nil ? brew.coffee : nil
     }
 
     func toBrew() -> Brew {
@@ -151,7 +156,8 @@ struct BrewRow: Codable, Sendable {
             bitterness: bitterness,
             body: body,
             complexity: complexity,
-            notes: notes
+            notes: notes,
+            coffee: card_id == nil ? coffee : nil
         )
     }
 }

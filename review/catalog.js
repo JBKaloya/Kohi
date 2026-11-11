@@ -16,6 +16,18 @@ export const CANVASES = [
     slug: "advance-modes",
     href: "./advance-modes.html",
     title: "Timing des recettes",
-    line: "Auto, Manual ou Cues : en garder un, sans choix dans l’app.",
+    line: "Auto par défaut, Tap et Cues au choix sur How much?.",
+  },
+  {
+    slug: "brew-density",
+    href: "./brew-density.html",
+    title: "Densité du parcours brew",
+    line: "Avant / après écran par écran, une échelle d’espacement, chiffré.",
+  },
+  {
+    slug: "card-visuals",
+    href: "./card-visuals.html",
+    title: "Visuels des fiches",
+    line: "Illustration, photo d’origine ou hybride : prototype à arbitrer.",
   },
 ];

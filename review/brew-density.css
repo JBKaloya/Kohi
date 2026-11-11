@@ -1,0 +1,94 @@
+.pair {
+  display: grid;
+  grid-template-columns: 236px 236px minmax(0, 1fr);
+  gap: 24px;
+  align-items: start;
+}
+
+.shot {
+  width: 236px;
+  border: 1px solid var(--line);
+  background: var(--paper);
+}
+
+.shot img { display: block; width: 100%; height: auto; }
+
+.caption {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+
+/* The after mock: a 393 pt screen drawn at 60 %, so 22 pt reads as 13 px. */
+.mock {
+  width: 236px;
+  min-height: 512px;
+  border: 1px solid var(--ink);
+  background: var(--paper);
+  padding: 24px 16px 16px;
+  display: flex;
+  flex-direction: column;
+  font-size: 9px;
+}
+
+.mock .q { font-size: 13px; margin: 8px 0 17px; }
+.mock .lbl {
+  font-family: var(--mono);
+  font-size: 6px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.mock .val { font-size: 9px; }
+.mock .muted { color: var(--muted); font-family: var(--mono); font-size: 7px; }
+.mock .rowline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 26px;
+  border-bottom: 1px solid var(--line);
+  gap: 8px;
+}
+.mock .g8 { height: 5px; }
+.mock .g14 { height: 8px; }
+.mock .g22 { height: 13px; }
+.mock .g44 { height: 26px; }
+.mock .disc {
+  width: 24px; height: 24px; border-radius: 50%;
+  border: 1px solid var(--line); flex: none;
+}
+.mock .choice { display: flex; gap: 10px; align-items: center; min-height: 38px; }
+.mock .counter {
+  display: flex; align-items: center; justify-content: space-between;
+  background: var(--shade); border-radius: 8px; height: 26px; padding: 0 6px;
+}
+.mock .counter.big { height: 40px; font-size: 18px; }
+.mock .chips { display: flex; gap: 4px; }
+.mock .chip {
+  border: 1px solid var(--line); border-radius: 10px; padding: 1px 6px;
+  font-family: var(--mono); font-size: 6px;
+}
+.mock .chip.on { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.mock .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.mock .cta {
+  margin-top: auto; height: 26px; border-radius: 13px; background: var(--ink);
+  color: var(--paper); display: flex; align-items: center; justify-content: center;
+  font-family: var(--mono); font-size: 6px; letter-spacing: 0.08em;
+}
+.mock .gain { color: #824e34; font-family: var(--mono); font-size: 7px; }
+
+.changes { margin: 0; padding-left: 18px; font-size: 14px; }
+.changes li { margin-bottom: 6px; }
+
+.scale { display: flex; gap: 14px; align-items: flex-end; flex-wrap: wrap; }
+.scale .step { display: flex; flex-direction: column; gap: 6px; align-items: flex-start; }
+.scale .bar { background: var(--ink); width: 28px; }
+.scale .name { font-family: var(--mono); font-size: 10px; color: var(--muted); }
+
+@media (max-width: 860px) {
+  .pair { grid-template-columns: 1fr 1fr; }
+  .pair > .why { grid-column: 1 / -1; }
+}

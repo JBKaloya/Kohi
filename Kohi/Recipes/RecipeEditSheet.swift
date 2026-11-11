@@ -133,7 +133,6 @@ struct RecipeEditSheet: View {
             return
         }
         draft.source = .mine
-        draft.autoAdvance = false
         if isEditing {
             recipes.update(draft)
         } else {

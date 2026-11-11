@@ -14,6 +14,7 @@ struct GridScreen: View {
     @Environment(RecipeStore.self) private var recipes
     @Environment(CardStore.self) private var store
     @Environment(TastingStore.self) private var tastings
+    @Environment(LooseBrewStore.self) private var looseBrews
     @Environment(CardLookStore.self) private var looks
     @Environment(AccountStore.self) private var account
     @Environment(SetupStore.self) private var setup
@@ -49,6 +50,8 @@ struct GridScreen: View {
     @State private var isPickingCoffee = false
     @State private var isAskingFromFAB = false
     @State private var brewCoffee: CoffeeCard?
+    /// Set by Skip on Which coffee?, read once the picker has gone.
+    @State private var brewsWithoutCoffee = false
     @State private var flow: BrewSession?
     /// One precise fix, taken only when location is already allowed.
     @State private var nearby = NearbyPlaces(accuracy: kCLLocationAccuracyNearestTenMeters)
@@ -101,6 +104,7 @@ struct GridScreen: View {
                             .frame(maxHeight: .infinity)
                         } else {
                             VStack(spacing: 0) {
+                                CoffeesBar()
                                 if shouldShowSearch { searchChips }
                                 grid
                             }
@@ -112,37 +116,17 @@ struct GridScreen: View {
                                 selection = card
                             },
                             onOpenBrew: { card, brew in
-                                flow = BrewSession(
-                                    card: card,
-                                    existing: brew,
-                                    mode: .edit,
-                                    start: .after,
-                                    setup: setup
-                                )
+                                flow = savedBrew(brew, on: card)
                             },
                             onAgainBrew: { card, brew in
-                                let prepared = BrewPrefill.preparedAgain(from: brew, setup: setup)
-                                flow = BrewSession(
-                                    card: card,
-                                    recipe: brew.recipeSnapshot.map(Recipe.init(snapshot:)),
-                                    existing: prepared.brew,
-                                    start: .dial,
-                                    lastApplication: prepared.application,
-                                    setup: setup
-                                )
+                                flow = again(brew, on: card)
                             },
                             onReadBrew: { card, brew in
-                                let session = BrewSession(
-                                    card: card,
-                                    existing: brew,
-                                    mode: .edit,
-                                    start: .after,
-                                    setup: setup
-                                )
+                                let session = savedBrew(brew, on: card)
                                 session.opensRead = true
                                 session.frozenCorrection = SuggestedCorrection.fallback(
                                     from: brew,
-                                    card: card,
+                                    card: session.card,
                                     equipment: setup.equipment,
                                     filterStock: setup.filterStock,
                                     tasting: TastingIntent.confirmed(from: brew.notes)
@@ -240,7 +224,11 @@ struct GridScreen: View {
                     .appEnvironment(appEnvironment)
             }
             .sheet(isPresented: $isPickingCoffee) {
-                RecipeCoffeePicker(picked: $brewCoffee, showsJourneyChrome: true)
+                RecipeCoffeePicker(
+                    picked: $brewCoffee,
+                    showsJourneyChrome: true,
+                    onSkip: { brewsWithoutCoffee = true }
+                )
                     .appEnvironment(appEnvironment)
             }
             .sheet(isPresented: $isAskingFromFAB) {
@@ -263,20 +251,22 @@ struct GridScreen: View {
                 )
                 brewCoffee = nil
             }
+            .onChange(of: brewsWithoutCoffee) { _, skipped in
+                guard skipped else { return }
+                brewsWithoutCoffee = false
+                flow = BrewSession.withoutCoffee(store: looseBrews, setup: setup)
+            }
             .fullScreenCover(item: $flow) { session in
                 BrewFlowHost(
                     session: session,
                     onDismiss: { flow = nil },
                     onAgain: { seed in
-                        let prepared = BrewPrefill.preparedAgain(from: seed, setup: setup)
-                        flow = BrewSession(
-                            card: session.card,
-                            recipe: seed.recipeSnapshot.map(Recipe.init(snapshot:)),
-                            existing: prepared.brew,
-                            start: .dial,
-                            lastApplication: prepared.application,
-                            setup: setup
-                        )
+                        flow = again(seed, on: session.hasCard ? session.card : nil)
+                    },
+                    onDelete: session.hasCard || session.mode != .edit ? nil : {
+                        looseBrews.delete(session.brew)
+                        BrewDraft.clear()
+                        flow = nil
                     }
                 )
                 .appEnvironment(appEnvironment)
@@ -349,7 +339,7 @@ struct GridScreen: View {
             .task { await openFirstCardIfRequested() }
             .onReceive(NotificationCenter.default.publisher(for: BrewDraft.resumeNotification)) { _ in
                 if let payload = BrewDraft.load(),
-                   let session = BrewDraft.session(from: payload, store: store, recipes: recipes, setup: setup) {
+                   let session = BrewDraft.session(from: payload, store: store, recipes: recipes, looseBrews: looseBrews, setup: setup) {
                     flow = session
                 }
             }
@@ -357,6 +347,40 @@ struct GridScreen: View {
             .onChange(of: router.pending) { _, _ in handleIntent() }
         }
         .tint(Palette.ink)
+    }
+
+    /// A saved brew reopened on It's done. One without a coffee still has
+    /// somewhere to save.
+    private func savedBrew(_ brew: Brew, on card: CoffeeCard?) -> BrewSession {
+        guard let card else {
+            return BrewSession.withoutCoffee(
+                existing: brew, mode: .edit, start: .after, store: looseBrews, setup: setup
+            )
+        }
+        return BrewSession(card: card, existing: brew, mode: .edit, start: .after, setup: setup)
+    }
+
+    private func again(_ brew: Brew, on card: CoffeeCard?) -> BrewSession {
+        let prepared = BrewPrefill.preparedAgain(from: brew, setup: setup)
+        let recipe = brew.recipeSnapshot.map(Recipe.init(snapshot:))
+        guard let card else {
+            return BrewSession.withoutCoffee(
+                recipe: recipe,
+                existing: prepared.brew,
+                start: .dial,
+                lastApplication: prepared.application,
+                store: looseBrews,
+                setup: setup
+            )
+        }
+        return BrewSession(
+            card: card,
+            recipe: recipe,
+            existing: prepared.brew,
+            start: .dial,
+            lastApplication: prepared.application,
+            setup: setup
+        )
     }
 
     /// The fix is already there, or the home does not ask for one.

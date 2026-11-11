@@ -64,13 +64,6 @@ struct BrewFlowHost: View {
                     onClose: dismiss,
                     onNext: { session.goToDial() }
                 )
-            case .kit:
-                BrewKitView(
-                    session: session,
-                    onBack: back,
-                    onClose: dismiss,
-                    onNext: { session.goToDial() }
-                )
             case .dial:
                 BrewDialView(
                     session: session,

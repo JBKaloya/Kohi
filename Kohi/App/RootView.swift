@@ -9,6 +9,7 @@ struct RootView: View {
     @State private var setup = SetupStore()
     @State private var recipes = RecipeStore()
     @State private var tastings = TastingStore()
+    @State private var looseBrews = LooseBrewStore()
     @State private var account = AccountStore()
     @State private var setupFlow = SetupFlowController()
     @State private var flags = AIFlags()
@@ -54,6 +55,7 @@ struct RootView: View {
             setup: setup,
             recipes: recipes,
             tastings: tastings,
+            looseBrews: looseBrews,
             account: account,
             setupFlow: setupFlow,
             sync: sync,
@@ -66,6 +68,11 @@ struct RootView: View {
             stampRefresh: stampRefresh
         )
     }
+
+    #if DEBUG
+    @State private var reproSteps = false
+    @State private var reproFlow: BrewSession?
+    #endif
 
     var body: some View {
         GridScreen(
@@ -111,6 +118,23 @@ struct RootView: View {
                 SetupFlowSheet(kitIsEmpty: setup.kitIsEmpty)
                     .appEnvironment(env)
             }
+            #if DEBUG
+            .sheet(isPresented: $reproSteps) {
+                if let recipe = ReferenceBase.recipe(referenceID: "a1-v60-ultimate") {
+                    StepBuilderSheet(draft: recipe) { _ in }
+                        .appEnvironment(env)
+                }
+            }
+            .fullScreenCover(isPresented: Binding(
+                get: { reproFlow != nil },
+                set: { if !$0 { reproFlow = nil } }
+            )) {
+                if let reproFlow {
+                    BrewFlowHost(session: reproFlow, onDismiss: { self.reproFlow = nil })
+                        .appEnvironment(env)
+                }
+            }
+            #endif
             .task {
                 ImageStore.shared.purgeOrphanedThumbnails()
                 sync = SyncCoordinator(outbox: outbox)
@@ -125,8 +149,10 @@ struct RootView: View {
                 sync.register(setup)
                 recipes.sink = sync
                 sync.register(recipes)
+                recipes.moveToAutoAdvanceIfNeeded()
                 store.tastings = tastings
                 sync.attach(tastings: tastings)
+                sync.attach(looseBrews: looseBrews)
                 aiEvents.attach(client: SupabaseConfig.current, userID: account.userID)
                 feedback.attach(client: SupabaseConfig.current, userID: account.userID)
                 await flags.refresh(client: SupabaseConfig.current)
@@ -140,6 +166,19 @@ struct RootView: View {
                 CardRegeneration.shared.startIfNeeded(cards: store.cards, library: stamps)
                 #if DEBUG
                 if DebugHooks.opensReview { isScanning = true }
+                switch DebugHooks.keyboardRepro {
+                case "sheet":
+                    reproSteps = true
+                case "after":
+                    reproFlow = BrewSession(
+                        card: store.cards.first ?? CoffeeCard(name: "Repro"),
+                        recipe: ReferenceBase.recipe(referenceID: "a1-v60-ultimate"),
+                        start: .after,
+                        setup: setup
+                    )
+                default:
+                    break
+                }
                 if DebugHooks.autoScans, let captured = DebugHooks.sampleCapture() {
                     try? await Task.sleep(for: .milliseconds(700))
                     await ingest(captured.reviewed(enhance: true))
@@ -159,6 +198,7 @@ struct RootView: View {
                     setup.flush()
                     recipes.flush()
                     tastings.flush()
+                    looseBrews.flush()
                     outbox.flush()
                     sync.pushSoon()
                 }

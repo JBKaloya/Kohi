@@ -316,3 +316,40 @@ Une capture vaut trois paragraphes. Une vidéo de trois secondes en vaut dix.
 **Connu, pas la peine de le signaler** : le minuteur n'a pas de cadran circulaire ; pas de thème sombre ; pas d'iPad ; la recette 4:6 n'a pas été retravaillée.
 
 **Build 6.** Le rinçage ne lance plus le chrono : un 3-2-1 part après. L'attente se lit comme une marée, pas comme un versement. Today's settings choisit Auto, Manual ou Cues, et le format (1 cup, 2 cups, Batch, Custom) avec une ligne « Scaled from » quand l'eau du jour diffère de la recette. Save ouvre Read (courbe, correction figée, comparaison). Brew again est un bouton, et la correction choisie est déjà appliquée, avec Keep et Undo. Le papier ajouté reste dans la liste. Un swipe supprime un café, avec Undo. La transcription se corrige avant Save.
+
+---
+
+## Annexe — Le clavier dans Steps (11 novembre)
+
+### Reproduction sur simulateur
+
+iPhone 16, iOS 18.2, clavier logiciel (Simulator > I/O > Keyboard > Connect Hardware Keyboard désactivé). Lancement de debug, sans toucher l'écran :
+
+- `SIMCTL_CHILD_KOHI_KEYBOARD=sheet` ouvre Steps au-dessus de la grille, comme depuis une recette (RecipeEditSheet, BrewScopeView express ou New recipe, copie depuis RecipeDetailSheet) ;
+- `SIMCTL_CHILD_KOHI_KEYBOARD=after` ouvre It's done dans le parcours, puis Steps depuis « Edit » de What you did.
+
+Dans les deux cas, le champ At de la dernière étape prend le focus.
+
+| | Feuille seule | Depuis It's done |
+| --- | --- | --- |
+| Avant | ![](keyboard-repro/avant-feuille.png) | ![](keyboard-repro/avant-its-done.png) |
+| Après | ![](keyboard-repro/apres-feuille.png) | ![](keyboard-repro/apres-its-done.png) |
+
+### Ce qu'on a vu, avant correction
+
+- Le champ en cours colle à la barre du clavier : Note, Cue et la suite de l'étape sont cachés dessous.
+- `fieldKeyboardClearance()` ne faisait rien : `Motion.Field.keyboardClearance` vaut 0, et les champs At, Until, Note et Cue ne signalaient pas leur focus.
+- Faire défiler ne fermait pas le clavier ; un pavé numérique (Dose, Water, Mass) n'a pas de touche Retour, Done était la seule sortie.
+- Done existait bien, une seule fois dans les deux contextes (pas de doublon avec la barre de StepFlow observé) — mais petit et gris, il ne se lisait pas comme une touche.
+- Le total « Last pour » et l'avertissement « Steps reach … » étaient en bas du contenu, invisibles sans tout faire défiler.
+
+### Corrigé
+
+- Défiler ferme le clavier (`scrollDismissesKeyboard(.interactively)`), un tap sur le fond aussi.
+- Le champ At ou Until en cours remonte au tiers haut, le reste de l'étape visible dessous.
+- Le total et l'avertissement sont en pied de feuille, toujours visibles, et s'effacent tant que le clavier est ouvert.
+- Done est à l'encre, cible de 44 pt, partout où `keyboardDoneButton()` est utilisé.
+
+### À valider sur appareil (JB)
+
+Le simulateur ne peut pas taper pour nous ici. À vérifier à la main : Done ferme bien le pavé numérique dans les quatre chemins ; le défilement interactif ne gêne pas le glisser des compteurs ; un tap sur une chip pendant l'édition fait ce qu'il doit (sélection, pas seulement fermeture du clavier).

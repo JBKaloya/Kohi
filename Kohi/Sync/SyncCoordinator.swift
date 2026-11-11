@@ -40,6 +40,14 @@ final class SyncCoordinator: ArchiveChangeSink {
         register(tastings)
     }
 
+    func attach(looseBrews: LooseBrewStore) {
+        looseBrews.sink = self
+        looseBrews.isPending = { [outbox] id in
+            outbox.dirtyIDs(.looseBrew).contains(id) || outbox.tombstones(.looseBrew)[id] != nil
+        }
+        register(looseBrews)
+    }
+
     private func importLegacyTastings() {
         guard let tastings, let store else { return }
         TastingMigrator.importLegacy(cards: store.cards, into: tastings)
@@ -228,7 +236,7 @@ final class SyncCoordinator: ArchiveChangeSink {
         }
 
         missing += try await pushEntities(
-            kinds: [.recipe, .tasting],
+            kinds: [.recipe, .tasting, .looseBrew],
             client: client,
             userID: userID
         )

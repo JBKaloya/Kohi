@@ -224,6 +224,10 @@ struct DevBrief10SnapshotTests {
             setup: SetupStore(files: JSONDocumentStore(filename: "setup-shot10-\(name).json")),
             recipes: RecipeStore(files: JSONFileStore(filename: "recipes-shot10-\(name).json")),
             tastings: tastings ?? tastingStore(),
+            looseBrews: LooseBrewStore(
+                files: JSONFileStore(filename: "loose-brews-shot10-\(name).json"),
+                ledgerFile: JSONDocumentStore(filename: "loose-brews-ledger-shot10-\(name).json")
+            ),
             account: AccountStore(),
             setupFlow: SetupFlowController(),
             sync: SyncCoordinator(outbox: SyncOutbox()),

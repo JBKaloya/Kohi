@@ -15,6 +15,7 @@ struct BrewScopeView: View {
     @State private var tapCount = 0
     @State private var showBuilder = false
     @State private var showEditor = false
+    @State private var showNewRecipe = false
 
     var body: some View {
         StepFlow(
@@ -50,6 +51,28 @@ struct BrewScopeView: View {
                     )
                 }
 
+                if session.recipeLane == .mine {
+                    VStack(alignment: .leading, spacing: 10) {
+                        if recipes.recipes.isEmpty {
+                            Text(Copy.noRecipesYet)
+                                .font(Typography.tag)
+                                .foregroundStyle(Palette.inkMuted)
+                        }
+                        Button {
+                            tapCount += 1
+                            showNewRecipe = true
+                        } label: {
+                            Label(Copy.newRecipe, systemImage: "plus")
+                                .font(Typography.label)
+                                .tracking(Typography.labelTracking)
+                                .textCase(.uppercase)
+                                .foregroundStyle(Palette.ink)
+                        }
+                        .buttonStyle(.plain)
+                        .touchTarget()
+                    }
+                }
+
                 // Recipe list — no size scaling here; scaling happens on Dial.
                 RecipePickerList(
                     card: session.card,
@@ -63,12 +86,6 @@ struct BrewScopeView: View {
                     session.apply(recipe: recipe, setup: setup)
                 }
 
-                if session.recipeLane == .mine, recipes.recipes.isEmpty {
-                    Text(Copy.recipesYouSave)
-                        .font(Typography.tag)
-                        .foregroundStyle(Palette.inkMuted)
-                }
-
                 // Edit selected express/mine recipe, or build a new one.
                 HStack(spacing: 20) {
                     if let selected = session.recipe,
@@ -79,8 +96,10 @@ struct BrewScopeView: View {
                         }
                         .catalogueLabel()
                     }
-                    Button("Build an express recipe") { showBuilder = true }
-                        .catalogueLabel()
+                    if session.recipeLane == .pros {
+                        Button("Build an express recipe") { showBuilder = true }
+                            .catalogueLabel()
+                    }
                 }
             }
             .padding(.bottom, 24)
@@ -93,6 +112,19 @@ struct BrewScopeView: View {
                     recipes.add(recipe)
                     session.apply(recipe: recipe, setup: setup)
                     showBuilder = false
+                }
+            )
+            .appEnvironment(appEnvironment)
+        }
+        .sheet(isPresented: $showNewRecipe) {
+            StepBuilderSheet(
+                draft: newRecipeDraft,
+                onSave: { recipe in
+                    var mine = recipe
+                    mine.source = .mine
+                    recipes.add(mine)
+                    session.apply(recipe: mine, setup: setup)
+                    showNewRecipe = false
                 }
             )
             .appEnvironment(appEnvironment)
@@ -119,6 +151,13 @@ struct BrewScopeView: View {
         )
     }
 
+    /// A recipe of yours, started from today's numbers. Kept in Mine.
+    private var newRecipeDraft: Recipe {
+        var recipe = expressDraft
+        recipe.source = .mine
+        return recipe
+    }
+
     private var expressDraft: Recipe {
         var recipe = Recipe(
             name: Recipe.expressTitle(family: session.tab(in: setup), card: session.card),
@@ -131,7 +170,7 @@ struct BrewScopeView: View {
             grindLabel: session.brew.grind.display(),
             source: .express,
             evidence: .unverified,
-            cardID: session.card.id
+            cardID: session.hasCard ? session.card.id : nil
         )
         return DefaultSequence.filling(recipe, roastLevel: session.card.roastLevel)
     }

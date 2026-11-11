@@ -156,17 +156,12 @@ struct DevBrief4SnapshotTests {
             card: BrewJourneySupport.card(agitation: nil),
             recipe: ReferenceBase.recipe(referenceID: "a1-v60-ultimate"),
             size: .twoCups,
-            start: .kit,
+            start: .dial,
             setup: setup
         )
         SnapshotSupport.image(
             of: BrewJourneySupport.wrap(
-                BrewKitView(
-                    session: session,
-                    onBack: {},
-                    onClose: {},
-                    onNext: {}
-                ),
+                BrewKitSheet(session: session),
                 setup: setup
             ),
             height: 980,

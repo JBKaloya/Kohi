@@ -47,6 +47,13 @@ struct BrewStartView: View {
                 ) {
                     session.openRecipes(.pros)
                 }
+                choice(
+                    systemName: "square.and.pencil",
+                    title: Copy.logBrewMadeElsewhere,
+                    detail: "Another app or another day"
+                ) {
+                    session.logElsewhere()
+                }
             }
             .padding(.bottom, 24)
         }

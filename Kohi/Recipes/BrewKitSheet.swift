@@ -1,14 +1,16 @@
 import SwiftUI
 
 /// Method family, dripper, grinder, filter — the kit, from the catalogue.
-struct BrewKitView: View {
+/// Opened from the kit line on How much? and on It's done; never a step.
+struct BrewKitSheet: View {
     @Bindable var session: BrewSession
-    var onBack: () -> Void
-    var onClose: () -> Void
-    var onNext: () -> Void
+    /// On It's done: the change is this brew's only. The recipe stays as it
+    /// was and nothing picked here becomes a default.
+    var correcting = false
 
     @Environment(SetupStore.self) private var setup
     @Environment(\.appEnvironment) private var appEnvironment
+    @Environment(\.dismiss) private var dismiss
 
     @State private var tapCount = 0
     @State private var picking: Picking?
@@ -27,23 +29,48 @@ struct BrewKitView: View {
     }
 
     var body: some View {
-        StepFlow(
-            step: session.progressIndex,
-            total: session.progressTotal,
-            question: Copy.withWhat,
-            onBack: onBack,
-            onClose: onClose,
-            nextTitle: "Next",
-            nextEnabled: true,
-            onNext: onNext
-        ) {
+        NavigationStack {
+            ScrollView {
+                content
+                    .padding(.horizontal, 26)
+                    .padding(.top, 16)
+                    .padding(.bottom, 44)
+            }
+            .scrollIndicators(.hidden)
+            .background(Palette.paper.ignoresSafeArea())
+            .navigationTitle(Copy.withWhat)
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Done") { dismiss() }
+                        .fontWeight(.medium)
+                }
+            }
+        }
+        .tint(Palette.ink)
+        .haptic(.tap, trigger: tapCount)
+        .sheet(item: $picking) { target in
+            picker(for: target)
+        }
+        .sheet(item: $addingKind) { kind in
+            EquipmentSheet(kind: kind)
+                .appEnvironment(appEnvironment)
+        }
+        .sheet(isPresented: $addingFilter) {
+            FilterSheet(defaultFor: correcting ? nil : activeBrewer?.id) { created in
+                session.brew.filterStockId = created.id
+                session.brew.captureSource = .typed
+            }
+            .appEnvironment(appEnvironment)
+        }
+    }
+
+    private var content: some View {
             VStack(alignment: .leading, spacing: 28) {
-                if let applied = session.lastApplication {
-                    AppliedFromLastBlock(
-                        change: applied.change,
-                        onKeep: { session.keepLastApplication() },
-                        onUndo: { session.undoLastApplication() }
-                    )
+                if correcting {
+                    Text(Copy.kitForThisBrewOnly)
+                        .font(Typography.tag)
+                        .foregroundStyle(Palette.inkMuted)
                 }
                 TabRail(
                     tabs: BrewKit.journeyTabs,
@@ -72,23 +99,11 @@ struct BrewKitView: View {
                     accessoriesRow
                 }
             }
-            .padding(.bottom, 24)
-        }
-        .haptic(.tap, trigger: tapCount)
-        .sheet(item: $picking) { target in
-            picker(for: target)
-        }
-        .sheet(item: $addingKind) { kind in
-            EquipmentSheet(kind: kind)
-                .appEnvironment(appEnvironment)
-        }
-        .sheet(isPresented: $addingFilter) {
-            FilterSheet(defaultFor: activeBrewer?.id) { created in
-                session.brew.filterStockId = created.id
-                session.brew.captureSource = .typed
-            }
-            .appEnvironment(appEnvironment)
-        }
+    }
+
+    /// The default a catalogue pick may become. None while correcting.
+    private func defaultMethod(_ method: BrewMethod?) -> BrewMethod? {
+        correcting ? nil : method
     }
 
     // MARK: - Accessories
@@ -306,7 +321,11 @@ struct BrewKitView: View {
 
     private func applyFamily(_ family: BrewerFamily) {
         tapCount += 1
-        session.apply(family: family, setup: setup)
+        if correcting {
+            session.correct(family: family, setup: setup)
+        } else {
+            session.apply(family: family, setup: setup)
+        }
     }
 
     private func pickDripper(_ entry: CatalogEntry) {
@@ -318,7 +337,7 @@ struct BrewKitView: View {
         if let reference = ReferenceBase.brewer(id: entry.id) {
             let stored = setup.adopt(
                 Equipment(reference: reference),
-                asDefaultIfFirstFor: reference.dripperFamily.brewerType.method
+                asDefaultIfFirstFor: defaultMethod(reference.dripperFamily.brewerType.method)
             )
             assignBrewer(stored)
             return
@@ -326,7 +345,7 @@ struct BrewKitView: View {
         if let item = ReferenceBase.kit.first(where: { $0.id == entry.id }) {
             let stored = setup.adopt(
                 Equipment(reference: item),
-                asDefaultIfFirstFor: item.family?.method ?? session.brew.method
+                asDefaultIfFirstFor: defaultMethod(item.family?.method ?? session.brew.method)
             )
             assignBrewer(stored)
         }
@@ -342,7 +361,7 @@ struct BrewKitView: View {
         if let reference = ReferenceBase.grinder(id: entry.id) {
             let stored = setup.adopt(
                 Equipment(reference: reference),
-                asDefaultIfFirstFor: session.brew.method
+                asDefaultIfFirstFor: defaultMethod(session.brew.method)
             )
             session.brew.grind.grinderId = stored.id
             session.brew.captureSource = .typed
@@ -363,7 +382,7 @@ struct BrewKitView: View {
                 size: model.sizes.first ?? "",
                 shape: model.shape
             )
-            if existing == nil { setup.add(stock, defaultFor: activeBrewer?.id) }
+            if existing == nil { setup.add(stock, defaultFor: correcting ? nil : activeBrewer?.id) }
             session.brew.filterStockId = stock.id
             session.brew.captureSource = .typed
         }
@@ -375,7 +394,7 @@ struct BrewKitView: View {
             to: &session.brew,
             setup: setup,
             card: session.card,
-            recipe: session.recipe
+            recipe: correcting ? nil : session.recipe
         )
     }
 }
@@ -396,5 +415,50 @@ struct AppliedFromLastBlock: View {
                 Button("Undo", action: onUndo).catalogueLabel()
             }
         }
+    }
+}
+
+/// "V60 · Comandante · Hario 02": the kit in one line, a tap to change it.
+struct KitSummaryRow: View {
+    @Bindable var session: BrewSession
+    var correcting = false
+
+    @Environment(SetupStore.self) private var setup
+    @Environment(\.appEnvironment) private var appEnvironment
+    @State private var isOpen = false
+
+    var body: some View {
+        let summary = Self.summary(of: session.brew, in: setup)
+        Button { isOpen = true } label: {
+            HStack(alignment: .firstTextBaseline, spacing: 12) {
+                Text(Copy.kit).catalogueLabel()
+                    .frame(width: 74, alignment: .leading)
+                Text(summary ?? "Add your kit")
+                    .font(Typography.value)
+                    .foregroundStyle(summary == nil ? Palette.inkMuted : Palette.ink)
+                    .lineLimit(2)
+                    .multilineTextAlignment(.leading)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                Text(Copy.change).catalogueLabel()
+            }
+            .frame(minHeight: 44)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel("\(Copy.kit): \(summary ?? "none")")
+        .accessibilityHint("Opens the kit")
+        .sheet(isPresented: $isOpen) {
+            BrewKitSheet(session: session, correcting: correcting)
+                .appEnvironment(appEnvironment)
+        }
+    }
+
+    static func summary(of brew: Brew, in setup: SetupStore) -> String? {
+        let brewer = BrewKit.activeBrewer(on: brew, in: setup)?.displayName
+        let grinder = brew.grind.grinderId.flatMap { setup.equipment(id: $0) }?.displayName
+            ?? setup.preferredGrinder(for: brew.method)?.displayName
+        let paper = brew.filterStockId.flatMap { setup.filterStock(id: $0) }?.displayName
+        let parts = [brewer, grinder, paper].compactMap { $0 }.filter { !$0.isEmpty }
+        return parts.isEmpty ? nil : parts.joined(separator: " · ")
     }
 }

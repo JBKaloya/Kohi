@@ -187,6 +187,9 @@ struct BrewLog: View {
     var onCompare: ((Brew) -> Void)?
     var onDelete: ((Brew) -> Void)?
     var onRead: ((Brew) -> Void)?
+    /// Set on the cross-coffee list for a brew that has no coffee yet.
+    var onAddCoffee: ((Brew) -> Void)?
+    var needsCoffee: (Brew) -> Bool = { _ in false }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -214,6 +217,10 @@ struct BrewLog: View {
                                 .buttonStyle(.plain)
                             }
                             HStack(spacing: 16) {
+                                if onAddCoffee != nil, needsCoffee(brew) {
+                                    Button(Copy.addTheCoffee) { onAddCoffee?(brew) }
+                                        .catalogueLabel(missing: true)
+                                }
                                 if onAgain != nil {
                                     Button(Copy.brewAgain) { onAgain?(brew) }
                                         .catalogueLabel()

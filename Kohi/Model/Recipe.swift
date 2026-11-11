@@ -258,10 +258,13 @@ nonisolated struct Recipe: Identifiable, Codable, Hashable, Sendable {
     /// The grinder the author named, when they named one.
     var authorGrinder: String?
     /// The guided brew advances on its own when the step's time is up.
-    /// On for reference recipes; off for yours unless you turn it on.
+    /// On by default, for every recipe; Tap or Cues is a choice you make.
     var autoAdvance: Bool
     /// Auto follows the clock, Manual waits for a tap, Cues shows a sensory mark.
     var advanceMode: AdvanceMode
+    /// Set once you pick a mode on How much?. The move to Auto by default
+    /// leaves a chosen mode alone.
+    var advanceModeChosen: Bool
     /// Chemex (and similar) can override the indicative rinse mass.
     var rinseMassOverride: Double?
 
@@ -292,8 +295,9 @@ nonisolated struct Recipe: Identifiable, Codable, Hashable, Sendable {
         referenceID: String? = nil,
         profileTags: [String] = [],
         authorGrinder: String? = nil,
-        autoAdvance: Bool = false,
+        autoAdvance: Bool = true,
         advanceMode: AdvanceMode? = nil,
+        advanceModeChosen: Bool = false,
         rinseMassOverride: Double? = nil,
         createdAt: Date = .now,
         updatedAt: Date = .now
@@ -323,6 +327,7 @@ nonisolated struct Recipe: Identifiable, Codable, Hashable, Sendable {
         self.authorGrinder = authorGrinder
         self.autoAdvance = autoAdvance
         self.advanceMode = advanceMode ?? (autoAdvance ? .auto : .manual)
+        self.advanceModeChosen = advanceModeChosen
         self.rinseMassOverride = rinseMassOverride
         self.createdAt = createdAt
         self.updatedAt = updatedAt
@@ -460,8 +465,7 @@ nonisolated struct Recipe: Identifiable, Codable, Hashable, Sendable {
             steps: snapshot.steps,
             source: snapshot.source,
             attribution: snapshot.attribution,
-            referenceID: snapshot.referenceID,
-            autoAdvance: snapshot.source == .reference
+            referenceID: snapshot.referenceID
         )
     }
 }
@@ -527,6 +531,7 @@ nonisolated extension Recipe {
         autoAdvance = try c.decodeIfPresent(Bool.self, forKey: .autoAdvance) ?? (source == .reference)
         advanceMode = try c.decodeIfPresent(AdvanceMode.self, forKey: .advanceMode)
             ?? (autoAdvance ? .auto : .manual)
+        advanceModeChosen = try c.decodeIfPresent(Bool.self, forKey: .advanceModeChosen) ?? false
         rinseMassOverride = try c.decodeIfPresent(Double.self, forKey: .rinseMassOverride)
         createdAt = try c.decodeIfPresent(Date.self, forKey: .createdAt) ?? .now
         updatedAt = try c.decodeIfPresent(Date.self, forKey: .updatedAt) ?? .now

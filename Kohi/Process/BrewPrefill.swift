@@ -26,6 +26,8 @@ enum BrewPrefill {
         } else {
             brew = Brew(method: card.brewMethod)
         }
+        // The kit you used last on this coffee wins over the defaults.
+        let reusedKit = existing == nil && reuseLastKit(on: card, into: &brew, setup: setup)
         // An existing brew already has a kit; replacing it would rewrite
         // history. Empty kit (Brew again of an old thin row) still fills.
         fill(
@@ -33,9 +35,35 @@ enum BrewPrefill {
             card: card,
             recipe: recipe,
             setup: setup,
-            replaceKit: existing == nil || brew.equipmentIDs.isEmpty
+            replaceKit: !reusedKit && (existing == nil || brew.equipmentIDs.isEmpty)
         )
         return brew
+    }
+
+    /// The last brew of this coffee made in the same family, when its
+    /// brewer is still in the kit.
+    static func lastKit(on card: CoffeeCard, for method: BrewMethod?, setup: SetupStore) -> Brew? {
+        guard let method else { return nil }
+        let family = BrewKit.tab(for: method)
+        return card.brews.first { last in
+            guard let brewer = BrewKit.activeBrewer(on: last, in: setup) else { return false }
+            return BrewKit.tab(for: last.method, brewer: brewer) == family
+        }
+    }
+
+    /// Brewer, accessories, paper and grinder from that brew. False when
+    /// there is none, and the defaults decide.
+    static func reuseLastKit(on card: CoffeeCard, into brew: inout Brew, setup: SetupStore) -> Bool {
+        guard let last = lastKit(on: card, for: brew.method, setup: setup) else { return false }
+        brew.equipmentIDs = last.equipmentIDs.filter { setup.equipment(id: $0) != nil }
+        if let paper = last.filterStockId, setup.filterStock(id: paper) != nil {
+            brew.filterStockId = paper
+        }
+        if let grinder = last.grind.grinderId, setup.equipment(id: grinder) != nil,
+           brew.grind.grinderId == nil || brew.grind.value == nil {
+            brew.grind.grinderId = grinder
+        }
+        return true
     }
 
     /// Kit and empty-field fill. Called after a method change as well as

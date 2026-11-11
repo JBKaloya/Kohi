@@ -13,6 +13,7 @@ struct AppEnvironment {
     var setup: SetupStore
     var recipes: RecipeStore
     var tastings: TastingStore
+    var looseBrews: LooseBrewStore
     var account: AccountStore
     var setupFlow: SetupFlowController
     var sync: SyncCoordinator
@@ -47,6 +48,7 @@ extension View {
             .environment(env.setup)
             .environment(env.recipes)
             .environment(env.tastings)
+            .environment(env.looseBrews)
             .environment(env.account)
             .environment(env.setupFlow)
             .environment(env.sync)

@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>Densité du parcours brew · Kohi</title>
+  <link rel="stylesheet" href="./tastings.css">
+  <link rel="stylesheet" href="./advance-modes.css">
+  <link rel="stylesheet" href="./brew-density.css">
+  <link rel="stylesheet" href="./site.css">
+  <link rel="stylesheet" href="./review.css">
+</head>
+<body>
+  <article class="page" id="review-root" data-review-root>
+    <a class="crumb" href="./index.html" data-review-chrome>Itérations</a>
+    <header class="stack gap-8" data-anchor="intro" data-anchor-label="Introduction">
+      <h1>Densité du parcours brew</h1>
+      <p class="lead">
+        Une passe écran par écran, de Start a brew à It's done. À gauche, l'écran tel qu'il est
+        au build du 11 novembre. Au milieu, la proposition, en maquette. Rien n'est appliqué :
+        on applique écran par écran après ton accord.
+      </p>
+      <p class="note">
+        Captures : ParcoursExportTests, données d'exemple. Les maquettes sont à 60 % d'un écran
+        de 393 pt. Elles montrent l'espacement et la hiérarchie, pas le rendu final.
+      </p>
+    </header>
+
+    <section class="section stack gap-14" data-anchor="scale" data-anchor-label="Échelle d'espacement">
+      <h2>Une seule échelle d'espacement</h2>
+      <p class="note">
+        Aujourd'hui le parcours utilise 4, 8, 10, 12, 14, 16, 18, 20, 22, 24 et 28 pt entre les
+        blocs, selon l'écran. La proposition en garde cinq, chacun avec un rôle.
+      </p>
+      <div class="scale">
+        <div class="step"><div class="bar" style="height:8px"></div><span class="name">8 · dans une ligne</span></div>
+        <div class="step"><div class="bar" style="height:14px"></div><span class="name">14 · entre lignes d'un groupe</span></div>
+        <div class="step"><div class="bar" style="height:22px"></div><span class="name">22 · entre groupes</span></div>
+        <div class="step"><div class="bar" style="height:28px"></div><span class="name">28 · question → contenu</span></div>
+        <div class="step"><div class="bar" style="height:44px"></div><span class="name">44 · entre sections, cible tactile</span></div>
+      </div>
+      <table class="sheet">
+        <thead><tr><th>Écran</th><th>Entre blocs aujourd'hui</th><th>Dans un groupe</th><th>Proposé</th></tr></thead>
+        <tbody>
+          <tr><td>Start a brew</td><td>22</td><td>12</td><td>22 · 14</td></tr>
+          <tr><td>Which recipe?</td><td>28, puis 20</td><td>10 · 16</td><td>22 · 14</td></tr>
+          <tr><td>How much?</td><td>22</td><td>14</td><td>22 · 14</td></tr>
+          <tr><td>Equipment (feuille)</td><td>28</td><td>8 · 12</td><td>22 · 14</td></tr>
+          <tr><td>It's done</td><td>28</td><td>16 · 8 · 4</td><td>44 entre sections · 22 · 14</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="section stack gap-14" data-anchor="start" data-anchor-label="Start a brew">
+      <h2>Start a brew</h2>
+      <div class="pair">
+        <div><div class="caption">Avant</div><div class="shot"><img src="./img/brew-density/start.png" alt="Start a brew aujourd'hui"></div></div>
+        <div>
+          <div class="caption">Après</div>
+          <div class="mock">
+            <div class="q">Start a brew</div>
+            <div class="choice"><div class="disc"></div><div><div class="val">Repeat last</div><div class="muted">just now · V60 · 15 g</div></div></div>
+            <div class="choice"><div class="disc"></div><div><div class="val">Choose a previous brew</div><div class="muted">This coffee</div></div></div>
+            <div class="choice"><div class="disc"></div><div><div class="val">Use a saved recipe</div><div class="muted">Mine</div></div></div>
+            <div class="choice"><div class="disc"></div><div><div class="val">Start from scratch</div><div class="muted">From the pros</div></div></div>
+            <div class="g22"></div>
+            <div class="rowline"><span class="val">Log a brew made elsewhere</span><span class="muted">›</span></div>
+            <div class="g14"></div>
+            <span class="gain">−80 pt, rien ne change de place</span>
+          </div>
+        </div>
+        <div class="why stack gap-8">
+          <ul class="changes">
+            <li>Disques d'icône de 54 à 40 pt, lignes de 80 à 64 pt : la cible tactile reste à 44 pt.</li>
+            <li>« Log a brew made elsewhere » passe sous un filet, en ligne de texte : c'est une autre intention que les quatre départs.</li>
+          </ul>
+          <p class="note">Coût : 0,25 j.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section stack gap-14" data-anchor="scope" data-anchor-label="Which recipe?">
+      <h2>Which recipe?</h2>
+      <div class="pair">
+        <div><div class="caption">Avant</div><div class="shot"><img src="./img/brew-density/scope.png" alt="Which recipe? aujourd'hui"></div></div>
+        <div>
+          <div class="caption">Après</div>
+          <div class="mock">
+            <div class="q">Which recipe?</div>
+            <div class="chips"><span class="chip on">Hand brew</span><span class="chip">Batch</span><span class="chip">Espresso</span><span class="chip">Cold</span></div>
+            <div class="g14"></div>
+            <div class="chips"><span class="chip">Mine</span><span class="chip on">From the pros</span></div>
+            <div class="g22"></div>
+            <div class="rowline"><div><div class="val">V60 « Ultimate »</div><div class="muted">30 g · 1:16.7 · 99 °C</div></div><span class="muted">J. Hoffmann</span></div>
+            <div class="rowline"><div><div class="val">V60 « 1 cup »</div><div class="muted">15 g · 1:16.7 · 100 °C</div></div><span class="muted">J. Hoffmann</span></div>
+            <div class="rowline"><div><div class="val">V60 « 4:6 »</div><div class="muted">20 g · 1:15 · 92 °C</div></div><span class="muted">T. Kasuya</span></div>
+            <div class="rowline"><div><div class="val">Kalita Wave 185</div><div class="muted">20 g · 1:16 · 93 °C</div></div><span class="muted">practice</span></div>
+            <div class="rowline"><div><div class="val">Chemex 6 cup</div><div class="muted">40 g · 1:16 · 94 °C</div></div><span class="muted">practice</span></div>
+            <div class="rowline"><div><div class="val">AeroPress « Ultimate »</div><div class="muted">11 g · 1:18.2</div></div><span class="muted">J. Hoffmann</span></div>
+            <div class="rowline"><div><div class="val">AeroPress inverted</div><div class="muted">14 g · 1:14.3</div></div><span class="muted">practice</span></div>
+            <div class="g14"></div>
+            <span class="gain">+1 recette visible, « From the pros » une seule fois</span>
+          </div>
+        </div>
+        <div class="why stack gap-8">
+          <ul class="changes">
+            <li>« From the pros » est écrit quatre fois : l'onglet, l'en-tête, l'étiquette de chaque ligne, la pastille. On garde l'onglet.</li>
+            <li>La méthode sort de la ligne de détail quand l'onglet famille la dit déjà.</li>
+            <li>Les deux rails gardent leur rôle ; 14 pt entre eux au lieu de 28 + 20.</li>
+          </ul>
+          <p class="note">Coût : 0,5 j.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section stack gap-14" data-anchor="dial" data-anchor-label="How much?">
+      <h2>How much?</h2>
+      <div class="pair">
+        <div><div class="caption">Avant</div><div class="shot"><img src="./img/brew-density/dial.png" alt="How much? aujourd'hui"></div></div>
+        <div>
+          <div class="caption">Après</div>
+          <div class="mock">
+            <div class="q">How much?</div>
+            <div class="rowline"><div><div class="val">V60 « Ultimate »</div><div class="muted">Hario V60 · J-Ultra · Hario 02</div></div><span class="lbl">Change</span></div>
+            <div class="rowline"><span class="lbl">Advance</span><div class="chips"><span class="chip on">Auto</span><span class="chip">Tap</span><span class="chip">Cues</span></div></div>
+            <div class="g22"></div>
+            <div class="lbl">Coffee dose</div><div class="g8"></div>
+            <div class="counter big"><span>−</span><span>30.0 g</span><span>+</span></div>
+            <div class="g14"></div>
+            <div class="rowline"><span class="lbl">Ratio</span><span class="val">1:16.7</span></div>
+            <div class="g14"></div>
+            <div class="lbl">Water weight</div><div class="g8"></div>
+            <div class="counter big"><span>−</span><span>500 g</span><span>+</span></div>
+            <div class="g22"></div>
+            <div class="rowline"><span class="lbl">Before you pour · 0 / 3</span><span class="muted">Rinse · Preheat · Tare</span></div>
+            <div class="g22"></div>
+            <div class="cta">Swipe up to brew</div>
+          </div>
+        </div>
+        <div class="why stack gap-8">
+          <ul class="changes">
+            <li>Recette et kit en un seul bloc : le nom, puis la ligne kit en dessous, une seule cible « Change ».</li>
+            <li>Advance sur une ligne, le libellé à gauche comme Ratio.</li>
+            <li>Les deux compteurs restent grands : c'est l'écran où on les règle.</li>
+            <li>Option à trancher : « Before you pour » replié en une ligne qui s'ouvre au tap. Gain de 100 pt, mais la liste ne se coche plus d'un coup d'œil.</li>
+          </ul>
+          <p class="note">Coût : 1 j, dont 0,25 j pour la liste repliable si tu la veux.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section stack gap-14" data-anchor="pour" data-anchor-label="Pendant l'extraction">
+      <h2>Pendant l'extraction</h2>
+      <div class="pair">
+        <div><div class="caption">Avant</div><div class="shot"><img src="./img/brew-density/pour.png" alt="Minuteur guidé aujourd'hui"></div></div>
+        <div class="why stack gap-8" style="grid-column: span 2">
+          <p class="note">
+            Pas de changement proposé. L'écran est déjà lu à un mètre, une seule chose à la fois.
+            Seul ajustement : ses libellés passent sur l'échelle (18 → 22 pt sous l'horloge).
+          </p>
+          <p class="note">Coût : inclus dans l'échelle.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section stack gap-14" data-anchor="after" data-anchor-label="It's done">
+      <h2>It's done</h2>
+      <div class="pair">
+        <div><div class="caption">Avant</div><div class="shot"><img src="./img/brew-density/after.png" alt="It's done aujourd'hui"></div></div>
+        <div>
+          <div class="caption">Après</div>
+          <div class="mock">
+            <div class="q">It's done</div>
+            <div class="muted">Comparable</div>
+            <div class="g22"></div>
+            <div class="lbl">What you did</div><div class="g8"></div>
+            <div class="grid2">
+              <div><div class="lbl">Dose</div><div class="counter"><span>−</span><span>15.0 g</span><span>+</span></div></div>
+              <div><div class="lbl">Water</div><div class="counter"><span>−</span><span>250 g</span><span>+</span></div></div>
+            </div>
+            <div class="g8"></div>
+            <div class="rowline"><span class="lbl">Ratio</span><span class="val">1:16.7</span></div>
+            <div class="rowline"><span class="lbl">Kit</span><span class="val">V60 · J-Ultra · Hario</span></div>
+            <div class="rowline"><span class="lbl">Grind</span><span class="val">22 clicks</span></div>
+            <div class="rowline"><span class="lbl">Time · Temp</span><span class="val">3:00 · 94 °C</span></div>
+            <div class="g14"></div>
+            <div class="val">Save as recipe</div><div class="muted">Keep these steps for next time</div>
+            <div class="g44"></div>
+            <div class="lbl">How was it</div><div class="g8"></div>
+            <div class="chips"><span class="chip">○</span><span class="chip">○</span><span class="chip">○</span><span class="chip">○</span><span class="chip">○</span></div>
+            <div class="g14"></div>
+            <div class="cta">Save</div>
+          </div>
+        </div>
+        <div class="why stack gap-8">
+          <ul class="changes">
+            <li>Le café est fait : dose et eau sont une correction, pas un réglage. Compteurs compacts (44 pt) côte à côte, au lieu de deux compteurs de 92 pt l'un sous l'autre.</li>
+            <li>Kit, mouture, temps et température en lignes de 44 pt ; chacune s'ouvre au tap pour être corrigée.</li>
+            <li>Le cadre « Summary » disparaît : la section « What you did » le remplace.</li>
+            <li>44 pt entre « What you did », « How was it » et la note. La note se lit sans faire défiler.</li>
+          </ul>
+          <p class="note">Coût : 1,5 j, avec les captures et la passe sur appareil.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section stack gap-14" data-anchor="kit" data-anchor-label="Equipment">
+      <h2>Equipment, en feuille</h2>
+      <div class="pair">
+        <div><div class="caption">Avant</div><div class="shot"><img src="./img/brew-density/kit.png" alt="Equipment aujourd'hui"></div></div>
+        <div class="why stack gap-8" style="grid-column: span 2">
+          <p class="note">
+            Déjà sur l'échelle une fois passée en feuille : lignes de 44 pt, libellés sur 74 pt.
+            Seul écart : 28 pt sous le rail des familles, 22 proposés.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section stack gap-12" data-anchor="cost" data-anchor-label="Chiffrage et questions">
+      <h2>Chiffrage</h2>
+      <table class="sheet">
+        <thead><tr><th>Lot</th><th>Contenu</th><th>Coût</th></tr></thead>
+        <tbody>
+          <tr><td>Échelle</td><td>Jetons d'espacement, StepFlow, Pour, Equipment</td><td>0,5 j</td></tr>
+          <tr><td>Start + Which recipe?</td><td>Lignes, provenance dite une fois</td><td>0,75 j</td></tr>
+          <tr><td>How much?</td><td>Bloc recette + kit, Advance en ligne, liste repliable en option</td><td>1 j</td></tr>
+          <tr><td>It's done</td><td>Compteurs compacts, lignes corrigeables, sections à 44</td><td>1,5 j</td></tr>
+          <tr><td>Total</td><td>Captures à jour et passe sur appareil comprises</td><td>3,5 à 4 j</td></tr>
+        </tbody>
+      </table>
+      <div class="callout">
+        <h3>À trancher</h3>
+        <p>1. It's done en compteurs compacts : oui, ou garder les grands compteurs pour corriger au pouce ?</p>
+        <p>2. « Before you pour » replié en une ligne : oui, ou la liste reste ouverte ?</p>
+        <p>3. Provenance dite une seule fois dans From the pros : on retire aussi la pastille noire de la recette sélectionnée ?</p>
+      </div>
+    </section>
+
+    <p class="note" style="margin-top:28px">Source : StepFlow, BrewStartView, BrewScopeView, BrewDialView, GuidedBrewView, AfterBrewSheet, BrewKitSheet. Valeurs relevées dans le code au 11 novembre.</p>
+  </article>
+  <script src="./config.js"></script>
+  <script type="module" src="./brew-density.js"></script>
+</body>
+</html>

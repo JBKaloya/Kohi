@@ -72,6 +72,10 @@ nonisolated struct Brew: Identifiable, Codable, Hashable, Sendable {
 
     var notes: String
 
+    /// The coffee as it was told, on a brew logged before choosing a card.
+    /// Nil on every brew that lives on a card.
+    var coffee: TastedCoffee?
+
     init(
         id: UUID = UUID(),
         date: Date = .now,
@@ -108,7 +112,8 @@ nonisolated struct Brew: Identifiable, Codable, Hashable, Sendable {
         bitterness: Int = 0,
         body: Int = 0,
         complexity: Int? = nil,
-        notes: String = ""
+        notes: String = "",
+        coffee: TastedCoffee? = nil
     ) {
         self.id = id
         self.date = date
@@ -148,6 +153,7 @@ nonisolated struct Brew: Identifiable, Codable, Hashable, Sendable {
         self.body = body
         self.complexity = complexity
         self.notes = notes
+        self.coffee = coffee
     }
 
     // MARK: - Completeness
@@ -290,7 +296,8 @@ nonisolated struct Brew: Identifiable, Codable, Hashable, Sendable {
             plannedSteps: plannedSteps,
             actualSource: .none,
             recipeName: recipeName,
-            captureSource: .prefilled
+            captureSource: .prefilled,
+            coffee: coffee
         )
     }
 
@@ -373,6 +380,7 @@ nonisolated extension Brew {
         body = try c.decodeIfPresent(Int.self, forKey: .body) ?? 0
         complexity = try c.decodeIfPresent(Int.self, forKey: .complexity)
         notes = try c.decodeIfPresent(String.self, forKey: .notes) ?? ""
+        coffee = try c.decodeIfPresent(TastedCoffee.self, forKey: .coffee)
     }
 }
 

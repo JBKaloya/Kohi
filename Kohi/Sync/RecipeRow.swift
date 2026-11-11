@@ -33,6 +33,7 @@ struct RecipeRow: Codable, Sendable {
     var author_grinder: String?
     var auto_advance: Bool?
     var advance_mode: String?
+    var advance_mode_chosen: Bool?
     var rinse_mass_override: Double?
     var created_at: Date
     var updated_at: Date
@@ -64,6 +65,7 @@ struct RecipeRow: Codable, Sendable {
         self.author_grinder = recipe.authorGrinder
         self.auto_advance = recipe.advanceMode == .auto
         self.advance_mode = recipe.advanceMode.rawValue
+        self.advance_mode_chosen = recipe.advanceModeChosen ? true : nil
         self.rinse_mass_override = recipe.rinseMassOverride
         self.created_at = recipe.createdAt
         self.updated_at = recipe.updatedAt
@@ -96,6 +98,7 @@ struct RecipeRow: Codable, Sendable {
             authorGrinder: author_grinder,
             autoAdvance: auto_advance ?? true,
             advanceMode: advance_mode.flatMap(AdvanceMode.init(rawValue:)),
+            advanceModeChosen: advance_mode_chosen ?? false,
             rinseMassOverride: rinse_mass_override,
             createdAt: created_at,
             updatedAt: updated_at

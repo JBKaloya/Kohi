@@ -265,7 +265,7 @@ struct RecipeTests {
             "temperatureMax", "seconds", "grindLabel", "grindMicronsLow",
             "grindMicronsHigh", "steps", "source", "evidence", "attribution",
             "sourceURL", "notes", "cardID", "brewID", "referenceID",
-            "profileTags", "authorGrinder", "autoAdvance", "advanceMode", "rinseMassOverride",
+            "profileTags", "authorGrinder", "autoAdvance", "advanceMode", "advanceModeChosen", "rinseMassOverride",
             "createdAt", "updatedAt",
         ]
         let actual = Set(Mirror(reflecting: fullRecipe()).children.compactMap(\.label))
