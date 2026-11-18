@@ -157,9 +157,7 @@ nonisolated struct CardProfileData: Equatable, Sendable {
         let tasted = (homeNotes(in: card) + out).filter { $0.ratingHalves != nil || !$0.taste.isEmpty }
         guard comparable.count >= 2 || byPlace.count >= 2 || tasted.count >= 2 else { return nil }
 
-        let median = comparable.count >= 2
-            ? medianTaste(comparable.map(\.taste))
-            : medianTaste(tasted.map(\.taste) + card.brews.map(\.taste))
+        let median = medianTaste(of: card, tasted: out)
 
         let bestBrew = comparable.max { ($0.ratingHalves ?? 0, $0.date) < ($1.ratingHalves ?? 0, $1.date) }
         let declaredIDs = Set(card.declaredFlavors.map(\.id))
@@ -273,6 +271,16 @@ nonisolated struct CardProfileData: Equatable, Sendable {
                 return lhs.name.localizedCompare(rhs.name) == .orderedAscending
             }
         }
+    }
+
+    /// The coffee's taste in one shape: its comparable brews when there are
+    /// two, else everything tasted of it. Also what Compare draws for a coffee.
+    static func medianTaste(of card: CoffeeCard, tasted out: [Tasting] = []) -> TasteProfile {
+        let comparable = card.brews.filter(\.isComparable)
+        if comparable.count >= 2 { return medianTaste(comparable.map(\.taste)) }
+        let out = out.filter { !$0.isDeleted && $0.place != nil }
+        let tasted = (homeNotes(in: card) + out).filter { $0.ratingHalves != nil || !$0.taste.isEmpty }
+        return medianTaste(tasted.map(\.taste) + card.brews.map(\.taste))
     }
 
     private static func medianTaste(_ profiles: [TasteProfile]) -> TasteProfile {

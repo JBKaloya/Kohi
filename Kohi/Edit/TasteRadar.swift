@@ -1,5 +1,14 @@
 import SwiftUI
 
+/// One shape on a comparison radar.
+struct RadarSeries: Equatable {
+    var taste: TasteProfile
+    var color: Color
+    var style: SeriesStyle
+    /// Spoken first: "Huabal, 12 Nov".
+    var label: String
+}
+
 /// Seven axes as a hairline heptagon, ink on paper.
 struct TasteRadar: View {
     let taste: TasteProfile
@@ -9,6 +18,29 @@ struct TasteRadar: View {
     var currentColor: Color = Palette.ink
     /// Previous series. Comparison overlays pass `Palette.secondary`.
     var previousColor: Color = Palette.inkMuted
+    /// Compare: up to three shapes, each with its own line and marker. When
+    /// set, `taste` and `previous` are not drawn.
+    var series: [RadarSeries] = []
+
+    init(
+        taste: TasteProfile,
+        previous: TasteProfile? = nil,
+        size: CGFloat = 168,
+        currentColor: Color = Palette.ink,
+        previousColor: Color = Palette.inkMuted
+    ) {
+        self.taste = taste
+        self.previous = previous
+        self.size = size
+        self.currentColor = currentColor
+        self.previousColor = previousColor
+    }
+
+    init(series: [RadarSeries], size: CGFloat = 168) {
+        self.taste = TasteProfile()
+        self.size = size
+        self.series = series
+    }
 
     private let axes = TasteAxis.allCases
 
@@ -17,6 +49,18 @@ struct TasteRadar: View {
             let center = CGPoint(x: canvasSize.width / 2, y: canvasSize.height / 2)
             let radius = min(canvasSize.width, canvasSize.height) / 2 - Motion.Radar.labelOffset
             drawWeb(context, center: center, radius: radius)
+            for one in series where !one.taste.isEmpty {
+                drawShape(
+                    one.taste,
+                    in: context,
+                    center: center,
+                    radius: radius,
+                    stroke: one.color,
+                    fill: series.count == 1,
+                    dots: true,
+                    style: one.style
+                )
+            }
             if let previous, !previous.isEmpty {
                 drawShape(
                     previous,
@@ -46,7 +90,20 @@ struct TasteRadar: View {
         .padding(.vertical, 16)
         .animation(Motion.quick, value: taste)
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel(taste.accessibilityLabel)
+        .accessibilityLabel(accessibilityText)
+    }
+
+    private var accessibilityText: String {
+        guard !series.isEmpty else { return taste.accessibilityLabel }
+        return series.enumerated().map { index, one in
+            let scores = one.taste.isEmpty ? "no taste noted" : one.taste.accessibilityLabel
+            return "\(index + 1), \(one.label), \(one.style.spoken): \(scores)"
+        }
+        .joined(separator: ". ")
+    }
+
+    private func isScored(_ axis: TasteAxis) -> Bool {
+        series.isEmpty ? taste[axis] != nil : series.contains { $0.taste[axis] != nil }
     }
 
     private var labels: some View {
@@ -57,7 +114,7 @@ struct TasteRadar: View {
                 Text(axis.label.uppercased())
                     .font(Typography.label)
                     .tracking(Typography.labelTracking)
-                    .foregroundStyle(taste[axis] == nil ? Palette.hairline : Palette.inkMuted)
+                    .foregroundStyle(isScored(axis) ? Palette.inkMuted : Palette.hairline)
                     .position(labelPoint(index: index, center: center, radius: radius))
             }
         }
@@ -88,7 +145,8 @@ struct TasteRadar: View {
         radius: CGFloat,
         stroke: Color,
         fill: Bool,
-        dots: Bool
+        dots: Bool,
+        style: SeriesStyle = .solid
     ) {
         let scored = axes.enumerated().compactMap { index, axis -> (Int, Int)? in
             guard let value = profile[axis] else { return nil }
@@ -98,7 +156,7 @@ struct TasteRadar: View {
             if let only = scored.first {
                 let p = point(index: only.0, value: Double(only.1), center: center, radius: radius)
                 if dots {
-                    context.fill(Path(ellipseIn: CGRect(x: p.x - 2, y: p.y - 2, width: 4, height: 4)), with: .color(stroke))
+                    context.fill(marker(style.marker, at: p, size: Motion.Radar.vertex), with: .color(stroke))
                 }
             }
             return
@@ -112,16 +170,34 @@ struct TasteRadar: View {
         if fill {
             context.fill(path, with: .color(stroke.opacity(Motion.Radar.fillOpacity)))
         }
-        context.stroke(path, with: .color(stroke), lineWidth: Motion.Radar.stroke)
+        context.stroke(
+            path,
+            with: .color(stroke),
+            style: StrokeStyle(lineWidth: series.isEmpty ? Motion.Radar.stroke : Motion.Radar.stroke * 1.6, dash: style.dash)
+        )
         if dots {
+            let size = series.isEmpty ? Motion.Radar.vertex : Motion.Radar.vertex * 1.6
             for pair in scored {
                 let p = point(index: pair.0, value: Double(pair.1), center: center, radius: radius)
-                let r = Motion.Radar.vertex
-                context.fill(
-                    Path(ellipseIn: CGRect(x: p.x - r / 2, y: p.y - r / 2, width: r, height: r)),
-                    with: .color(stroke)
-                )
+                context.fill(marker(style.marker, at: p, size: size), with: .color(stroke))
             }
+        }
+    }
+
+    private func marker(_ kind: SeriesStyle.Marker, at p: CGPoint, size: CGFloat) -> Path {
+        let half = size / 2
+        switch kind {
+        case .circle:
+            return Path(ellipseIn: CGRect(x: p.x - half, y: p.y - half, width: size, height: size))
+        case .square:
+            return Path(CGRect(x: p.x - half, y: p.y - half, width: size, height: size))
+        case .triangle:
+            var path = Path()
+            path.move(to: CGPoint(x: p.x, y: p.y - half * 1.2))
+            path.addLine(to: CGPoint(x: p.x + half * 1.1, y: p.y + half * 0.8))
+            path.addLine(to: CGPoint(x: p.x - half * 1.1, y: p.y + half * 0.8))
+            path.closeSubpath()
+            return path
         }
     }
 
