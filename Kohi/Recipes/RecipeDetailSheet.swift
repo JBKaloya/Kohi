@@ -31,7 +31,12 @@ struct RecipeDetailSheet: View {
     @State private var editingCopy: Recipe?
     @State private var isEditingMine = false
 
-    private var shown: Recipe { scaled?.recipe ?? recipe }
+    /// An older recipe may still carry a rinse; it is no longer a step.
+    private var shown: Recipe {
+        var shown = scaled?.recipe ?? recipe
+        shown.steps.removeAll { $0.action == .rinse }
+        return shown
+    }
 
     var body: some View {
         NavigationStack {

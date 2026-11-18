@@ -91,12 +91,6 @@ struct GuidedBrewView: View {
                     currentBlock
                         .contentShape(Rectangle())
                         .onTapGesture { advance() }
-                    if isRinse {
-                        Button("Skip") { skipRinse() }
-                            .catalogueLabel()
-                            .padding(.horizontal, 26)
-                            .padding(.top, 8)
-                    }
                     voiceNoteRow
                         .padding(.horizontal, 26)
                         .padding(.top, 18)
@@ -125,7 +119,7 @@ struct GuidedBrewView: View {
         .onAppear {
             UIApplication.shared.isIdleTimerDisabled = true
             seedPlan()
-            if startsRunning, !isRinse { beginCountdown() }
+            if startsRunning { beginCountdown() }
         }
         .onDisappear {
             UIApplication.shared.isIdleTimerDisabled = false
@@ -181,18 +175,7 @@ struct GuidedBrewView: View {
             Text(step.action.label)
                 .catalogueLabel()
 
-            if step.action == .rinse {
-                Text(rinseHeadline(step))
-                    .font(Typography.number)
-                    .foregroundStyle(Palette.ink)
-                    .minimumScaleFactor(0.6)
-                    .lineLimit(2)
-                if let prep = prepLine {
-                    Text(prep)
-                        .font(Typography.value)
-                        .foregroundStyle(Palette.inkMuted)
-                }
-            } else if isWait {
+            if isWait {
                 Text("Wait")
                     .font(Typography.number)
                     .foregroundStyle(Palette.ink)
@@ -287,34 +270,11 @@ struct GuidedBrewView: View {
         !steps.isEmpty && index >= steps.count
     }
 
-    private var isRinse: Bool {
-        index < steps.count && steps[index].action == .rinse
-    }
-
-    private func rinseHeadline(_ step: RecipeStep) -> String {
-        var parts = [step.action.label]
-        if let mass = step.targetMass {
-            parts.append("\(GrindRange.number(mass)) g")
-        }
-        let extra = step.note.trimmingCharacters(in: .whitespaces)
-        if !extra.isEmpty { parts.append(extra) }
-        return parts.joined(separator: " · ")
-    }
-
     private var nextLine: String? {
         guard index + 1 < steps.count else { return nil }
         let next = steps[index + 1]
         if isWait { return "next pour at \(next.timeLabel)" }
         return "next: \(next.instruction.lowercased())"
-    }
-
-    private var prepLine: String? {
-        let names = brew.equipmentIDs.compactMap { id -> String? in
-            guard let item = equipment.first(where: { $0.id == id }), item.kind == .accessory else { return nil }
-            return item.displayName
-        }
-        guard !names.isEmpty else { return nil }
-        return names.joined(separator: " · ")
     }
 
     private func accessoryLine(for step: RecipeStep) -> String? {
@@ -390,32 +350,18 @@ struct GuidedBrewView: View {
 
     private func advance() {
         guard !isFinished, index < steps.count else { return }
-        let leavingRinse = isRinse
         recordCurrent(skipped: false)
         stepTrigger += 1
         withAnimation(Motion.quick) { index += 1 }
         autoArmed = false
-        if leavingRinse, !running, startsRunning {
-            beginCountdown()
-        }
         if isFinished {
             brew.seconds = Int(elapsed)
         }
         pushLiveActivity(force: true)
     }
 
-    private func skipRinse() {
-        guard isRinse else { return }
-        recordCurrent(skipped: true)
-        stepTrigger += 1
-        withAnimation(Motion.quick) { index += 1 }
-        autoArmed = false
-        if !running, startsRunning { beginCountdown() }
-        pushLiveActivity(force: true)
-    }
-
     private func armAutoAdvanceIfNeeded() {
-        guard !steps.isEmpty, index < steps.count, !autoArmed, !isRinse else { return }
+        guard !steps.isEmpty, index < steps.count, !autoArmed else { return }
         let end = GuidedTarget.targetTime(for: steps, at: index, total: recipe.seconds)
         guard elapsed >= end else { return }
         autoArmed = true
@@ -433,7 +379,7 @@ struct GuidedBrewView: View {
         brew.steps.append(BrewStep(
             index: index,
             action: planned.action,
-            at: planned.action == .rinse ? 0 : Int(elapsed),
+            at: Int(elapsed),
             mass: skipped ? nil : recordedMass(for: planned),
             targetAt: planned.untilSeconds ?? planned.at,
             targetMass: planned.targetMass,

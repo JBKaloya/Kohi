@@ -42,6 +42,8 @@ struct StepBuilderSheet: View {
         asksMethod: Bool = false,
         onSave: @escaping (Recipe) -> Void
     ) {
+        var draft = draft
+        draft.steps.removeAll { $0.action == .rinse }
         _draft = State(initialValue: draft)
         self.saveAs = saveAs
         self.creating = creating
@@ -675,13 +677,9 @@ struct StepBuilderSheet: View {
 
     // MARK: - Rescale
 
-    /// The last pour, which is what the sequence should add up to. The rinse
-    /// is excluded: its mass belongs to the paper, not to the recipe.
+    /// The last pour, which is what the sequence should add up to.
     private var lastPourMass: Double? {
-        draft.steps
-            .filter { $0.action != .rinse }
-            .compactMap(\.targetMass)
-            .max()
+        draft.steps.compactMap(\.targetMass).max()
     }
 
     private var stepsNeedRescale: Bool {
@@ -717,7 +715,7 @@ struct StepBuilderSheet: View {
     /// Actions offered for the draft's method, plus whatever a step already
     /// uses — editing an imported recipe must not silently drop its action.
     private var availableActions: [StepAction] {
-        var actions = DefaultSequence.actions(for: draft.method)
+        var actions = DefaultSequence.actions(for: draft.method).filter { $0 != .rinse }
         for step in draft.steps where !actions.contains(step.action) {
             actions.append(step.action)
         }

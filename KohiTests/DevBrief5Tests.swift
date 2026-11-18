@@ -88,23 +88,28 @@ struct DevBrief5Tests {
         #expect(setting.position != nil)
     }
 
-    @Test func rinseIsInjectedOnlyForPaperOrCloth() {
-        let paper = Equipment(kind: .brewer, brand: "Hario", model: "V60", brewerType: "V60", size: "02", acceptsFilterShapes: [.cone60])
-        let metal = Equipment(
-            kind: .brewer,
-            brand: "Able",
-            model: "Kone",
-            filterShape: "métal",
-            acceptsFilterShapes: []
-        )
-        let recipe = Recipe(name: "V60", method: .v60, dose: 15, water: 250, steps: [
+    @Test func theTimerNeverHasARinse() {
+        let setup = BrewJourneySupport.setup()
+        let session = BrewSession(card: BrewJourneySupport.card(), setup: setup)
+        session.apply(recipe: Recipe(name: "Old V60", method: .v60, dose: 15, water: 250, steps: [
+            RecipeStep(at: 0, action: .rinse, targetMass: 150),
             RecipeStep(at: 0, action: .bloom, targetMass: 45),
-        ])
-        let injected = RinseRule.injecting(into: recipe, brewer: paper, stock: nil)
-        #expect(injected.steps.first?.action == .rinse)
-        #expect(injected.steps.count == 2)
-        let skipped = RinseRule.injecting(into: recipe, brewer: metal, stock: nil)
-        #expect(skipped.steps.first?.action == .bloom)
+            RecipeStep(at: 45, action: .pour, targetMass: 250),
+        ], source: .mine), setup: setup)
+        #expect(!session.timerRecipe(in: setup).steps.contains { $0.action == .rinse })
+        let blank = BrewSession(card: BrewJourneySupport.card(), setup: setup)
+        #expect(!blank.timerRecipe(in: setup).steps.contains { $0.action == .rinse })
+    }
+
+    @Test func noDefaultSequenceHasARinse() {
+        for method in BrewMethod.allCases {
+            #expect(!DefaultSequence.actions(for: method).contains(.rinse), "\(method)")
+        }
+        for type in BrewerType.allCases {
+            let steps = DefaultSequence.make(family: .handBrew, brewerType: type, dose: 15, water: 250, targetTime: nil)
+            #expect(!steps.contains { $0.action == .rinse }, "\(type)")
+        }
+        #expect(!RecipeCreation.blank().steps.contains { $0.action == .rinse })
     }
 
     @Test func rinseSitsOutsideTBTAndFlow() {

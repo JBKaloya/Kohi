@@ -170,15 +170,11 @@ final class BrewSession: Identifiable {
             roastLevel: card.roastLevel
         )
 
-        // 2. The rinse step is *never* stored in a recipe or snapshot.
-        //    It is injected here, from RinseRule, every time.
-        //    Whatever rinse mass may be in the snapshot (e.g. a stale one
-        //    from a build before the scaling fix) is stripped first.
+        // 2. The timer has no rinse: it is a line of Before you pour, not a
+        //    step. A rinse an older recipe or snapshot still carries is dropped.
         var stripped = filled
         stripped.steps = filled.steps.filter { $0.action != .rinse }
-
-        let stock = brew.filterStockId.flatMap { setup.filterStock(id: $0) }
-        return RinseRule.injecting(into: stripped, brewer: brewer, stock: stock)
+        return stripped
     }
 
     /// Attaches a recipe and pins it as the resize baseline. Every path that

@@ -116,7 +116,6 @@ nonisolated enum DefaultSequence {
         let pour2End = max(pour2Start + 15, Int(Double(total) * 0.55))
         let lastStart = max(pour2End + 5, Int(Double(total) * 0.65))
         return [
-            RecipeStep(at: 0, action: .rinse, targetMass: 150, note: "Skip if the paper is already wet", derived: true),
             RecipeStep(at: 0, action: .bloom, targetMass: bloomMass, untilSeconds: bloomEnd, derived: true),
             RecipeStep(at: bloomEnd, action: .pour, targetMass: mid, untilSeconds: pour2End, derived: true),
             RecipeStep(at: pour2End, action: .wait, untilSeconds: lastStart, derived: true),
@@ -129,7 +128,6 @@ nonisolated enum DefaultSequence {
         let water = water ?? 250
         let steep = max(30, (targetTime ?? 240) - 30)
         return [
-            RecipeStep(at: 0, action: .rinse, derived: true),
             RecipeStep(at: 0, action: .pour, targetMass: water, untilSeconds: 20, derived: true),
             RecipeStep(at: 20, action: .steep, untilSeconds: steep, derived: true),
             RecipeStep(at: steep, action: .release, derived: true),
@@ -141,7 +139,6 @@ nonisolated enum DefaultSequence {
         let steep = 120
         let press = steep + 30
         return [
-            RecipeStep(at: 0, action: .rinse, derived: true),
             RecipeStep(at: 0, action: .pour, targetMass: water, untilSeconds: 20, derived: true),
             RecipeStep(at: 20, action: .steep, untilSeconds: steep, derived: true),
             RecipeStep(at: steep, action: .press, untilSeconds: press, derived: true),

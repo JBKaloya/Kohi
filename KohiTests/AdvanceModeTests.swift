@@ -65,7 +65,7 @@ struct AdvanceModeTests {
         #expect(!timer.contains("advanceMode"))
         #expect(timer.contains("armAutoAdvanceIfNeeded()"))
         #expect(timer.contains(".onTapGesture { advance() }"))
-        #expect(timer.contains("Button(\"Skip\") { skipRinse() }"))
+        #expect(!timer.contains("skipRinse"))
     }
 
     @Test func theEditorNoLongerAsksForACue() throws {
