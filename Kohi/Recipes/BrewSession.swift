@@ -220,6 +220,18 @@ final class BrewSession: Identifiable {
         recipeLane = .mine
     }
 
+    /// Brew once: the recipe drives this brew and is kept nowhere else. The
+    /// brew holds its numbers as a snapshot only — `brews.recipe_id` points
+    /// at stored recipes, and this one is not stored.
+    func applyOnce(recipe: Recipe, setup: SetupStore) {
+        var once = recipe
+        once.source = .express
+        adopt(recipe: once)
+        size = RecipeSize.inferred(from: once.water)
+        brew = BrewPrefill.seed(card: card, recipe: once, setup: setup)
+        brew.recipeID = nil
+    }
+
     /// The liquid total of the recipe as chosen, before any resizing.
     var nominalRecipeLiquid: Double? {
         nominalRecipe.flatMap { RecipeScaling.liquid(of: $0) }

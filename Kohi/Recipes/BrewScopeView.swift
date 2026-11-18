@@ -79,7 +79,7 @@ struct BrewScopeView: View {
                 }
 
                 if let selected = session.nominalRecipe ?? session.recipe {
-                    Button(Copy.adjust) {
+                    Button(RecipeCreation.isYours(selected) ? Copy.edit : Copy.editACopy) {
                         tapCount += 1
                         adjust(selected)
                     }
@@ -95,14 +95,21 @@ struct BrewScopeView: View {
             showCreation = true
         }
         .sheet(isPresented: $showCreation) {
-            StepBuilderSheet.creation(draft: newRecipeDraft) { recipe in
-                keepInMine(recipe)
-                showCreation = false
-            }
+            StepBuilderSheet.creation(
+                draft: newRecipeDraft,
+                onBrewOnce: { recipe in
+                    session.applyOnce(recipe: recipe, setup: setup)
+                    showCreation = false
+                },
+                onSave: { recipe in
+                    keepInMine(recipe)
+                    showCreation = false
+                }
+            )
             .appEnvironment(appEnvironment)
         }
         .sheet(item: $adjustDraft) { draft in
-            StepBuilderSheet.creation(draft: draft) { recipe in
+            StepBuilderSheet.copying(draft: draft) { recipe in
                 keepInMine(recipe)
                 adjustDraft = nil
             }

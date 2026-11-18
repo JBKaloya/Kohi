@@ -131,7 +131,11 @@ nonisolated enum Copy {
     static let liveDetail = "No recipe. Brew and say what you do."
     static let liveNoSteps = "No steps to follow. Say what you do."
     static let liveNoMicrophone = "Microphone off. The clock still runs."
-    static let adjust = "Adjust"
+    /// A recipe of yours, edited in place.
+    static let edit = "Edit"
+    /// Someone else's recipe, copied into Mine first.
+    static let editACopy = "Edit a copy"
+    static let brewOnce = "Brew once"
     static let stepsHeard = "Steps heard"
     static let nothingHeard = "No step heard. The transcript is in the notes."
     static let saveAsRecipe = "Save as recipe"

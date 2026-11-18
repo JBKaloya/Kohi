@@ -22,6 +22,18 @@ struct StepBuilderSheet: View {
     private let adjusting: Bool
     /// From Recipes there is no brew to take the method from.
     private let asksMethod: Bool
+    /// On the way to the timer: use the recipe for this brew without
+    /// keeping it in Mine.
+    private let onBrewOnce: ((Recipe) -> Void)?
+    private let titleOverride: String?
+
+    /// How the parts of the split are written. The same grams either way.
+    private enum SplitUnit: String, CaseIterable, Identifiable, Equatable {
+        case percent = "%"
+        case grams = "g"
+        var id: String { rawValue }
+    }
+    @State private var splitUnit: SplitUnit = .percent
 
     @State private var tapCount = 0
     /// The parts last written, held across total changes so rounding to the
@@ -40,6 +52,8 @@ struct StepBuilderSheet: View {
         creating: Bool = false,
         adjusting: Bool = false,
         asksMethod: Bool = false,
+        onBrewOnce: ((Recipe) -> Void)? = nil,
+        titleOverride: String? = nil,
         onSave: @escaping (Recipe) -> Void
     ) {
         var draft = draft
@@ -49,15 +63,27 @@ struct StepBuilderSheet: View {
         self.creating = creating
         self.adjusting = adjusting
         self.asksMethod = asksMethod
+        self.onBrewOnce = onBrewOnce
+        self.titleOverride = titleOverride
         self.onSave = onSave
     }
 
     /// Create your recipe, ready to fill in, saved to Mine.
-    static func creation(draft: Recipe, asksMethod: Bool = false, onSave: @escaping (Recipe) -> Void) -> StepBuilderSheet {
-        StepBuilderSheet(draft: draft, saveAs: .mine, creating: true, asksMethod: asksMethod, onSave: onSave)
+    static func creation(
+        draft: Recipe,
+        asksMethod: Bool = false,
+        onBrewOnce: ((Recipe) -> Void)? = nil,
+        onSave: @escaping (Recipe) -> Void
+    ) -> StepBuilderSheet {
+        StepBuilderSheet(draft: draft, saveAs: .mine, creating: true, asksMethod: asksMethod, onBrewOnce: onBrewOnce, onSave: onSave)
     }
 
-    /// Adjust on a recipe of mine, from the brew or from Recipes.
+    /// Edit a copy of someone else's recipe: created in Mine, titled as such.
+    static func copying(draft: Recipe, onSave: @escaping (Recipe) -> Void) -> StepBuilderSheet {
+        StepBuilderSheet(draft: draft, saveAs: .mine, creating: true, titleOverride: Copy.editACopy, onSave: onSave)
+    }
+
+    /// Edit on a recipe of mine, from the brew or from Recipes.
     static func adjusting(draft: Recipe, onSave: @escaping (Recipe) -> Void) -> StepBuilderSheet {
         StepBuilderSheet(draft: draft, saveAs: draft.source, adjusting: true, onSave: onSave)
     }
@@ -67,8 +93,9 @@ struct StepBuilderSheet: View {
     private var countsBloom: Bool { draft.splitCountsBloom ?? true }
 
     private var title: String {
+        if let titleOverride { return titleOverride }
         if creating { return Copy.createYourRecipe }
-        return adjusting ? Copy.adjust : "Steps"
+        return adjusting ? Copy.edit : "Steps"
     }
 
     var body: some View {
@@ -127,6 +154,11 @@ struct StepBuilderSheet: View {
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") { dismiss() }
+                }
+                if onBrewOnce != nil {
+                    ToolbarItem(placement: .primaryAction) {
+                        Button(Copy.brewOnce) { brewOnce() }
+                    }
                 }
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Save") { save() }
@@ -236,6 +268,13 @@ struct StepBuilderSheet: View {
                         .foregroundStyle(Palette.inkMuted)
                 }
                 let percents = split.percents
+                ChipPicker(
+                    items: SplitUnit.allCases,
+                    label: \.rawValue,
+                    selection: Binding(get: { splitUnit }, set: { if let unit = $0 { splitUnit = unit } }),
+                    allowsDeselect: false,
+                    onPick: { tapCount += 1 }
+                )
                 ForEach(Array(split.services.enumerated()), id: \.element.stepID) { index, service in
                     let label = "\(index + 1) · \(service.action.label)"
                     if index == split.services.count - 1 {
@@ -245,6 +284,15 @@ struct StepBuilderSheet: View {
                                 .font(Typography.value)
                                 .foregroundStyle(Palette.inkMuted)
                         }
+                    } else if splitUnit == .grams {
+                        RollingCounter(
+                            label,
+                            value: gramsBinding(at: index),
+                            range: .water,
+                            unit: "g",
+                            labelWidth: 74,
+                            hint: "\(percents[index]) %"
+                        )
                     } else {
                         RollingCounter(
                             label,
@@ -296,6 +344,17 @@ struct StepBuilderSheet: View {
                 let next = PourSplit.setting(share: value / 100, at: index, in: split.services.map(\.share))
                 draft.steps = PourSplit.applying(shares: next, to: draft.steps, total: total, countsBloom: countsBloom)
                 shares = next
+            }
+        )
+    }
+
+    /// The grams a service adds, written as its part of the water.
+    private func gramsBinding(at index: Int) -> Binding<Double?> {
+        Binding(
+            get: { split?.services[safe: index]?.grams },
+            set: { value in
+                guard let value, let split, split.base > 0 else { return }
+                shareBinding(at: index).wrappedValue = value / split.base * 100
             }
         )
     }
@@ -363,6 +422,9 @@ struct StepBuilderSheet: View {
                 // Steps with a timeline running between them.
                 ForEach(Array(draft.steps.enumerated()), id: \.element.id) { index, step in
                     stepRow(step: step, index: index)
+                    if index < draft.steps.count - 1 {
+                        insertButton(after: index)
+                    }
                 }
             }
 
@@ -526,7 +588,7 @@ struct StepBuilderSheet: View {
                     Text("Until").catalogueLabel()
                     TextField("0:00", text: stepTimeBinding(Binding(
                         get: { stepBinding.wrappedValue.untilSeconds },
-                        set: { stepBinding.wrappedValue.untilSeconds = $0 }
+                        set: { draft.steps = StepEditing.settingUntil($0, at: index, in: draft.steps) }
                     )))
                     .formValue()
                     .keyboardType(.numbersAndPunctuation)
@@ -595,6 +657,31 @@ struct StepBuilderSheet: View {
                 }
             }
         }
+    }
+
+    /// A step between two others, on the timeline between their badges.
+    private func insertButton(after index: Int) -> some View {
+        Menu {
+            ForEach(availableActions, id: \.self) { action in
+                Button(action.label) {
+                    tapCount += 1
+                    withAnimation(Motion.quick) {
+                        draft.steps = StepEditing.inserting(action, after: index, in: draft.steps)
+                    }
+                }
+            }
+        } label: {
+            Image(systemName: "plus")
+                .font(.system(size: 9, weight: .semibold))
+                .foregroundStyle(Palette.inkMuted)
+                .frame(width: 22, height: 22)
+                .background(Palette.paper, in: Circle())
+                .overlay(Circle().stroke(Palette.hairline, lineWidth: 1))
+                .frame(width: 44, height: 30)
+                .contentShape(Rectangle())
+        }
+        .accessibilityLabel("Insert a step after step \(index + 1)")
+        .padding(.leading, -11)
     }
 
     // MARK: - Add buttons
@@ -698,6 +785,25 @@ struct StepBuilderSheet: View {
     }
 
     // MARK: - Save
+
+    /// This brew only: the recipe goes to the timer, not to Mine.
+    private func brewOnce() {
+        guard let onBrewOnce else { return }
+        var once = finished(draft)
+        once.source = .express
+        onBrewOnce(once)
+        dismiss()
+    }
+
+    private func finished(_ recipe: Recipe) -> Recipe {
+        var recipe = recipe
+        recipe.steps = PourSplit.inTimeOrder(recipe.steps)
+        if recipe.name.trimmingCharacters(in: .whitespaces).isEmpty {
+            recipe.name = Recipe.expressTitle(family: recipe.method.family)
+        }
+        recipe.evidence = .unverified
+        return recipe
+    }
 
     private func save() {
         draft.steps.sort { $0.at < $1.at }

@@ -19,7 +19,9 @@ struct RecipeEntryTests {
         #expect(Copy.live == "Live")
         #expect(Copy.chooseARecipe == "Choose a recipe")
         #expect(Copy.newRecipe == "New recipe")
-        #expect(Copy.adjust == "Adjust")
+        #expect(Copy.edit == "Edit")
+        #expect(Copy.editACopy == "Edit a copy")
+        #expect(Copy.brewOnce == "Brew once")
     }
 
     @Test func recipeLeadsWithLiveThenTheRecipes() throws {
@@ -65,7 +67,7 @@ struct RecipeEntryTests {
         #expect(!row.contains("Circle()"))
         #expect(!row.contains("Typography.value"))
         let scope = try source("Recipes/BrewScopeView.swift")
-        #expect(scope.contains("Button(Copy.adjust)"))
+        #expect(scope.contains("Button(RecipeCreation.isYours(selected) ? Copy.edit : Copy.editACopy)"))
         #expect(!scope.contains("Button(\"Edit recipe\")"))
     }
 
@@ -153,7 +155,7 @@ struct RecipeEntryTests {
 
     @Test func detailOffersOnlyAdjust() throws {
         let detail = try source("Recipes/RecipeDetailSheet.swift")
-        #expect(detail.contains("Button(Copy.adjust)"))
+        #expect(detail.contains("Button(RecipeCreation.isYours(recipe) ? Copy.edit : Copy.editACopy)"))
         #expect(!detail.contains("Save a copy"))
         #expect(!detail.contains("RecipeEditSheet"))
         #expect(!detail.contains("Button(\"Edit\")"))

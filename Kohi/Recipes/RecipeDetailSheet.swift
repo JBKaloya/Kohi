@@ -53,7 +53,7 @@ struct RecipeDetailSheet: View {
                             rates: []
                         )
                     }
-                    Button(Copy.adjust) { adjust() }
+                    Button(RecipeCreation.isYours(recipe) ? Copy.edit : Copy.editACopy) { adjust() }
                         .catalogueLabel()
                     if !recipe.notes.isEmpty { notesSection }
                     attributionSection
@@ -131,7 +131,7 @@ struct RecipeDetailSheet: View {
                 .appEnvironment(appEnvironment)
         }
         .sheet(item: $editingCopy) { copy in
-            StepBuilderSheet.creation(draft: copy) { saved in
+            StepBuilderSheet.copying(draft: copy) { saved in
                 var mine = saved
                 mine.source = .mine
                 recipes.add(mine)
