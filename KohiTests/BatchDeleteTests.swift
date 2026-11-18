@@ -37,7 +37,7 @@ struct BatchDeleteTests {
         let going = Set(cards.prefix(2).map(\.id))
         store.deleteLater(going, window: .milliseconds(80))
         #expect(sink.deleted.isEmpty)
-        try await Task.sleep(for: .milliseconds(300))
+        try await eventually { !sink.deleted.isEmpty }
         #expect(Set(sink.deleted) == going)
         #expect(store.cards.map(\.id) == [cards[2].id])
         store.undoDeletion()
@@ -71,10 +71,17 @@ struct BatchDeleteTests {
         #expect(tastings.tastings.count == 2)
 
         tastings.deleteLater([one.id, two.id], window: .milliseconds(80))
-        try await Task.sleep(for: .milliseconds(300))
+        try await eventually { tastings.heldForUndo.isEmpty }
         #expect(tastings.tastings.isEmpty)
         #expect(tastings.all.allSatisfy { $0.isDeleted })
         #expect(Set(sink.changed) == [one.id, two.id])
+    }
+
+    /// Waits for the undo window to close, however loaded the run.
+    private func eventually(_ condition: () -> Bool) async throws {
+        for _ in 0..<100 where !condition() {
+            try await Task.sleep(for: .milliseconds(50))
+        }
     }
 
     @Test func theConfirmationSaysTheBrewsGoToo() {
