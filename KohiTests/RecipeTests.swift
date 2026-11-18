@@ -247,6 +247,7 @@ struct RecipeTests {
             profileTags: ["fruity"],
             authorGrinder: "Comandante C40",
             rinseMassOverride: 600,
+            splitCountsBloom: false,
             createdAt: Date(timeIntervalSince1970: 1_000),
             updatedAt: Date(timeIntervalSince1970: 2_000)
         )
@@ -264,7 +265,7 @@ struct RecipeTests {
             "temperatureMax", "seconds", "grindLabel", "grindMicronsLow",
             "grindMicronsHigh", "steps", "source", "evidence", "attribution",
             "sourceURL", "notes", "cardID", "brewID", "referenceID",
-            "profileTags", "authorGrinder", "rinseMassOverride",
+            "profileTags", "authorGrinder", "rinseMassOverride", "splitCountsBloom",
             "createdAt", "updatedAt",
         ]
         let actual = Set(Mirror(reflecting: fullRecipe()).children.compactMap(\.label))
@@ -298,11 +299,13 @@ struct RecipeTests {
         object.removeValue(forKey: "author_grinder")
         object.removeValue(forKey: "auto_advance")
         object.removeValue(forKey: "rinse_mass_override")
+        object.removeValue(forKey: "split_counts_bloom")
         let restored = try JSONDecoder().decode(
             RecipeRow.self,
             from: try JSONSerialization.data(withJSONObject: object)
         ).toRecipe()
         #expect(restored.profileTags.isEmpty)
         #expect(restored.rinseMassOverride == nil)
+        #expect(restored.splitCountsBloom == nil)
     }
 }

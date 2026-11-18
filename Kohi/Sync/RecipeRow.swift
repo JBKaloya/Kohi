@@ -35,6 +35,7 @@ struct RecipeRow: Codable, Sendable {
     var advance_mode: String?
     var advance_mode_chosen: Bool?
     var rinse_mass_override: Double?
+    var split_counts_bloom: Bool?
     var created_at: Date
     var updated_at: Date
 
@@ -68,6 +69,7 @@ struct RecipeRow: Codable, Sendable {
         self.advance_mode = "auto"
         self.advance_mode_chosen = nil
         self.rinse_mass_override = recipe.rinseMassOverride
+        self.split_counts_bloom = recipe.splitCountsBloom
         self.created_at = recipe.createdAt
         self.updated_at = recipe.updatedAt
     }
@@ -98,6 +100,7 @@ struct RecipeRow: Codable, Sendable {
             profileTags: profile_tags ?? [],
             authorGrinder: author_grinder,
             rinseMassOverride: rinse_mass_override,
+            splitCountsBloom: split_counts_bloom,
             createdAt: created_at,
             updatedAt: updated_at
         )

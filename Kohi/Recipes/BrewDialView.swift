@@ -238,14 +238,26 @@ struct BrewDialView: View {
         return "Scaled from \(GrindRange.number(nominal)) g → \(GrindRange.number(live)) g"
     }
 
-    /// Dose binding. The dose alone does not resize the sequence: the step
-    /// masses follow the water, not the coffee.
+    /// The dose carries the water at the same ratio, and the water resizes
+    /// the recipe: 15 g to 10 g at 1:15 is 150 g, the parts unchanged.
     private var doseBinding: Binding<Double?> {
         Binding(
             get: { session.brew.dose },
             set: { newDose in
+                let carried = PourSplitEditing.liquid(
+                    following: newDose,
+                    from: session.brew.dose,
+                    liquid: RecipeScaling.liquid(of: session.brew)
+                )
                 session.brew.dose = newDose
                 session.brew.captureSource = .typed
+                guard let carried else { return }
+                if session.brew.method == .espresso {
+                    session.brew.beverage = carried
+                } else {
+                    session.brew.water = carried
+                }
+                scheduleResize()
             }
         )
     }

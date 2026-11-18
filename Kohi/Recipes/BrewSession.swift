@@ -335,6 +335,7 @@ final class BrewSession: Identifiable {
             updated.seconds = saved.seconds
             updated.grindLabel = saved.grindLabel
             updated.steps = saved.steps
+            updated.splitCountsBloom = saved.splitCountsBloom
             updated.source = saved.source
             updated.evidence = saved.evidence
             store.update(updated)
@@ -353,7 +354,8 @@ final class BrewSession: Identifiable {
                 grindLabel: saved.grindLabel,
                 steps: saved.steps,
                 source: .express,
-                evidence: .unverified
+                evidence: .unverified,
+                splitCountsBloom: saved.splitCountsBloom
             )
             store.add(copy)
             saved = copy

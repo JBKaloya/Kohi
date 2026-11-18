@@ -176,7 +176,7 @@ struct SloshRail: View {
 
 /// The leading edge, slanted by a clip rather than a skew, so the bottom
 /// stays on the floor of the track.
-private struct SloshFill: Shape {
+private nonisolated struct SloshFill: Shape {
     var lean: Double
 
     var animatableData: Double {

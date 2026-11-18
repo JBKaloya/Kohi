@@ -115,10 +115,11 @@ struct PourSplitTests {
         #expect(PourSplit.split(steps: leftOut, total: 225, countsBloom: false)?.services.count == 2)
     }
 
-    @Test func aNewSequenceKeepsTheRinse() {
-        let steps = PourSplit.steps(dose: 15, water: 225, count: 3, countsBloom: true, targetTime: nil, keeping: recipe().steps)
-        #expect(steps.first?.action == .rinse)
-        #expect(steps.first?.targetMass == 150)
+    @Test func aNewSequenceHasNoRinse() {
+        let steps = PourSplit.steps(dose: 15, water: 225, count: 3, countsBloom: true, targetTime: nil)
+        #expect(!steps.contains { $0.action == .rinse })
+        let restructured = PourSplit.restructuring(recipe().steps, dose: 15, water: 225, count: 3, countsBloom: true, targetTime: nil)
+        #expect(!restructured.contains { $0.action == .rinse })
     }
 
     @Test func espressoAndSinglePoursAreNotSplit() {

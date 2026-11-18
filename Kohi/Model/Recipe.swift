@@ -259,6 +259,9 @@ nonisolated struct Recipe: Identifiable, Codable, Hashable, Sendable {
     var authorGrinder: String?
     /// Chemex (and similar) can override the indicative rinse mass.
     var rinseMassOverride: Double?
+    /// Whether the bloom is the first of the parts the water splits into.
+    /// Nil reads as counted, which is how every recipe before this read.
+    var splitCountsBloom: Bool?
 
     var createdAt: Date
     var updatedAt: Date
@@ -288,6 +291,7 @@ nonisolated struct Recipe: Identifiable, Codable, Hashable, Sendable {
         profileTags: [String] = [],
         authorGrinder: String? = nil,
         rinseMassOverride: Double? = nil,
+        splitCountsBloom: Bool? = nil,
         createdAt: Date = .now,
         updatedAt: Date = .now
     ) {
@@ -315,6 +319,7 @@ nonisolated struct Recipe: Identifiable, Codable, Hashable, Sendable {
         self.profileTags = profileTags
         self.authorGrinder = authorGrinder
         self.rinseMassOverride = rinseMassOverride
+        self.splitCountsBloom = splitCountsBloom
         self.createdAt = createdAt
         self.updatedAt = updatedAt
     }
@@ -515,6 +520,7 @@ nonisolated extension Recipe {
         profileTags = try c.decodeIfPresent([String].self, forKey: .profileTags) ?? []
         authorGrinder = try c.decodeIfPresent(String.self, forKey: .authorGrinder)
         rinseMassOverride = try c.decodeIfPresent(Double.self, forKey: .rinseMassOverride)
+        splitCountsBloom = try c.decodeIfPresent(Bool.self, forKey: .splitCountsBloom)
         createdAt = try c.decodeIfPresent(Date.self, forKey: .createdAt) ?? .now
         updatedAt = try c.decodeIfPresent(Date.self, forKey: .updatedAt) ?? .now
     }

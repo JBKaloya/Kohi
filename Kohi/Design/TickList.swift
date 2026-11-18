@@ -118,7 +118,7 @@ private struct TickRow: View {
 }
 
 /// The tick, as a path that can be trimmed from its start.
-private struct CheckStroke: Shape {
+private nonisolated struct CheckStroke: Shape {
     func path(in rect: CGRect) -> Path {
         var path = Path()
         path.move(to: CGPoint(x: rect.minX + rect.width * 0.15, y: rect.midY))

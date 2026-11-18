@@ -64,7 +64,8 @@ enum BrewLiveActivity {
             startedAt: startedAt,
             isRecording: isRecording
         )
-        Task { await activity.update(.init(state: state, staleDate: nil)) }
+        nonisolated(unsafe) let running = activity
+        Task { await running.update(.init(state: state, staleDate: nil)) }
     }
 
     static func end() {
@@ -72,7 +73,8 @@ enum BrewLiveActivity {
         activity = nil
         lastSecond = -1
         guard let current else { return }
-        Task { await current.end(nil, dismissalPolicy: .immediate) }
+        nonisolated(unsafe) let ending = current
+        Task { await ending.end(nil, dismissalPolicy: .immediate) }
     }
 
     private static func content(

@@ -168,7 +168,8 @@ struct AfterBrewSheet: View {
                         liveDraft = RecipeCreation.fromLive(
                             brew: session.brew,
                             family: session.tab(in: setup),
-                            card: session.hasCard ? card : nil
+                            card: session.hasCard ? card : nil,
+                            countsBloom: countsBloom
                         )
                     }
                     .font(Typography.value)

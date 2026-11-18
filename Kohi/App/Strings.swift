@@ -142,6 +142,7 @@ nonisolated enum Copy {
     static let split = "Split"
     static let services = "Services"
     static let countTheBloom = "Count the bloom"
+    static let addASecondPour = "Add a second pour to split the water"
     static let theRest = "The rest"
     static let ratioOneTo = "Ratio 1:"
     static let chooseARecipe = "Choose a recipe"

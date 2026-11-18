@@ -1,9 +1,9 @@
 import SwiftUI
 
 /// Name a sequence, edit its blocks — doses, times, masses — and pick a
-/// template. Dose and water are fully independent: tapping a number never
-/// rewrites the other one. Rescaling the steps to new totals is an explicit
-/// action, not an automatic side-effect.
+/// template. The ratio is the pivot: the dose carries the water at the same
+/// ratio, the water carries the ratio, and the parts of the split hold
+/// while their grams follow.
 struct StepBuilderSheet: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(SetupStore.self) private var setup
@@ -24,7 +24,9 @@ struct StepBuilderSheet: View {
     private let asksMethod: Bool
 
     @State private var tapCount = 0
-    @AppStorage(PourSplit.countsBloomKey) private var countsBloom = true
+    /// The parts last written, held across total changes so rounding to the
+    /// half gram never drifts them.
+    @State private var shares: [Double]?
     @FocusState private var focus: Field?
     @State private var keyboardUp = false
 
@@ -60,6 +62,8 @@ struct StepBuilderSheet: View {
 
     private var editsEverything: Bool { creating || adjusting }
 
+    private var countsBloom: Bool { draft.splitCountsBloom ?? true }
+
     private var title: String {
         if creating { return Copy.createYourRecipe }
         return adjusting ? Copy.adjust : "Steps"
@@ -72,7 +76,7 @@ struct StepBuilderSheet: View {
                     VStack(alignment: .leading, spacing: 22) {
                         headerGroup
                         totalsGroup
-                        if PourSplit.isSplittable(draft) { splitGroup }
+                        if PourSplitEditing.showsSplit(draft) { splitGroup }
                         if editsEverything { parametersGroup }
                         stepsGroup
                     }
@@ -166,21 +170,29 @@ struct StepBuilderSheet: View {
         }
     }
 
-    /// Writing the ratio sets the water from the dose. Writing the dose
-    /// leaves the water alone: the two stay independent.
+    /// Writing the ratio sets the water from the dose; the parts follow.
     private var ratioBinding: Binding<Double?> {
         Binding(
             get: { PourSplit.ratio(dose: draft.dose, water: RecipeScaling.liquid(of: draft)) },
             set: { ratio in
-                guard let ratio, let dose = draft.dose,
-                      let liquid = PourSplit.water(dose: dose, ratio: ratio)
-                else { return }
-                if draft.method == .espresso {
-                    draft.beverage = liquid
-                } else {
-                    draft.water = liquid
-                }
+                draft = PourSplitEditing.settingRatio(ratio, on: draft, countsBloom: countsBloom, shares: shares)
             }
+        )
+    }
+
+    /// The dose carries the water at the same ratio.
+    private var doseBinding: Binding<Double?> {
+        Binding(
+            get: { draft.dose },
+            set: { draft = PourSplitEditing.settingDose($0, on: draft, countsBloom: countsBloom, shares: shares) }
+        )
+    }
+
+    /// The water, or the shot out on an espresso. The ratio moves.
+    private var liquidBinding: Binding<Double?> {
+        Binding(
+            get: { draft.method == .espresso ? draft.beverage : draft.water },
+            set: { draft = PourSplitEditing.settingWater($0, on: draft, countsBloom: countsBloom, shares: shares) }
         )
     }
 
@@ -207,9 +219,14 @@ struct StepBuilderSheet: View {
             HStack(spacing: 10) {
                 Text(Copy.countTheBloom).catalogueLabel()
                 Spacer(minLength: 0)
-                LiquidToggle(isOn: $countsBloom, label: Copy.countTheBloom, height: 24)
+                LiquidToggle(isOn: countsBloomBinding, label: Copy.countTheBloom, height: 24)
             }
             .frame(minHeight: 44)
+            if split == nil {
+                Text(Copy.addASecondPour)
+                    .font(Typography.tag)
+                    .foregroundStyle(Palette.inkMuted)
+            }
             if let split {
                 if let bloom = split.bloom {
                     Text("Bloom \(GrindRange.number(bloom.grams)) g, outside the split")
@@ -249,15 +266,23 @@ struct StepBuilderSheet: View {
                 let count = Int(value.rounded())
                 guard count != split?.services.count else { return }
                 tapCount += 1
-                draft.steps = PourSplit.steps(
+                draft.steps = PourSplit.restructuring(
+                    draft.steps,
                     dose: draft.dose,
                     water: total,
                     count: count,
                     countsBloom: countsBloom,
-                    targetTime: draft.seconds,
-                    keeping: draft.steps
+                    targetTime: draft.seconds
                 )
+                shares = nil
             }
+        )
+    }
+
+    private var countsBloomBinding: Binding<Bool> {
+        Binding(
+            get: { countsBloom },
+            set: { draft.splitCountsBloom = $0 ? nil : false }
         )
     }
 
@@ -266,8 +291,9 @@ struct StepBuilderSheet: View {
             get: { split.map { Double($0.percents[index]) } },
             set: { value in
                 guard let value, let split, let total = RecipeScaling.liquid(of: draft) else { return }
-                let shares = PourSplit.setting(share: value / 100, at: index, in: split.services.map(\.share))
-                draft.steps = PourSplit.applying(shares: shares, to: draft.steps, total: total, countsBloom: countsBloom)
+                let next = PourSplit.setting(share: value / 100, at: index, in: split.services.map(\.share))
+                draft.steps = PourSplit.applying(shares: next, to: draft.steps, total: total, countsBloom: countsBloom)
+                shares = next
             }
         )
     }
@@ -293,11 +319,11 @@ struct StepBuilderSheet: View {
 
     private var totalsGroup: some View {
         FieldGroup(title: "Totals") {
-            RollingCounter("Dose", value: $draft.dose, range: .dose, unit: "g", labelWidth: 74)
+            RollingCounter("Dose", value: doseBinding, range: .dose, unit: "g", labelWidth: 74)
             if draft.method == .espresso {
-                RollingCounter("Out", value: $draft.beverage, range: .beverage, unit: "g", labelWidth: 74)
+                RollingCounter("Out", value: liquidBinding, range: .beverage, unit: "g", labelWidth: 74)
             } else {
-                RollingCounter("Water", value: $draft.water, range: .water, unit: "g", labelWidth: 74)
+                RollingCounter("Water", value: liquidBinding, range: .water, unit: "g", labelWidth: 74)
             }
             if editsEverything {
                 RollingCounter(Copy.ratioOneTo, value: ratioBinding, range: .ratio, labelWidth: 74)

@@ -106,7 +106,7 @@ struct EquipmentGlyphView: View {
     }
 }
 
-struct GlyphShape: Shape {
+nonisolated struct GlyphShape: Shape {
     let glyph: EquipmentGlyph
 
     func path(in rect: CGRect) -> Path {
@@ -428,7 +428,7 @@ nonisolated private extension EquipmentGlyph {
 
 /// The filled cup from the Coffee Intelligence sketch: a rounded body, a handle
 /// on the right, two eyes cut out of the fill.
-struct CoffeeCupMark: Shape {
+nonisolated struct CoffeeCupMark: Shape {
     func path(in rect: CGRect) -> Path {
         let scale = min(rect.width, rect.height) / 24
         let origin = CGPoint(x: rect.minX, y: rect.minY)

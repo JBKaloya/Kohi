@@ -83,7 +83,7 @@ nonisolated enum PourSplit {
     private static func services(in steps: [RecipeStep]) -> [(UUID, StepAction, Double)] {
         var reached = 0.0
         var out: [(UUID, StepAction, Double)] = []
-        for step in steps where carriesWater(step.action) {
+        for step in inTimeOrder(steps) where carriesWater(step.action) {
             guard let mass = step.targetMass else { continue }
             out.append((step.id, step.action, max(mass - reached, 0)))
             reached = max(reached, mass)
@@ -91,11 +91,25 @@ nonisolated enum PourSplit {
         return out
     }
 
-    /// Whole percents that add up to 100: the last one takes what rounding left.
+    /// The water the steps themselves reach, whatever the total says.
+    static func reached(_ steps: [RecipeStep]) -> Double {
+        services(in: steps).reduce(0) { $0 + $1.2 }
+    }
+
+    /// The steps as they run: by time, ties in list order. The list is only
+    /// sorted on Save, so a step moved with the chevrons is read here.
+    static func inTimeOrder(_ steps: [RecipeStep]) -> [RecipeStep] {
+        steps.enumerated()
+            .sorted { ($0.element.at, $0.offset) < ($1.element.at, $1.offset) }
+            .map(\.element)
+    }
+
+    /// Whole percents that add up to 100: the last one takes what rounding
+    /// left, and never reads below zero.
     static func percents(of shares: [Double]) -> [Int] {
         guard !shares.isEmpty else { return [] }
-        var out = shares.dropLast().map { Int(($0 * 100).rounded()) }
-        out.append(100 - out.reduce(0, +))
+        var out = shares.dropLast().map { max(Int(($0 * 100).rounded()), 0) }
+        out.append(max(100 - out.reduce(0, +), 0))
         return out
     }
 
@@ -114,14 +128,33 @@ nonisolated enum PourSplit {
         for (service, value) in zip(current.services, grams) { added[service.stepID] = value }
         if let bloom = current.bloom { added[bloom.stepID] = bloom.grams }
 
+        var cumulative: [UUID: Double] = [:]
         var reached = 0.0
-        return steps.map { step in
-            guard let value = added[step.id] else { return step }
+        for step in inTimeOrder(steps) {
+            guard let value = added[step.id] else { continue }
             reached += value
+            cumulative[step.id] = reached
+        }
+        return steps.map { step in
+            guard let mass = cumulative[step.id] else { return step }
             var next = step
-            next.targetMass = reached
+            next.targetMass = mass
             return next
         }
+    }
+
+    /// The water changed: the parts hold and the grams follow, a bloom left
+    /// out of the parts included. Measured from what the steps reach, so a
+    /// sequence that had drifted from its total comes back to it.
+    static func resizing(_ steps: [RecipeStep], to total: Double, shares: [Double]?, countsBloom: Bool) -> [RecipeStep] {
+        guard total > 0 else { return steps }
+        var next = steps
+        let current = reached(steps)
+        if current > 0, RecipeScaling.factorBounds.contains(total / current) {
+            next = RecipeScaling.scalingSteps(steps, by: total / current)
+        }
+        guard let shares else { return next }
+        return applying(shares: shares, to: next, total: total, countsBloom: countsBloom)
     }
 
     /// One part changed. The last service is the rest, so it moves; a part
@@ -142,15 +175,13 @@ nonisolated enum PourSplit {
 
     /// A fresh pour-over sequence for `count` services. A bloom at twice the
     /// dose opens it; the rest of the water is shared evenly between the
-    /// pours. Times follow the default sequence's spread. A rinse already on
-    /// the draft is kept as it was.
+    /// pours. Times follow the default sequence's spread.
     static func steps(
         dose: Double?,
         water: Double,
         count: Int,
         countsBloom: Bool,
-        targetTime: Int?,
-        keeping existing: [RecipeStep] = []
+        targetTime: Int?
     ) -> [RecipeStep] {
         let count = min(max(count, serviceRange.lowerBound), serviceRange.upperBound)
         let dose = dose ?? RecipeCreation.blankDose
@@ -161,8 +192,7 @@ nonisolated enum PourSplit {
         let lastEnd = max(bloomEnd + 15 * pours, Int(Double(total) * 0.8))
         let window = Double(lastEnd - bloomEnd) / Double(max(pours, 1))
 
-        var steps = existing.filter { $0.action == .rinse }
-        steps.append(RecipeStep(at: 0, action: .bloom, targetMass: bloomMass, untilSeconds: bloomEnd, derived: true))
+        var steps = [RecipeStep(at: 0, action: .bloom, targetMass: bloomMass, untilSeconds: bloomEnd, derived: true)]
         let rest = water - bloomMass
         var reached = bloomMass
         for index in 0..<pours {
@@ -174,5 +204,59 @@ nonisolated enum PourSplit {
         }
         steps.append(RecipeStep(at: total, action: .wait, note: "Drawdown", derived: true))
         return steps
+    }
+
+    /// The number of services changed on a sequence already written. Only
+    /// the pours move: waits, notes and the bloom as it was written stay.
+    /// Pours kept keep their times; new ones follow the last. The rest of
+    /// the water is shared evenly, as on a fresh sequence.
+    static func restructuring(
+        _ steps: [RecipeStep],
+        dose: Double?,
+        water: Double,
+        count: Int,
+        countsBloom: Bool,
+        targetTime: Int?
+    ) -> [RecipeStep] {
+        let count = min(max(count, serviceRange.lowerBound), serviceRange.upperBound)
+        let ordered = inTimeOrder(steps.filter { $0.action != .rinse })
+        let others = ordered.filter { !carriesWater($0.action) }
+        let existingBloom = ordered.first { $0.action == .bloom }
+        let pours = ordered.filter { carriesWater($0.action) && $0.action != .bloom }
+        guard existingBloom != nil || !pours.isEmpty else {
+            let fresh = self.steps(dose: dose, water: water, count: count, countsBloom: countsBloom, targetTime: targetTime)
+            return others.isEmpty ? fresh : inTimeOrder(others + fresh.filter { carriesWater($0.action) })
+        }
+
+        let dose = dose ?? RecipeCreation.blankDose
+        let bloomEnd = 45
+        var bloom = existingBloom
+            ?? RecipeStep(at: 0, action: .bloom, untilSeconds: bloomEnd, derived: true)
+        let bloomMass = RecipeScaling.roundHalf(min(bloom.targetMass ?? dose * 2, water))
+        bloom.targetMass = bloomMass
+
+        let wanted = countsBloom ? count - 1 : count
+        var kept = Array(pours.prefix(wanted))
+        if existingBloom == nil, let first = kept.first, first.at < bloomEnd {
+            let shift = bloomEnd - first.at
+            for index in kept.indices {
+                kept[index].at += shift
+                kept[index].untilSeconds = kept[index].untilSeconds.map { $0 + shift }
+            }
+        }
+        var lastEnd = kept.last.map { $0.untilSeconds ?? $0.at } ?? (bloom.untilSeconds ?? bloomEnd)
+        while kept.count < wanted {
+            let start = lastEnd + 10
+            kept.append(RecipeStep(at: start, action: .pour, untilSeconds: start + 20, derived: true))
+            lastEnd = start + 20
+        }
+        let rest = water - bloomMass
+        var reached = bloomMass
+        for index in kept.indices {
+            let isLast = index == kept.count - 1
+            reached = isLast ? water : reached + RecipeScaling.roundHalf(rest / Double(kept.count))
+            kept[index].targetMass = reached
+        }
+        return inTimeOrder([bloom] + kept + others)
     }
 }

@@ -38,7 +38,7 @@ nonisolated enum RecipeCreation {
     }
 
     /// Save as recipe after a Live brew: what was heard, as written.
-    static func fromLive(brew: Brew, family: BrewerFamily, card: CoffeeCard?) -> Recipe {
+    static func fromLive(brew: Brew, family: BrewerFamily, card: CoffeeCard?, countsBloom: Bool = true) -> Recipe {
         let steps = LiveSteps.recipeSteps(brew.actualSteps)
         let last = steps.last { PourSplit.carriesWater($0.action) && $0.targetMass != nil }?.targetMass
         return Recipe(
@@ -54,7 +54,8 @@ nonisolated enum RecipeCreation {
             source: .mine,
             evidence: .unverified,
             cardID: card?.id,
-            brewID: brew.id
+            brewID: brew.id,
+            splitCountsBloom: countsBloom ? nil : false
         )
     }
 
@@ -93,7 +94,8 @@ nonisolated enum RecipeCreation {
             cardID: recipe.cardID,
             profileTags: recipe.profileTags,
             authorGrinder: recipe.authorGrinder,
-            rinseMassOverride: recipe.rinseMassOverride
+            rinseMassOverride: recipe.rinseMassOverride,
+            splitCountsBloom: recipe.splitCountsBloom
         )
     }
 

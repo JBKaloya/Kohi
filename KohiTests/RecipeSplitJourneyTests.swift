@@ -20,7 +20,7 @@ struct RecipeSplitJourneyTests {
             roastLevel: nil
         )
         draft.water = try #require(PourSplit.water(dose: 15, ratio: 15))
-        draft.steps = PourSplit.steps(dose: 15, water: 225, count: 3, countsBloom: true, targetTime: 180, keeping: draft.steps)
+        draft.steps = PourSplit.steps(dose: 15, water: 225, count: 3, countsBloom: true, targetTime: 180)
         draft.steps = PourSplit.applying(shares: [0.2, 0.5, 0.3], to: draft.steps, total: 225, countsBloom: true)
         draft.source = .mine
         return draft
@@ -86,8 +86,9 @@ struct RecipeSplitJourneyTests {
     @Test func theCreationFormAsksForRatioAndSplit() throws {
         let text = try String(contentsOf: BrewJourneySupport.kohiRoot().appending(path: "Recipes/StepBuilderSheet.swift"))
         #expect(text.contains("RollingCounter(Copy.ratioOneTo, value: ratioBinding"))
-        #expect(text.contains("if PourSplit.isSplittable(draft) { splitGroup }"))
-        #expect(text.contains("@AppStorage(PourSplit.countsBloomKey) private var countsBloom = true"))
+        #expect(text.contains("if PourSplitEditing.showsSplit(draft) { splitGroup }"))
+        #expect(text.contains("private var countsBloom: Bool { draft.splitCountsBloom ?? true }"))
+        #expect(text.contains("RollingCounter(\"Dose\", value: doseBinding"))
         #expect(text.contains("Rescale steps to these totals"))
     }
 }
