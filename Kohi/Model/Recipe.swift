@@ -257,14 +257,6 @@ nonisolated struct Recipe: Identifiable, Codable, Hashable, Sendable {
     var profileTags: [String]
     /// The grinder the author named, when they named one.
     var authorGrinder: String?
-    /// The guided brew advances on its own when the step's time is up.
-    /// On by default, for every recipe; Tap or Cues is a choice you make.
-    var autoAdvance: Bool
-    /// Auto follows the clock, Manual waits for a tap, Cues shows a sensory mark.
-    var advanceMode: AdvanceMode
-    /// Set once you pick a mode on How much?. The move to Auto by default
-    /// leaves a chosen mode alone.
-    var advanceModeChosen: Bool
     /// Chemex (and similar) can override the indicative rinse mass.
     var rinseMassOverride: Double?
 
@@ -295,9 +287,6 @@ nonisolated struct Recipe: Identifiable, Codable, Hashable, Sendable {
         referenceID: String? = nil,
         profileTags: [String] = [],
         authorGrinder: String? = nil,
-        autoAdvance: Bool = true,
-        advanceMode: AdvanceMode? = nil,
-        advanceModeChosen: Bool = false,
         rinseMassOverride: Double? = nil,
         createdAt: Date = .now,
         updatedAt: Date = .now
@@ -325,9 +314,6 @@ nonisolated struct Recipe: Identifiable, Codable, Hashable, Sendable {
         self.referenceID = referenceID
         self.profileTags = profileTags
         self.authorGrinder = authorGrinder
-        self.autoAdvance = autoAdvance
-        self.advanceMode = advanceMode ?? (autoAdvance ? .auto : .manual)
-        self.advanceModeChosen = advanceModeChosen
         self.rinseMassOverride = rinseMassOverride
         self.createdAt = createdAt
         self.updatedAt = updatedAt
@@ -528,10 +514,6 @@ nonisolated extension Recipe {
         referenceID = try c.decodeIfPresent(String.self, forKey: .referenceID)
         profileTags = try c.decodeIfPresent([String].self, forKey: .profileTags) ?? []
         authorGrinder = try c.decodeIfPresent(String.self, forKey: .authorGrinder)
-        autoAdvance = try c.decodeIfPresent(Bool.self, forKey: .autoAdvance) ?? (source == .reference)
-        advanceMode = try c.decodeIfPresent(AdvanceMode.self, forKey: .advanceMode)
-            ?? (autoAdvance ? .auto : .manual)
-        advanceModeChosen = try c.decodeIfPresent(Bool.self, forKey: .advanceModeChosen) ?? false
         rinseMassOverride = try c.decodeIfPresent(Double.self, forKey: .rinseMassOverride)
         createdAt = try c.decodeIfPresent(Date.self, forKey: .createdAt) ?? .now
         updatedAt = try c.decodeIfPresent(Date.self, forKey: .updatedAt) ?? .now
@@ -554,32 +536,8 @@ nonisolated extension RecipeStep {
     }
 }
 
-/// How the guided timer leaves a step.
-nonisolated enum AdvanceMode: String, Codable, CaseIterable, Identifiable, Sendable {
-    case auto
-    case manual
-    case cues
-
-    var id: String { rawValue }
-
-    var label: String {
-        switch self {
-        case .auto: "Auto"
-        case .manual: "Manual"
-        case .cues: "Cues"
-        }
-    }
-
-    var detail: String {
-        switch self {
-        case .auto: "By time"
-        case .manual: "Tap"
-        case .cues: "Visual"
-        }
-    }
-}
-
-/// What tells you the step is done, when it is not the clock.
+/// A sensory mark written on a step. The timer always advances by time; the
+/// mark is kept so nothing typed in is lost.
 nonisolated enum StepCue: Codable, Hashable, Sendable {
     case time
     case mass

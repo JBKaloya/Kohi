@@ -11,8 +11,20 @@ struct StepBuilderSheet: View {
 
     @State private var draft: Recipe
     var onSave: (Recipe) -> Void
+    /// What the recipe becomes on Save: express when edited on the way to
+    /// the timer, mine when created.
+    private let saveAs: RecipeSource
+    /// Create your recipe: the sheet also asks for the parameters a blank
+    /// recipe has nowhere else to get.
+    private let creating: Bool
+    /// Adjust on a recipe of mine: the whole recipe is editable, as when it
+    /// was created, and it keeps its source.
+    private let adjusting: Bool
+    /// From Recipes there is no brew to take the method from.
+    private let asksMethod: Bool
 
     @State private var tapCount = 0
+    @AppStorage(PourSplit.countsBloomKey) private var countsBloom = true
     @FocusState private var focus: Field?
     @State private var keyboardUp = false
 
@@ -20,9 +32,37 @@ struct StepBuilderSheet: View {
         case at(UUID), until(UUID)
     }
 
-    init(draft: Recipe, onSave: @escaping (Recipe) -> Void) {
+    init(
+        draft: Recipe,
+        saveAs: RecipeSource = .express,
+        creating: Bool = false,
+        adjusting: Bool = false,
+        asksMethod: Bool = false,
+        onSave: @escaping (Recipe) -> Void
+    ) {
         _draft = State(initialValue: draft)
+        self.saveAs = saveAs
+        self.creating = creating
+        self.adjusting = adjusting
+        self.asksMethod = asksMethod
         self.onSave = onSave
+    }
+
+    /// Create your recipe, ready to fill in, saved to Mine.
+    static func creation(draft: Recipe, asksMethod: Bool = false, onSave: @escaping (Recipe) -> Void) -> StepBuilderSheet {
+        StepBuilderSheet(draft: draft, saveAs: .mine, creating: true, asksMethod: asksMethod, onSave: onSave)
+    }
+
+    /// Adjust on a recipe of mine, from the brew or from Recipes.
+    static func adjusting(draft: Recipe, onSave: @escaping (Recipe) -> Void) -> StepBuilderSheet {
+        StepBuilderSheet(draft: draft, saveAs: draft.source, adjusting: true, onSave: onSave)
+    }
+
+    private var editsEverything: Bool { creating || adjusting }
+
+    private var title: String {
+        if creating { return Copy.createYourRecipe }
+        return adjusting ? Copy.adjust : "Steps"
     }
 
     var body: some View {
@@ -32,6 +72,8 @@ struct StepBuilderSheet: View {
                     VStack(alignment: .leading, spacing: 22) {
                         headerGroup
                         totalsGroup
+                        if PourSplit.isSplittable(draft) { splitGroup }
+                        if editsEverything { parametersGroup }
                         stepsGroup
                     }
                     .padding(.horizontal, 26)
@@ -73,7 +115,7 @@ struct StepBuilderSheet: View {
             .animation(Motion.snappy, value: keyboardUp)
             .scrollIndicators(.hidden)
             .background(Palette.paper.ignoresSafeArea())
-            .navigationTitle("Steps")
+            .navigationTitle(title)
             .navigationBarTitleDisplayMode(.inline)
             .keyboardDoneButton()
             .toolbar {
@@ -108,7 +150,143 @@ struct StepBuilderSheet: View {
                 presence: .useful
             )
             DictationField(text: $draft.name, vocabulary: { CoffeeLexicon.recipes(recipes.recipes) })
+            if asksMethod {
+                RollingPicker(
+                    label: "Method",
+                    options: BrewMethod.allCases.map { RollOption(id: $0, name: $0.label) },
+                    selection: Binding(
+                        get: { draft.method },
+                        set: {
+                            tapCount += 1
+                            draft = RecipeCreation.switching(draft, to: $0)
+                        }
+                    )
+                )
+            }
         }
+    }
+
+    /// Writing the ratio sets the water from the dose. Writing the dose
+    /// leaves the water alone: the two stay independent.
+    private var ratioBinding: Binding<Double?> {
+        Binding(
+            get: { PourSplit.ratio(dose: draft.dose, water: RecipeScaling.liquid(of: draft)) },
+            set: { ratio in
+                guard let ratio, let dose = draft.dose,
+                      let liquid = PourSplit.water(dose: dose, ratio: ratio)
+                else { return }
+                if draft.method == .espresso {
+                    draft.beverage = liquid
+                } else {
+                    draft.water = liquid
+                }
+            }
+        )
+    }
+
+    // MARK: - Split
+
+    private var split: PourSplit.Split? {
+        PourSplit.split(of: draft, countsBloom: countsBloom)
+    }
+
+    private var splitGroup: some View {
+        FieldGroup(title: Copy.split) {
+            RollingCounter(
+                Copy.services,
+                value: serviceCountBinding,
+                range: NumberRange(
+                    min: Double(PourSplit.serviceRange.lowerBound),
+                    max: Double(PourSplit.serviceRange.upperBound),
+                    step: 1,
+                    decimals: 0,
+                    default: 3
+                ),
+                labelWidth: 74
+            )
+            HStack(spacing: 10) {
+                Text(Copy.countTheBloom).catalogueLabel()
+                Spacer(minLength: 0)
+                LiquidToggle(isOn: $countsBloom, label: Copy.countTheBloom, height: 24)
+            }
+            .frame(minHeight: 44)
+            if let split {
+                if let bloom = split.bloom {
+                    Text("Bloom \(GrindRange.number(bloom.grams)) g, outside the split")
+                        .font(Typography.tag)
+                        .foregroundStyle(Palette.inkMuted)
+                }
+                let percents = split.percents
+                ForEach(Array(split.services.enumerated()), id: \.element.stepID) { index, service in
+                    let label = "\(index + 1) · \(service.action.label)"
+                    if index == split.services.count - 1 {
+                        HStack {
+                            Text(label).catalogueLabel().frame(width: 74, alignment: .leading)
+                            Text("\(percents[index]) % · \(GrindRange.number(service.grams)) g · \(Copy.theRest.lowercased())")
+                                .font(Typography.value)
+                                .foregroundStyle(Palette.inkMuted)
+                        }
+                    } else {
+                        RollingCounter(
+                            label,
+                            value: shareBinding(at: index),
+                            range: .share,
+                            unit: "%",
+                            labelWidth: 74,
+                            hint: "\(GrindRange.number(service.grams)) g"
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    private var serviceCountBinding: Binding<Double?> {
+        Binding(
+            get: { split.map { Double($0.services.count) } },
+            set: { value in
+                guard let value, let total = RecipeScaling.liquid(of: draft) else { return }
+                let count = Int(value.rounded())
+                guard count != split?.services.count else { return }
+                tapCount += 1
+                draft.steps = PourSplit.steps(
+                    dose: draft.dose,
+                    water: total,
+                    count: count,
+                    countsBloom: countsBloom,
+                    targetTime: draft.seconds,
+                    keeping: draft.steps
+                )
+            }
+        )
+    }
+
+    private func shareBinding(at index: Int) -> Binding<Double?> {
+        Binding(
+            get: { split.map { Double($0.percents[index]) } },
+            set: { value in
+                guard let value, let split, let total = RecipeScaling.liquid(of: draft) else { return }
+                let shares = PourSplit.setting(share: value / 100, at: index, in: split.services.map(\.share))
+                draft.steps = PourSplit.applying(shares: shares, to: draft.steps, total: total, countsBloom: countsBloom)
+            }
+        )
+    }
+
+    // MARK: - Parameters
+
+    private var parametersGroup: some View {
+        FieldGroup(title: "Parameters") {
+            RollingCounter("Temp", value: $draft.temperature, range: .temperature, unit: "°C", labelWidth: 74)
+            RollingCounter("Time", value: secondsBinding, range: .brewTime, unit: "s", labelWidth: 74)
+            TextRow(label: "Grind", text: $draft.grindLabel, placeholder: "medium-fine", capitalization: .never)
+        }
+    }
+
+    private var secondsBinding: Binding<Double?> {
+        Binding(
+            get: { draft.seconds.map(Double.init) },
+            set: { draft.seconds = $0.map { Int($0.rounded()) } }
+        )
     }
 
     // MARK: - Totals
@@ -121,7 +299,9 @@ struct StepBuilderSheet: View {
             } else {
                 RollingCounter("Water", value: $draft.water, range: .water, unit: "g", labelWidth: 74)
             }
-            if let ratio = draft.ratioValue {
+            if editsEverything {
+                RollingCounter(Copy.ratioOneTo, value: ratioBinding, range: .ratio, labelWidth: 74)
+            } else if let ratio = draft.ratioValue {
                 HStack {
                     Text("Ratio").catalogueLabel().frame(width: 74, alignment: .leading)
                     Text("1:\(GrindRange.number(ratio))")
@@ -361,20 +541,6 @@ struct StepBuilderSheet: View {
         )
         .padding(.top, 8)
 
-        TextRow(
-            label: "Cue",
-            text: Binding(
-                get: { stepBinding.wrappedValue.cue?.label ?? "" },
-                set: { text in
-                    let trimmed = text.trimmingCharacters(in: .whitespaces)
-                    stepBinding.wrappedValue.cue = trimmed.isEmpty ? nil : .visual(trimmed)
-                }
-            ),
-            placeholder: "bed drops to 2 mm",
-            capitalization: .sentences
-        )
-        .padding(.top, 8)
-
         // Accessories for this step (Melodrip, Switch…)
         accessoryChips(stepBinding: stepBinding)
             .padding(.top, 8)
@@ -514,7 +680,7 @@ struct StepBuilderSheet: View {
         if draft.name.trimmingCharacters(in: .whitespaces).isEmpty {
             draft.name = Recipe.expressTitle(family: draft.method.family)
         }
-        draft.source = .express
+        draft.source = saveAs
         draft.evidence = .unverified
         onSave(draft)
         dismiss()

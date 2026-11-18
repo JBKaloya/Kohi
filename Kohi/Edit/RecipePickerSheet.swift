@@ -31,6 +31,8 @@ struct RecipePickerList: View {
     var size: RecipeSize? = nil
     var selected: Recipe? = nil
     var lane: Lane? = nil
+    /// New recipe, first in Mine. Shown even when Mine is empty.
+    var onCreate: (() -> Void)? = nil
     let onPick: (Recipe) -> Void
 
     @Environment(CardStore.self) private var store
@@ -38,11 +40,11 @@ struct RecipePickerList: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 30) {
-            if shows(.mine), !recipes.recipes.isEmpty {
-                section("Mine", recipes: filtered(recipes.recipes))
+            if shows(.mine), !recipes.recipes.isEmpty || onCreate != nil {
+                section(.mine, recipes: filtered(recipes.recipes), onCreate: onCreate)
             }
             if shows(.pros) {
-                section(Copy.fromThePros, recipes: dedupedReferences)
+                section(.pros, recipes: dedupedReferences)
             }
         }
     }
@@ -85,18 +87,25 @@ struct RecipePickerList: View {
     }
 
     @ViewBuilder
-    private func section(_ title: String, recipes list: [Recipe]) -> some View {
-        if !list.isEmpty {
+    private func section(_ group: Lane, recipes list: [Recipe], onCreate: (() -> Void)? = nil) -> some View {
+        if !list.isEmpty || onCreate != nil {
             VStack(alignment: .leading, spacing: 12) {
-                Text(title).catalogueLabel()
-                Rectangle().fill(Palette.hairline).frame(height: 1)
+                // Under a tab the tab already names the group.
+                if lane == nil {
+                    Text(group.label).catalogueLabel()
+                    Rectangle().fill(Palette.hairline).frame(height: 1)
+                }
+
+                if let onCreate {
+                    NewRecipeRow(action: onCreate)
+                }
 
                 VStack(spacing: 0) {
                     ForEach(list) { recipe in
                         let shown = displayed(recipe)
                         RecipeRowView(
                             recipe: shown.recipe,
-                            provenance: recipe.source.label,
+                            provenance: RecipeRowView.provenance(of: recipe, under: lane?.label),
                             attribution: recipe.attribution,
                             scaledFrom: shown.scaledFrom,
                             isSelected: isSelected(recipe),
@@ -117,6 +126,26 @@ struct RecipePickerList: View {
     private func isSelected(_ recipe: Recipe) -> Bool {
         guard let selected else { return false }
         return RecipePickerMatch.isSame(recipe, selected)
+    }
+}
+
+/// New recipe at the head of Mine. Same weight as Adjust: a label with a
+/// plus, not a recipe row.
+struct NewRecipeRow: View {
+    var action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: 8) {
+                Image(systemName: "plus")
+                    .font(.system(size: 11, weight: .medium))
+                Text(Copy.newRecipe)
+            }
+            .catalogueLabel()
+            .padding(.vertical, 6)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
     }
 }
 

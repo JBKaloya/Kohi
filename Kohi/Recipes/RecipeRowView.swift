@@ -59,4 +59,10 @@ struct RecipeRowView: View {
         .accessibilityAddTraits(isSelected ? .isSelected : [])
         .animation(Motion.quick, value: isSelected)
     }
+
+    /// The trailing mark, left out when it would only repeat the tab.
+    static func provenance(of recipe: Recipe, under tab: String?) -> String {
+        let label = recipe.source.label
+        return label == tab ? "" : label
+    }
 }

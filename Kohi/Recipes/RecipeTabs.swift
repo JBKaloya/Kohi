@@ -10,8 +10,8 @@ enum RecipeTab: String, CaseIterable, Identifiable, Sendable {
     var label: String {
         switch self {
         case .all: "All"
-        case .mine: "My recipes"
-        case .reference: "Recipes from the pros"
+        case .mine: "Mine"
+        case .reference: Copy.fromThePros
         }
     }
 }

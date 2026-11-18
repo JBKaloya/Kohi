@@ -39,6 +39,10 @@ struct AfterBrewSheet: View {
     @State private var editingTasting = false
     @State private var acceptedNarration: Set<String> = []
     @State private var addingCoffee = false
+    /// Live: the dictation gave no step, so the clock stands for the brew.
+    @State private var nothingHeard = false
+    @State private var liveDraft: Recipe?
+    @AppStorage(PourSplit.countsBloomKey) private var countsBloom = true
 
     private var card: CoffeeCard { session.card }
     private var isLocked: Bool { session.mode == .edit && !isEditingSaved }
@@ -63,7 +67,7 @@ struct AfterBrewSheet: View {
                     if !session.hasCard { coffeeRow }
                     summary
                     saveAsRecipe
-                    whatYouDid
+                    if session.isLive { stepsHeard } else { whatYouDid }
                 }
                 .disabled(isLocked)
                 sensory
@@ -119,6 +123,18 @@ struct AfterBrewSheet: View {
             }
             .appEnvironment(appEnvironment)
         }
+        .sheet(item: $liveDraft) { draft in
+            StepBuilderSheet.creation(draft: draft) { recipe in
+                var mine = recipe
+                mine.source = .mine
+                if !session.hasCard { mine.cardID = nil }
+                recipes.add(mine)
+                session.brew.recipeID = mine.id
+                savedAsRecipe = true
+                liveDraft = nil
+            }
+            .appEnvironment(appEnvironment)
+        }
     }
 
     /// A saved brew opens read-only. One tap opens all of it, counters included.
@@ -143,7 +159,28 @@ struct AfterBrewSheet: View {
     /// Under the summary: what you just did can be the recipe next time.
     @ViewBuilder
     private var saveAsRecipe: some View {
-        if session.brew.dose != nil, session.brew.water != nil || session.brew.beverage != nil {
+        if session.isLive {
+            if !session.brew.actualSteps.isEmpty, !isTranscribingNote {
+                VStack(alignment: .leading, spacing: 4) {
+                    Button(savedAsRecipe ? "Saved as a recipe" : Copy.saveAsRecipe) {
+                        guard !savedAsRecipe else { return }
+                        tapCount += 1
+                        liveDraft = RecipeCreation.fromLive(
+                            brew: session.brew,
+                            family: session.tab(in: setup),
+                            card: session.hasCard ? card : nil
+                        )
+                    }
+                    .font(Typography.value)
+                    .foregroundStyle(savedAsRecipe ? Palette.inkMuted : Palette.ink)
+                    .frame(minHeight: 44)
+                    .disabled(savedAsRecipe)
+                    Text(Copy.keepTheseSteps)
+                        .font(Typography.tag)
+                        .foregroundStyle(Palette.inkMuted)
+                }
+            }
+        } else if session.brew.dose != nil, session.brew.water != nil || session.brew.beverage != nil {
             VStack(alignment: .leading, spacing: 4) {
                 Button(savedAsRecipe ? "Saved as a recipe" : "Save as recipe") {
                     guard !savedAsRecipe else { return }
@@ -295,6 +332,58 @@ struct AfterBrewSheet: View {
                 }
             }
         }
+    }
+
+    /// Live: what the dictation gave, each step at the time it was said.
+    /// A step can be removed here; Edit opens the full editor.
+    private var stepsHeard: some View {
+        InsightBlock(
+            title: Copy.stepsHeard,
+            bodyText: stepsHeardReading,
+            provenance: ActualSource.narration.label,
+            accessory: {
+                Button("Edit") { showStepEditor = true }
+                    .catalogueLabel()
+            }
+        ) {
+            VStack(alignment: .leading, spacing: 10) {
+                if isTranscribingNote {
+                    Text(Copy.transcribingBrewNote).catalogueLabel()
+                    ShimmerBar()
+                }
+                if !voiceTranscript.isEmpty {
+                    TextField("What you said", text: $voiceTranscript, axis: .vertical)
+                        .font(Typography.body)
+                        .foregroundStyle(Palette.ink)
+                        .lineLimit(2...8)
+                }
+                ForEach(session.brew.actualSteps) { step in
+                    HeardStepRow(step: step) {
+                        tapCount += 1
+                        withAnimation(Motion.snappy) {
+                            session.brew.actualSteps.removeAll { $0.id == step.id }
+                            session.brew.refreshPourRates()
+                        }
+                    }
+                }
+                if let split = LiveSteps.split(of: session.brew, countsBloom: countsBloom) {
+                    Text(countsBloom ? "Split · bloom counted" : "Split · bloom left out")
+                        .catalogueLabel()
+                        .padding(.top, 6)
+                    SplitBar(shares: split.services.map(\.share))
+                    Text(zip(split.services, split.percents).map { "\($0.action.label) \($1) %" }.joined(separator: " · "))
+                        .font(Typography.tag)
+                        .foregroundStyle(Palette.inkMuted)
+                }
+            }
+        }
+    }
+
+    private var stepsHeardReading: String {
+        if isTranscribingNote { return Copy.transcribingBrewNote }
+        if nothingHeard { return Copy.nothingHeard }
+        let count = session.brew.actualSteps.count
+        return count == 1 ? "One step" : "\(count) steps"
     }
 
     private var whatYouDidReading: String {
@@ -560,18 +649,59 @@ struct AfterBrewSheet: View {
         if !spoken.isEmpty {
             NarrationDeviation.apply(spoken, to: &session.brew)
         }
+        DictationArchive.shared.keep(
+            editedSteps: LiveSteps.timed(session.brew.actualSteps),
+            brewID: session.brew.id
+        )
         onSave()
     }
 
+    /// Live with nothing to read: one step for the whole clock.
+    private func settleLive(_ heard: [SpokenBrewParser.TimedStep], nothingHeard: Bool) {
+        guard session.isLive, session.mode == .create else { return }
+        self.nothingHeard = nothingHeard
+        LiveSteps.apply(heard, to: &session.brew)
+    }
+
+    private func settleSilentLive() {
+        guard session.isLive, session.brew.actualSteps.isEmpty else { return }
+        settleLive(
+            LiveSteps.fallback(seconds: session.brew.seconds, water: session.brew.water),
+            nothingHeard: true
+        )
+    }
+
     private func transcribeVoiceNoteIfNeeded() async {
-        guard session.voiceNote.hasFile else { return }
+        guard session.voiceNote.hasFile else {
+            settleSilentLive()
+            return
+        }
         isTranscribingNote = true
-        defer { isTranscribingNote = false }
+        defer {
+            isTranscribingNote = false
+            settleSilentLive()
+        }
         do {
-            let text = try await session.voiceNote.transcribe(
+            let sharing = lotFlags.isOn(.shareDictations)
+            var stash: UUID?
+            let outcome = try await session.voiceNote.transcribe(
                 keepAudio: lotFlags.isOn(.keepVoiceNote)
+            ) { url, _ in
+                stash = DictationArchive.shared.stash(audio: url, sharing: sharing)
+            }
+            let spoken = outcome.text.trimmingCharacters(in: .whitespacesAndNewlines)
+            let timed = SpokenBrewParser.timedSteps(phrases: outcome.phrases)
+            DictationArchive.shared.record(
+                id: stash,
+                outcome: outcome,
+                context: session.isLive ? .live : .afterBrew,
+                brewID: session.brew.id,
+                recipeID: session.recipe?.id,
+                parsed: DictationRecord.Parsed(
+                    steps: timed,
+                    result: SpokenBrewParser.parse(spoken, waters: setup.waterProfiles, filters: setup.filterStock)
+                )
             )
-            let spoken = text.trimmingCharacters(in: .whitespacesAndNewlines)
             guard !spoken.isEmpty else { return }
             let terms = SpokenLexicon.terms(
                 brew: session.brew,
@@ -589,7 +719,16 @@ struct AfterBrewSheet: View {
             SpokenBrewParser.apply(parsed, to: &session.brew, appendLeftover: false)
             session.brew.notes = DictationTranscript.apply(rewritten, to: brewBeforeVoice?.notes ?? "")
             voiceTranscript = rewritten
-            if session.brew.actualSource == .timer || session.brew.actualSource == .none {
+            if session.isLive {
+                if timed.isEmpty {
+                    settleLive(
+                        LiveSteps.fallback(seconds: session.brew.seconds, water: session.brew.water),
+                        nothingHeard: true
+                    )
+                } else {
+                    settleLive(timed, nothingHeard: false)
+                }
+            } else if session.brew.actualSource == .timer || session.brew.actualSource == .none {
                 session.brew.actualSource = .narration
                 session.brew.refreshPourRates()
             }

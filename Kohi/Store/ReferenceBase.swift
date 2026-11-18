@@ -253,8 +253,7 @@ nonisolated enum ReferenceBase {
             notes: normalized.notes,
             referenceID: key,
             profileTags: normalized.profileTags,
-            authorGrinder: normalized.authorGrinder,
-            autoAdvance: true
+            authorGrinder: normalized.authorGrinder
         )
     }
 

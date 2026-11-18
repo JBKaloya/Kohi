@@ -216,6 +216,92 @@ nonisolated enum SpokenBrewParser {
         brew.refreshPourRates()
     }
 
+    // MARK: - Timed steps
+
+    /// A step heard during a Live brew, at the time it was said.
+    struct TimedStep: Identifiable, Equatable, Codable, Sendable {
+        var id = UUID()
+        var at: Int
+        var action: StepAction
+        var mass: Double?
+        var agitation: Agitation?
+        /// Set only on the one step a silent brew falls back to.
+        var until: Int?
+        var note: String = ""
+
+        var timeLabel: String { String(format: "%d:%02d", at / 60, at % 60) }
+    }
+
+    /// Word gaps longer than this end an utterance. Speech segments are words.
+    static let utterancePause: TimeInterval = 1.2
+
+    /// Words grouped into what was said in one breath, each at its first word.
+    static func utterances(
+        _ phrases: [VoiceNoteTranscriber.Phrase]
+    ) -> [(at: TimeInterval, text: String)] {
+        var result: [(at: TimeInterval, text: String)] = []
+        var current: [VoiceNoteTranscriber.Phrase] = []
+        func flush() {
+            if let first = current.first {
+                result.append((first.at, current.map(\.text).joined(separator: " ")))
+            }
+            current = []
+        }
+        for phrase in phrases.sorted(by: { $0.at < $1.at }) {
+            if let last = current.last, phrase.at - last.at > utterancePause { flush() }
+            current.append(phrase)
+            if let mark = phrase.text.trimmingCharacters(in: .whitespaces).last, ".!?".contains(mark) {
+                flush()
+            }
+        }
+        flush()
+        return result
+    }
+
+    /// The steps said during the brew, each at the time of its utterance.
+    /// What else was said in the same breath stays on the step as a note.
+    static func timedSteps(phrases: [VoiceNoteTranscriber.Phrase]) -> [TimedStep] {
+        utterances(phrases).flatMap { utterance -> [TimedStep] in
+            let text = normalize(utterance.text)
+            let at = Int(utterance.at)
+            let (spoken, ranges) = spokenSteps(in: text, skipping: [])
+            var consumed = ranges
+            var steps = spoken.map {
+                TimedStep(at: at, action: $0.action, mass: $0.mass, agitation: $0.agitation)
+            }
+            if steps.isEmpty,
+               let range = text.range(of: Self.drawdownPattern, options: .regularExpression) {
+                steps = [TimedStep(at: at, action: .wait, note: StepAction.drawdown.label)]
+                consumed.append(range)
+            }
+            guard !steps.isEmpty else { return [] }
+            if let (agitation, range) = agitation(in: text, skipping: consumed) {
+                if steps[0].agitation == nil { steps[0].agitation = agitation }
+                consumed.append(range)
+            }
+            let rest = remainder(of: text, minus: consumed)
+                .split(separator: " ")
+                .filter { !Self.stepFiller.contains(String($0)) }
+                .joined(separator: " ")
+            if !rest.isEmpty {
+                let last = steps.count - 1
+                steps[last].note = steps[last].note.isEmpty ? rest : steps[last].note + " · " + rest
+            }
+            return steps
+        }
+    }
+
+    /// Words that only link a step to the sentence it was said in.
+    private static let stepFiller: Set<String> = [
+        "je", "j'ai", "on", "ça", "ca", "et", "puis", "alors", "là", "la", "le", "les",
+        "un", "une", "de", "du", "à", "au", "jusqu'à", "jusqu’à", "premier", "première",
+        "deuxième", "second", "seconde", "troisième", "dernier", "dernière", "now", "first",
+        "third", "last", "next", "i'm", "we",
+    ]
+
+    private static let drawdownPattern =
+        #"\b(draw ?down|draws down|drawing down|drains?|draining|draine|drainé|ça draine)\b"#
+
     // MARK: - Pieces
 
     /// Lowercased, with spoken numbers turned into digits so a single numeric
@@ -363,7 +449,7 @@ nonisolated enum SpokenBrewParser {
             (.preInfusion, "pre[- ]?infusion|preinfusion"),
             (.rinse, "rinse|rincer|rinsed|rincage"),
             (.bloom, "bloom|bloomed|fleur"),
-            (.pour, "pour|poured|verse|verser|versee"),
+            (.pour, "pour|poured|verse|verser|versee|versement"),
             (.wait, "wait|waited|attendre"),
             (.steep, "steep|steeped|infuse"),
             (.press, "press|pressed|presser"),
@@ -372,7 +458,7 @@ nonisolated enum SpokenBrewParser {
         ]
         var found: [(SpokenStep, Range<String.Index>)] = []
         for (action, verbs) in verbs {
-            let pattern = #"\b(?:\#(verbs))(?:\s+(?:to|a|à))?(?:\s+(\d+(?:\.\d+)?))?(?:\s*(?:g|grams|grammes|gramme))?\b"#
+            let pattern = #"\b(?:\#(verbs))(?:\s+(?:up to|to|jusqu'à|jusqu’à|jusqu'a|jusqua|a|à))?(?:\s+(\d+(?:\.\d+)?))?(?:\s*(?:g|grams|grammes|gramme))?\b"#
             var search = text.startIndex..<text.endIndex
             while let match = text.range(of: pattern, options: .regularExpression, range: search) {
                 if consumed.contains(where: { $0.overlaps(match) })

@@ -85,6 +85,18 @@ struct RecipesArchiveSnapshotTests {
         )
     }
 
+    @Test func proRecipeOffersAdjust() throws {
+        let reference = try #require(ReferenceBase.recipes.first)
+        SnapshotSupport.image(
+            of: host(
+                RecipeDetailSheet(recipe: reference, provenance: .reference(reference.attribution)),
+                cards: []
+            ),
+            height: 1400,
+            named: "detail-adjust"
+        )
+    }
+
     private func host<V: View>(
         _ view: V,
         cards: [CoffeeCard],
@@ -105,6 +117,7 @@ struct RecipesArchiveSnapshotTests {
             .environment(AIFlags(defaults: defaults))
             .environment(LotFlags(defaults: defaults))
             .environment(AIEventLog())
+            .environment(AIFeedbackStore(files: JSONFileStore(filename: "feedback-recipes-shot-\(name).json")))
             .environment(LooseBrewStore(
                 files: JSONFileStore(filename: "loose-brews-shot-\(name).json"),
                 ledgerFile: JSONDocumentStore(filename: "loose-brews-ledger-shot-\(name).json")

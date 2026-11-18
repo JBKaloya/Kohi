@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>Recipe et Live, avant / après · Kohi</title>
+  <link rel="stylesheet" href="./tastings.css">
+  <link rel="stylesheet" href="./brew-repeat.css">
+  <link rel="stylesheet" href="./live-recipe.css">
+  <link rel="stylesheet" href="./recipe-before-after.css">
+  <link rel="stylesheet" href="./site.css">
+  <link rel="stylesheet" href="./review.css">
+</head>
+<body>
+  <article class="page wide" id="review-root" data-review-root>
+    <a class="crumb" href="./index.html" data-review-chrome>Itérations</a>
+    <header class="stack gap-8" data-anchor="intro" data-anchor-label="Introduction">
+      <h1>Recipe et Live, avant / après</h1>
+      <p class="lead">
+        À gauche, l’app telle qu’elle est sur la machine, avec le travail du 11 novembre encore non commité. À droite, le plan du 12 novembre :
+        l’écran devient « Recipe », Live passe en entrée principale, « New recipe » ouvre Mine,
+        Adjust repart d’une recette, et chaque dictée est gardée dans Supabase pour qu’on apprenne.
+        La colonne de droite est codée depuis le 12 novembre, y compris l’onglet Brews de l’accueil et le détail d’une recette,
+        alignés sur le brew.
+      </p>
+    </header>
+
+    <div class="row gap-6 wrap" id="screens" style="margin-top:22px"></div>
+
+    <section class="section">
+      <div class="ba-grid">
+        <div class="stack gap-8">
+          <span class="cat">Avant · aujourd’hui</span>
+          <div id="before" class="brew-frame" data-anchor="avant" data-anchor-label="Avant"></div>
+        </div>
+        <div class="stack gap-8">
+          <span class="cat">Après · codé</span>
+          <div id="after" class="brew-frame" data-anchor="apres" data-anchor-label="Après"></div>
+        </div>
+        <div id="notes" class="stack gap-14" data-anchor="notes" data-anchor-label="Ce qui change"></div>
+      </div>
+    </section>
+
+    <section class="section stack gap-8" data-anchor="resume" data-anchor-label="En résumé">
+      <h2>En résumé</h2>
+      <table class="sheet">
+        <thead><tr><th>Sujet</th><th>Avant</th><th>Après</th></tr></thead>
+        <tbody>
+          <tr><td>Titre de l’écran</td><td>Which recipe?</td><td>Recipe</td></tr>
+          <tr><td>Entrée principale</td><td>Create your recipe</td><td>Live : brewer sans recette, en dictant</td></tr>
+          <tr><td>Créer une recette</td><td>En tête d’écran</td><td>« + New recipe », première ligne de Mine</td></tr>
+          <tr><td>Repartir d’une recette</td><td>Edit recipe, pour les miennes seulement, sans enregistrement</td><td>Adjust partout : une recette pro est copiée dans Mine, une des miennes est modifiée et enregistrée</td></tr>
+          <tr><td>Brew sans recette</td><td>Séquence par défaut, minutée</td><td>Chrono libre, aucune étape imposée</td></tr>
+          <tr><td>Après le brew</td><td>Transcription dans les notes</td><td>Étapes entendues et datées, répartition, Save as recipe</td></tr>
+          <tr><td>Onglets de l’accueil</td><td>My recipes · Recipes from the pros</td><td>Mine · From the pros, « + New recipe » en tête de Mine</td></tr>
+          <tr><td>Détail d’une recette</td><td>Edit ou Save a copy</td><td>Adjust, même éditeur que le brew</td></tr>
+          <tr><td>Audio de la dictée</td><td>Supprimé après la transcription</td><td>Envoyé dans Supabase avec la transcription et la lecture, réglage actif par défaut</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <p class="note" style="margin-top:28px">Sources : BrewScopeView, BrewStartView, RecipePickerList, GuidedBrewView, AfterBrewSheet, BrewVoiceNote, LotFlags. Plan : recipe_screen_and_live.</p>
+  </article>
+  <script src="./config.js"></script>
+  <script type="module" src="./recipe-before-after.js"></script>
+</body>
+</html>

@@ -8,6 +8,9 @@ struct BrewReadView: View {
     var previous: Brew?
     var onAgain: (() -> Void)?
     var onDone: () -> Void
+    /// Reached by saving a brew just made: the journey is over, so Done leads
+    /// and Brew again steps back. From a past brew, Brew again leads.
+    var endsTheBrew = false
 
     @State private var pickedMove: Int?
     @State private var correction: SuggestedCorrection?
@@ -44,29 +47,39 @@ struct BrewReadView: View {
                     }
                 }
 
-                if let onAgain {
-                    Button(action: onAgain) {
-                        Text(Copy.brewAgain)
-                            .font(Typography.label)
-                            .tracking(Typography.labelTracking)
-                            .textCase(.uppercase)
-                            .foregroundStyle(Palette.paper)
+                if endsTheBrew || onAgain == nil {
+                    primary(Copy.done, action: onDone)
+                    if let onAgain {
+                        Button(Copy.brewAgain, action: onAgain)
+                            .catalogueLabel()
                             .frame(maxWidth: .infinity)
-                            .frame(height: 52)
-                            .background(Palette.ink, in: Capsule())
                     }
-                    .buttonStyle(.plain)
+                } else if let onAgain {
+                    primary(Copy.brewAgain, action: onAgain)
+                    Button(Copy.done, action: onDone)
+                        .catalogueLabel()
+                        .frame(maxWidth: .infinity)
                 }
-
-                Button("Done", action: onDone)
-                    .catalogueLabel()
-                    .frame(maxWidth: .infinity)
             }
             .padding(26)
         }
         .scrollIndicators(.hidden)
         .background(Palette.paper.ignoresSafeArea())
         .onAppear(perform: load)
+    }
+
+    private func primary(_ title: String, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            Text(title)
+                .font(Typography.label)
+                .tracking(Typography.labelTracking)
+                .textCase(.uppercase)
+                .foregroundStyle(Palette.paper)
+                .frame(maxWidth: .infinity)
+                .frame(height: 52)
+                .background(Palette.ink, in: Capsule())
+        }
+        .buttonStyle(.plain)
     }
 
     // MARK: - What you'd change

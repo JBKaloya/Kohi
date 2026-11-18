@@ -48,13 +48,8 @@ struct RecipeDetailSheet: View {
                             rates: []
                         )
                     }
-                    if recipe.source == .mine || recipe.source == .express {
-                        Button("Edit") { isEditingMine = true }
-                            .catalogueLabel()
-                    } else if recipe.source == .reference || recipe.source == .ai {
-                        Button("Save a copy") { saveCopy() }
-                            .catalogueLabel()
-                    }
+                    Button(Copy.adjust) { adjust() }
+                        .catalogueLabel()
                     if !recipe.notes.isEmpty { notesSection }
                     attributionSection
                     variantSection
@@ -131,8 +126,10 @@ struct RecipeDetailSheet: View {
                 .appEnvironment(appEnvironment)
         }
         .sheet(item: $editingCopy) { copy in
-            StepBuilderSheet(draft: copy) { saved in
-                recipes.add(saved)
+            StepBuilderSheet.creation(draft: copy) { saved in
+                var mine = saved
+                mine.source = .mine
+                recipes.add(mine)
             }
             .appEnvironment(appEnvironment)
         }
@@ -141,8 +138,10 @@ struct RecipeDetailSheet: View {
                 .appEnvironment(appEnvironment)
         }
         .sheet(isPresented: $isEditingMine) {
-            RecipeEditSheet(recipe: recipe)
-                .appEnvironment(appEnvironment)
+            StepBuilderSheet.adjusting(draft: recipes.recipe(id: recipe.id) ?? recipe) { edited in
+                recipes.update(edited)
+            }
+            .appEnvironment(appEnvironment)
         }
         .fullScreenCover(item: $flow) { session in
             BrewFlowHost(
@@ -412,29 +411,13 @@ struct RecipeDetailSheet: View {
         }
     }
 
-    private func saveCopy() {
-        var copy = Recipe(
-            name: shown.name,
-            method: shown.method,
-            dose: shown.dose,
-            water: shown.water,
-            beverage: shown.beverage,
-            temperature: shown.temperature,
-            temperatureMax: shown.temperatureMax,
-            seconds: shown.seconds,
-            grindLabel: shown.grindLabel,
-            grindMicronsLow: shown.grindMicronsLow,
-            grindMicronsHigh: shown.grindMicronsHigh,
-            steps: shown.steps,
-            source: .mine,
-            evidence: .unverified,
-            attribution: shown.attribution,
-            notes: shown.notes,
-            referenceID: shown.referenceID,
-            autoAdvance: shown.advanceMode == .auto,
-            advanceMode: shown.advanceMode
-        )
-        editingCopy = copy
+    /// Yours is edited in place; anyone else's is copied into Mine first.
+    private func adjust() {
+        if RecipeCreation.isYours(recipe) {
+            isEditingMine = true
+        } else {
+            editingCopy = RecipeCreation.adjusting(recipe)
+        }
     }
 
     private var notesSection: some View {

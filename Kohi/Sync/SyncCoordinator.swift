@@ -48,6 +48,50 @@ final class SyncCoordinator: ArchiveChangeSink {
         register(looseBrews)
     }
 
+    @ObservationIgnored private var dictations: DictationArchive?
+
+    func attach(dictations: DictationArchive) {
+        self.dictations = dictations
+        dictations.onChange = { [weak self] in self?.pushSoon() }
+    }
+
+    /// Audio first, then the row that points at it, then the steps the
+    /// brewer kept. Each part is retried on the next pass until it lands.
+    private func syncDictations(client: SupabaseClient, userID: UUID) async {
+        guard let dictations else { return }
+        let bucket = client.storage.from(DictationArchive.bucket)
+        for record in dictations.pending() {
+            do {
+                if !record.audioUploaded {
+                    let url = dictations.audioURL(record.id)
+                    if let data = try? Data(contentsOf: url) {
+                        try await bucket.upload(
+                            DictationArchive.remotePath(userID: userID, id: record.id),
+                            data: data,
+                            options: FileOptions(contentType: "audio/mp4", upsert: true)
+                        )
+                    }
+                    dictations.markAudioUploaded(record.id)
+                }
+                if !record.rowSent {
+                    try await client.from("dictations")
+                        .upsert(DictationRow(record: record, userID: userID))
+                        .execute()
+                    dictations.markRowSent(record.id)
+                } else if record.editsPending, let edited = record.editedSteps {
+                    try await client.from("dictations")
+                        .update(DictationEditsPatch(editedSteps: edited))
+                        .eq("id", value: record.id)
+                        .execute()
+                    dictations.markEditsSent(record.id)
+                }
+            } catch {
+                Log.app.warning("dictation upload failed for \(record.id): \(error)")
+            }
+        }
+        dictations.removeFinished()
+    }
+
     private func importLegacyTastings() {
         guard let tastings, let store else { return }
         TastingMigrator.importLegacy(cards: store.cards, into: tastings)
@@ -156,6 +200,7 @@ final class SyncCoordinator: ArchiveChangeSink {
                 let pullGaps = try await pullEntities(client: client, userID: userID)
                 importLegacyTastings()
                 await syncTastingPhotos(client: client, userID: userID)
+                await syncDictations(client: client, userID: userID)
                 lastSyncDate = .now
                 let missing = Array(Set(pushGaps + pullGaps)).sorted()
                 if let summary = outbox.errorSummary {

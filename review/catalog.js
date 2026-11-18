@@ -16,7 +16,19 @@ export const CANVASES = [
     slug: "advance-modes",
     href: "./advance-modes.html",
     title: "Timing des recettes",
-    line: "Auto par défaut, Tap et Cues au choix sur How much?.",
+    line: "Auto seulement, décidé le 11 novembre après-midi. Le tap passe plus tôt.",
+  },
+  {
+    slug: "recipe-before-after",
+    href: "./recipe-before-after.html",
+    title: "Recipe et Live, avant / après",
+    line: "Plan du 12 novembre : Live en entrée principale, New recipe dans Mine, Adjust, dictées archivées.",
+  },
+  {
+    slug: "live-recipe",
+    href: "./live-recipe.html",
+    title: "Recipe, Live et archive des dictées",
+    line: "Codé : écran Recipe avec Live en tête, étapes entendues, dictées archivées dans Supabase (migration 0034 en attente).",
   },
   {
     slug: "brew-density",

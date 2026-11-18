@@ -193,8 +193,8 @@ struct VocabTests {
         #expect(Copy.anotherFieldIsListening == "Another field is listening")
         #expect(Copy.unfinishedVoiceNote == "There is a recording from a brew you did not finish.")
         #expect(Copy.keepVoiceNotes == "Keep brew recordings")
-        #expect(RecipeTab.reference.label == "Recipes from the pros")
-        #expect(RecipeTab.mine.label == "My recipes")
+        #expect(RecipeTab.reference.label == "From the pros")
+        #expect(RecipeTab.mine.label == "Mine")
         #expect(Copy.recipes == "Brews")
         #expect(Copy.narrate == "Narrate")
         #expect(Copy.whatYouDid == "As brewed")
@@ -316,7 +316,6 @@ struct RecipeFlowScreenTests {
     @Test func aReferenceRecipeHasAGuidedClockAndAfterSheetInputs() {
         let recipe = ReferenceBase.recipe(referenceID: "a1-v60-ultimate")
         #expect(recipe?.steps.isEmpty == false)
-        #expect(recipe?.autoAdvance == true)
         #expect(recipe?.steps.contains { $0.action == .drawdown || $0.action == .wait } == true)
         #expect(recipe?.profileTags.contains("clean") == true)
         #expect(recipe?.authorGrinder == "Comandante C40")

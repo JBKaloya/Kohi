@@ -19,6 +19,8 @@ struct GuidedBrewView: View {
     @State var brew: Brew
     var voiceNote: BrewVoiceNote
     var equipment: [Equipment] = []
+    /// No steps: a free clock, and the narration records what was done.
+    var isLive: Bool = false
     var onFinish: (Brew) -> Void
     var onCancel: () -> Void
     /// Tests snapshot the first frame without starting the clock.
@@ -65,7 +67,16 @@ struct GuidedBrewView: View {
 
                 Spacer(minLength: 12)
 
-                if steps.isEmpty {
+                if isLive, countdown == nil {
+                    liveBlock
+                } else if isLive, let countdown {
+                    Text("\(countdown)")
+                        .font(Typography.number)
+                        .foregroundStyle(Palette.ink)
+                        .frame(maxWidth: .infinity)
+                        .contentShape(Rectangle())
+                        .onTapGesture { skipCountdown() }
+                } else if steps.isEmpty {
                     finishedBlock
                 } else if isFinished {
                     finishedBlock
@@ -223,17 +234,27 @@ struct GuidedBrewView: View {
                     .font(Typography.tag)
                     .foregroundStyle(Palette.inkMuted)
             }
-            if recipe.advanceMode == .cues, let cue = step.cue {
-                Text(cue.label)
-                    .font(Typography.value)
-                    .foregroundStyle(Palette.ink)
-            } else if let next = nextLine, !isWait {
+            if let next = nextLine, !isWait {
                 Text(next)
                     .font(Typography.value)
                     .foregroundStyle(Palette.ink)
                     .lineLimit(2)
                     .minimumScaleFactor(0.7)
             }
+        }
+        .padding(.horizontal, 26)
+    }
+
+    private var liveBlock: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            Text(Copy.live)
+                .catalogueLabel()
+            rollingClock(size: 56)
+            Text(voiceNote.state == .denied ? Copy.liveNoMicrophone : Copy.liveNoSteps)
+                .font(Typography.value)
+                .foregroundStyle(Palette.inkMuted)
+            voiceNoteRow
+                .padding(.top, 4)
         }
         .padding(.horizontal, 26)
     }
@@ -320,10 +341,6 @@ struct GuidedBrewView: View {
 
     private func beginCountdown() {
         guard countdown == nil, !running else { return }
-        if recipe.advanceMode == .cues {
-            startClock()
-            return
-        }
         countdown = 3
         tickTrigger += 1
         autoTask?.cancel()
@@ -366,6 +383,9 @@ struct GuidedBrewView: View {
                 guard let start else { return }
                 elapsed = now.timeIntervalSince(start)
             }
+        if isLive, voiceNote.state == .idle, !voiceNote.hasFile {
+            Task { await voiceNote.start(brewID: brew.id) }
+        }
     }
 
     private func advance() {
@@ -395,7 +415,7 @@ struct GuidedBrewView: View {
     }
 
     private func armAutoAdvanceIfNeeded() {
-        guard recipe.advanceMode == .auto, !steps.isEmpty, index < steps.count, !autoArmed, !isRinse else { return }
+        guard !steps.isEmpty, index < steps.count, !autoArmed, !isRinse else { return }
         let end = GuidedTarget.targetTime(for: steps, at: index, total: recipe.seconds)
         guard elapsed >= end else { return }
         autoArmed = true
@@ -451,7 +471,7 @@ struct GuidedBrewView: View {
             recordCurrent(skipped: false)
         }
         brew.actualSource = brew.actualSource == .none ? .timer : brew.actualSource
-        brew.recipeName = brew.recipeName ?? recipe.name
+        if !isLive { brew.recipeName = brew.recipeName ?? recipe.name }
         brew.refreshPourRates()
         voiceNote.stop()
         BrewLiveActivity.end()
@@ -474,7 +494,7 @@ struct GuidedBrewView: View {
                 agitation: step.agitation
             )
         }
-        if brew.recipeName == nil { brew.recipeName = recipe.name }
+        if brew.recipeName == nil, !isLive { brew.recipeName = recipe.name }
     }
 
     private var voiceNoteRow: some View {

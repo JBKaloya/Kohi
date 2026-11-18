@@ -63,9 +63,10 @@ struct RecipeRow: Codable, Sendable {
         self.reference_id = recipe.referenceID
         self.profile_tags = recipe.profileTags
         self.author_grinder = recipe.authorGrinder
-        self.auto_advance = recipe.advanceMode == .auto
-        self.advance_mode = recipe.advanceMode.rawValue
-        self.advance_mode_chosen = recipe.advanceModeChosen ? true : nil
+        // Builds 15 and earlier still read these columns.
+        self.auto_advance = true
+        self.advance_mode = "auto"
+        self.advance_mode_chosen = nil
         self.rinse_mass_override = recipe.rinseMassOverride
         self.created_at = recipe.createdAt
         self.updated_at = recipe.updatedAt
@@ -96,9 +97,6 @@ struct RecipeRow: Codable, Sendable {
             referenceID: reference_id,
             profileTags: profile_tags ?? [],
             authorGrinder: author_grinder,
-            autoAdvance: auto_advance ?? true,
-            advanceMode: advance_mode.flatMap(AdvanceMode.init(rawValue:)),
-            advanceModeChosen: advance_mode_chosen ?? false,
             rinseMassOverride: rinse_mass_override,
             createdAt: created_at,
             updatedAt: updated_at

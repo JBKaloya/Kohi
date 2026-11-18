@@ -494,7 +494,7 @@ private struct ParcoursSchema: View {
             lane("Recettes", steps: [
                 ("All", "05-recettes-suggested"),
                 ("From the pros", "05-recettes-pros"),
-                ("My recipes", "05-recettes-mine"),
+                ("Mine", "05-recettes-mine"),
                 ("Fiche recette", "05-recette-detail"),
             ])
             Text("Brasser depuis une recette reprend Scope.")

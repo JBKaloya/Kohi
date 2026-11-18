@@ -246,7 +246,6 @@ struct RecipeTests {
             referenceID: "a1-v60-ultimate",
             profileTags: ["fruity"],
             authorGrinder: "Comandante C40",
-            autoAdvance: false,
             rinseMassOverride: 600,
             createdAt: Date(timeIntervalSince1970: 1_000),
             updatedAt: Date(timeIntervalSince1970: 2_000)
@@ -265,7 +264,7 @@ struct RecipeTests {
             "temperatureMax", "seconds", "grindLabel", "grindMicronsLow",
             "grindMicronsHigh", "steps", "source", "evidence", "attribution",
             "sourceURL", "notes", "cardID", "brewID", "referenceID",
-            "profileTags", "authorGrinder", "autoAdvance", "advanceMode", "advanceModeChosen", "rinseMassOverride",
+            "profileTags", "authorGrinder", "rinseMassOverride",
             "createdAt", "updatedAt",
         ]
         let actual = Set(Mirror(reflecting: fullRecipe()).children.compactMap(\.label))
@@ -304,7 +303,6 @@ struct RecipeTests {
             from: try JSONSerialization.data(withJSONObject: object)
         ).toRecipe()
         #expect(restored.profileTags.isEmpty)
-        #expect(restored.autoAdvance)
         #expect(restored.rinseMassOverride == nil)
     }
 }

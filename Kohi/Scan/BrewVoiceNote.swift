@@ -144,23 +144,29 @@ final class BrewVoiceNote {
         )
     }
 
-    func transcribe(keepAudio: Bool) async throws -> String {
+    /// `beforeDiscard` sees the recording and what was heard while the file
+    /// still exists, whether or not it is kept afterwards.
+    func transcribe(
+        keepAudio: Bool,
+        beforeDiscard: (URL, VoiceNoteTranscriber.Outcome) -> Void = { _, _ in }
+    ) async throws -> VoiceNoteTranscriber.Outcome {
         stop()
         guard let fileURL, hasFile else {
             clearPending()
             state = .idle
-            return ""
+            return VoiceNoteTranscriber.Outcome(text: "", coveredThrough: 0, duration: 0, phrases: [])
         }
         state = .transcribing
         do {
             let outcome = try await VoiceNoteTranscriber.transcribe(url: fileURL)
+            beforeDiscard(fileURL, outcome)
             if !keepAudio {
                 try? FileManager.default.removeItem(at: fileURL)
                 self.fileURL = nil
             }
             clearPending()
             state = .idle
-            return outcome.text
+            return outcome
         } catch {
             state = .failed
             throw error

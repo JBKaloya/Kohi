@@ -12,11 +12,19 @@ struct BrewFlowHost: View {
     @Environment(AIEventLog.self) private var events
     @Environment(SetupStore.self) private var setup
     @State private var reading = false
+    @State private var endsTheBrew = false
 
     var body: some View {
         journey
+            .id(session.id)
             .onAppear {
                 if session.opensRead { reading = true }
+            }
+            // Brew again swaps the session inside the same cover: start the
+            // new one on its own first screen, not on For next time.
+            .onChange(of: session.id) {
+                reading = session.opensRead
+                endsTheBrew = false
             }
     }
 
@@ -26,8 +34,9 @@ struct BrewFlowHost: View {
             BrewReadView(
                 session: session,
                 previous: session.card.brews.first { $0.id != session.brew.id },
-                onAgain: { onAgain?(session.brew) },
-                onDone: onDismiss
+                onAgain: onAgain == nil ? nil : { onAgain?(session.brew) },
+                onDone: onDismiss,
+                endsTheBrew: endsTheBrew
             )
         } else {
             // Pour sits behind the dial, so lifting the sheet reveals the timer
@@ -93,6 +102,7 @@ struct BrewFlowHost: View {
             brew: session.brew,
             voiceNote: session.voiceNote,
             equipment: setup.equipment,
+            isLive: session.isLive,
             onFinish: {
                 var brew = $0
                 if brew.actualSource == .none { brew.actualSource = .timer }
@@ -119,6 +129,7 @@ struct BrewFlowHost: View {
     private func save() {
         session.finish(store: store, events: events)
         BrewDraft.clear()
+        endsTheBrew = true
         reading = true
     }
 }

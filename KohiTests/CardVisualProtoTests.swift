@@ -3,8 +3,8 @@ import SwiftUI
 import Testing
 @testable import Kohi
 
-/// The hybrid face shipped with a single Kohi cards switch on the coffees
-/// bar. Only the fiche's own switch is still a debug prototype.
+/// The hybrid face is switched by a flipping card next to Scan, at the
+/// bottom of the grid. Only the fiche's own switch is still a debug prototype.
 struct CardVisualProtoTests {
     @Test func theFicheSwitchIsDebugOnly() throws {
         let proto = try String(contentsOf: BrewJourneySupport.kohiRoot().appending(path: "Grid/CardVisualProto.swift"))
@@ -21,12 +21,22 @@ struct CardVisualProtoTests {
         #expect(hybrid.contains("aspect: 4.0 / 5.0, fills: true"))
     }
 
-    @Test func theBarSitsAboveTheGridOutsideItsScroll() throws {
+    @Test func theFaceSwitchSitsNextToScan() throws {
         let grid = try String(contentsOf: BrewJourneySupport.kohiRoot().appending(path: "Grid/GridScreen.swift"))
-        #expect(grid.contains("CoffeesBar()\n                                if shouldShowSearch { searchChips }\n                                grid"))
+        #expect(!grid.contains("CoffeesBar"))
         #expect(!grid.contains("CardVisualMenu"))
-        let bar = try String(contentsOf: BrewJourneySupport.kohiRoot().appending(path: "Grid/CoffeesBar.swift"))
-        #expect(bar.contains("LiquidToggle(isOn: kohiCards, label: Copy.kohiCards"))
+        #expect(grid.contains("ScanButton(action: scanTapped)\n                            FaceSwitchButton()"))
+        let scan = try String(contentsOf: BrewJourneySupport.kohiRoot().appending(path: "Grid/ScanButton.swift"))
+        #expect(scan.contains("systemName: \"plus\""))
+        let face = try String(contentsOf: BrewJourneySupport.kohiRoot().appending(path: "Grid/FaceSwitchButton.swift"))
+        #expect(face.contains("looks.global = isKohi ? .scan : .kohi"))
+        #expect(face.contains(".accessibilityAddTraits(.isToggle)"))
+    }
+
+    @MainActor
+    @Test func theFlipSymbolExists() {
+        #expect(UIImage(systemName: FaceSwitchButton.symbol) != nil)
+        #expect(UIImage(systemName: "plus") != nil)
     }
 
     @MainActor
@@ -49,13 +59,18 @@ struct CardVisualProtoTests {
 
     @MainActor
     @Test(arguments: [false, true])
-    func coffeesBarReadsAsASwitch(kohi: Bool) {
-        let defaults = UserDefaults(suiteName: "CoffeesBar.\(UUID().uuidString)")!
+    func scanAndFaceSwitchSitSideBySide(kohi: Bool) {
+        let defaults = UserDefaults(suiteName: "FaceSwitch.\(UUID().uuidString)")!
         let looks = CardLookStore(defaults: defaults)
         looks.global = kohi ? .kohi : .scan
         SnapshotSupport.image(
-            of: CoffeesBar().environment(looks),
-            height: 48,
+            of: HStack(spacing: 16) {
+                ScanButton {}
+                FaceSwitchButton()
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .environment(looks),
+            height: 110,
             named: kohi ? "kohiCards" : "hybrid"
         )
     }

@@ -104,7 +104,6 @@ struct GridScreen: View {
                             .frame(maxHeight: .infinity)
                         } else {
                             VStack(spacing: 0) {
-                                CoffeesBar()
                                 if shouldShowSearch { searchChips }
                                 grid
                             }
@@ -149,7 +148,10 @@ struct GridScreen: View {
                         ProgressView().tint(Palette.inkMuted)
                     }
                     if tab == .coffees {
-                        ScanButton(action: scanTapped)
+                        HStack(spacing: 16) {
+                            ScanButton(action: scanTapped)
+                            FaceSwitchButton()
+                        }
                     } else if tab == .tastings {
                         if !tastings.isEmpty {
                             CircleButton(

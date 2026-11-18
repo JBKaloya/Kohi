@@ -40,14 +40,14 @@ struct CircleButton: View {
     }
 }
 
-/// The single affordance on the coffee grid. Everything else on that side of
-/// the catalogue is reached through a card.
+/// Adds a coffee by scanning its card. Sits with the face switch at the
+/// bottom of the grid; everything else is reached through a card.
 struct ScanButton: View {
     let action: () -> Void
 
     var body: some View {
         CircleButton(
-            systemName: "viewfinder",
+            systemName: "plus",
             accessibilityLabel: "Scan a card",
             action: action
         )

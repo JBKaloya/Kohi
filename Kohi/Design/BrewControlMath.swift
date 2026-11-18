@@ -27,6 +27,10 @@ struct NumberRange: Equatable, Sendable {
     static let dose = NumberRange(min: 1, max: 80, step: 0.1, decimals: 1, default: 15)
     static let water = NumberRange(min: 10, max: 1500, step: 1, decimals: 0, default: 250)
     static let beverage = NumberRange(min: 5, max: 150, step: 1, decimals: 0, default: 36)
+    /// The water side of 1:x.
+    static let ratio = NumberRange(min: 1, max: 30, step: 0.1, decimals: 1, default: 15)
+    /// A service's part of the water, in percent.
+    static let share = NumberRange(min: 0, max: 100, step: 1, decimals: 0, default: 30)
     static let temperature = NumberRange(min: 70, max: 100, step: 1, decimals: 0, default: 93)
     static let brewTime = NumberRange(min: 0, max: 600, step: 1, decimals: 0, default: 150)
     static let grindSetting = NumberRange(min: 0, max: 200, step: 0.1, decimals: 1, default: 20)

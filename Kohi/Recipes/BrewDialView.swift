@@ -10,7 +10,6 @@ struct BrewDialView: View {
     var onAlreadyBrewed: () -> Void
 
     @Environment(SetupStore.self) private var setup
-    @Environment(RecipeStore.self) private var recipes
     @State private var lift: CGFloat = 0
     @State private var resizeTask: Task<Void, Never>?
 
@@ -50,7 +49,6 @@ struct BrewDialView: View {
                         .foregroundStyle(Palette.inkMuted)
                 }
                 KitSummaryRow(session: session)
-                advanceRow
                 parameters
                 if !session.logsElsewhere {
                     Text(Copy.logWithoutTimerHint)
@@ -87,31 +85,6 @@ struct BrewDialView: View {
             }
         }
         .background(Palette.ink)
-    }
-
-    /// Auto by default. Tap waits for you, Cues shows what to look for.
-    private var advanceRow: some View {
-        HStack(alignment: .center, spacing: 12) {
-            Text(Copy.advance).catalogueLabel()
-                .frame(width: 74, alignment: .leading)
-            ChipRail {
-                ForEach(AdvanceMode.allCases) { mode in
-                    TagChip(text: Self.advanceLabel(mode), isSelected: session.advanceMode == mode) {
-                        session.setAdvanceMode(mode, store: recipes)
-                    }
-                }
-            }
-        }
-        .accessibilityElement(children: .contain)
-        .accessibilityLabel(Copy.advance)
-    }
-
-    static func advanceLabel(_ mode: AdvanceMode) -> String {
-        switch mode {
-        case .auto: "Auto"
-        case .manual: "Tap"
-        case .cues: "Cues"
-        }
     }
 
     private var brewPreview: some View {
@@ -185,6 +158,9 @@ struct BrewDialView: View {
     }
 
     private var sourceLine: String? {
+        if session.isLive {
+            return ([Copy.live] + [session.brew.method?.label].compactMap { $0 }).joined(separator: " · ")
+        }
         let name = (session.recipe?.name ?? session.brew.recipeName)?
             .trimmingCharacters(in: .whitespacesAndNewlines)
         if let name, !name.isEmpty { return name }

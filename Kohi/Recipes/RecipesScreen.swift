@@ -78,11 +78,6 @@ struct RecipesScreen: View {
                         .catalogueLabel()
                         .touchTarget()
                     Spacer()
-                    if tab == .mine {
-                        Button(Copy.newRecipe) { isNewRecipe = true }
-                            .catalogueLabel()
-                            .touchTarget()
-                    }
                 }
                 .padding(.horizontal, 26)
                 .padding(.top, 12)
@@ -140,12 +135,16 @@ struct RecipesScreen: View {
                 .appEnvironment(appEnvironment)
         }
         .sheet(isPresented: $isNewRecipe) {
-            RecipeEditSheet()
-                .appEnvironment(appEnvironment)
+            StepBuilderSheet.creation(draft: RecipeCreation.blank(), asksMethod: true) { recipe in
+                recipes.add(recipe)
+            }
+            .appEnvironment(appEnvironment)
         }
         .sheet(item: $editingRecipe) { recipe in
-            RecipeEditSheet(recipe: recipe)
-                .appEnvironment(appEnvironment)
+            StepBuilderSheet.adjusting(draft: recipe) { edited in
+                recipes.update(edited)
+            }
+            .appEnvironment(appEnvironment)
         }
         .sheet(item: $addingCoffee, onDismiss: keepToldCoffee) { _ in
             LinkCoffeeSheet(coffee: toldCoffee) { card in
@@ -298,6 +297,7 @@ struct RecipesScreen: View {
             let scaled = RecipeScaling.scaled(recipe, to: currentFilter.size)
                 RecipeRowView(
                     recipe: scaled.recipe,
+                    provenance: RecipeRowView.provenance(of: recipe, under: RecipeTab.reference.label),
                     attribution: recipe.attribution,
                     scaledFrom: scaled.scaledFromLabel ?? ""
                 ) {
@@ -329,9 +329,10 @@ struct RecipesScreen: View {
 
     @ViewBuilder
     private var mineContent: some View {
+        NewRecipeRow { isNewRecipe = true }
         if suggestionHome == .mine {
             suggestionBlock
-                .padding(.bottom, 22)
+                .padding(.vertical, 22)
         }
         if filteredMine.isEmpty {
             Text("Save a brew as a recipe to keep it here")
@@ -343,6 +344,7 @@ struct RecipesScreen: View {
                 let scaled = RecipeScaling.scaled(recipe, to: currentFilter.size)
                 RecipeRowView(
                     recipe: scaled.recipe,
+                    provenance: RecipeRowView.provenance(of: recipe, under: RecipeTab.mine.label),
                     attribution: recipe.attribution.isEmpty
                         ? CatalogueDate.happened(recipe.createdAt)
                         : recipe.attribution,

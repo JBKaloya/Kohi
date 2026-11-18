@@ -7,8 +7,6 @@ const MOMENTS = [
 
 const MODES = [
   { id: "auto", label: "Auto", detail: "By time" },
-  { id: "manual", label: "Manual", detail: "Tap" },
-  { id: "cues", label: "Cues", detail: "Visual" },
 ];
 
 const FRAMES = {

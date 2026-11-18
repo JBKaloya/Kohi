@@ -149,10 +149,10 @@ struct RootView: View {
                 sync.register(setup)
                 recipes.sink = sync
                 sync.register(recipes)
-                recipes.moveToAutoAdvanceIfNeeded()
                 store.tastings = tastings
                 sync.attach(tastings: tastings)
                 sync.attach(looseBrews: looseBrews)
+                sync.attach(dictations: .shared)
                 aiEvents.attach(client: SupabaseConfig.current, userID: account.userID)
                 feedback.attach(client: SupabaseConfig.current, userID: account.userID)
                 await flags.refresh(client: SupabaseConfig.current)
@@ -251,8 +251,23 @@ struct RootView: View {
         let note = BrewVoiceNote()
         note.attachPending(pending)
         do {
-            let text = try await note.transcribe(keepAudio: lotFlags.isOn(.keepVoiceNote))
-            let spoken = text.trimmingCharacters(in: .whitespacesAndNewlines)
+            let sharing = lotFlags.isOn(.shareDictations)
+            var stash: UUID?
+            let outcome = try await note.transcribe(keepAudio: lotFlags.isOn(.keepVoiceNote)) { url, _ in
+                stash = DictationArchive.shared.stash(audio: url, sharing: sharing)
+            }
+            let spoken = outcome.text.trimmingCharacters(in: .whitespacesAndNewlines)
+            DictationArchive.shared.record(
+                id: stash,
+                outcome: outcome,
+                context: .afterBrew,
+                brewID: pending.brewID,
+                recipeID: nil,
+                parsed: DictationRecord.Parsed(
+                    steps: SpokenBrewParser.timedSteps(phrases: outcome.phrases),
+                    result: SpokenBrewParser.parse(spoken, waters: setup.waterProfiles, filters: setup.filterStock)
+                )
+            )
             if !spoken.isEmpty, var card = store.cards.first(where: {
                 $0.brews.contains { $0.id == pending.brewID }
             }), let index = card.brews.firstIndex(where: { $0.id == pending.brewID }) {

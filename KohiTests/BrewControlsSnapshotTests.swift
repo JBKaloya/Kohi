@@ -79,7 +79,7 @@ struct BrewControlsSnapshotTests {
             ?? Recipe(name: "V60", method: .v60, dose: 30, water: 500, seconds: 210, steps: [
                 RecipeStep(at: 0, action: .bloom, targetMass: 60),
                 RecipeStep(at: 45, action: .pour, targetMass: 300),
-            ], autoAdvance: true)
+            ])
         SnapshotSupport.image(
             of: GuidedBrewView(
                 card: CoffeeCard(name: "Chelbesa"),

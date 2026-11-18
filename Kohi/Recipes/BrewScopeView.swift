@@ -1,6 +1,7 @@
 import SwiftUI
 
-/// Recipe selection: pick a family, pick a recipe, or build your own.
+/// Live first, then a recipe from Mine or the pros. New recipe heads Mine;
+/// Adjust starts again from the selected one.
 /// Format and Parameters moved to Today's settings.
 struct BrewScopeView: View {
     @Bindable var session: BrewSession
@@ -13,9 +14,9 @@ struct BrewScopeView: View {
     @Environment(\.appEnvironment) private var appEnvironment
 
     @State private var tapCount = 0
-    @State private var showBuilder = false
     @State private var showEditor = false
-    @State private var showNewRecipe = false
+    @State private var showCreation = false
+    @State private var adjustDraft: Recipe?
 
     var body: some View {
         StepFlow(
@@ -29,8 +30,17 @@ struct BrewScopeView: View {
             onNext: onNext
         ) {
             VStack(alignment: .leading, spacing: 28) {
-                // Family + provenance rails
+                JourneyChoiceRow(
+                    systemName: "waveform",
+                    title: Copy.live,
+                    detail: Copy.liveDetail
+                ) {
+                    tapCount += 1
+                    session.startLive()
+                }
+
                 VStack(alignment: .leading, spacing: 16) {
+                    Text(Copy.chooseARecipe).catalogueLabel()
                     TabRail(
                         tabs: BrewKit.journeyTabs,
                         selection: Binding(
@@ -51,28 +61,6 @@ struct BrewScopeView: View {
                     )
                 }
 
-                if session.recipeLane == .mine {
-                    VStack(alignment: .leading, spacing: 10) {
-                        if recipes.recipes.isEmpty {
-                            Text(Copy.noRecipesYet)
-                                .font(Typography.tag)
-                                .foregroundStyle(Palette.inkMuted)
-                        }
-                        Button {
-                            tapCount += 1
-                            showNewRecipe = true
-                        } label: {
-                            Label(Copy.newRecipe, systemImage: "plus")
-                                .font(Typography.label)
-                                .tracking(Typography.labelTracking)
-                                .textCase(.uppercase)
-                                .foregroundStyle(Palette.ink)
-                        }
-                        .buttonStyle(.plain)
-                        .touchTarget()
-                    }
-                }
-
                 // Recipe list — no size scaling here; scaling happens on Dial.
                 RecipePickerList(
                     card: session.card,
@@ -80,68 +68,77 @@ struct BrewScopeView: View {
                     family: session.tab(in: setup),
                     size: nil,
                     selected: session.recipe,
-                    lane: session.recipeLane
+                    lane: session.recipeLane,
+                    onCreate: {
+                        tapCount += 1
+                        showCreation = true
+                    }
                 ) { recipe in
                     tapCount += 1
                     session.apply(recipe: recipe, setup: setup)
                 }
 
-                // Edit selected express/mine recipe, or build a new one.
-                HStack(spacing: 20) {
-                    if let selected = session.recipe,
-                       (selected.source == .express || selected.source == .mine) {
-                        Button("Edit recipe") {
-                            tapCount += 1
-                            showEditor = true
-                        }
-                        .catalogueLabel()
+                if let selected = session.nominalRecipe ?? session.recipe {
+                    Button(Copy.adjust) {
+                        tapCount += 1
+                        adjust(selected)
                     }
-                    if session.recipeLane == .pros {
-                        Button("Build an express recipe") { showBuilder = true }
-                            .catalogueLabel()
-                    }
+                    .catalogueLabel()
                 }
             }
             .padding(.bottom, 24)
         }
         .haptic(.tap, trigger: tapCount)
-        .sheet(isPresented: $showBuilder) {
-            StepBuilderSheet(
-                draft: expressDraft,
-                onSave: { recipe in
-                    recipes.add(recipe)
-                    session.apply(recipe: recipe, setup: setup)
-                    showBuilder = false
-                }
-            )
+        .onAppear {
+            guard session.opensCreation else { return }
+            session.opensCreation = false
+            showCreation = true
+        }
+        .sheet(isPresented: $showCreation) {
+            StepBuilderSheet.creation(draft: newRecipeDraft) { recipe in
+                keepInMine(recipe)
+                showCreation = false
+            }
             .appEnvironment(appEnvironment)
         }
-        .sheet(isPresented: $showNewRecipe) {
-            StepBuilderSheet(
-                draft: newRecipeDraft,
-                onSave: { recipe in
-                    var mine = recipe
-                    mine.source = .mine
-                    recipes.add(mine)
-                    session.apply(recipe: mine, setup: setup)
-                    showNewRecipe = false
-                }
-            )
+        .sheet(item: $adjustDraft) { draft in
+            StepBuilderSheet.creation(draft: draft) { recipe in
+                keepInMine(recipe)
+                adjustDraft = nil
+            }
             .appEnvironment(appEnvironment)
         }
         .sheet(isPresented: $showEditor) {
-            if let selected = session.recipe {
-                StepBuilderSheet(
-                    draft: selected,
-                    onSave: { edited in
-                        tapCount += 1
-                        session.apply(recipe: edited, setup: setup)
-                        showEditor = false
+            if let selected = session.nominalRecipe ?? session.recipe {
+                StepBuilderSheet.adjusting(draft: selected) { edited in
+                    tapCount += 1
+                    if recipes.recipe(id: edited.id) != nil {
+                        recipes.update(edited)
+                    } else {
+                        recipes.add(edited)
                     }
-                )
+                    session.applyCreated(recipe: edited, setup: setup)
+                    showEditor = false
+                }
                 .appEnvironment(appEnvironment)
             }
         }
+    }
+
+    /// Yours is edited in place; anyone else's is copied into Mine first.
+    private func adjust(_ selected: Recipe) {
+        if RecipeCreation.isYours(selected) {
+            showEditor = true
+        } else {
+            adjustDraft = RecipeCreation.adjusting(selected)
+        }
+    }
+
+    private func keepInMine(_ recipe: Recipe) {
+        var mine = recipe
+        mine.source = .mine
+        recipes.add(mine)
+        session.applyCreated(recipe: mine, setup: setup)
     }
 
     private var lane: Binding<RecipePickerList.Lane> {
@@ -153,25 +150,11 @@ struct BrewScopeView: View {
 
     /// A recipe of yours, started from today's numbers. Kept in Mine.
     private var newRecipeDraft: Recipe {
-        var recipe = expressDraft
-        recipe.source = .mine
-        return recipe
-    }
-
-    private var expressDraft: Recipe {
-        var recipe = Recipe(
-            name: Recipe.expressTitle(family: session.tab(in: setup), card: session.card),
-            method: session.brew.method ?? .v60,
-            dose: session.brew.dose,
-            water: session.brew.water,
-            beverage: session.brew.beverage,
-            temperature: session.brew.temperature,
-            seconds: session.brew.seconds,
-            grindLabel: session.brew.grind.display(),
-            source: .express,
-            evidence: .unverified,
-            cardID: session.hasCard ? session.card.id : nil
+        RecipeCreation.draft(
+            from: session.brew,
+            family: session.tab(in: setup),
+            card: session.hasCard ? session.card : nil,
+            roastLevel: session.card.roastLevel
         )
-        return DefaultSequence.filling(recipe, roastLevel: session.card.roastLevel)
     }
 }

@@ -34,18 +34,18 @@ struct BrewStartView: View {
                     session.openPrevious()
                 }
                 choice(
-                    systemName: "book",
-                    title: Copy.useSavedRecipe,
-                    detail: "Mine"
+                    systemName: "waveform",
+                    title: Copy.live,
+                    detail: Copy.liveDetail
                 ) {
-                    session.openRecipes(.mine)
+                    session.startLive()
                 }
                 choice(
-                    systemName: "plus",
-                    title: Copy.startFromScratch,
-                    detail: Copy.fromThePros
+                    systemName: "book",
+                    title: Copy.chooseARecipe,
+                    detail: Copy.chooseARecipeDetail
                 ) {
-                    session.openRecipes(.pros)
+                    session.openRecipes(.mine)
                 }
                 choice(
                     systemName: "square.and.pencil",
@@ -65,30 +65,7 @@ struct BrewStartView: View {
         detail: String,
         action: @escaping () -> Void
     ) -> some View {
-        Button(action: action) {
-            HStack(spacing: 12) {
-                ZStack {
-                    Circle()
-                        .stroke(Palette.hairline, lineWidth: 1)
-                        .frame(width: 44, height: 44)
-                    Image(systemName: systemName)
-                        .font(.system(size: 15, weight: .medium))
-                        .foregroundStyle(Palette.ink)
-                }
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(title)
-                        .font(Typography.value)
-                        .foregroundStyle(Palette.ink)
-                    Text(detail)
-                        .font(Typography.tag)
-                        .foregroundStyle(Palette.inkMuted)
-                        .lineLimit(1)
-                }
-                Spacer(minLength: 0)
-            }
-            .contentShape(Rectangle())
-        }
-        .buttonStyle(.plain)
+        JourneyChoiceRow(systemName: systemName, title: title, detail: detail, action: action)
     }
 
     private func summary(_ brew: Brew) -> String {

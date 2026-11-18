@@ -16,73 +16,55 @@
     <header class="stack gap-8" data-anchor="intro" data-anchor-label="Introduction">
       <h1>Timing des recettes</h1>
       <p class="lead">
-        Même tasse, même séquence. Advance choisit qui fait quitter l’étape au minuteur guidé,
-        après Brew. Décidé le 11 novembre : Auto par défaut, Tap et Cues au choix sur How much?.
+        Même tasse, même séquence. Décidé le 11 novembre après-midi : le minuteur guidé avance
+        seulement par le temps. Tap et Cues ne sont plus des modes, et How much? n’offre plus de choix.
         Dose, eau, température et mouture restent leurs propres blocs.
       </p>
     </header>
 
     <section class="section stack gap-14" id="moments">
       <div class="row gap-6 wrap" id="moment-pills"></div>
-      <p class="note">Un bloom à 0:45, puis une attente. Le cue « bed drops to 2 mm » est l’exemple du champ Cue dans l’éditeur d’étape.</p>
+      <p class="note">Un bloom à 0:45, puis une attente.</p>
       <div class="modes" id="modes"></div>
     </section>
 
-    <section class="section stack gap-8" data-anchor="split" data-anchor-label="Où les modes se séparent">
-      <h2>Où les trois modes se séparent</h2>
+    <section class="section stack gap-8" data-anchor="split" data-anchor-label="Ce qui reste">
+      <h2>Ce qui reste du tap</h2>
       <p class="note">
-        Le tap avance dans les trois cas et enregistre le temps réel. Le rinçage n’avance jamais
-        seul. Toutes les recettes ouvrent sur Auto, les tiennes comprises, sauf si tu as choisi
-        un autre mode sur How much?. Aucune recette livrée n’a de cue écrit.
+        Le geste reste, le mode part. Toucher le bloc passe plus tôt et enregistre le temps réel.
+        Le rinçage, avant le chrono, se valide toujours d’un tap ou de Skip. Les recettes réglées
+        Tap ou Cues passent en Auto sans rien demander. Un repère déjà écrit sur une étape reste
+        dans les données mais ne s’affiche plus et ne s’édite plus.
       </p>
       <table class="sheet">
         <thead>
           <tr>
             <th>Moment</th>
             <th>Auto · By time</th>
-            <th>Manual · Tap</th>
-            <th>Cues · Visual</th>
           </tr>
         </thead>
         <tbody>
           <tr>
             <td>Après le rinçage</td>
             <td>3-2-1, puis le chrono</td>
-            <td>3-2-1, puis le chrono</td>
-            <td>Le chrono part tout de suite</td>
           </tr>
           <tr>
             <td>Sous l’étape</td>
             <td>Aperçu de la suivante</td>
-            <td>Aperçu de la suivante</td>
-            <td>Le cue, s’il est écrit</td>
           </tr>
           <tr>
             <td>Temps prévu atteint</td>
             <td>Avance seul après 3 s</td>
-            <td>Reste jusqu’au tap</td>
-            <td>Reste jusqu’au tap</td>
           </tr>
           <tr>
             <td>Un tap avant la fin</td>
-            <td>Enregistre le réel, passe</td>
-            <td>Enregistre le réel, passe</td>
             <td>Enregistre le réel, passe</td>
           </tr>
         </tbody>
       </table>
     </section>
 
-    <section class="section stack gap-12" id="keep" data-anchor="keep-one" data-anchor-label="Si on n’en gardait qu’un">
-      <h2>Si on n’en gardait qu’un</h2>
-      <div class="callout">
-        <h3>Question ouverte</h3>
-        <p>Lequel garderais-tu une fois le café en main, et qu’est-ce que les deux autres t’apportent encore — le passage tout seul, le tap, ou le repère visuel ?</p>
-      </div>
-      <p class="note">La réponse se pose en commentaire, sur la colonne du mode que tu garderais.</p>
-    </section>
-
-    <p class="note" style="margin-top:28px">Source : AdvanceMode, GuidedBrewView, StepBuilderSheet. Comportement du code actuel.</p>
+    <p class="note" style="margin-top:28px">Source : GuidedBrewView, BrewDialView, StepBuilderSheet. Comportement du code actuel.</p>
   </article>
   <script src="./config.js"></script>
   <script type="module" src="./advance-modes.js"></script>

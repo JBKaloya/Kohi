@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>Recipe, Live et archive des dictées · Kohi</title>
+  <link rel="stylesheet" href="./tastings.css">
+  <link rel="stylesheet" href="./brew-repeat.css">
+  <link rel="stylesheet" href="./live-recipe.css">
+  <link rel="stylesheet" href="./site.css">
+  <link rel="stylesheet" href="./review.css">
+</head>
+<body>
+  <article class="page" id="review-root" data-review-root>
+    <a class="crumb" href="./index.html" data-review-chrome>Itérations</a>
+    <header class="stack gap-8" data-anchor="intro" data-anchor-label="Introduction">
+      <h1>Recipe, Live et archive des dictées</h1>
+      <p class="lead">
+        Codé le 12 novembre 2026. L’écran Which recipe? devient Recipe, avec Live en tête.
+        Une extraction improvisée se documente en la dictant au fil de l’eau.
+        La dictée écrit les étapes ; elle ne fait jamais avancer le minuteur, qui reste sur Auto.
+        Chaque dictée de brew, Live ou après le brew, est archivée dans Supabase pour apprendre à mieux lire.
+      </p>
+    </header>
+
+    <div class="row gap-6 wrap" id="screens" style="margin-top:22px"></div>
+
+    <section class="section">
+      <div class="after-grid">
+        <div id="frame" class="brew-frame" data-anchor="parcours" data-anchor-label="Parcours"></div>
+        <div id="notes" class="stack gap-14" data-anchor="notes" data-anchor-label="Notes de l’écran"></div>
+      </div>
+    </section>
+
+    <section class="section stack gap-8" data-anchor="pipeline" data-anchor-label="Ce que fait la dictée">
+      <h2>Ce que fait la dictée, et ce qu’elle ne fait pas</h2>
+      <table class="sheet">
+        <thead><tr><th>Dit pendant le brew</th><th>Devient</th><th>Ne fait pas</th></tr></thead>
+        <tbody>
+          <tr><td>« bloom 40 grammes, je swirle »</td><td>0:04 · Bloom · 40 g · note « je swirle »</td><td>Ne lance ni n’arrête rien</td></tr>
+          <tr><td>« je verse jusqu’à 150 »</td><td>0:46 · Pour to 150 g</td><td>Ne passe pas à l’étape suivante</td></tr>
+          <tr><td>« deuxième versement à 250, plus lent »</td><td>1:31 · Pour to 250 g · note « plus lent »</td><td>Ne corrige pas la dose ni l’eau</td></tr>
+          <tr><td>« ça draine »</td><td>3:08 · Drawdown</td><td>N’arrête pas le chrono, Stop le fait</td></tr>
+        </tbody>
+      </table>
+      <p class="note">
+        L’heure de chaque étape est celle de la phrase dans l’enregistrement : les mots horodatés de la
+        transcription sont regroupés en phrases (pause de plus de 1,2 s ou ponctuation), puis
+        SpokenBrewParser lit chaque phrase. « ça draine » devient une étape d’attente notée Drawdown.
+        La transcription entière est ajoutée aux notes, sans rien écraser, comme partout ailleurs.
+      </p>
+    </section>
+
+    <section class="section stack gap-8" data-anchor="archive" data-anchor-label="Archive des dictées">
+      <h2>Archive des dictées</h2>
+      <p class="note">
+        Réglage « Share dictations to improve Kohi », activé par défaut, dans Features du profil.
+        Quand il est actif, l’audio m4a est gardé sur le téléphone puis envoyé dans le bucket privé
+        <code>dictations</code>, sous le dossier de l’utilisateur. Une ligne de la table
+        <code>dictations</code> garde la transcription, les phrases horodatées, ce que le parseur a lu,
+        puis les étapes gardées après correction (jusqu’à 7 jours). L’audio local est supprimé une fois envoyé.
+        Réglage coupé : rien n’est gardé ni envoyé.
+      </p>
+      <p class="note">Migration 0034 écrite, pas encore appliquée sur Supabase : en attente du feu vert.</p>
+    </section>
+
+    <section class="section stack gap-12" data-anchor="questions" data-anchor-label="Décisions">
+      <h2>Décidé</h2>
+      <div class="callout">
+        <h3>Entrée</h3>
+        <p>Écran Recipe, Live en premier, même composant que les autres choix. New recipe en tête de Mine, style d’Adjust.</p>
+      </div>
+      <div class="callout">
+        <h3>Rien d’entendu</h3>
+        <p>After propose une seule étape, la durée totale, et garde la transcription en note.</p>
+      </div>
+      <div class="callout">
+        <h3>Dose et eau</h3>
+        <p>Facultatives en live ; l’eau totale vient de la dernière masse dictée.</p>
+      </div>
+      <div class="callout">
+        <h3>Adjust</h3>
+        <p>Recette des pros : copie dans Mine, ouverte dans l’éditeur. Ma recette : modifiée sur place.</p>
+      </div>
+    </section>
+
+    <p class="note" style="margin-top:28px">Sources : NarrationPill, BrewVoiceNote, VoiceNoteTranscriber, SpokenBrewParser, AfterBrewSheet, PourSplit. Aucune connexion à une balance : le chrono reste interne.</p>
+  </article>
+  <script src="./config.js"></script>
+  <script type="module" src="./live-recipe.js"></script>
+</body>
+</html>

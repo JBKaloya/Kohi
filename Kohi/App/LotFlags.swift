@@ -15,6 +15,9 @@ final class LotFlags {
         case cardProfile
         case flavorOrigin
         case keepVoiceNote
+        /// On by default: every brew dictation goes to Supabase so the
+        /// parser can learn from real ones.
+        case shareDictations
 
         var id: String { rawValue }
 
@@ -24,6 +27,7 @@ final class LotFlags {
             case .cardProfile: "Card profile"
             case .flavorOrigin: "Aroma origin in diagnosis"
             case .keepVoiceNote: Copy.keepVoiceNotes
+            case .shareDictations: Copy.shareDictations
             }
         }
 
@@ -34,6 +38,7 @@ final class LotFlags {
             case .cardProfile: "The profile section is hidden."
             case .flavorOrigin: "Diagnosis ignores origin classes until they are verified."
             case .keepVoiceNote: "A brew note is transcribed then deleted."
+            case .shareDictations: "Dictations stay on this phone and are not sent to Kohi."
             }
         }
 

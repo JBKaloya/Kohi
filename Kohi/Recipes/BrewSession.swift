@@ -131,6 +131,17 @@ final class BrewSession: Identifiable {
     }
 
     func timerRecipe(in setup: SetupStore) -> Recipe {
+        if isLive {
+            return Recipe(
+                name: Copy.live,
+                method: brew.method ?? .v60,
+                dose: brew.dose,
+                water: brew.water,
+                beverage: brew.beverage,
+                source: .express,
+                evidence: .unverified
+            )
+        }
         // 1. Choose a base, scaling to the brew's live numbers.
         //    The snapshot already has steps; use them when present.
         let base: Recipe
@@ -167,10 +178,7 @@ final class BrewSession: Identifiable {
         stripped.steps = filled.steps.filter { $0.action != .rinse }
 
         let stock = brew.filterStockId.flatMap { setup.filterStock(id: $0) }
-        var guided = RinseRule.injecting(into: stripped, brewer: brewer, stock: stock)
-        guided.advanceMode = advanceMode
-        guided.autoAdvance = advanceMode == .auto
-        return guided
+        return RinseRule.injecting(into: stripped, brewer: brewer, stock: stock)
     }
 
     /// Attaches a recipe and pins it as the resize baseline. Every path that
@@ -178,6 +186,23 @@ final class BrewSession: Identifiable {
     func adopt(recipe: Recipe?) {
         self.recipe = recipe
         nominalRecipe = recipe
+        if recipe != nil { isLive = false }
+    }
+
+    /// Live: no recipe, a free clock, and the narration writes the steps.
+    var isLive = false
+
+    /// Live from Recipe or the launcher. Water is left for the dictation to
+    /// give; the dose stays as the kit set it, and both may stay empty.
+    func startLive() {
+        adopt(recipe: nil)
+        isLive = true
+        brew.recipeSnapshot = nil
+        brew.recipeName = nil
+        brew.water = nil
+        brew.beverage = nil
+        brew.scale = nil
+        goToDial()
     }
 
     func apply(recipe: Recipe, setup: SetupStore) {
@@ -188,6 +213,15 @@ final class BrewSession: Identifiable {
             size: size,
             setup: setup
         )
+    }
+
+    /// A recipe you just created: its numbers are the ones you typed, so it
+    /// is not rescaled to a cup size on the way to How much?.
+    func applyCreated(recipe: Recipe, setup: SetupStore) {
+        adopt(recipe: recipe)
+        size = RecipeSize.inferred(from: recipe.water)
+        brew = BrewPrefill.seed(card: card, recipe: recipe, setup: setup)
+        recipeLane = .mine
     }
 
     /// The liquid total of the recipe as chosen, before any resizing.
@@ -224,35 +258,6 @@ final class BrewSession: Identifiable {
 
     func keepLastApplication() {
         lastApplication = nil
-    }
-
-    /// How the timer leaves a step on this brew. A brew without a recipe
-    /// holds its own; it starts on Auto like everything else.
-    var advanceMode: AdvanceMode {
-        recipe?.advanceMode ?? nominalRecipe?.advanceMode ?? freeAdvanceMode
-    }
-
-    private var freeAdvanceMode: AdvanceMode = .auto
-
-    /// The choice on How much?. Kept on your own and express recipes;
-    /// a reference recipe only changes for this brew.
-    func setAdvanceMode(_ mode: AdvanceMode, store: RecipeStore? = nil) {
-        freeAdvanceMode = mode
-        recipe?.advanceMode = mode
-        recipe?.autoAdvance = mode == .auto
-        recipe?.advanceModeChosen = true
-        if nominalRecipe != nil {
-            nominalRecipe?.advanceMode = mode
-            nominalRecipe?.autoAdvance = mode == .auto
-            nominalRecipe?.advanceModeChosen = true
-        }
-        if let store, let recipe, recipe.source == .mine || recipe.source == .express,
-           var stored = store.recipe(id: recipe.id) {
-            stored.advanceMode = mode
-            stored.autoAdvance = mode == .auto
-            stored.advanceModeChosen = true
-            store.update(stored)
-        }
     }
 
     func apply(size: RecipeSize) {
@@ -348,10 +353,7 @@ final class BrewSession: Identifiable {
                 grindLabel: saved.grindLabel,
                 steps: saved.steps,
                 source: .express,
-                evidence: .unverified,
-                autoAdvance: saved.advanceMode == .auto,
-                advanceMode: saved.advanceMode,
-                advanceModeChosen: saved.advanceModeChosen
+                evidence: .unverified
             )
             store.add(copy)
             saved = copy
@@ -377,6 +379,16 @@ final class BrewSession: Identifiable {
 
     func openRecipes(_ lane: RecipePickerList.Lane) {
         recipeLane = lane
+        step = .scope
+    }
+
+    /// Set when Which recipe? should open straight on Create your recipe.
+    var opensCreation = false
+
+    /// Create your recipe, from the launcher. Which recipe? sits underneath,
+    /// so Cancel lands on the other entry rather than closing the journey.
+    func openCreation() {
+        opensCreation = true
         step = .scope
     }
 
@@ -413,6 +425,7 @@ final class BrewSession: Identifiable {
             guard let target = dialReturn else { return false }
             dialReturn = nil
             logsElsewhere = false
+            isLive = false
             step = target
             return true
         case .previous:
@@ -441,6 +454,11 @@ final class BrewSession: Identifiable {
     }
 
     func seedPlan(in setup: SetupStore) {
+        guard !isLive else {
+            brew.plannedSteps = []
+            brew.recipeSnapshot = nil
+            return
+        }
         let recipe = timerRecipe(in: setup)
         brew.plannedSteps = recipe.steps.enumerated().map { index, step in
             BrewStep(
