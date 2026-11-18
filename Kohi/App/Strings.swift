@@ -136,6 +136,34 @@ nonisolated enum Copy {
     /// Someone else's recipe, copied into Mine first.
     static let editACopy = "Edit a copy"
     static let brewOnce = "Brew once"
+    static let compareUpToThree = "Compare up to 3"
+    static let delete = "Delete"
+
+    static func deleteCoffees(_ count: Int) -> String {
+        count == 1 ? "Delete 1 coffee? Its brews go too." : "Delete \(count) coffees? Their brews go too."
+    }
+
+    static func coffeesDeleted(_ count: Int) -> String {
+        count == 1 ? "1 coffee deleted" : "\(count) coffees deleted"
+    }
+
+    static func deleteTastings(_ count: Int) -> String {
+        count == 1 ? "Delete 1 tasting?" : "Delete \(count) tastings?"
+    }
+
+    static func deleteMixed(coffees: Int, tastings: Int) -> String {
+        let c = coffees == 1 ? "1 coffee" : "\(coffees) coffees"
+        let t = tastings == 1 ? "1 tasting" : "\(tastings) tastings"
+        return "Delete \(c) and \(t)? The coffees' brews go too."
+    }
+
+    static func itemsDeleted(_ count: Int) -> String {
+        "\(count) deleted"
+    }
+
+    static func tastingsDeleted(_ count: Int) -> String {
+        count == 1 ? "1 tasting deleted" : "\(count) tastings deleted"
+    }
     static let stepsHeard = "Steps heard"
     static let nothingHeard = "No step heard. The transcript is in the notes."
     static let saveAsRecipe = "Save as recipe"

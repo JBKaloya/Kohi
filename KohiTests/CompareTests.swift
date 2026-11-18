@@ -94,3 +94,39 @@ struct CompareTests {
         SnapshotSupport.image(of: TasteRadar(series: series(3), size: 220), height: 320, named: "three")
     }
 }
+
+@MainActor
+struct CompareViewSnapshotTests {
+    @Test func threeBrewsSideBySide() {
+        let card = CoffeeCard(name: "Huabal", roaster: "Dak", brewMethod: .v60)
+        let brews = [
+            Brew(method: .v60, dose: 15, water: 250, seconds: 170, temperature: 93, taste: CompareTests.bright),
+            Brew(method: .v60, dose: 16, water: 250, seconds: 185, temperature: 94, taste: CompareTests.round),
+            Brew(method: .v60, dose: 15, water: 240, seconds: 160, temperature: 92, taste: CompareTests.dark),
+        ]
+        let series = brews.map { CompareSeries.brew($0, on: card, ink: nil) }
+        SnapshotSupport.image(of: CompareView(series: series), height: 900, named: "brews")
+    }
+
+    @Test func aCoffeeAndATastingMix() {
+        let card = CoffeeCard(
+            name: "Huabal",
+            roaster: "Dak",
+            brewMethod: .v60,
+            brews: [
+                Brew(method: .v60, dose: 15, water: 250, taste: CompareTests.bright),
+                Brew(method: .v60, dose: 15, water: 250, taste: CompareTests.round),
+            ]
+        )
+        let tasting = Tasting(
+            context: .out(place: Place(name: "Crible", address: "", latitude: 0, longitude: 0), placeID: nil),
+            coffee: TastedCoffee(name: "Gesha Village"),
+            taste: CompareTests.dark
+        )
+        let series = [
+            CompareSeries.coffee(card, ink: OKLab.fromSRGB(0.62, 0.18, 0.2)),
+            CompareSeries.tasting(tasting, card: nil, ink: nil),
+        ]
+        SnapshotSupport.image(of: CompareView(series: series), height: 700, named: "mixed")
+    }
+}

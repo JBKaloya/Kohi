@@ -12,6 +12,12 @@ final class CardStore {
     /// hold its landing animation until the transition is over.
     var landingCardID: UUID?
 
+    /// A batch delete waiting out its Undo. Off the grid, still on disk and
+    /// on the server until the window closes.
+    private(set) var heldForUndo: [CoffeeCard] = []
+    @ObservationIgnored private var undoTask: Task<Void, Never>?
+    static let undoWindow: Duration = .seconds(5)
+
     @ObservationIgnored weak var sink: (any ArchiveChangeSink)?
     /// Unlinked, never deleted, when a card goes.
     @ObservationIgnored weak var tastings: TastingStore?
@@ -99,6 +105,47 @@ final class CardStore {
 
     func delete(_ card: CoffeeCard) {
         cards.removeAll { $0.id == card.id }
+        finishDeleting(card)
+        scheduleSave()
+    }
+
+    /// Deletes several cards once `window` has passed without an Undo. A new
+    /// batch closes the window of the one before.
+    func deleteLater(_ ids: Set<UUID>, window: Duration = undoWindow) {
+        commitHeldDeletion()
+        let going = cards.filter { ids.contains($0.id) }
+        guard !going.isEmpty else { return }
+        cards.removeAll { ids.contains($0.id) }
+        heldForUndo = going
+        invalidateTitles()
+        undoTask = Task { [weak self] in
+            try? await Task.sleep(for: window)
+            guard !Task.isCancelled else { return }
+            self?.commitHeldDeletion()
+        }
+    }
+
+    func undoDeletion() {
+        undoTask?.cancel()
+        undoTask = nil
+        guard !heldForUndo.isEmpty else { return }
+        cards = Self.sorted(cards + heldForUndo)
+        heldForUndo = []
+        invalidateTitles()
+    }
+
+    /// Ends the window now: when it runs out, or when the app leaves.
+    func commitHeldDeletion() {
+        undoTask?.cancel()
+        undoTask = nil
+        guard !heldForUndo.isEmpty else { return }
+        let going = heldForUndo
+        heldForUndo = []
+        for card in going { finishDeleting(card) }
+        scheduleSave()
+    }
+
+    private func finishDeleting(_ card: CoffeeCard) {
         flavorIndex.removeValue(forKey: card.id)
         invalidateTitles()
         ThumbnailCache.shared.invalidate(card.id)
@@ -106,7 +153,6 @@ final class CardStore {
         sink?.cardDeleted(card.id)
         let id = card.id
         Task.detached(priority: .utility) { ImageStore.shared.removeAll(for: id) }
-        scheduleSave()
     }
 
     /// Newest scan first. The editable `date` field is for the cup, not the shelf
@@ -118,7 +164,7 @@ final class CardStore {
     /// Coalesces a burst of edits into one write.
     private func scheduleSave() {
         saveTask?.cancel()
-        let snapshot = cards
+        let snapshot = Self.sorted(cards + heldForUndo)
         let files = files
         saveTask = Task { [weak self] in
             try? await Task.sleep(for: .milliseconds(500))

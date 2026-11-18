@@ -18,6 +18,9 @@ final class TastingStore {
     @ObservationIgnored private let ledgerFile: JSONDocumentStore<TastingLedger>
     @ObservationIgnored private(set) var ledger: TastingLedger
     @ObservationIgnored private var saveTask: Task<Void, Never>?
+    /// A batch delete waiting out its Undo: hidden, not yet a tombstone.
+    private(set) var heldForUndo: Set<UUID> = []
+    @ObservationIgnored private var undoTask: Task<Void, Never>?
 
     init(
         files: JSONFileStore<Tasting> = JSONFileStore(filename: "tastings.json"),
@@ -31,7 +34,7 @@ final class TastingStore {
     }
 
     /// Alive tastings, newest first.
-    var tastings: [Tasting] { all.filter { !$0.isDeleted } }
+    var tastings: [Tasting] { all.filter { !$0.isDeleted && !heldForUndo.contains($0.id) } }
 
     var isEmpty: Bool { !all.contains { !$0.isDeleted } }
 
@@ -80,6 +83,31 @@ final class TastingStore {
         ledger.insertOnly.remove(tasting.id)
         sink?.changed(.tasting, id: tasting.id)
         scheduleSave()
+    }
+
+    /// Soft-deletes several once `window` has passed without an Undo.
+    func deleteLater(_ ids: Set<UUID>, window: Duration = CardStore.undoWindow) {
+        commitHeldDeletion()
+        heldForUndo = ids
+        undoTask = Task { [weak self] in
+            try? await Task.sleep(for: window)
+            guard !Task.isCancelled else { return }
+            self?.commitHeldDeletion()
+        }
+    }
+
+    func undoDeletion() {
+        undoTask?.cancel()
+        undoTask = nil
+        heldForUndo = []
+    }
+
+    func commitHeldDeletion() {
+        undoTask?.cancel()
+        undoTask = nil
+        let going = heldForUndo
+        heldForUndo = []
+        for tasting in all where going.contains(tasting.id) { delete(tasting) }
     }
 
     /// A deleted card leaves its tastings intact, only unlinked.

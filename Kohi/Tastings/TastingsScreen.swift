@@ -7,6 +7,9 @@ struct TastingsScreen: View {
     let onAdd: () -> Void
     @Binding var opened: Tasting?
     @Binding var openedPlace: PlaceGroup?
+    var picking: [UUID]? = nil
+    var onPick: (UUID) -> Void = { _ in }
+    var onStartPicking: (UUID) -> Void = { _ in }
 
     @Environment(TastingStore.self) private var tastings
     @State private var rail: Rail = .coffees
@@ -78,7 +81,13 @@ struct TastingsScreen: View {
             ForEach(months, id: \.title) { month in
                 VStack(alignment: .leading, spacing: 4) {
                     Text(month.title).catalogueLabel()
-                    TastingList(tastings: month.tastings) { opened = $0 }
+                    TastingList(
+                        tastings: month.tastings,
+                        picking: picking,
+                        onStartPicking: { onStartPicking($0.id) }
+                    ) { tasting in
+                        if picking != nil { onPick(tasting.id) } else { opened = tasting }
+                    }
                 }
             }
         }

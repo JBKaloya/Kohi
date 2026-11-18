@@ -23,6 +23,7 @@ struct GridScreen: View {
     @Environment(\.displayScale) private var displayScale
     @Environment(\.scenePhase) private var scenePhase
     @Environment(PlaceIndex.self) private var places
+    @Environment(LotFlags.self) private var lotFlags
 
     @State private var density: GridDensity = .launch
     @State private var densityChanges = 0
@@ -58,6 +59,14 @@ struct GridScreen: View {
     @State private var askingScan: PlaceSuggestion?
     @State private var answeredScan: ScanPurpose?
     @Namespace private var namespace
+    /// Selection mode, opened by a long press: ids in pick order, coffees
+    /// and tastings alike. Nil when off.
+    @State private var picking: [UUID]?
+    /// The press that opened the mode ends as a tap; that tap is not a pick.
+    @State private var pickingSince = Date.distantPast
+    @State private var confirmsPickDelete = false
+    @State private var comparePick: ComparePick?
+    @State private var undoText: String?
 
     private var filteredCards: [CoffeeCard] {
         store.cards.filter { card in
@@ -137,7 +146,10 @@ struct GridScreen: View {
                         TastingsScreen(
                             onAdd: { composesTasting = true },
                             opened: $openedTasting,
-                            openedPlace: $openedPlace
+                            openedPlace: $openedPlace,
+                            picking: picking,
+                            onPick: pick,
+                            onStartPicking: startPicking
                         )
                     }
                 }
@@ -147,7 +159,22 @@ struct GridScreen: View {
                     if isIngesting {
                         ProgressView().tint(Palette.inkMuted)
                     }
-                    if tab == .coffees {
+                    if let undoText {
+                        UndoBanner(text: undoText) {
+                            store.undoDeletion()
+                            tastings.undoDeletion()
+                            self.undoText = nil
+                        }
+                        .transition(.opacity)
+                    }
+                    if let picking {
+                        PickBar(
+                            count: picking.count,
+                            showsCompare: lotFlags.isOn(.brewCompare),
+                            onCompare: { comparePick = ComparePick(series: compareSeries(picking)) },
+                            onDelete: { confirmsPickDelete = true }
+                        )
+                    } else if tab == .coffees {
                         HStack(spacing: 16) {
                             ScanButton(action: scanTapped)
                             FaceSwitchButton()
@@ -185,6 +212,22 @@ struct GridScreen: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbarBackground(.hidden, for: .navigationBar)
             .toolbar(selection == nil ? .automatic : .hidden, for: .navigationBar)
+            .confirmationDialog(
+                deletePrompt,
+                isPresented: $confirmsPickDelete,
+                titleVisibility: .visible
+            ) {
+                Button(Copy.delete, role: .destructive) { deletePicked() }
+            }
+            .sheet(item: $comparePick) { pick in
+                CompareView(series: pick.series)
+            }
+            .task(id: undoText) {
+                guard undoText != nil else { return }
+                try? await Task.sleep(for: CardStore.undoWindow)
+                guard !Task.isCancelled else { return }
+                withAnimation(Motion.quick) { undoText = nil }
+            }
             .modifier(ConditionalSearchModifier(
                 text: $searchText,
                 isEnabled: shouldShowSearch
@@ -209,15 +252,26 @@ struct GridScreen: View {
             }
             .toolbar {
                 ToolbarItem(placement: .principal) {
-                    Text("Kohi")
-                        .font(Typography.brand)
-                        .foregroundStyle(Palette.ink)
+                    if let picking {
+                        Text("\(picking.count) selected")
+                            .font(Typography.tag)
+                            .foregroundStyle(Palette.ink)
+                    } else {
+                        Text("Kohi")
+                            .font(Typography.brand)
+                            .foregroundStyle(Palette.ink)
+                    }
                 }
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button {
-                        showProfile = true
-                    } label: {
-                        Image(systemName: account.isSignedIn ? "person.crop.circle.fill" : "person.crop.circle")
+                    if picking != nil {
+                        Button("Done") { withAnimation(Motion.quick) { picking = nil } }
+                            .fontWeight(.medium)
+                    } else {
+                        Button {
+                            showProfile = true
+                        } label: {
+                            Image(systemName: account.isSignedIn ? "person.crop.circle.fill" : "person.crop.circle")
+                        }
                     }
                 }
             }
@@ -332,6 +386,10 @@ struct GridScreen: View {
             .task(id: tab) { refreshFix() }
             .onChange(of: scenePhase) { _, phase in
                 if phase == .active { refreshFix() }
+                if phase == .background {
+                    store.commitHeldDeletion()
+                    tastings.commitHeldDeletion()
+                }
             }
             .task(id: nearby.coordinate?.latitude) {
                 guard nearby.coordinate != nil else { return }
@@ -533,8 +591,18 @@ struct GridScreen: View {
                                 width: metrics.tileWidth,
                                 namespace: namespace
                             ) {
-                                selection = card
+                                if picking != nil { pick(card.id) } else { selection = card }
                             }
+                            .overlay(alignment: .topTrailing) {
+                                if let picking {
+                                    PickMark(number: picking.firstIndex(of: card.id).map { $0 + 1 })
+                                }
+                            }
+                            .simultaneousGesture(
+                                LongPressGesture(minimumDuration: Self.pickPress).onEnded { _ in startPicking(card.id) },
+                                including: picking == nil ? .all : .subviews
+                            )
+                            .accessibilityAddTraits(picking?.contains(card.id) == true ? .isSelected : [])
                             .id(card.id)
                         }
                     }
@@ -549,7 +617,7 @@ struct GridScreen: View {
                     withAnimation(Motion.snappy) { scrolledDown = past }
                 }
                 .scaleEffect(pinchScale, anchor: .center)
-                .simultaneousGesture(pinchGesture)
+                .simultaneousGesture(pinchGesture, including: picking == nil ? .all : .subviews)
                 .onChange(of: store.landingCardID) { _, landing in
                     // A new card goes to the top of the archive, so bring the
                     // top of the archive into view to watch it arrive.
@@ -579,6 +647,65 @@ struct GridScreen: View {
         let bucket = ThumbnailCache.bucket(forWidth: tileWidth(for: density), scale: displayScale)
         for card in store.cards.prefix(Motion.Grid.launchPrewarmCount) {
             ThumbnailCache.shared.warm(card, buckets: [bucket])
+        }
+    }
+
+    // MARK: - Selection mode
+
+    static let pickPress = 0.45
+
+    private func startPicking(_ id: UUID) {
+        guard picking == nil else { return }
+        pickingSince = .now
+        withAnimation(Motion.quick) { picking = [id] }
+    }
+
+    private func pick(_ id: UUID) {
+        guard let current = picking, Date.now.timeIntervalSince(pickingSince) > 0.6 else { return }
+        picking = CompareSelection.toggling(id, in: current)
+    }
+
+    /// A coffee compares as its median; a tasting as itself.
+    private func compareSeries(_ ids: [UUID]) -> [CompareSeries] {
+        ids.compactMap { id in
+            if let card = store.card(id: id) {
+                let tasted = tastings.tastings.filter { $0.cardID == card.id }
+                return .coffee(card, tasted: tasted, ink: CompareSeries.ink(of: card))
+            }
+            if let tasting = tastings.tasting(id: id) {
+                let card = tasting.cardID.flatMap(store.card(id:))
+                return .tasting(tasting, card: card, ink: card.map(CompareSeries.ink(of:)))
+            }
+            return nil
+        }
+    }
+
+    private var pickedSplit: (cards: Set<UUID>, tastings: Set<UUID>) {
+        let ids = picking ?? []
+        let cards = Set(ids.filter { store.card(id: $0) != nil })
+        return (cards, Set(ids).subtracting(cards))
+    }
+
+    private var deletePrompt: String {
+        let split = pickedSplit
+        switch (split.cards.count, split.tastings.count) {
+        case (let c, 0): return Copy.deleteCoffees(c)
+        case (0, let t): return Copy.deleteTastings(t)
+        case (let c, let t): return Copy.deleteMixed(coffees: c, tastings: t)
+        }
+    }
+
+    private func deletePicked() {
+        let split = pickedSplit
+        if !split.cards.isEmpty { store.deleteLater(split.cards) }
+        if !split.tastings.isEmpty { tastings.deleteLater(split.tastings) }
+        withAnimation(Motion.quick) {
+            picking = nil
+            undoText = split.tastings.isEmpty
+                ? Copy.coffeesDeleted(split.cards.count)
+                : split.cards.isEmpty
+                    ? Copy.tastingsDeleted(split.tastings.count)
+                    : Copy.itemsDeleted(split.cards.count + split.tastings.count)
         }
     }
 

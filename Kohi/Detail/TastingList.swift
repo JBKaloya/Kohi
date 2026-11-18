@@ -16,6 +16,10 @@ struct TastingList: View {
     /// The Tastings tab leads with the coffee; a card already is the coffee.
     var showsCoffee = true
     var showsPlace = true
+    /// Selection mode: ids in pick order. Nil when off.
+    var picking: [UUID]? = nil
+    /// A long press opens selection mode on this row.
+    var onStartPicking: ((Tasting) -> Void)? = nil
     let onSelect: (Tasting) -> Void
 
     var body: some View {
@@ -27,9 +31,20 @@ struct TastingList: View {
                         .frame(height: 1)
                 }
                 Button { onSelect(tasting) } label: {
-                    TastingLine(tasting: tasting, showsCoffee: showsCoffee, showsPlace: showsPlace)
+                    HStack(spacing: 4) {
+                        if let picking {
+                            PickMark(number: picking.firstIndex(of: tasting.id).map { $0 + 1 })
+                                .padding(.leading, -8)
+                        }
+                        TastingLine(tasting: tasting, showsCoffee: showsCoffee, showsPlace: showsPlace)
+                    }
                 }
                 .buttonStyle(.plain)
+                .simultaneousGesture(
+                    LongPressGesture(minimumDuration: GridScreen.pickPress).onEnded { _ in onStartPicking?(tasting) },
+                    including: picking == nil && onStartPicking != nil ? .all : .subviews
+                )
+                .accessibilityAddTraits(picking?.contains(tasting.id) == true ? .isSelected : [])
             }
         }
     }
