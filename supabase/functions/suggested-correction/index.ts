@@ -1,6 +1,8 @@
 // suggested-correction: pick three moves from an admissible set the app already
 // computed. The model ranks and explains; it cannot invent a variable.
 
+import { generate } from "../_shared/gemini.ts";
+
 const PROMPT = `\
 You rank three brew corrections. You are given the only moves you may use \
 (allowed). Pick exactly three, rank them 1 (gentlest) to 3 (strongest), and \
@@ -66,47 +68,28 @@ Deno.serve(async (req) => {
   }
   if (!body.allowed) return json({ error: "missing allowed" }, 400);
 
-  const model = Deno.env.get("GEMINI_MODEL") ?? "gemini-3.6-flash";
   const started = Date.now();
-  const response = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`,
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json", "x-goog-api-key": apiKey },
-      body: JSON.stringify({
-        contents: [{
-          parts: [
-            { text: PROMPT },
-            { text: `Allowed moves: ${JSON.stringify(body.allowed)}` },
-            { text: `Reading hint: ${body.readingHint ?? ""}` },
-            { text: `Comment: ${body.comment ?? ""}` },
-            { text: `Recipe: ${body.recipeName ?? ""} · actualSource: ${body.actualSource ?? ""} · pourRates: ${JSON.stringify(body.pourRates ?? [])} · material deviations: ${body.deviations ?? 0}` },
-            { text: `Wishes: ${JSON.stringify(body.wishes ?? [])}` },
-            { text: `Reading: ${JSON.stringify(body.reading ?? {})}` },
-          ],
-        }],
-        generationConfig: {
-          temperature: 0.2,
-          responseMimeType: "application/json",
-          responseSchema: SCHEMA,
-          thinkingConfig: { thinkingLevel: "low" },
-        },
-      }),
-    },
-  );
+  const result = await generate(apiKey, [
+    { text: PROMPT },
+    { text: `Allowed moves: ${JSON.stringify(body.allowed)}` },
+    { text: `Reading hint: ${body.readingHint ?? ""}` },
+    { text: `Comment: ${body.comment ?? ""}` },
+    { text: `Recipe: ${body.recipeName ?? ""} · actualSource: ${body.actualSource ?? ""} · pourRates: ${JSON.stringify(body.pourRates ?? [])} · material deviations: ${body.deviations ?? 0}` },
+    { text: `Wishes: ${JSON.stringify(body.wishes ?? [])}` },
+    { text: `Reading: ${JSON.stringify(body.reading ?? {})}` },
+  ], {
+    temperature: 0.2,
+    responseMimeType: "application/json",
+    responseSchema: SCHEMA,
+    thinkingConfig: { thinkingLevel: "low" },
+  });
 
-  if (!response.ok) {
-    const detail = await response.text();
-    console.error(`gemini error ${response.status}: ${detail}`);
-    return json({ error: `model returned ${response.status}` }, 502);
-  }
+  if (!result.ok) return json({ error: `model returned ${result.status}` }, 502);
 
-  const data = await response.json();
-  const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+  const { text, usage, model } = result;
   if (!text) return json({ error: "empty model response" }, 502);
 
   const parsed = JSON.parse(text);
-  const usage = data?.usageMetadata ?? {};
   return json({
     ...parsed,
     model,

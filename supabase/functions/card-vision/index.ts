@@ -3,7 +3,9 @@
 // server-side; the app only ever sees the JSON result.
 //
 // Secrets:   GEMINI_API_KEY  (required)
-// Optional:  GEMINI_MODEL    (defaults to gemini-3.6-flash)
+// Optional: GEMINI_MODEL, GEMINI_MODEL_FALLBACK (see _shared/gemini.ts)
+
+import { generate } from "../_shared/gemini.ts";
 
 const PROMPT = `You are reading a photo of a specialty coffee bag label or a coffee info card.
 Extract the metadata printed on it and return JSON matching the response schema.
@@ -134,48 +136,29 @@ Deno.serve(async (req) => {
     return json({ error: "missing image" }, 400);
   }
 
-  const model = Deno.env.get("GEMINI_MODEL") ?? "gemini-3.6-flash";
   const started = Date.now();
-  const response = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-goog-api-key": apiKey,
-      },
-      body: JSON.stringify({
-        contents: [{
-          parts: [
-            { inlineData: { mimeType: mime ?? "image/jpeg", data: image } },
-            { text: PROMPT },
-          ],
-        }],
-        generationConfig: {
-          temperature: 0.1,
-          responseMimeType: "application/json",
-          responseSchema: SCHEMA,
-          // Gemini 3 replaced thinkingBudget with discrete levels; "low" is
-          // the recommended setting for extraction and keeps latency in check.
-          thinkingConfig: { thinkingLevel: "low" },
-        },
-      }),
-    },
-  );
+  const result = await generate(apiKey, [
+    { inlineData: { mimeType: mime ?? "image/jpeg", data: image } },
+    { text: PROMPT },
+  ], {
+    temperature: 0.1,
+    responseMimeType: "application/json",
+    responseSchema: SCHEMA,
+    // Gemini 3 replaced thinkingBudget with discrete levels; "low" is
+    // the recommended setting for extraction and keeps latency in check.
+    thinkingConfig: { thinkingLevel: "low" },
+  });
 
-  if (!response.ok) {
-    const detail = await response.text();
-    console.error(`gemini error ${response.status}: ${detail}`);
+  if (!result.ok) {
     // The two failures worth telling apart in the app log: out of credit, and
     // everything else.
-    const reason = response.status === 429
+    const reason = result.status === 429
       ? "vision model quota exhausted"
-      : `vision model returned ${response.status}`;
+      : `vision model returned ${result.status}`;
     return json({ error: reason }, 502);
   }
 
-  const data = await response.json();
-  const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+  const { text, usage, model } = result;
   if (!text) {
     console.error("gemini returned no candidate text");
     return json({ error: "empty model response" }, 502);
@@ -191,7 +174,6 @@ Deno.serve(async (req) => {
     console.error("gemini returned text that is not JSON");
     return json({ error: "unreadable model response" }, 502);
   }
-  const usage = data?.usageMetadata ?? {};
   return json({
     ...fields,
     model,

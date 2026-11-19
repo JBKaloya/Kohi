@@ -7,7 +7,9 @@
 // length of the note and the water before it does.
 //
 // Secrets:  GEMINI_API_KEY (required)
-// Optional: GEMINI_MODEL (defaults to gemini-3.6-flash)
+// Optional: GEMINI_MODEL, GEMINI_MODEL_FALLBACK (see _shared/gemini.ts)
+
+import { generate } from "../_shared/gemini.ts";
 
 const PROMPT = `\
 You are listening to someone narrating a coffee brew out loud while they \
@@ -28,9 +30,11 @@ Steps:
   "bloom 40" then "encore 100" is 40 then 140. Null when no mass was said, \
   and always null for wait, drawdown, swirl and stir.
 - A pattern describes several steps: "je verse par palier de 40, j'attends \
-  20 secondes entre chaque, jusqu'à 200" is five pours, 40, 80, 120, 160, \
-  200, twenty seconds apart from the moment it was said. When no target is \
-  said, the pattern ends on the water from the context.
+  20 secondes entre chaque, jusqu'à 200", said at 8 s after a 40 g bloom, is \
+  four pours: 80 at 8, 120 at 28, 160 at 48, 200 at 68. Each pour has its own \
+  at, the interval apart, even though it was all said at once. The waits \
+  between the pours of a pattern are not steps. When no target is said, the \
+  pattern ends on the water from the context.
 - "Ça draine", "drawdown", "it's draining" is a drawdown at that second.
 - A time spoken as a wait ("j'attends 20 secondes") is never a mass.
 - note carries what was said about the step that is not its action or its \
@@ -123,40 +127,25 @@ Deno.serve(async (req) => {
   const context = describe(body.context ?? {});
   if (context) parts.push({ text: context });
 
-  const model = Deno.env.get("GEMINI_MODEL") ?? "gemini-3.6-flash";
   const started = Date.now();
-  const response = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`,
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json", "x-goog-api-key": apiKey },
-      body: JSON.stringify({
-        contents: [{ parts }],
-        generationConfig: {
-          temperature: 0,
-          responseMimeType: "application/json",
-          responseSchema: SCHEMA,
-          thinkingConfig: { thinkingLevel: "low" },
-        },
-      }),
-    },
-  );
+  const result = await generate(apiKey, parts, {
+    temperature: 0,
+    responseMimeType: "application/json",
+    responseSchema: SCHEMA,
+    thinkingConfig: { thinkingLevel: "low" },
+  });
 
-  if (!response.ok) {
-    const detail = await response.text();
-    console.error(`gemini error ${response.status}: ${detail}`);
+  if (!result.ok) {
     return json({
-      error: response.status === 429
+      error: result.status === 429
         ? "model quota exhausted"
-        : `model returned ${response.status}`,
+        : `model returned ${result.status}`,
     }, 502);
   }
 
-  const data = await response.json();
-  const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+  const { text, usage, model } = result;
   if (!text) return json({ error: "empty model response" }, 502);
 
-  const usage = data?.usageMetadata ?? {};
   return json({
     fields: JSON.parse(text),
     model,

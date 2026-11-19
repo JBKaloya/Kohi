@@ -8,11 +8,10 @@
 // of thing this app should not produce.
 //
 // Secrets:  GEMINI_API_KEY, SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY
-// Optional: GEMINI_MODEL (defaults to gemini-3.6-flash)
-// Optional: GEMINI_MODEL_FALLBACK (defaults to gemini-2.5-flash) — used when
-// the primary model returns 429. Free-tier caps are per model.
+// Optional: GEMINI_MODEL, GEMINI_MODEL_FALLBACK (see _shared/gemini.ts)
 
 import { createClient } from "jsr:@supabase/supabase-js@2";
+import { generate } from "../_shared/gemini.ts";
 
 const PROMPT = `\
 You answer coffee questions for Kohi.
@@ -52,20 +51,6 @@ function json(body: unknown, status = 200): Response {
     status,
     headers: { "Content-Type": "application/json" },
   });
-}
-
-function generationConfig(model: string) {
-  const config: Record<string, unknown> = {
-    temperature: 0.1,
-    responseMimeType: "application/json",
-    responseSchema: SCHEMA,
-  };
-  // Gemini 3 takes thinkingLevel; 2.5 takes a budget. Asking the wrong
-  // shape is a 400, which would skip the 429 fallback.
-  if (model.startsWith("gemini-3")) {
-    config.thinkingConfig = { thinkingLevel: "low" };
-  }
-  return config;
 }
 
 Deno.serve(async (req) => {
@@ -116,57 +101,29 @@ Deno.serve(async (req) => {
     sources = [];
   }
 
-  const models = [
-    Deno.env.get("GEMINI_MODEL") ?? "gemini-3.6-flash",
-    Deno.env.get("GEMINI_MODEL_FALLBACK") ?? "gemini-2.5-flash",
-  ].filter((name, index, all) => name && all.indexOf(name) === index);
-
   const started = Date.now();
-  let model = models[0];
-  let data: { candidates?: { content?: { parts?: { text?: string }[] } }[]; usageMetadata?: Record<string, number> } | undefined;
-  let lastStatus = 502;
-  let lastDetail = "";
+  const result = await generate(apiKey, [
+    { text: PROMPT },
+    { text: `Sources:\n${JSON.stringify(sources)}` },
+    { text: `Question: ${question}` },
+  ], {
+    temperature: 0.1,
+    responseMimeType: "application/json",
+    responseSchema: SCHEMA,
+    thinkingConfig: { thinkingLevel: "low" },
+  });
 
-  for (const candidate of models) {
-    model = candidate;
-    const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "x-goog-api-key": apiKey },
-        body: JSON.stringify({
-          contents: [{
-            parts: [
-              { text: PROMPT },
-              { text: `Sources:\n${JSON.stringify(sources)}` },
-              { text: `Question: ${question}` },
-            ],
-          }],
-          generationConfig: generationConfig(model),
-        }),
-      },
+  if (!result.ok) {
+    return json(
+      { error: `model returned ${result.status}`, model: result.model },
+      result.status === 429 ? 429 : 502,
     );
-    if (response.ok) {
-      data = await response.json();
-      break;
-    }
-    lastStatus = response.status;
-    lastDetail = await response.text();
-    console.error(`gemini error ${response.status} model=${model}: ${lastDetail}`);
-    if (response.status !== 429) {
-      return json({ error: `model returned ${response.status}`, model }, 502);
-    }
   }
 
-  if (!data) {
-    return json({ error: `model returned ${lastStatus}`, model }, lastStatus === 429 ? 429 : 502);
-  }
-
-  const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+  const { text, usage, model } = result;
   if (!text) return json({ error: "empty model response" }, 502);
 
   const parsed = JSON.parse(text);
-  const usage = data?.usageMetadata ?? {};
   return json({
     ...parsed,
     // The titles, so the app can name the sources without a second query.

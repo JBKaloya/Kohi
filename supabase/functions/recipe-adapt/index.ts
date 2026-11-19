@@ -10,7 +10,9 @@
 // the rules it must not contradict, and is asked for one change with a reason.
 //
 // Secrets:  GEMINI_API_KEY (required)
-// Optional: GEMINI_MODEL (defaults to gemini-3.6-flash)
+// Optional: GEMINI_MODEL, GEMINI_MODEL_FALLBACK (see _shared/gemini.ts)
+
+import { generate } from "../_shared/gemini.ts";
 
 const PROMPT = `\
 You are suggesting one variant of a filter or espresso recipe that a rules \
@@ -87,36 +89,19 @@ Deno.serve(async (req) => {
     parts.push({ text: `Already brewed: ${JSON.stringify(body.history)}` });
   }
 
-  const model = Deno.env.get("GEMINI_MODEL") ?? "gemini-3.6-flash";
   const started = Date.now();
-  const response = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`,
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json", "x-goog-api-key": apiKey },
-      body: JSON.stringify({
-        contents: [{ parts }],
-        generationConfig: {
-          temperature: 0.2,
-          responseMimeType: "application/json",
-          responseSchema: SCHEMA,
-          thinkingConfig: { thinkingLevel: "low" },
-        },
-      }),
-    },
-  );
+  const result = await generate(apiKey, parts, {
+    temperature: 0.2,
+    responseMimeType: "application/json",
+    responseSchema: SCHEMA,
+    thinkingConfig: { thinkingLevel: "low" },
+  });
 
-  if (!response.ok) {
-    const detail = await response.text();
-    console.error(`gemini error ${response.status}: ${detail}`);
-    return json({ error: `model returned ${response.status}` }, 502);
-  }
+  if (!result.ok) return json({ error: `model returned ${result.status}` }, 502);
 
-  const data = await response.json();
-  const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+  const { text, usage, model } = result;
   if (!text) return json({ error: "empty model response" }, 502);
 
-  const usage = data?.usageMetadata ?? {};
   return json({
     variant: JSON.parse(text),
     model,
