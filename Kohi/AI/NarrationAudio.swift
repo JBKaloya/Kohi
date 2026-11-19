@@ -19,6 +19,9 @@ nonisolated enum NarrationAudio {
         var duration: Double?
         var recipe: [String] = []
         var vocabulary: [String] = []
+        /// What Speech heard, for a transcript that comes back without
+        /// timings to be placed against.
+        var phrases: [DictationRecord.Phrase] = []
     }
 
     struct Heard: Decodable, Sendable {

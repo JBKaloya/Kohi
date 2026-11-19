@@ -46,6 +46,12 @@ struct AfterBrewSheet: View {
     /// Live: the steps the device read, kept while the model's are shown.
     @State private var stepsBeforeModel: (steps: [BrewStep], water: Double?, nothingHeard: Bool)?
     @State private var liveDraft: Recipe?
+    /// Testers: every pipeline is hearing the note.
+    @State private var isComparing = false
+    @State private var comparison: Comparison?
+    @State private var comparisonAnswered = false
+    /// Kept past a swipe-down, which clears `comparison` before onDismiss.
+    @State private var lastComparison: Comparison?
     @AppStorage(PourSplit.countsBloomKey) private var countsBloom = true
 
     private var card: CoffeeCard { session.card }
@@ -126,6 +132,23 @@ struct AfterBrewSheet: View {
                 showStepEditor = false
             }
             .appEnvironment(appEnvironment)
+        }
+        .sheet(item: $comparison, onDismiss: {
+            if !comparisonAnswered, let dismissed = lastComparison {
+                comparisonAnswered = true
+                NarrationCompare.send(
+                    .skip,
+                    shown: dismissed.shown,
+                    dictationID: dismissed.dictationID,
+                    brewID: session.brew.id,
+                    duration: dismissed.duration,
+                    events: events
+                )
+            }
+        }) { current in
+            NarrationCompareSheet(candidates: current.shown, onAnswer: answerComparison)
+                .onAppear { lastComparison = current }
+                .appEnvironment(appEnvironment)
         }
         .sheet(item: $liveDraft) { draft in
             StepBuilderSheet.creation(draft: draft) { recipe in
@@ -364,6 +387,9 @@ struct AfterBrewSheet: View {
                 if isTranscribingNote {
                     Text(Copy.transcribingBrewNote).catalogueLabel()
                     ShimmerBar()
+                }
+                if isComparing {
+                    Text(Copy.comparingVersions).catalogueLabel()
                 }
                 if !voiceTranscript.isEmpty {
                     TextField("What you said", text: $voiceTranscript, axis: .vertical)
@@ -779,13 +805,112 @@ struct AfterBrewSheet: View {
             }
             if let audio {
                 isTranscribingNote = false
-                let heard = await hearAgain(audio: audio, duration: outcome.duration, lexicon: lexicon)
+                let context = narrationContext(
+                    duration: outcome.duration,
+                    lexicon: lexicon,
+                    phrases: outcome.phrases.map { DictationRecord.Phrase(at: $0.at, text: $0.text) }
+                )
+                let comparing = NarrationCompare.isEnabled(flags: flags, sharing: sharing)
+                if comparing { isComparing = true }
+                async let compared = comparing
+                    ? NarrationCompare.fetch(audio: audio, context: context)
+                    : nil
+                let heard = await hearAgain(audio: audio, duration: outcome.duration, context: context)
                 archived.modelSteps = heard?.steps
                 archived.model = heard?.model
+                let remote = await compared
+                isComparing = false
+                if let remote {
+                    offerComparison(
+                        remote,
+                        duration: outcome.duration,
+                        device: timed,
+                        transcript: spoken,
+                        dictationID: stash
+                    )
+                }
             }
         } catch {
             Log.app.notice("voice note transcription: \(error)")
         }
+    }
+
+    private func narrationContext(
+        duration: TimeInterval,
+        lexicon: [String],
+        phrases: [DictationRecord.Phrase]
+    ) -> NarrationAudio.Context {
+        NarrationAudio.Context(
+            method: session.brew.method?.rawValue,
+            dose: session.brew.dose,
+            water: session.brew.water,
+            duration: duration,
+            recipe: (session.recipe?.steps ?? []).map { step in
+                [step.action.label, step.targetMass.map { "\(Int($0)) g" }, "at \(step.at) s"]
+                    .compactMap { $0 }.joined(separator: " ")
+            },
+            vocabulary: Array(lexicon.prefix(40)),
+            phrases: phrases
+        )
+    }
+
+    /// Testers: every reading of the note, shuffled, once they are all back.
+    /// Nothing is shown when the brew has already been saved or left.
+    private func offerComparison(
+        _ remote: [NarrationCompare.Remote],
+        duration: TimeInterval,
+        device: [SpokenBrewParser.TimedStep],
+        transcript: String,
+        dictationID: UUID?
+    ) {
+        guard session.isLive, session.mode == .create, !Task.isCancelled else { return }
+        var generator = SystemRandomNumberGenerator()
+        let shown = NarrationCompare.shuffled(
+            NarrationCompare.candidates(
+                remote,
+                duration: duration,
+                water: session.brew.water,
+                device: device,
+                deviceTranscript: transcript
+            ),
+            using: &generator
+        )
+        comparison = Comparison(
+            shown: shown,
+            snapshot: session.brew.actualSteps,
+            dictationID: dictationID,
+            duration: duration
+        )
+    }
+
+    private func answerComparison(_ answer: NarrationCompare.Answer) {
+        guard let current = comparison else { return }
+        comparisonAnswered = true
+        comparison = nil
+        NarrationCompare.send(
+            answer,
+            shown: current.shown,
+            dictationID: current.dictationID,
+            brewID: session.brew.id,
+            duration: current.duration,
+            events: events
+        )
+        guard !answer.skipped, !answer.noneRight,
+              let picked = current.shown.first(where: { $0.pipeline == answer.chosen }),
+              !picked.steps.isEmpty
+        else { return }
+        applyPick(picked.steps, over: current.snapshot)
+    }
+
+    /// The pick becomes the steps, unless they were edited while the sheet
+    /// was being read. Undo goes back to what was there before any model.
+    private func applyPick(_ steps: [SpokenBrewParser.TimedStep], over snapshot: [BrewStep]) {
+        guard session.isLive, session.mode == .create, session.brew.actualSteps == snapshot else { return }
+        if stepsBeforeModel == nil {
+            stepsBeforeModel = (snapshot, session.brew.water, nothingHeard)
+        }
+        tapCount += 1
+        withAnimation(Motion.snappy) { settleLive(steps, nothingHeard: false) }
     }
 
     /// The model listens to the same note. Its steps replace the device's
@@ -793,23 +918,12 @@ struct AfterBrewSheet: View {
     private func hearAgain(
         audio: Data,
         duration: TimeInterval,
-        lexicon: [String]
+        context: NarrationAudio.Context
     ) async -> (steps: [SpokenBrewParser.TimedStep], model: String)? {
         let device = session.brew.actualSteps
         let water = session.brew.water
         isHearingAgain = true
         defer { isHearingAgain = false }
-        let context = NarrationAudio.Context(
-            method: session.brew.method?.rawValue,
-            dose: session.brew.dose,
-            water: water,
-            duration: duration,
-            recipe: (session.recipe?.steps ?? []).map { step in
-                [step.action.label, step.targetMass.map { "\(Int($0)) g" }, "at \(step.at) s"]
-                    .compactMap { $0 }.joined(separator: " ")
-            },
-            vocabulary: Array(lexicon.prefix(40))
-        )
         guard let outcome = await NarrationAudio.read(
             audio: audio,
             context: context,
@@ -847,5 +961,16 @@ struct AfterBrewSheet: View {
         withAnimation(Motion.snappy) { session.brew = brewBeforeVoice }
         self.brewBeforeVoice = nil
         voiceTranscript = ""
+    }
+}
+
+extension AfterBrewSheet {
+    /// What the compare sheet shows, and the steps it may replace.
+    struct Comparison: Identifiable {
+        let id = UUID()
+        var shown: [NarrationCompare.Candidate]
+        var snapshot: [BrewStep]
+        var dictationID: UUID?
+        var duration: TimeInterval
     }
 }
