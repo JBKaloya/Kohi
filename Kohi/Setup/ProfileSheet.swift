@@ -428,7 +428,8 @@ struct ProfileSheet: View {
                 .buttonStyle(.plain)
 
                 ForEach(AIFeature.allCases) { feature in
-                    if !feature.isExperimental || flags.isExperimentalEnabled {
+                    if (!feature.isExperimental || flags.isExperimentalEnabled),
+                       feature != .narrationCompare || TesterBuild.isTester {
                         featureRow(feature)
                     }
                 }

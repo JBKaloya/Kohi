@@ -21,6 +21,8 @@ nonisolated enum AIFeature: String, Codable, CaseIterable, Identifiable, Sendabl
     case menuExtract = "menu-extract"
     /// Listening to a Live voice note for the steps the device missed.
     case narration = "brew-narration"
+    /// Testers only: every way of hearing a note, shown blind, to pick from.
+    case narrationCompare = "narration-compare"
     /// Four-level usefulness scale under every model output.
     case aiFeedback = "ai-feedback"
 
@@ -35,6 +37,7 @@ nonisolated enum AIFeature: String, Codable, CaseIterable, Identifiable, Sendabl
         case .suggestedCorrection: "Suggested correction"
         case .menuExtract: "Read café menus"
         case .narration: "Hear brew steps"
+        case .narrationCompare: "Compare transcriptions"
         case .aiFeedback: "AI feedback"
         }
     }
@@ -50,6 +53,7 @@ nonisolated enum AIFeature: String, Codable, CaseIterable, Identifiable, Sendabl
         case .suggestedCorrection: "The rule still proposes one move."
         case .menuExtract: "Menus are still read on device."
         case .narration: "Steps are read on device."
+        case .narrationCompare: "The brew keeps one reading of the note."
         case .aiFeedback: "Usefulness is not recorded."
         }
     }
@@ -64,7 +68,7 @@ nonisolated enum AIFeature: String, Codable, CaseIterable, Identifiable, Sendabl
     var isExperimental: Bool {
         switch self {
         case .cardVision, .menuExtract, .aiFeedback: false
-        case .fieldExtract, .recipeAdapt, .ask, .suggestedCorrection, .narration: true
+        case .fieldExtract, .recipeAdapt, .ask, .suggestedCorrection, .narration, .narrationCompare: true
         }
     }
 
@@ -78,6 +82,7 @@ nonisolated enum AIFeature: String, Codable, CaseIterable, Identifiable, Sendabl
         case .suggestedCorrection: "suggested-correction"
         case .menuExtract: "field-extract"
         case .narration: "brew-narration"
+        case .narrationCompare: "narration-compare"
         case .aiFeedback: nil
         }
     }

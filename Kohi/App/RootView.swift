@@ -156,6 +156,7 @@ struct RootView: View {
                 aiEvents.attach(client: SupabaseConfig.current, userID: account.userID)
                 feedback.attach(client: SupabaseConfig.current, userID: account.userID)
                 await flags.refresh(client: SupabaseConfig.current)
+                await TesterBuild.resolve()
                 await seedIfNeeded()
                 _ = ArchiveMigrator.migrateIfNeeded(cards: store, setup: setup)
                 TastingMigrator.importLegacy(cards: store.cards, into: tastings)
