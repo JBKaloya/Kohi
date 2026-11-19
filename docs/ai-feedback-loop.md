@@ -47,9 +47,13 @@ Source : [`AIFeature`](../Kohi/AI/AIFeature.swift).
 | `recipe-adapt` | `recipe-adapt` | Proposer une variante sous la recette par règles | oui |
 | `ask` | `ask` | Répondre depuis la base de connaissances vérifiée, avec citations | oui |
 | `suggested-correction` | `suggested-correction` | Classer trois ajustements parmi l’ensemble admissible calculé localement | oui |
+| `brew-narration` | `brew-narration` | Réécouter la note d’un brew Live pour les étapes que l’iPhone a manquées | oui |
+| `narration-compare` | `narration-compare` | Testeurs (Debug et TestFlight) : comparer à l’aveugle toutes les lectures d’une note | oui |
 | `ai-feedback` | — | Affichage de l’échelle d’utilité | non |
 
-Toutes les edge functions appellent Gemini, modèle par défaut `gemini-3.6-flash`, surchargeable par la variable d’environnement `GEMINI_MODEL` côté Supabase (`ask` a aussi `GEMINI_MODEL_FALLBACK`, par défaut `gemini-2.5-flash`). Températures basses (0 à 0,2) et `thinkingLevel: "low"`. Chaque fonction renvoie au client le **modèle réellement utilisé**, les tokens et la latence, pour que la ligne `ai_events` reflète le vrai coût. Il n’y a pas de sélecteur de modèle dans l’app : changer de modèle se fait côté serveur, et les données se comparent par la colonne `model`.
+Les edge functions appellent Gemini via [`_shared/gemini.ts`](../supabase/functions/_shared/gemini.ts) : `gemini-3.8-flash` par défaut (`GEMINI_MODEL`), puis `gemini-3.5-flash-lite` (`GEMINI_MODEL_FALLBACK`) quand le premier est surchargé, hors quota, disparu ou dépasse 25 s. Températures basses (0 à 0,2) et `thinkingLevel: "low"`.
+
+La narration a quatre pipelines ([`_shared/narration-pipelines.ts`](../supabase/functions/_shared/narration-pipelines.ts)), choisis par `NARRATION_PIPELINE` : `gemini-audio` (Gemini écoute l’audio, par défaut), `scribe+luna` (ElevenLabs Scribe transcrit avec l’heure de chaque mot, `gpt-5.6-luna` lit les étapes), `scribe+gemini`, et `openai+luna` (`gpt-transcribe`, sans horodatage, les mots sont placés d’après ceux de l’iPhone). Si le pipeline choisi échoue, Gemini écoute l’audio à sa place. Comparaison et prix : [`audio-models-audit.md`](audio-models-audit.md). Chaque fonction renvoie au client le **modèle réellement utilisé**, les tokens et la latence, pour que la ligne `ai_events` reflète le vrai coût. Il n’y a pas de sélecteur de modèle dans l’app : changer de modèle se fait côté serveur, et les données se comparent par la colonne `model`.
 
 ---
 
