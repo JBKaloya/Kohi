@@ -148,6 +148,7 @@ final class BrewVoiceNote {
     /// still exists, whether or not it is kept afterwards.
     func transcribe(
         keepAudio: Bool,
+        contextualStrings: [String] = [],
         beforeDiscard: (URL, VoiceNoteTranscriber.Outcome) -> Void = { _, _ in }
     ) async throws -> VoiceNoteTranscriber.Outcome {
         stop()
@@ -160,7 +161,7 @@ final class BrewVoiceNote {
         let heard = await AudioGain.normalized(fileURL)
         defer { if heard != fileURL { try? FileManager.default.removeItem(at: heard) } }
         do {
-            let outcome = try await VoiceNoteTranscriber.transcribe(url: heard)
+            let outcome = try await VoiceNoteTranscriber.transcribe(url: heard, contextualStrings: contextualStrings)
             beforeDiscard(heard, outcome)
             if !keepAudio {
                 try? FileManager.default.removeItem(at: fileURL)

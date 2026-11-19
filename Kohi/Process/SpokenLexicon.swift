@@ -61,6 +61,14 @@ nonisolated enum SpokenLexicon {
         return result
     }
 
+    /// What a narration says between pours, in both languages. Biases the
+    /// recogniser toward the verbs the step parser reads.
+    static let stepWords: [String] = [
+        "bloom", "pour", "drawdown", "swirl", "stir", "wait",
+        "verse", "je verse", "jusqu'à", "palier", "paliers", "encore",
+        "j'attends", "secondes", "grammes", "ça draine", "touille",
+    ]
+
     /// The words a brew note actually uses, even when the kit is empty.
     static let coffeeWords: [String] = [
         "V60", "AeroPress", "Chemex", "Moka", "Kalita", "Origami",

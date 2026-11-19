@@ -18,7 +18,8 @@ nonisolated enum VoiceNoteTranscriber {
     }
 
     @concurrent
-    static func transcribe(url: URL) async throws -> Outcome {
+    /// `contextualStrings` biases recognition toward the kit and the step words.
+    static func transcribe(url: URL, contextualStrings: [String] = []) async throws -> Outcome {
         let duration = try await assetDuration(url)
         var collected = ""
         var covered: TimeInterval = 0
@@ -31,7 +32,7 @@ nonisolated enum VoiceNoteTranscriber {
         }
 
         for _ in 0..<VoiceNoteCoverage.maxPasses {
-            let pass = try await recognize(url: source)
+            let pass = try await recognize(url: source, contextualStrings: contextualStrings)
             collected = DictationTranscript.join(collected, pass.text)
             covered = VoiceNoteCoverage.coveredThrough(
                 origin: origin,
@@ -63,11 +64,11 @@ nonisolated enum VoiceNoteTranscriber {
     }
 
     @concurrent
-    private static func recognize(url: URL) async throws -> Pass {
+    private static func recognize(url: URL, contextualStrings: [String]) async throws -> Pass {
         var best: (pass: Pass, score: Double)?
         for locale in SpeechLocales.candidates {
             do {
-                let pass = try await recognize(url: url, locale: locale)
+                let pass = try await recognize(url: url, locale: locale, contextualStrings: contextualStrings)
                 if best == nil || pass.score > best!.score {
                     best = (pass, pass.score)
                 }
@@ -82,20 +83,36 @@ nonisolated enum VoiceNoteTranscriber {
     /// `@concurrent` so the continuation is never main-actor isolated, even
     /// if a later caller is. Speech resumes the handler on a background queue.
     @concurrent
-    private static func recognize(url: URL, locale: Locale) async throws -> Pass {
+    private static func recognize(url: URL, locale: Locale, contextualStrings: [String]) async throws -> Pass {
         guard let recognizer = SFSpeechRecognizer(locale: locale),
               recognizer.isAvailable,
               recognizer.supportsOnDeviceRecognition
         else { throw DictationError.unavailable }
 
         let request = SFSpeechURLRecognitionRequest(url: url)
-        request.shouldReportPartialResults = false
+        // Partial results are how the chunks before a pause are seen at all:
+        // the final result only carries the last one.
+        request.shouldReportPartialResults = true
         request.addsPunctuation = true
         request.requiresOnDeviceRecognition = true
+        request.contextualStrings = contextualStrings
 
         let gate = OSAllocatedUnfairLock(initialState: false)
+        let heard = OSAllocatedUnfairLock(initialState: (chunks: TranscriptChunks(), confidences: [Float]()))
         return try await withCheckedThrowingContinuation { continuation in
             recognizer.recognitionTask(with: request) { @Sendable result, error in
+                if let result {
+                    let segments = result.bestTranscription.segments
+                    heard.withLock { state in
+                        state.chunks.feed(
+                            segments.map { .init(at: $0.timestamp, duration: $0.duration, text: $0.substring) },
+                            endsUtterance: result.speechRecognitionMetadata != nil
+                        )
+                        if result.isFinal || result.speechRecognitionMetadata != nil {
+                            state.confidences.append(contentsOf: segments.map(\.confidence))
+                        }
+                    }
+                }
                 let shouldSettle = error != nil || result?.isFinal == true
                 guard shouldSettle else { return }
                 let first = gate.withLock { fired -> Bool in
@@ -104,23 +121,19 @@ nonisolated enum VoiceNoteTranscriber {
                     return true
                 }
                 guard first else { return }
-                if let error {
+                let (chunks, confidences) = heard.withLock { ($0.chunks, $0.confidences) }
+                // "No speech" after words were heard ends the file, it is not a failure.
+                if let error, chunks.segments.isEmpty {
                     continuation.resume(throwing: error)
                     return
                 }
-                guard let result else { return }
-                let text = result.bestTranscription.formattedString
-                let last = result.bestTranscription.segments.last
-                let end = last.map { $0.timestamp + $0.duration } ?? 0
-                let phrases = result.bestTranscription.segments.map {
-                    Phrase(at: $0.timestamp, text: $0.substring)
-                }
-                let score = SpeechLocales.score(text: text, segments: result.bestTranscription.segments)
+                let text = chunks.text
+                let speech = confidences.isEmpty ? 0 : Double(confidences.reduce(0, +)) / Double(confidences.count)
                 continuation.resume(returning: Pass(
                     text: text,
-                    coveredThrough: end,
-                    phrases: phrases,
-                    score: score
+                    coveredThrough: chunks.end,
+                    phrases: chunks.segments.map { Phrase(at: $0.at, text: $0.text) },
+                    score: speech + min(Double(text.count) / 400, 0.25)
                 ))
             }
         }

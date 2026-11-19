@@ -685,8 +685,15 @@ struct AfterBrewSheet: View {
         do {
             let sharing = lotFlags.isOn(.shareDictations)
             var stash: UUID?
+            let lexicon = SpokenLexicon.terms(
+                brew: session.brew,
+                recipe: session.recipe,
+                equipment: setup.equipment,
+                filters: setup.filterStock
+            )
             let outcome = try await session.voiceNote.transcribe(
-                keepAudio: lotFlags.isOn(.keepVoiceNote)
+                keepAudio: lotFlags.isOn(.keepVoiceNote),
+                contextualStrings: Array((SpokenLexicon.stepWords + lexicon).prefix(100))
             ) { url, _ in
                 stash = DictationArchive.shared.stash(audio: url, sharing: sharing)
             }
