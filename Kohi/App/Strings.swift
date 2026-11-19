@@ -166,6 +166,8 @@ nonisolated enum Copy {
     }
     static let stepsHeard = "Steps heard"
     static let nothingHeard = "No step heard. The transcript is in the notes."
+    static let heardByModel = "Heard by the model"
+    static let listeningAgain = "Listening again for the steps"
     static let saveAsRecipe = "Save as recipe"
     static let shareDictations = "Share dictations to improve Kohi"
     static let startABrew = "Start a brew"

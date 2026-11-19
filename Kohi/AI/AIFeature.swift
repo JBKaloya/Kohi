@@ -19,6 +19,8 @@ nonisolated enum AIFeature: String, Codable, CaseIterable, Identifiable, Sendabl
     case suggestedCorrection = "suggested-correction"
     /// Reading a photographed café menu into coffees, from its OCR text.
     case menuExtract = "menu-extract"
+    /// Listening to a Live voice note for the steps the device missed.
+    case narration = "brew-narration"
     /// Four-level usefulness scale under every model output.
     case aiFeedback = "ai-feedback"
 
@@ -32,6 +34,7 @@ nonisolated enum AIFeature: String, Codable, CaseIterable, Identifiable, Sendabl
         case .ask: "Answer questions"
         case .suggestedCorrection: "Suggested correction"
         case .menuExtract: "Read café menus"
+        case .narration: "Hear brew steps"
         case .aiFeedback: "AI feedback"
         }
     }
@@ -46,6 +49,7 @@ nonisolated enum AIFeature: String, Codable, CaseIterable, Identifiable, Sendabl
         case .ask: "No answers, no citations."
         case .suggestedCorrection: "The rule still proposes one move."
         case .menuExtract: "Menus are still read on device."
+        case .narration: "Steps are read on device."
         case .aiFeedback: "Usefulness is not recorded."
         }
     }
@@ -60,7 +64,7 @@ nonisolated enum AIFeature: String, Codable, CaseIterable, Identifiable, Sendabl
     var isExperimental: Bool {
         switch self {
         case .cardVision, .menuExtract, .aiFeedback: false
-        case .fieldExtract, .recipeAdapt, .ask, .suggestedCorrection: true
+        case .fieldExtract, .recipeAdapt, .ask, .suggestedCorrection, .narration: true
         }
     }
 
@@ -73,6 +77,7 @@ nonisolated enum AIFeature: String, Codable, CaseIterable, Identifiable, Sendabl
         case .ask: "ask"
         case .suggestedCorrection: "suggested-correction"
         case .menuExtract: "field-extract"
+        case .narration: "brew-narration"
         case .aiFeedback: nil
         }
     }

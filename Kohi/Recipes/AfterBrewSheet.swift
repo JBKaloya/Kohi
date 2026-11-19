@@ -41,6 +41,10 @@ struct AfterBrewSheet: View {
     @State private var addingCoffee = false
     /// Live: the dictation gave no step, so the clock stands for the brew.
     @State private var nothingHeard = false
+    /// Live: the model is listening to the note again.
+    @State private var isHearingAgain = false
+    /// Live: the steps the device read, kept while the model's are shown.
+    @State private var stepsBeforeModel: (steps: [BrewStep], water: Double?, nothingHeard: Bool)?
     @State private var liveDraft: Recipe?
     @AppStorage(PourSplit.countsBloomKey) private var countsBloom = true
 
@@ -279,6 +283,9 @@ struct AfterBrewSheet: View {
                 if isTranscribingNote {
                     Text(Copy.transcribingBrewNote).catalogueLabel()
                     ShimmerBar()
+                } else if isHearingAgain {
+                    Text(Copy.listeningAgain).catalogueLabel()
+                    ShimmerBar()
                 }
                 if !voiceTranscript.isEmpty || session.voiceNote.hasFile {
                     TextField("What you said", text: $voiceTranscript, axis: .vertical)
@@ -341,10 +348,16 @@ struct AfterBrewSheet: View {
         InsightBlock(
             title: Copy.stepsHeard,
             bodyText: stepsHeardReading,
-            provenance: ActualSource.narration.label,
+            provenance: stepsBeforeModel == nil ? ActualSource.narration.label : Copy.heardByModel,
             accessory: {
-                Button("Edit") { showStepEditor = true }
-                    .catalogueLabel()
+                HStack(spacing: 14) {
+                    if stepsBeforeModel != nil {
+                        Button("Undo", action: undoModelSteps)
+                            .catalogueLabel()
+                    }
+                    Button("Edit") { showStepEditor = true }
+                        .catalogueLabel()
+                }
             }
         ) {
             VStack(alignment: .leading, spacing: 10) {
@@ -685,6 +698,9 @@ struct AfterBrewSheet: View {
         do {
             let sharing = lotFlags.isOn(.shareDictations)
             var stash: UUID?
+            var audio: Data?
+            let listens = session.isLive && session.mode == .create
+                && NarrationAudio.isAllowed(flags: flags, sharing: sharing)
             let lexicon = SpokenLexicon.terms(
                 brew: session.brew,
                 recipe: session.recipe,
@@ -696,6 +712,7 @@ struct AfterBrewSheet: View {
                 contextualStrings: Array((SpokenLexicon.stepWords + lexicon).prefix(100))
             ) { url, _ in
                 stash = DictationArchive.shared.stash(audio: url, sharing: sharing)
+                if listens { audio = try? Data(contentsOf: url) }
             }
             let spoken = outcome.text.trimmingCharacters(in: .whitespacesAndNewlines)
             let timed = SpokenBrewParser.timedSteps(
@@ -703,55 +720,125 @@ struct AfterBrewSheet: View {
                 water: session.brew.water,
                 rewrite: { SpokenLexicon.rewrite($0, terms: lexicon) }
             )
-            DictationArchive.shared.record(
-                id: stash,
-                outcome: outcome,
-                context: session.isLive ? .live : .afterBrew,
-                brewID: session.brew.id,
-                recipeID: session.recipe?.id,
-                parsed: DictationRecord.Parsed(
-                    steps: timed,
-                    result: SpokenBrewParser.parse(spoken, waters: setup.waterProfiles, filters: setup.filterStock)
-                )
+            var archived = DictationRecord.Parsed(
+                steps: timed,
+                result: SpokenBrewParser.parse(spoken, waters: setup.waterProfiles, filters: setup.filterStock)
             )
-            guard !spoken.isEmpty else { return }
+            defer {
+                DictationArchive.shared.record(
+                    id: stash,
+                    outcome: outcome,
+                    context: session.isLive ? .live : .afterBrew,
+                    brewID: session.brew.id,
+                    recipeID: session.recipe?.id,
+                    parsed: archived
+                )
+            }
+            guard !spoken.isEmpty || audio != nil else { return }
             let terms = lexicon
             let rewritten = SpokenLexicon.rewrite(spoken, terms: terms)
-            brewBeforeVoice = session.brew
-            let parsed = SpokenBrewParser.parse(
-                rewritten,
-                waters: setup.waterProfiles,
-                filters: setup.filterStock
-            )
-            SpokenBrewParser.apply(parsed, to: &session.brew, appendLeftover: false)
-            session.brew.notes = DictationTranscript.apply(rewritten, to: brewBeforeVoice?.notes ?? "")
-            voiceTranscript = rewritten
-            if session.isLive {
-                if timed.isEmpty {
-                    settleLive(
-                        LiveSteps.fallback(seconds: session.brew.seconds, water: session.brew.water),
-                        nothingHeard: true
-                    )
-                } else {
-                    settleLive(timed, nothingHeard: false)
-                }
-            } else if session.brew.actualSource == .timer || session.brew.actualSource == .none {
-                session.brew.actualSource = .narration
-                session.brew.refreshPourRates()
+            if spoken.isEmpty, session.isLive {
+                settleLive(
+                    LiveSteps.fallback(seconds: session.brew.seconds, water: session.brew.water),
+                    nothingHeard: true
+                )
             }
-            voiceNoteTrigger += 1
-            if let tidied = await FieldExtract.tidy(
-                transcript: rewritten,
-                terms: terms,
-                flags: flags,
-                events: events
-            ), tidied != rewritten {
-                voiceTranscript = tidied
-                session.brew.notes = DictationTranscript.apply(tidied, to: brewBeforeVoice?.notes ?? "")
+            if !spoken.isEmpty {
+                brewBeforeVoice = session.brew
+                let parsed = SpokenBrewParser.parse(
+                    rewritten,
+                    waters: setup.waterProfiles,
+                    filters: setup.filterStock
+                )
+                SpokenBrewParser.apply(parsed, to: &session.brew, appendLeftover: false)
+                session.brew.notes = DictationTranscript.apply(rewritten, to: brewBeforeVoice?.notes ?? "")
+                voiceTranscript = rewritten
+                if session.isLive {
+                    if timed.isEmpty {
+                        settleLive(
+                            LiveSteps.fallback(seconds: session.brew.seconds, water: session.brew.water),
+                            nothingHeard: true
+                        )
+                    } else {
+                        settleLive(timed, nothingHeard: false)
+                    }
+                } else if session.brew.actualSource == .timer || session.brew.actualSource == .none {
+                    session.brew.actualSource = .narration
+                    session.brew.refreshPourRates()
+                }
+                voiceNoteTrigger += 1
+                if let tidied = await FieldExtract.tidy(
+                    transcript: rewritten,
+                    terms: terms,
+                    flags: flags,
+                    events: events
+                ), tidied != rewritten {
+                    voiceTranscript = tidied
+                    session.brew.notes = DictationTranscript.apply(tidied, to: brewBeforeVoice?.notes ?? "")
+                }
+            }
+            if let audio {
+                isTranscribingNote = false
+                let heard = await hearAgain(audio: audio, duration: outcome.duration, lexicon: lexicon)
+                archived.modelSteps = heard?.steps
+                archived.model = heard?.model
             }
         } catch {
             Log.app.notice("voice note transcription: \(error)")
         }
+    }
+
+    /// The model listens to the same note. Its steps replace the device's
+    /// only while the brewer has not touched them; Undo brings them back.
+    private func hearAgain(
+        audio: Data,
+        duration: TimeInterval,
+        lexicon: [String]
+    ) async -> (steps: [SpokenBrewParser.TimedStep], model: String)? {
+        let device = session.brew.actualSteps
+        let water = session.brew.water
+        isHearingAgain = true
+        defer { isHearingAgain = false }
+        let context = NarrationAudio.Context(
+            method: session.brew.method?.rawValue,
+            dose: session.brew.dose,
+            water: water,
+            duration: duration,
+            recipe: (session.recipe?.steps ?? []).map { step in
+                [step.action.label, step.targetMass.map { "\(Int($0)) g" }, "at \(step.at) s"]
+                    .compactMap { $0 }.joined(separator: " ")
+            },
+            vocabulary: Array(lexicon.prefix(40))
+        )
+        guard let outcome = await NarrationAudio.read(
+            audio: audio,
+            context: context,
+            flags: flags,
+            sharing: lotFlags.isOn(.shareDictations),
+            events: events
+        ) else { return nil }
+        guard let steps = NarrationGrounding.steps(
+            outcome.heard.steps ?? [],
+            duration: duration,
+            water: water ?? outcome.heard.water
+        ) else { return nil }
+        if session.isLive, session.mode == .create, session.brew.actualSteps == device {
+            stepsBeforeModel = (device, session.brew.water, nothingHeard)
+            withAnimation(Motion.snappy) { settleLive(steps, nothingHeard: false) }
+        }
+        return (steps, outcome.model)
+    }
+
+    private func undoModelSteps() {
+        guard let before = stepsBeforeModel else { return }
+        tapCount += 1
+        withAnimation(Motion.snappy) {
+            session.brew.actualSteps = before.steps
+            session.brew.water = before.water
+            session.brew.refreshPourRates()
+            nothingHeard = before.nothingHeard
+        }
+        stepsBeforeModel = nil
     }
 
     private func undoVoiceNote() {

@@ -29,6 +29,9 @@ nonisolated struct DictationRecord: Codable, Equatable, Identifiable, Sendable {
         var flavors: [String] = []
         var leftover: String = ""
         var confidence: Double = 0
+        /// What the model heard in the same audio, when it was asked.
+        var modelSteps: [SpokenBrewParser.TimedStep]?
+        var model: String?
 
         init(steps: [SpokenBrewParser.TimedStep] = [], result: SpokenBrewParser.Result? = nil) {
             self.steps = steps
