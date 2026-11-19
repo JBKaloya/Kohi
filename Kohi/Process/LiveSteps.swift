@@ -12,7 +12,7 @@ nonisolated enum LiveSteps {
         seconds: Int?,
         water: Double?
     ) -> (steps: [TimedStep], nothingHeard: Bool) {
-        let steps = SpokenBrewParser.timedSteps(phrases: phrases)
+        let steps = SpokenBrewParser.timedSteps(phrases: phrases, water: water)
         guard steps.isEmpty else { return (steps, false) }
         return (fallback(seconds: seconds, water: water), true)
     }

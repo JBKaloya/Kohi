@@ -51,6 +51,22 @@ nonisolated enum SpokenBrewParser {
         var action: StepAction
         var mass: Double?
         var agitation: Agitation?
+        /// "encore 50": the grams added, not the scale reading.
+        var isIncrement = false
+    }
+
+    /// Increments become scale readings, counted from `reached`.
+    static func cumulative(_ steps: [SpokenStep], from reached: Double?) -> [SpokenStep] {
+        var reached = reached ?? 0
+        return steps.map { step in
+            var step = step
+            if step.isIncrement, let added = step.mass {
+                step.mass = reached + added
+                step.isIncrement = false
+            }
+            if PourSplit.carriesWater(step.action), let mass = step.mass { reached = max(reached, mass) }
+            return step
+        }
     }
 
     static func parse(
@@ -74,7 +90,7 @@ nonisolated enum SpokenBrewParser {
         }
 
         let (steps, stepRanges) = spokenSteps(in: text, skipping: consumed)
-        result.spokenSteps = steps
+        result.spokenSteps = cumulative(steps, from: nil)
         consumed.append(contentsOf: stepRanges)
 
         if let (value, range) = quantity(in: text, units: ["g", "gram", "grams", "gramme", "grammes"],
@@ -260,35 +276,63 @@ nonisolated enum SpokenBrewParser {
 
     /// The steps said during the brew, each at the time of its utterance.
     /// What else was said in the same breath stays on the step as a note.
-    static func timedSteps(phrases: [VoiceNoteTranscriber.Phrase]) -> [TimedStep] {
-        utterances(phrases).flatMap { utterance -> [TimedStep] in
-            let text = normalize(utterance.text)
-            let at = Int(utterance.at)
-            let (spoken, ranges) = spokenSteps(in: text, skipping: [])
-            var consumed = ranges
-            var steps = spoken.map {
-                TimedStep(at: at, action: $0.action, mass: $0.mass, agitation: $0.agitation)
+    ///
+    /// Read in order: "encore 50" and "par palier de 40" count from the mass
+    /// the utterances before have reached. `water` ends a pattern said
+    /// without its target; `rewrite` restores the kit's spelling first.
+    static func timedSteps(
+        phrases: [VoiceNoteTranscriber.Phrase],
+        water: Double? = nil,
+        rewrite: (String) -> String = { $0 }
+    ) -> [TimedStep] {
+        var reached: Double?
+        var out: [TimedStep] = []
+        for utterance in utterances(phrases) {
+            let steps = timedSteps(in: rewrite(utterance.text), at: Int(utterance.at), reached: reached, water: water)
+            for step in steps where PourSplit.carriesWater(step.action) {
+                if let mass = step.mass { reached = max(reached ?? 0, mass) }
             }
-            if steps.isEmpty,
-               let range = text.range(of: Self.drawdownPattern, options: .regularExpression) {
-                steps = [TimedStep(at: at, action: .wait, note: StepAction.drawdown.label)]
-                consumed.append(range)
-            }
-            guard !steps.isEmpty else { return [] }
-            if let (agitation, range) = agitation(in: text, skipping: consumed) {
-                if steps[0].agitation == nil { steps[0].agitation = agitation }
-                consumed.append(range)
-            }
-            let rest = remainder(of: text, minus: consumed)
+            out += steps
+        }
+        return out
+    }
+
+    private static func timedSteps(in spoken: String, at: Int, reached: Double?, water: Double?) -> [TimedStep] {
+        let text = normalize(spoken)
+        if let pattern = StepPattern.expand(text, at: at, reached: reached, water: water) {
+            var steps = pattern.steps
+            let rest = remainder(of: text, minus: [pattern.range])
                 .split(separator: " ")
                 .filter { !Self.stepFiller.contains(String($0)) }
                 .joined(separator: " ")
-            if !rest.isEmpty {
-                let last = steps.count - 1
-                steps[last].note = steps[last].note.isEmpty ? rest : steps[last].note + " · " + rest
-            }
+            if !rest.isEmpty, !steps.isEmpty { steps[0].note = rest }
             return steps
         }
+        let (found, ranges) = spokenSteps(in: text, skipping: [])
+        let spoken = cumulative(found, from: reached)
+        var consumed = ranges
+        var steps = spoken.map {
+            TimedStep(at: at, action: $0.action, mass: $0.mass, agitation: $0.agitation)
+        }
+        if steps.isEmpty,
+           let range = text.range(of: Self.drawdownPattern, options: .regularExpression) {
+            steps = [TimedStep(at: at, action: .wait, note: StepAction.drawdown.label)]
+            consumed.append(range)
+        }
+        guard !steps.isEmpty else { return [] }
+        if let (agitation, range) = agitation(in: text, skipping: consumed) {
+            if steps[0].agitation == nil { steps[0].agitation = agitation }
+            consumed.append(range)
+        }
+        let rest = remainder(of: text, minus: consumed)
+            .split(separator: " ")
+            .filter { !Self.stepFiller.contains(String($0)) }
+            .joined(separator: " ")
+        if !rest.isEmpty {
+            let last = steps.count - 1
+            steps[last].note = steps[last].note.isEmpty ? rest : steps[last].note + " · " + rest
+        }
+        return steps
     }
 
     /// Words that only link a step to the sentence it was said in.
@@ -296,11 +340,21 @@ nonisolated enum SpokenBrewParser {
         "je", "j'ai", "on", "ça", "ca", "et", "puis", "alors", "là", "la", "le", "les",
         "un", "une", "de", "du", "à", "au", "jusqu'à", "jusqu’à", "premier", "première",
         "deuxième", "second", "seconde", "troisième", "dernier", "dernière", "now", "first",
-        "third", "last", "next", "i'm", "we",
+        "third", "last", "next", "i'm", "we", "ensuite", "enfin", "maintenant", "then", "and",
+        "finis", "finish", "termine",
     ]
 
     private static let drawdownPattern =
-        #"\b(draw ?down|draws down|drawing down|drains?|draining|draine|drainé|ça draine)\b"#
+        #"\b(draw ?down|draws down|drawing down|drains?|draining|draine|drainé|ça draine|s'écoule|ecoule|écoule|écoulement)\b"#
+
+    /// Words allowed between a verb and its mass: "verse par palier de 40",
+    /// "pour up to 150". Nothing else, so a mass is never borrowed from the
+    /// next clause.
+    private static let gapWords = [
+        "up to", "up", "to", "jusqu'à", "jusqu'a", "jusqua", "a", "à", "de", "d'", "des",
+        "par", "palier", "paliers", "un", "une", "le", "la", "les", "du", "of", "the",
+        "about", "around", "environ", "doucement", "lentement", "slowly",
+    ].map { NSRegularExpression.escapedPattern(for: $0) }.joined(separator: "|")
 
     // MARK: - Pieces
 
@@ -308,6 +362,7 @@ nonisolated enum SpokenBrewParser {
     /// scanner handles both "18" and "eighteen".
     static func normalize(_ text: String) -> String {
         var result = text.lowercased()
+        result = result.replacingOccurrences(of: "’", with: "'")
         result = result.replacingOccurrences(of: "-", with: " ")
         result = spokenClock(result)
 
@@ -321,6 +376,10 @@ nonisolated enum SpokenBrewParser {
         // between two halves of one number, not a word of its own.
         result = result.replacingOccurrences(
             of: #"(?<=\d)\s+and\s+(?=\d)"#, with: " ", options: .regularExpression
+        )
+        // "vingt et un": the same glue in French, only ever before one.
+        result = result.replacingOccurrences(
+            of: #"(?<=\d)\s+et\s+(?=1\b)"#, with: " ", options: .regularExpression
         )
         // "40 5": one number said in two words.
         result = foldTens(result)
@@ -386,8 +445,9 @@ nonisolated enum SpokenBrewParser {
         var words = text.split(separator: " ").map(String.init)
         var index = 0
         while index + 1 < words.count {
-            guard let tens = Int(words[index]), tens >= 20, tens <= 90, tens % 10 == 0,
-                  let unit = Int(words[index + 1]), unit >= 1, unit <= 9
+            guard let tens = Int(words[index]), let unit = Int(words[index + 1]),
+                  (tens >= 20 && tens <= 90 && tens % 10 == 0 && (1...9).contains(unit))
+                    || (tens == 10 && (7...9).contains(unit))
             else { index += 1; continue }
 
             words.replaceSubrange(index...(index + 1), with: [String(tens + unit)])
@@ -400,11 +460,21 @@ nonisolated enum SpokenBrewParser {
         var words = text.split(separator: " ").map(String.init)
         var index = 0
         while index < words.count {
-            guard words[index] == "100", index > 0, let multiplier = Int(words[index - 1]),
-                  multiplier < 10
-            else { index += 1; continue }
-
-            var total = multiplier * 100
+            guard words[index] == "100" else { index += 1; continue }
+            // "cent cinquante": a hundred said alone, then what follows it.
+            let multiplier = index > 0 ? Int(words[index - 1]).flatMap { $0 < 10 ? $0 : nil } : nil
+            if multiplier == nil {
+                var total = 100
+                var upTo = index
+                while upTo + 1 < words.count, let next = Int(words[upTo + 1]), next < 100, total % 100 + next < 100 {
+                    total += next
+                    upTo += 1
+                }
+                words.replaceSubrange(index...upTo, with: [String(total)])
+                index += 1
+                continue
+            }
+            var total = (multiplier ?? 1) * 100
             var consumedUpTo = index
             // Absorb the tens and units that follow: "2 100 50" → 250.
             while consumedUpTo + 1 < words.count, let next = Int(words[consumedUpTo + 1]),
@@ -427,7 +497,7 @@ nonisolated enum SpokenBrewParser {
             }
         }
         if let match = text.range(
-            of: #"\b(\d+(?:\.\d+)?)\s*(seconds|second|secs|sec|s)\b"#,
+            of: #"\b(\d+(?:\.\d+)?)\s*(secondes|seconde|seconds|second|secs|sec|s)\b"#,
             options: .regularExpression
         ), let value = firstNumber(in: String(text[match])) {
             return (Int(value), match)
@@ -446,19 +516,35 @@ nonisolated enum SpokenBrewParser {
         skipping consumed: [Range<String.Index>]
     ) -> ([SpokenStep], [Range<String.Index>]) {
         let verbs: [(StepAction, String)] = [
-            (.preInfusion, "pre[- ]?infusion|preinfusion"),
+            (.preInfusion, "pr[eé][- ]?infusion|preinfusion"),
             (.rinse, "rinse|rincer|rinsed|rincage"),
-            (.bloom, "bloom|bloomed|fleur"),
-            (.pour, "pour|poured|verse|verser|versee|versement"),
-            (.wait, "wait|waited|attendre"),
+            (.bloom, "bloom|bloomed|blooming|fleur"),
+            (.pour, "pour|poured|pouring|vers(?:e|é|ée|er|ez|ons|ant|ement)s?|reverse|remonte"),
+            (.wait, "wait|waited|attendre|attends|attend|patiente"),
             (.steep, "steep|steeped|infuse"),
             (.press, "press|pressed|presser"),
             (.shot, "shot"),
             (.fill, "fill|filled|remplir"),
         ]
         var found: [(SpokenStep, Range<String.Index>)] = []
+        let mass = #"(\d+(?:\.\d+)?)\s*(?:g|grams|grammes|gramme)?\b(?!\s*(?:secondes?|seconds?|secs?|s|minutes?|mins?)\b)"#
+        let increments = [
+            #"\b(?:encore|rajoute|ajoute|another|add)(?:\s+(?:de|of|un|une))?\s+"# + mass,
+            #"\b"# + mass + #"\s+(?:de plus|more)\b"#,
+        ]
+        for pattern in increments {
+            var search = text.startIndex..<text.endIndex
+            while let match = text.range(of: pattern, options: .regularExpression, range: search) {
+                search = match.upperBound..<text.endIndex
+                guard !consumed.contains(where: { $0.overlaps(match) }),
+                      !found.contains(where: { $0.1.overlaps(match) }),
+                      let added = firstNumber(in: String(text[match]))
+                else { continue }
+                found.append((SpokenStep(action: .pour, mass: added, isIncrement: true), match))
+            }
+        }
         for (action, verbs) in verbs {
-            let pattern = #"\b(?:\#(verbs))(?:\s+(?:up to|to|jusqu'à|jusqu’à|jusqu'a|jusqua|a|à))?(?:\s+(\d+(?:\.\d+)?))?(?:\s*(?:g|grams|grammes|gramme))?\b"#
+            let pattern = #"\b(?:\#(verbs))\b(?:\s+(?:\#(Self.gapWords))){0,4}(?:\s+"# + mass + #")?"#
             var search = text.startIndex..<text.endIndex
             while let match = text.range(of: pattern, options: .regularExpression, range: search) {
                 if consumed.contains(where: { $0.overlaps(match) })
@@ -810,6 +896,12 @@ nonisolated enum SpokenBrewParser {
         "eighteen": "18", "nineteen": "19", "twenty": "20", "thirty": "30",
         "forty": "40", "fifty": "50", "sixty": "60", "seventy": "70",
         "eighty": "80", "ninety": "90", "hundred": "100",
+        // French. "un" and "une" stay words: they are articles far more often.
+        "deux": "2", "trois": "3", "quatre": "4", "cinq": "5", "sept": "7",
+        "huit": "8", "neuf": "9", "dix": "10", "onze": "11", "douze": "12",
+        "treize": "13", "quatorze": "14", "quinze": "15", "seize": "16",
+        "vingt": "20", "trente": "30", "quarante": "40", "cinquante": "50",
+        "soixante": "60", "cent": "100", "cents": "100",
     ]
 
     private static let methodAliases: [BrewMethod: [String]] = [

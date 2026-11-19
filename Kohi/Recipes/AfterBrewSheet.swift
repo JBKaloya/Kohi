@@ -698,7 +698,11 @@ struct AfterBrewSheet: View {
                 stash = DictationArchive.shared.stash(audio: url, sharing: sharing)
             }
             let spoken = outcome.text.trimmingCharacters(in: .whitespacesAndNewlines)
-            let timed = SpokenBrewParser.timedSteps(phrases: outcome.phrases)
+            let timed = SpokenBrewParser.timedSteps(
+                phrases: outcome.phrases,
+                water: session.brew.water,
+                rewrite: { SpokenLexicon.rewrite($0, terms: lexicon) }
+            )
             DictationArchive.shared.record(
                 id: stash,
                 outcome: outcome,
@@ -711,12 +715,7 @@ struct AfterBrewSheet: View {
                 )
             )
             guard !spoken.isEmpty else { return }
-            let terms = SpokenLexicon.terms(
-                brew: session.brew,
-                recipe: session.recipe,
-                equipment: setup.equipment,
-                filters: setup.filterStock
-            )
+            let terms = lexicon
             let rewritten = SpokenLexicon.rewrite(spoken, terms: terms)
             brewBeforeVoice = session.brew
             let parsed = SpokenBrewParser.parse(
