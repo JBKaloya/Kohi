@@ -161,6 +161,16 @@ nonisolated enum NarrationCompare {
         candidates.shuffled(using: &generator)
     }
 
+    /// The steps the answer puts on the brew: the pick's, when there is one
+    /// and it heard any. Nil leaves the steps as they are.
+    static func pickedSteps(_ answer: Answer, shown: [Candidate]) -> [TimedStep]? {
+        guard !answer.skipped, !answer.noneRight,
+              let picked = shown.first(where: { $0.pipeline == answer.chosen }),
+              picked.ok, !picked.steps.isEmpty
+        else { return nil }
+        return picked.steps
+    }
+
     /// The events for the account sheet and `ai_events`: one per cloud
     /// version, kept when it was the one picked.
     static func events(for shown: [Candidate], answer: Answer) -> [AIEvent] {

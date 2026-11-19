@@ -895,11 +895,8 @@ struct AfterBrewSheet: View {
             duration: current.duration,
             events: events
         )
-        guard !answer.skipped, !answer.noneRight,
-              let picked = current.shown.first(where: { $0.pipeline == answer.chosen }),
-              !picked.steps.isEmpty
-        else { return }
-        applyPick(picked.steps, over: current.snapshot)
+        guard let steps = NarrationCompare.pickedSteps(answer, shown: current.shown) else { return }
+        applyPick(steps, over: current.snapshot)
     }
 
     /// The pick becomes the steps, unless they were edited while the sheet
