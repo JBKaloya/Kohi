@@ -26,15 +26,17 @@ final class AccountStore {
         state = .signedOut
 
         authListener = Task { @MainActor [weak self] in
+            // `session` refreshes an expired token before returning, so a
+            // stored session is never enough on its own to count as signed in.
             if let session = try? await client.auth.session {
                 self?.state = .signedIn(session.user)
             }
             for await (event, session) in client.auth.authStateChanges {
                 guard let self else { return }
                 switch event {
-                case .signedIn, .tokenRefreshed:
-                    if let user = session?.user {
-                        self.state = .signedIn(user)
+                case .initialSession, .signedIn, .tokenRefreshed:
+                    if let session, !session.isExpired {
+                        self.state = .signedIn(session.user)
                     }
                 case .signedOut:
                     self.state = .signedOut
