@@ -201,7 +201,7 @@ struct CoffeeLexiconTests {
         let field = try String(contentsOf: DevBrief10.kohiRoot.appending(path: "Design/DictationField.swift"))
         #expect(field.contains("dictation.contextualStrings = vocabulary()"))
         let transcriber = try String(contentsOf: DevBrief10.kohiRoot.appending(path: "Scan/VoiceNoteTranscriber.swift"))
-        #expect(!transcriber.contains("contextualStrings"))
+        #expect(transcriber.contains("request.contextualStrings = contextualStrings"))
     }
 }
 
