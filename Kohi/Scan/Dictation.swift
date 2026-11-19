@@ -569,10 +569,18 @@ nonisolated enum DictationSession {
         DictationSessionPlan(category: .record, mode: .default, options: []),
     ]
 
+    /// A brew-length recording, phone on the counter: the default mode keeps
+    /// the automatic gain that `.measurement` turns off, so a voice a metre
+    /// away does not arrive near silence. Live dictation keeps `plans`.
+    static let notePlans: [DictationSessionPlan] = [
+        DictationSessionPlan(category: .playAndRecord, mode: .default, options: .duckOthers),
+        DictationSessionPlan(category: .record, mode: .default, options: []),
+    ] + plans
+
     /// `deactivateFirst` is for a recorder that must drop the previous
     /// category. Live dictation leaves the session up so a start already
     /// in progress is not cut off.
-    static func activate(deactivateFirst: Bool) throws {
+    static func activate(deactivateFirst: Bool, plans: [DictationSessionPlan] = plans) throws {
         let session = AVAudioSession.sharedInstance()
         if deactivateFirst {
             try? session.setActive(false)

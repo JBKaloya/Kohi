@@ -92,7 +92,7 @@ final class BrewVoiceNote {
                 AVFormatIDKey: Int(kAudioFormatMPEG4AAC),
                 AVSampleRateKey: rate,
                 AVNumberOfChannelsKey: 1,
-                AVEncoderAudioQualityKey: AVAudioQuality.medium.rawValue,
+                AVEncoderAudioQualityKey: AVAudioQuality.high.rawValue,
             ]
         )
         recorder.delegate = delegate
@@ -118,10 +118,10 @@ final class BrewVoiceNote {
     /// A spoken-audio mode plus Bluetooth returns `-50`; that combination is
     /// not in the list.
     static func activateSession() throws {
-        try DictationSession.activate(deactivateFirst: true)
+        try DictationSession.activate(deactivateFirst: true, plans: DictationSession.notePlans)
     }
 
-    nonisolated static var sessionPlans: [DictationSessionPlan] { DictationSession.plans }
+    nonisolated static var sessionPlans: [DictationSessionPlan] { DictationSession.notePlans }
 
     func stop() {
         if let startedAt, state == .recording || state == .paused {
@@ -157,9 +157,11 @@ final class BrewVoiceNote {
             return VoiceNoteTranscriber.Outcome(text: "", coveredThrough: 0, duration: 0, phrases: [])
         }
         state = .transcribing
+        let heard = await AudioGain.normalized(fileURL)
+        defer { if heard != fileURL { try? FileManager.default.removeItem(at: heard) } }
         do {
-            let outcome = try await VoiceNoteTranscriber.transcribe(url: fileURL)
-            beforeDiscard(fileURL, outcome)
+            let outcome = try await VoiceNoteTranscriber.transcribe(url: heard)
+            beforeDiscard(heard, outcome)
             if !keepAudio {
                 try? FileManager.default.removeItem(at: fileURL)
                 self.fileURL = nil

@@ -122,9 +122,11 @@ struct VoiceNoteCoverageTests {
             DictationSessionPlan(category: .record, mode: .default, options: []),
         ]
         #expect(DictationSession.plans == plans)
-        #expect(BrewVoiceNote.sessionPlans == DictationSession.plans)
-        #expect(plans.allSatisfy { $0.mode != .spokenAudio })
-        #expect(plans.allSatisfy { plan in
+        #expect(BrewVoiceNote.sessionPlans.first == DictationSessionPlan(category: .playAndRecord, mode: .default, options: .duckOthers))
+        #expect(BrewVoiceNote.sessionPlans.suffix(plans.count) == plans[...])
+        let all = BrewVoiceNote.sessionPlans
+        #expect(all.allSatisfy { $0.mode != .spokenAudio })
+        #expect(all.allSatisfy { plan in
             plan.category != .record || !plan.options.contains(.duckOthers)
         })
     }
