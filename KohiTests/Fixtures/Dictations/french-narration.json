@@ -1,0 +1,17 @@
+{
+  "name": "A French V60 narration with pauses, as Speech returns it once every chunk is kept",
+  "confirmed": false,
+  "phrases": [
+    { "at": 3, "text": "Je fais un bloom de 40 grammes." },
+    { "at": 20, "text": "Je verse jusqu'à 150 grammes." },
+    { "at": 40, "text": "Puis encore 100 grammes." },
+    { "at": 55, "text": "Ça draine." },
+    { "at": 80, "text": "Et enfin je termine." }
+  ],
+  "expected": [
+    { "at": 3, "action": "bloom", "mass": 40 },
+    { "at": 20, "action": "pour", "mass": 150 },
+    { "at": 40, "action": "pour", "mass": 250 },
+    { "at": 55, "action": "wait" }
+  ]
+}

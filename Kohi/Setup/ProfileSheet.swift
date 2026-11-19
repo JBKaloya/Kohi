@@ -325,6 +325,12 @@ struct ProfileSheet: View {
                 Button("Reset first-scan flag") { flow.resetFirstScanFlag() }
                 Button("Reset kit") { confirmResetKit = true }
                 Button("Reset scan spots") { ScanSpots.clear() }
+                let dictations = DictationShelf.files()
+                if !dictations.isEmpty {
+                    ShareLink(items: dictations) {
+                        Text("Share last dictations (\(dictations.count / 2))")
+                    }
+                }
             }
             .font(Typography.tag)
             .foregroundStyle(Palette.inkMuted)

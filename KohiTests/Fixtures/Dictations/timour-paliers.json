@@ -1,0 +1,14 @@
+{
+  "name": "Pours by steps of 40, 20 s apart (19 Nov screenshot)",
+  "confirmed": false,
+  "phrases": [
+    { "at": 30, "text": "Puis ensuite je verse par palier de 40, j'attends 20 secondes entre chaque et je finis jusqu'à 200" }
+  ],
+  "expected": [
+    { "at": 30, "action": "pour", "mass": 40 },
+    { "at": 50, "action": "pour", "mass": 80 },
+    { "at": 70, "action": "pour", "mass": 120 },
+    { "at": 90, "action": "pour", "mass": 160 },
+    { "at": 110, "action": "pour", "mass": 200 }
+  ]
+}

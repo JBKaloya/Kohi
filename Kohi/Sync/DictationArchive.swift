@@ -170,6 +170,9 @@ final class DictationArchive {
         do {
             try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
             try FileManager.default.copyItem(at: audio, to: audioURL(id))
+            #if DEBUG
+            DictationShelf.keep(audio: audio, id: id)
+            #endif
             return id
         } catch {
             Log.app.notice("dictation stash failed: \(error)")
@@ -202,6 +205,9 @@ final class DictationArchive {
             createdAt: .now
         )
         write(record)
+        #if DEBUG
+        DictationShelf.keep(record: record)
+        #endif
         onChange?()
     }
 
@@ -289,3 +295,47 @@ final class DictationArchive {
         }
     }
 }
+
+#if DEBUG
+/// The last few dictations, audio and manifest, kept on the phone after the
+/// outbox has sent and deleted them, so they can be shared from Developer.
+nonisolated enum DictationShelf {
+    static let limit = 5
+
+    static var directory: URL {
+        FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
+            .appending(path: "dictations-shelf", directoryHint: .isDirectory)
+    }
+
+    static func keep(audio: URL, id: UUID) {
+        try? FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        try? FileManager.default.copyItem(at: audio, to: directory.appending(path: "\(id.uuidString).m4a"))
+        trim()
+    }
+
+    static func keep(record: DictationRecord) {
+        let encoder = JSONEncoder()
+        encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
+        guard let data = try? encoder.encode(record) else { return }
+        try? data.write(to: directory.appending(path: "\(record.id.uuidString).json"), options: .atomic)
+    }
+
+    static func files() -> [URL] {
+        let keys: [URLResourceKey] = [.contentModificationDateKey]
+        let urls = (try? FileManager.default.contentsOfDirectory(at: directory, includingPropertiesForKeys: keys)) ?? []
+        return urls.sorted { date($0) > date($1) }
+    }
+
+    private static func trim() {
+        let audio = files().filter { $0.pathExtension == "m4a" }
+        for old in audio.dropFirst(limit) {
+            try? FileManager.default.removeItem(at: old)
+            try? FileManager.default.removeItem(at: old.deletingPathExtension().appendingPathExtension("json"))
+        }
+    }
+
+    private static func date(_ url: URL) -> Date {
+        (try? url.resourceValues(forKeys: [.contentModificationDateKey]).contentModificationDate) ?? .distantPast
+    }
+}
+#endif
