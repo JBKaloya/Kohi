@@ -2,6 +2,7 @@
 //
 // Secrets:  OPENAI_API_KEY
 // Optional: OPENAI_TEXT_MODEL (defaults to gpt-5.6-luna)
+//           OPENAI_REASONING (defaults to low)
 //
 // The schema is strict JSON Schema: every property required, nullable ones
 // typed ["number", "null"], no extra properties.
@@ -36,7 +37,7 @@ export async function generateJSON(
       },
       body: JSON.stringify({
         model,
-        reasoning_effort: "low",
+        reasoning_effort: Deno.env.get("OPENAI_REASONING") ?? "low",
         messages: [
           { role: "system", content: system },
           { role: "user", content: user },
