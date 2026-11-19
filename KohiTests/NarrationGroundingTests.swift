@@ -55,6 +55,31 @@ struct NarrationGroundingTests {
         #expect(steps[0].mass == nil)
     }
 
+    @Test func stackedPoursOfAPatternTakeTheDevicesTimes() throws {
+        let device = SpokenBrewParser.timedSteps(phrases: [
+            .init(at: 0, text: "Bloom 40 grammes."),
+            .init(at: 8, text: "Je verse par palier de 40, j'attends 15 secondes entre chaque, jusqu'à 200."),
+        ])
+        let steps = try #require(NarrationGrounding.steps([
+            Step(at: 0, action: "bloom", mass: 40),
+            Step(at: 8, action: "pour", mass: 80),
+            Step(at: 8, action: "pour", mass: 120),
+            Step(at: 8, action: "pour", mass: 160),
+            Step(at: 8, action: "pour", mass: 200),
+            Step(at: 70, action: "drawdown"),
+        ], duration: 80, water: 200, device: device))
+        #expect(steps.map(\.mass) == [40, 80, 120, 160, 200, nil])
+        #expect(steps.map(\.at) == [0, 8, 23, 38, 53, 70])
+    }
+
+    @Test func stackedPoursWithoutTheDeviceAreSpreadByTheDefault() throws {
+        let steps = try #require(NarrationGrounding.steps([
+            Step(at: 10, action: "pour", mass: 100),
+            Step(at: 10, action: "pour", mass: 150),
+        ], duration: 60, water: nil))
+        #expect(steps.map(\.at) == [10, 10 + StepPattern.defaultInterval])
+    }
+
     @Test func nothingThatHoldsKeepsTheDevicesSteps() {
         #expect(NarrationGrounding.steps([], duration: 60, water: nil) == nil)
         #expect(NarrationGrounding.steps([Step(at: 500, action: "pour", mass: 40)], duration: 60, water: nil) == nil)

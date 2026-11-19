@@ -131,13 +131,15 @@ nonisolated enum NarrationGrounding {
     static func steps(
         _ heard: [NarrationAudio.Heard.Step],
         duration: TimeInterval,
-        water: Double?
+        water: Double?,
+        device: [TimedStep] = []
     ) -> [TimedStep]? {
         let end = Int(duration.rounded(.up)) + durationSlack
         let ceiling = water.map { $0 * waterCeiling }
         var reached = 0.0
         var steps: [TimedStep] = []
-        for step in heard.sorted(by: { $0.at < $1.at }) {
+        let ordered = heard.enumerated().sorted { ($0.element.at, $0.offset) < ($1.element.at, $1.offset) }
+        for step in ordered.map(\.element) {
             guard step.at >= 0, duration <= 0 || step.at <= end else { continue }
             let note = step.note?.trimmed ?? ""
             let action: StepAction
@@ -165,6 +167,38 @@ nonisolated enum NarrationGrounding {
             let until = step.until.flatMap { $0 > step.at ? $0 : nil }
             steps.append(TimedStep(at: step.at, action: action, mass: mass, until: until, note: label))
         }
-        return steps.isEmpty ? nil : steps
+        guard !steps.isEmpty else { return nil }
+        return spread(steps, device: device)
+    }
+
+    /// The pours of a pattern ("par palier de 40… jusqu'à 200") come back
+    /// stacked at the second the pattern was said. Each takes the time the
+    /// device gave the same mass, or the default interval after the last.
+    static func spread(_ steps: [TimedStep], device: [TimedStep]) -> [TimedStep] {
+        var result = steps
+        var index = 1
+        while index < result.count {
+            let first = result[index - 1]
+            guard PourSplit.carriesWater(first.action), first.mass != nil else {
+                index += 1
+                continue
+            }
+            var offset = 1
+            while index < result.count,
+                  result[index].at == first.at,
+                  PourSplit.carriesWater(result[index].action),
+                  let mass = result[index].mass {
+                let previous = result[index - 1].at
+                let known = device.first { $0.mass == mass && PourSplit.carriesWater($0.action) }?.at
+                result[index].at = known.flatMap { $0 > previous ? $0 : nil }
+                    ?? first.at + offset * StepPattern.defaultInterval
+                offset += 1
+                index += 1
+            }
+            index += 1
+        }
+        return result.enumerated()
+            .sorted { ($0.element.at, $0.offset) < ($1.element.at, $1.offset) }
+            .map(\.element)
     }
 }

@@ -820,7 +820,8 @@ struct AfterBrewSheet: View {
         guard let steps = NarrationGrounding.steps(
             outcome.heard.steps ?? [],
             duration: duration,
-            water: water ?? outcome.heard.water
+            water: water ?? outcome.heard.water,
+            device: LiveSteps.timed(device)
         ) else { return nil }
         if session.isLive, session.mode == .create, session.brew.actualSteps == device {
             stepsBeforeModel = (device, session.brew.water, nothingHeard)
