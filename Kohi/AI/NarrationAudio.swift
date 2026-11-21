@@ -16,6 +16,8 @@ nonisolated enum NarrationAudio {
         var method: String?
         var dose: Double?
         var water: Double?
+        /// The bag, when the brew is on a coffee.
+        var coffee: String?
         var duration: Double?
         var recipe: [String] = []
         var vocabulary: [String] = []

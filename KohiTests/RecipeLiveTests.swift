@@ -290,7 +290,7 @@ struct RecipeLiveTests {
         let data = try JSONEncoder().encode(DictationRow(record: record, userID: userID))
         let object = try #require(try JSONSerialization.jsonObject(with: data) as? [String: Any])
         for key in ["id", "user_id", "brew_id", "context", "audio_path", "duration_s", "transcript",
-                    "phrases", "parsed", "steps_heard", "app_build", "created_at"] {
+                    "phrases", "parsed", "steps_heard", "brew_context", "app_build", "created_at"] {
             #expect(object[key] != nil, "missing \(key)")
         }
         #expect(object["context"] as? String == "after_brew")

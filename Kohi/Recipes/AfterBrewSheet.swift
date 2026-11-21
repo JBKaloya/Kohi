@@ -757,7 +757,13 @@ struct AfterBrewSheet: View {
                     context: session.isLive ? .live : .afterBrew,
                     brewID: session.brew.id,
                     recipeID: session.recipe?.id,
-                    parsed: archived
+                    parsed: archived,
+                    plan: DictationRecord.Plan(
+                        dose: session.brew.dose,
+                        water: session.brew.water,
+                        method: session.brew.method?.rawValue,
+                        coffee: session.hasCard ? card.name : nil
+                    )
                 )
             }
             guard !spoken.isEmpty || audio != nil else { return }
@@ -844,6 +850,7 @@ struct AfterBrewSheet: View {
             method: session.brew.method?.rawValue,
             dose: session.brew.dose,
             water: session.brew.water,
+            coffee: session.hasCard ? card.name : nil,
             duration: duration,
             recipe: (session.recipe?.steps ?? []).map { step in
                 [step.action.label, step.targetMass.map { "\(Int($0)) g" }, "at \(step.at) s"]

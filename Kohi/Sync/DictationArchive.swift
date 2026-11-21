@@ -49,6 +49,16 @@ nonisolated struct DictationRecord: Codable, Equatable, Identifiable, Sendable {
         }
     }
 
+    /// What was set before the recording: the coffee weighed, the water
+    /// aimed at, the method, the bag. Kept with the audio so a later batch
+    /// can give a model the same facts the brewer had.
+    struct Plan: Codable, Equatable, Sendable {
+        var dose: Double?
+        var water: Double?
+        var method: String?
+        var coffee: String?
+    }
+
     var id: UUID
     var brewID: UUID?
     var recipeID: UUID?
@@ -58,11 +68,91 @@ nonisolated struct DictationRecord: Codable, Equatable, Identifiable, Sendable {
     var phrases: [Phrase]
     var parsed: Parsed
     var editedSteps: [SpokenBrewParser.TimedStep]?
+    var plan: Plan = .init()
     var appBuild: String
     var createdAt: Date
     var audioUploaded = false
     var rowSent = false
     var editsPending = false
+
+    init(
+        id: UUID,
+        brewID: UUID?,
+        recipeID: UUID?,
+        context: DictationContext,
+        duration: Double,
+        transcript: String,
+        phrases: [Phrase],
+        parsed: Parsed,
+        editedSteps: [SpokenBrewParser.TimedStep]? = nil,
+        plan: Plan = .init(),
+        appBuild: String,
+        createdAt: Date,
+        audioUploaded: Bool = false,
+        rowSent: Bool = false,
+        editsPending: Bool = false
+    ) {
+        self.id = id
+        self.brewID = brewID
+        self.recipeID = recipeID
+        self.context = context
+        self.duration = duration
+        self.transcript = transcript
+        self.phrases = phrases
+        self.parsed = parsed
+        self.editedSteps = editedSteps
+        self.plan = plan
+        self.appBuild = appBuild
+        self.createdAt = createdAt
+        self.audioUploaded = audioUploaded
+        self.rowSent = rowSent
+        self.editsPending = editsPending
+    }
+
+    /// A record written before `plan` existed still decodes: the outbox must
+    /// not drop a dictation for a key it never had.
+    enum CodingKeys: String, CodingKey {
+        case id, brewID, recipeID, context, duration, transcript, phrases, parsed
+        case editedSteps, plan, appBuild, createdAt, audioUploaded, rowSent, editsPending
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var values = encoder.container(keyedBy: CodingKeys.self)
+        try values.encode(id, forKey: .id)
+        try values.encodeIfPresent(brewID, forKey: .brewID)
+        try values.encodeIfPresent(recipeID, forKey: .recipeID)
+        try values.encode(context, forKey: .context)
+        try values.encode(duration, forKey: .duration)
+        try values.encode(transcript, forKey: .transcript)
+        try values.encode(phrases, forKey: .phrases)
+        try values.encode(parsed, forKey: .parsed)
+        try values.encodeIfPresent(editedSteps, forKey: .editedSteps)
+        try values.encode(plan, forKey: .plan)
+        try values.encode(appBuild, forKey: .appBuild)
+        try values.encode(createdAt, forKey: .createdAt)
+        try values.encode(audioUploaded, forKey: .audioUploaded)
+        try values.encode(rowSent, forKey: .rowSent)
+        try values.encode(editsPending, forKey: .editsPending)
+    }
+
+    init(from decoder: Decoder) throws {
+        let values = try decoder.container(keyedBy: CodingKeys.self)
+        id = try values.decode(UUID.self, forKey: .id)
+        brewID = try values.decodeIfPresent(UUID.self, forKey: .brewID)
+        recipeID = try values.decodeIfPresent(UUID.self, forKey: .recipeID)
+        context = try values.decode(DictationContext.self, forKey: .context)
+        duration = try values.decode(Double.self, forKey: .duration)
+        transcript = try values.decode(String.self, forKey: .transcript)
+        phrases = try values.decode([Phrase].self, forKey: .phrases)
+        parsed = try values.decode(Parsed.self, forKey: .parsed)
+        editedSteps = try values.decodeIfPresent([SpokenBrewParser.TimedStep].self, forKey: .editedSteps)
+        plan = try values.decodeIfPresent(Plan.self, forKey: .plan) ?? .init()
+        appBuild = try values.decode(String.self, forKey: .appBuild)
+        createdAt = try values.decode(Date.self, forKey: .createdAt)
+        audioUploaded = try values.decodeIfPresent(Bool.self, forKey: .audioUploaded) ?? false
+        rowSent = try values.decodeIfPresent(Bool.self, forKey: .rowSent) ?? false
+        editsPending = try values.decodeIfPresent(Bool.self, forKey: .editsPending) ?? false
+    }
 }
 
 /// The row in `public.dictations`.
@@ -80,6 +170,7 @@ nonisolated struct DictationRow: Encodable, Sendable {
     let parsed: DictationRecord.Parsed
     let stepsHeard: Int
     let editedSteps: [SpokenBrewParser.TimedStep]?
+    let brewContext: DictationRecord.Plan
     let appBuild: String
     let createdAt: Date
 
@@ -97,6 +188,7 @@ nonisolated struct DictationRow: Encodable, Sendable {
         parsed = record.parsed
         stepsHeard = record.parsed.steps.count
         editedSteps = record.editedSteps
+        brewContext = record.plan
         appBuild = record.appBuild
         createdAt = record.createdAt
     }
@@ -115,6 +207,7 @@ nonisolated struct DictationRow: Encodable, Sendable {
         case parsed
         case stepsHeard = "steps_heard"
         case editedSteps = "edited_steps"
+        case brewContext = "brew_context"
         case appBuild = "app_build"
         case createdAt = "created_at"
     }
@@ -192,7 +285,8 @@ final class DictationArchive {
         context: DictationContext,
         brewID: UUID?,
         recipeID: UUID?,
-        parsed: DictationRecord.Parsed
+        parsed: DictationRecord.Parsed,
+        plan: DictationRecord.Plan = .init()
     ) {
         guard let id else { return }
         let record = DictationRecord(
@@ -204,6 +298,7 @@ final class DictationArchive {
             transcript: transcript ?? outcome.text,
             phrases: outcome.phrases.map { DictationRecord.Phrase(at: $0.at, text: $0.text) },
             parsed: parsed,
+            plan: plan,
             appBuild: Self.appBuild,
             createdAt: .now
         )

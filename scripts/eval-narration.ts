@@ -27,7 +27,10 @@ type Note = {
   name: string;
   audio: Uint8Array;
   duration: number;
+  dose?: number;
   water?: number;
+  method?: string;
+  coffee?: string;
   phrases: { at: number; text: string }[];
   expected: Step[] | null;
   reference: string | null;
@@ -149,6 +152,7 @@ async function dictations(url: string): Promise<Note[]> {
     transcript: string;
     phrases: { at: number; text: string }[];
     edited_steps: Step[] | null;
+    brew_context: { dose?: number; water?: number; method?: string; coffee?: string } | null;
     created_at: string;
   }[] = await (await fetch(
     `${url}/rest/v1/dictations?select=*&context=eq.live&order=created_at.desc&limit=50`,
@@ -162,6 +166,10 @@ async function dictations(url: string): Promise<Note[]> {
       name: `dictation ${row.id.slice(0, 8)} · ${row.created_at.slice(0, 16)} · ${Math.round(row.duration_s)} s`,
       audio: new Uint8Array(await response.arrayBuffer()),
       duration: row.duration_s,
+      dose: row.brew_context?.dose,
+      water: row.brew_context?.water,
+      method: row.brew_context?.method,
+      coffee: row.brew_context?.coffee,
       phrases: row.phrases,
       expected: row.edited_steps,
       reference: null,
@@ -179,7 +187,14 @@ async function hear(url: string, key: string, note: Note, pipeline: string): Pro
       audio: base64(note.audio),
       mime: "audio/mp4",
       pipeline,
-      context: { water: note.water, duration: note.duration, phrases: note.phrases },
+      context: {
+        dose: note.dose,
+        water: note.water,
+        method: note.method,
+        coffee: note.coffee,
+        duration: note.duration,
+        phrases: note.phrases,
+      },
     }),
   });
   const latencyMs = Date.now() - started;
@@ -214,6 +229,10 @@ const pct = (value: number) => `${(value * 100).toFixed(0)}%`;
 
 for (const note of notes) {
   console.log(`\n## ${note.name}`);
+  console.log(
+    `   set before: ${note.dose ?? "?"} g coffee, ${note.water ?? "?"} g water` +
+      (note.coffee ? `, ${note.coffee}` : ""),
+  );
   console.log(`   device: ${note.phrases.map((p) => p.text).join(" ").slice(0, 160)}`);
   const runs = await Promise.all(pipelines.map((pipeline) => hear(url, key, note, pipeline)));
   for (const run of runs) {

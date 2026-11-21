@@ -10,8 +10,12 @@ export type Phrase = { at: number; text: string };
 
 export type Context = {
   method?: string;
+  /// Grams of coffee the brewer weighed before recording.
   dose?: number;
+  /// Grams of water the brewer set before recording. The scale ends here.
   water?: number;
+  /// The bag, when the brew is on a coffee.
+  coffee?: string;
   duration?: number;
   recipe?: string[];
   vocabulary?: string[];
@@ -21,9 +25,18 @@ export type Context = {
 
 export function describe(context: Context): string {
   const lines: string[] = [];
+  if (context.coffee) lines.push(`Coffee: ${context.coffee}`);
   if (context.method) lines.push(`Method: ${context.method}`);
-  if (context.dose) lines.push(`Dose: ${context.dose} g`);
-  if (context.water) lines.push(`Water: ${context.water} g`);
+  if (context.dose) {
+    lines.push(
+      `Coffee dose, weighed before the brew: ${context.dose} g. It is the coffee in the brewer, never a scale reading and never a pour.`,
+    );
+  }
+  if (context.water) {
+    lines.push(
+      `Water, set before the brew: ${context.water} g. The scale ends on this, whether or not it was spoken. A pattern with no spoken target ends on it, and no step's mass goes past it.`,
+    );
+  }
   if (context.duration) lines.push(`Recording length: ${Math.round(context.duration)} s`);
   if (context.recipe?.length) lines.push(`Recipe followed: ${context.recipe.join("; ")}`);
   if (context.vocabulary?.length) lines.push(`Vocabulary: ${context.vocabulary.join(", ")}`);
