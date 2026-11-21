@@ -10,8 +10,21 @@ struct FlavorPicker: View {
     var showsSummary = true
 
     @State private var query = ""
-    @State private var showAll = false
-    @State private var expanded: Set<String> = []
+    @State private var showAll: Bool
+
+    init(
+        selection: Binding<[FlavorTag]>,
+        recent: [FlavorTag] = [],
+        declared: [FlavorTag] = [],
+        showsSummary: Bool = true,
+        opensAll: Bool = false
+    ) {
+        _selection = selection
+        self.recent = recent
+        self.declared = declared
+        self.showsSummary = showsSummary
+        _showAll = State(initialValue: opensAll)
+    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
@@ -118,44 +131,17 @@ struct FlavorPicker: View {
         }
     }
 
+    /// One family, flat: each group, then its flavours, all in view. A wider
+    /// gap before a group is the only thing that tells groups apart.
     private func familyBlock(_ family: FlavorNode) -> some View {
         VStack(alignment: .leading, spacing: 8) {
             Text(family.en)
                 .catalogueLabel()
             Rectangle().fill(Palette.hairline).frame(height: 1)
             FlowLayout {
-                ForEach(FlavorWheel.shared.children(of: family.id)) { child in
-                    HStack(spacing: 4) {
-                        chip(FlavorTag(id: child.id))
-                        let leaves = FlavorWheel.shared.children(of: child.id)
-                        if !leaves.isEmpty {
-                            Button {
-                                withAnimation(Motion.quick) {
-                                    if expanded.contains(child.id) {
-                                        expanded.remove(child.id)
-                                    } else {
-                                        expanded.insert(child.id)
-                                    }
-                                }
-                            } label: {
-                                Image(systemName: "chevron.right")
-                                    .font(.system(size: 8, weight: .semibold))
-                                    .foregroundStyle(Palette.inkMuted)
-                                    .rotationEffect(.degrees(expanded.contains(child.id) ? 90 : 0))
-                            }
-                            .buttonStyle(.plain)
-                        }
-                    }
-                }
-            }
-            ForEach(FlavorWheel.shared.children(of: family.id)) { child in
-                if expanded.contains(child.id) {
-                    FlowLayout {
-                        ForEach(FlavorWheel.shared.children(of: child.id)) { leaf in
-                            chip(FlavorTag(id: leaf.id))
-                        }
-                    }
-                    .padding(.leading, 8)
+                ForEach(FlavorFamilyLayout.entries(of: family.id)) { entry in
+                    chip(FlavorTag(id: entry.id))
+                        .padding(.leading, entry.opensGroup ? FlavorFamilyLayout.groupGap : 0)
                 }
             }
         }
@@ -182,6 +168,25 @@ struct FlavorPicker: View {
             selection.append(tag)
         }
         query = ""
+    }
+}
+
+/// A family of the wheel on two levels: every group, each followed by its
+/// flavours, nothing folded away.
+nonisolated enum FlavorFamilyLayout {
+    struct Entry: Identifiable, Equatable {
+        let id: String
+        /// A group that is not the first of its family: a wider gap before it.
+        let opensGroup: Bool
+    }
+
+    static let groupGap: CGFloat = 6
+
+    static func entries(of familyID: String, wheel: FlavorWheel = .shared) -> [Entry] {
+        wheel.children(of: familyID).enumerated().flatMap { index, group in
+            [Entry(id: group.id, opensGroup: index > 0)]
+                + wheel.children(of: group.id).map { Entry(id: $0.id, opensGroup: false) }
+        }
     }
 }
 

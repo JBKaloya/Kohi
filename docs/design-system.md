@@ -499,6 +499,8 @@ Heptagone `Canvas` / `Path`. Rayon, fill, épaisseurs dans `Motion.Radar`. Axe n
 
 Recherche, Quick, All replié (9 familles). Encre / hairline / papier, jamais les `color` du JSON.
 
+Deux niveaux, à plat : sous le label et le filet de chaque famille, une seule `FlowLayout` qui enchaîne chaque groupe puis ses saveurs (`FlavorFamilyLayout`). Plus de chevron par groupe : la zone de 44 pt du chip le recouvrait et le tap sélectionnait le groupe. Un espace un peu plus large (`groupGap`) avant chaque groupe sépare les groupes. Le seul chevron restant est celui de « All ».
+
 ### `BrewCompareSheet`
 
 Picker B + chips Best / Previous / Any coffee same method. Radar A `primary` / B `secondary`, légende A · B, colonnes teintées. Rangées A · B · Δ. Phrase + tag `practice`.

@@ -1,5 +1,11 @@
 # Blueprint changelog
 
+## Drift · 2026-11-21 · since `e8dd14e` · not patched
+
+Feedback of 21 November. Code changed, Figma frames not patched yet; no node ids touched.
+
+- **Flavours** (How was it?, It's done, tasting edit): All opens flat. Under each family, each group then its flavours, no chevron per group. Frames: the tasting and after-brew frames that show the flavour picker.
+
 ## 2026-11-11 · `3894307` · sync 3
 
 Brew feedback of 11 November, on the working tree at that SHA (not committed yet). Only the brew journey is patched.
