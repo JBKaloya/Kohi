@@ -7,6 +7,15 @@ struct CompareView: View {
     let series: [CompareSeries]
 
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.appEnvironment) private var appEnvironment
+
+    @State private var summary: CompareSummary.Summary?
+    @State private var isSummarizing = false
+    @State private var isAsking = false
+
+    private var summarizes: Bool {
+        CompareSummary.isAvailable(series, flags: appEnvironment?.flags)
+    }
 
     private var inks: [SIMD3<Double>] { CompareColors.inks(series.map(\.cardInk)) }
 
@@ -36,6 +45,7 @@ struct CompareView: View {
                         Spacer()
                     }
                     legend
+                    if summarizes, isSummarizing || summary != nil { summaryBlock }
                     if let brews { parameters(brews) }
                 }
                 .padding(.horizontal, 26)
@@ -53,6 +63,40 @@ struct CompareView: View {
             }
         }
         .tint(Palette.ink)
+        .task { await summarize() }
+        .sheet(isPresented: $isAsking) {
+            AskSheet(context: CompareSummary.context(series, summary: summary?.text))
+                .appEnvironment(appEnvironment)
+        }
+    }
+
+    private var summaryBlock: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            if let summary {
+                Text(summary.text)
+                    .font(Typography.body)
+                    .foregroundStyle(Palette.ink)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .transition(.opacity)
+                CoffeeIntelligenceButton(title: Copy.askAboutThisComparison, subtitle: nil) {
+                    isAsking = true
+                }
+            } else {
+                VStack(alignment: .leading, spacing: 8) {
+                    ShimmerBar(width: 240)
+                    ShimmerBar(width: 160)
+                }
+                .accessibilityLabel(Copy.summarizing)
+            }
+        }
+        .animation(Motion.gentle, value: summary)
+    }
+
+    private func summarize() async {
+        guard summarizes, summary == nil, let env = appEnvironment else { return }
+        isSummarizing = true
+        summary = await CompareSummary.summary(of: series, flags: env.flags, events: env.aiEvents)
+        isSummarizing = false
     }
 
     private var legend: some View {

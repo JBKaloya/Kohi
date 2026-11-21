@@ -23,6 +23,9 @@ nonisolated enum AIFeature: String, Codable, CaseIterable, Identifiable, Sendabl
     case narration = "brew-narration"
     /// Testers only: every way of hearing a note, shown blind, to pick from.
     case narrationCompare = "narration-compare"
+    /// Testers first: a sentence or two under the comparison radar, saying
+    /// what sets the picks apart.
+    case compareSummary = "compare-summary"
     /// Four-level usefulness scale under every model output.
     case aiFeedback = "ai-feedback"
 
@@ -38,6 +41,7 @@ nonisolated enum AIFeature: String, Codable, CaseIterable, Identifiable, Sendabl
         case .menuExtract: "Read café menus"
         case .narration: "Hear brew steps"
         case .narrationCompare: "Compare transcriptions"
+        case .compareSummary: "Summarize comparisons"
         case .aiFeedback: "AI feedback"
         }
     }
@@ -54,7 +58,16 @@ nonisolated enum AIFeature: String, Codable, CaseIterable, Identifiable, Sendabl
         case .menuExtract: "Menus are still read on device."
         case .narration: "Steps are read on device."
         case .narrationCompare: "The brew keeps one reading of the note."
+        case .compareSummary: "The radar and its legend stand alone."
         case .aiFeedback: "Usefulness is not recorded."
+        }
+    }
+
+    /// Shown in Debug and TestFlight builds only, until it has been tried.
+    var isTesterOnly: Bool {
+        switch self {
+        case .narrationCompare, .compareSummary: true
+        default: false
         }
     }
 
@@ -68,7 +81,8 @@ nonisolated enum AIFeature: String, Codable, CaseIterable, Identifiable, Sendabl
     var isExperimental: Bool {
         switch self {
         case .cardVision, .menuExtract, .aiFeedback: false
-        case .fieldExtract, .recipeAdapt, .ask, .suggestedCorrection, .narration, .narrationCompare: true
+        case .fieldExtract, .recipeAdapt, .ask, .suggestedCorrection, .narration, .narrationCompare,
+             .compareSummary: true
         }
     }
 
@@ -83,6 +97,7 @@ nonisolated enum AIFeature: String, Codable, CaseIterable, Identifiable, Sendabl
         case .menuExtract: "field-extract"
         case .narration: "brew-narration"
         case .narrationCompare: "narration-compare"
+        case .compareSummary: "compare-summary"
         case .aiFeedback: nil
         }
     }

@@ -78,6 +78,7 @@ nonisolated enum Ask {
     static func answer(
         to question: String,
         topic: String? = nil,
+        context: String? = nil,
         flags: AIFlags,
         events: AIEventLog
     ) async -> Result<Answer, Failure> {
@@ -85,16 +86,11 @@ nonisolated enum Ask {
         guard let client = SupabaseConfig.current else { return .failure(.notConfigured) }
         guard let question = question.trimmed else { return .failure(.decode) }
 
-        struct Payload: Encodable {
-            let question: String
-            let topic: String?
-        }
-
         let started = Date.now
         do {
             let response: Response = try await client.functions.invoke(
                 "ask",
-                options: FunctionInvokeOptions(body: Payload(question: question, topic: topic))
+                options: FunctionInvokeOptions(body: payload(question: question, topic: topic, context: context))
             )
             let eventID = events.record(AIEvent(
                 feature: .ask,
@@ -122,6 +118,18 @@ nonisolated enum Ask {
             log(failure, error: error)
             return .failure(failure)
         }
+    }
+
+    struct Payload: Encodable, Equatable {
+        let question: String
+        let topic: String?
+        /// What the sheet was opened on (a comparison), for the model to read
+        /// the question against. Left out of the body when there is none.
+        let context: String?
+    }
+
+    static func payload(question: String, topic: String?, context: String?) -> Payload {
+        Payload(question: question, topic: topic, context: context?.trimmed)
     }
 
     static func classify(_ error: Error) -> Failure {

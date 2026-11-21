@@ -63,7 +63,7 @@ Deno.serve(async (req) => {
     return json({ error: "function is not configured" }, 500);
   }
 
-  let body: { question?: string; topic?: string };
+  let body: { question?: string; topic?: string; context?: string };
   try {
     body = await req.json();
   } catch {
@@ -101,10 +101,15 @@ Deno.serve(async (req) => {
     sources = [];
   }
 
+  // What the person is looking at when they ask (a comparison, say). Context
+  // for the question, never a source to cite.
+  const context = body.context?.trim().slice(0, 4000);
+
   const started = Date.now();
   const result = await generate(apiKey, [
     { text: PROMPT },
     { text: `Sources:\n${JSON.stringify(sources)}` },
+    ...(context ? [{ text: `What they are looking at (not a source):\n${context}` }] : []),
     { text: `Question: ${question}` },
   ], {
     temperature: 0.1,

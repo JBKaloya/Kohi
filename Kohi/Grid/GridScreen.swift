@@ -224,6 +224,7 @@ struct GridScreen: View {
             }
             .sheet(item: $comparePick) { pick in
                 CompareView(series: pick.series)
+                    .appEnvironment(appEnvironment)
             }
             .task(id: undoText) {
                 guard undoText != nil else { return }

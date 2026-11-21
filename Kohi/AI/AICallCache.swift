@@ -37,6 +37,16 @@ enum AICallCache {
         variants.removeValue(forKey: key)
     }
 
+    private static var compareSummaries: [String: CompareSummary.Summary] = [:]
+
+    static func compareSummary(for key: String) -> CompareSummary.Summary? {
+        compareSummaries[key]
+    }
+
+    static func store(_ value: CompareSummary.Summary, for key: String) {
+        compareSummaries[key] = value
+    }
+
     private static var transcripts: [String: String] = [:]
 
     static func transcript(for key: String) -> String? {
@@ -51,6 +61,7 @@ enum AICallCache {
         suggested.removeAll()
         variants.removeAll()
         emptyVariants.removeAll()
+        compareSummaries.removeAll()
         transcripts.removeAll()
     }
 }

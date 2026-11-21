@@ -13,6 +13,9 @@ struct AskSheet: View {
     @Environment(\.dismiss) private var dismiss
 
     var topic: String?
+    /// What the sheet opens on, sent with the question: a comparison and its
+    /// summary. Nil asks about coffee in general.
+    var context: String?
 
     @State private var question = ""
     @State private var answer: Ask.Answer?
@@ -145,7 +148,7 @@ struct AskSheet: View {
         failure = nil
         answer = nil
         Task {
-            let result = await Ask.answer(to: text, topic: topic, flags: flags, events: events)
+            let result = await Ask.answer(to: text, topic: topic, context: context, flags: flags, events: events)
             withAnimation(Motion.snappy) {
                 switch result {
                 case .success(let value):

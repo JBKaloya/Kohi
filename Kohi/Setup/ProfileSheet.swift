@@ -429,7 +429,7 @@ struct ProfileSheet: View {
 
                 ForEach(AIFeature.allCases) { feature in
                     if (!feature.isExperimental || flags.isExperimentalEnabled),
-                       feature != .narrationCompare || TesterBuild.isTester {
+                       !feature.isTesterOnly || TesterBuild.isTester {
                         featureRow(feature)
                     }
                 }

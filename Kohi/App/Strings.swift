@@ -277,6 +277,8 @@ nonisolated enum Copy {
     static let coffee = "Coffee"
     static let ask = "Ask"
     static let askAboutThisCoffee = "Ask about this coffee"
+    static let askAboutThisComparison = "Ask about this comparison"
+    static let summarizing = "Summarizing"
     static let noBrewsYet = "No brews yet."
     static let brewThisCoffee = "Brew this coffee"
 

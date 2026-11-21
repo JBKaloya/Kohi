@@ -20,18 +20,29 @@ nonisolated struct CompareSeries: Identifiable, Equatable {
     let cardInk: SIMD3<Double>?
     /// Set for a brew, to set its parameters side by side.
     let brew: Brew?
+    /// The flavours it is known for, most noted first. For the summary.
+    var flavors: [String] = []
+    /// Half points, 1…10. A coffee carries the mean of its scored cups.
+    var ratingHalves: Int?
 
     var id: Source { source }
 
+    /// The most a series says about its flavours.
+    static let flavorLimit = 4
+
     static func coffee(_ card: CoffeeCard, tasted: [Tasting] = [], ink: SIMD3<Double>?) -> CompareSeries {
         let count = card.brews.count
+        let cups = card.brews.map(\.flavors) + tasted.map(\.flavors)
+        let ratings = card.brews.compactMap(\.ratingHalves) + tasted.compactMap(\.ratingHalves)
         return CompareSeries(
             source: .coffee(card.id),
             title: card.displayName,
             detail: count == 1 ? "1 brew" : "\(count) brews",
             taste: CardProfileData.medianTaste(of: card, tasted: tasted),
             cardInk: ink,
-            brew: nil
+            brew: nil,
+            flavors: mostNoted(cups),
+            ratingHalves: HalfRating.mean(ratings).map { Int(($0 * 2).rounded()) }
         )
     }
 
@@ -42,8 +53,26 @@ nonisolated struct CompareSeries: Identifiable, Equatable {
             detail: brew.date.formatted(.dateTime.day().month(.abbreviated)),
             taste: brew.taste,
             cardInk: ink,
-            brew: brew
+            brew: brew,
+            flavors: mostNoted([brew.flavors]),
+            ratingHalves: brew.ratingHalves
         )
+    }
+
+    /// Flavours by how many cups noted them, ties in the order first met.
+    static func mostNoted(_ cups: [[FlavorTag]]) -> [String] {
+        var counts: [String: Int] = [:]
+        var order: [String] = []
+        for tag in cups.flatMap({ $0 }) {
+            let name = tag.displayName
+            if counts[name] == nil { order.append(name) }
+            counts[name, default: 0] += 1
+        }
+        let ranked = order.enumerated().sorted { a, b in
+            let (ca, cb) = (counts[a.element] ?? 0, counts[b.element] ?? 0)
+            return ca != cb ? ca > cb : a.offset < b.offset
+        }
+        return ranked.prefix(flavorLimit).map(\.element)
     }
 
     static func tasting(_ tasting: Tasting, card: CoffeeCard?, ink: SIMD3<Double>?) -> CompareSeries {
@@ -55,7 +84,9 @@ nonisolated struct CompareSeries: Identifiable, Equatable {
             detail: place.isEmpty ? date : "\(place) · \(date)",
             taste: tasting.taste,
             cardInk: card == nil ? nil : ink,
-            brew: nil
+            brew: nil,
+            flavors: mostNoted([tasting.flavors]),
+            ratingHalves: tasting.ratingHalves
         )
     }
 
