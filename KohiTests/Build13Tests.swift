@@ -63,7 +63,7 @@ struct SloshLiveValueTests {
 
     @Test func theBindingFollowsTheDrag() throws {
         let source = try String(contentsOf: DevBrief10.kohiRoot.appending(path: "Design/SloshRail.swift"))
-        #expect(source.contains("set(SloshSim.snap(percent))"))
+        #expect(source.contains("SloshSim.score(x:"))
         #expect(source.contains("startValue = value"))
         #expect(source.contains("set(startValue == snapped ? nil : snapped)"))
     }

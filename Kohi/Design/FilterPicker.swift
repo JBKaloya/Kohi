@@ -2,12 +2,26 @@ import SwiftUI
 
 /// One criterion as a pill. The pill is the result: the criterion's name
 /// while nothing is picked, the values once they are. No count, no shadow,
-/// no rule. Tapped, its values unfold from the pill's top-left corner.
+/// no rule. Tapped, its values hang below it and unfold from that corner.
 struct FilterPicker: View {
     let facet: FilterFacet
     @Binding var active: ActiveFilters
     let isOpen: Bool
+    /// Where the pill landed, in the filter bar's coordinate space. The open
+    /// list is drawn by the bar, not by the pill: an overlay on the pill
+    /// aligns to the pill's bottom and so grows up over the title.
+    var onFrame: (CGRect) -> Void = { _ in }
     let onToggle: () -> Void
+
+    /// How far under the pill the list starts.
+    static let menuGap: CGFloat = 6
+
+    /// The list leads with the pill, and never past the bar's right edge.
+    static func menuLead(pillMinX: CGFloat, barWidth: CGFloat, menuWidth: CGFloat) -> CGFloat {
+        let natural = max(pillMinX, 0)
+        guard menuWidth > 1, barWidth > 1 else { return natural }
+        return min(natural, max(0, barWidth - menuWidth))
+    }
 
     /// Past this many characters the pill ends on an ellipsis.
     static let titleLimit = 22
@@ -27,16 +41,13 @@ struct FilterPicker: View {
         .buttonStyle(FilterPillStyle(isOpen: isOpen))
         .accessibilityLabel(facet.label)
         .accessibilityValue(active.values(of: facet.id).isEmpty ? "" : active.title(of: facet))
-        .overlay(alignment: .bottomLeading) {
-            if isOpen {
-                FilterOptionList(facet: facet, active: $active)
-                    .fixedSize()
-                    .alignmentGuide(.bottom) { $0[.top] - 6 }
-                    .transition(.unfold)
-            }
-        }
+        .onGeometryChange(for: CGRect.self, of: { $0.frame(in: .named(FilterBarSpace.name)) }, action: onFrame)
         .zIndex(isOpen ? 1 : 0)
     }
+}
+
+private enum FilterBarSpace {
+    static let name = "filter-bar"
 }
 
 private struct FilterPillStyle: ButtonStyle {
@@ -158,7 +169,7 @@ private struct UnfoldEffect: ViewModifier {
 }
 
 extension AnyTransition {
-    /// A list opening from the top-left corner of what opened it.
+    /// A list opening from its top-left corner, the one against the pill.
     static var unfold: AnyTransition {
         .modifier(active: UnfoldEffect(folded: true), identity: UnfoldEffect(folded: false))
     }
@@ -175,6 +186,11 @@ struct FilterBar<Tabs: View>: View {
 
     @State private var showsFacets = false
     @State private var open: String?
+    /// The pill the list last hung from. Kept while the list folds shut,
+    /// so the exit still has a corner to fold into.
+    @State private var anchor: String?
+    @State private var frames: [String: CGRect] = [:]
+    @State private var barWidth: CGFloat = 0
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     init(facets: [FilterFacet], active: Binding<ActiveFilters>, @ViewBuilder tabs: () -> Tabs) {
@@ -217,9 +233,19 @@ struct FilterBar<Tabs: View>: View {
             if showsFacets {
                 FlowLayout {
                     ForEach(facets) { facet in
-                        FilterPicker(facet: facet, active: $active, isOpen: open == facet.id) {
+                        FilterPicker(
+                            facet: facet,
+                            active: $active,
+                            isOpen: open == facet.id,
+                            onFrame: { frames[facet.id] = $0 }
+                        ) {
                             withAnimation(reduceMotion ? nil : Motion.unfold) {
-                                open = open == facet.id ? nil : facet.id
+                                if open == facet.id {
+                                    open = nil
+                                } else {
+                                    anchor = facet.id
+                                    open = facet.id
+                                }
                             }
                         }
                     }
@@ -227,9 +253,14 @@ struct FilterBar<Tabs: View>: View {
                 .transition(.opacity)
             }
         }
+        .coordinateSpace(name: FilterBarSpace.name)
+        .onGeometryChange(for: CGFloat.self) { $0.size.width } action: { barWidth = $0 }
+        .overlay(alignment: .topLeading) { hangingList }
         .background {
             if open != nil {
-                // Any tap outside the open list closes it.
+                // Any tap outside the open list closes it. The catcher lives
+                // on the bar, above the scrolling list, so a tap on a row
+                // underneath still dismisses.
                 Color.clear
                     .contentShape(Rectangle())
                     .frame(width: 4000, height: 4000)
@@ -241,6 +272,24 @@ struct FilterBar<Tabs: View>: View {
         .zIndex(1)
     }
 
+    /// The open list, laid out under the pill that opened it. Spacers take
+    /// the gap and do not take taps, so the pill underneath still toggles.
+    @ViewBuilder
+    private var hangingList: some View {
+        if let id = anchor, let pill = frames[id], pill.width > 1,
+           let facet = facets.first(where: { $0.id == id }) {
+            HangingFilterList(
+                facet: facet,
+                active: $active,
+                pill: pill,
+                barWidth: barWidth,
+                shown: open == id
+            )
+            .id(id)
+            .transition(.identity)
+        }
+    }
+
     private var chips: some View {
         ChipRail {
             ForEach(active.chips(in: facets)) { chip in
@@ -248,6 +297,41 @@ struct FilterBar<Tabs: View>: View {
                     withAnimation(Motion.quick) { active.remove(chip.option.id, from: chip.facetID) }
                 }
                 .accessibilityLabel("Remove \(chip.option.label)")
+            }
+        }
+    }
+}
+
+/// The open values, hung under the pill. The clear spacers are the gap:
+/// they keep the list's own top-left on the pill's bottom-left, which is
+/// the corner `unfold` scales from, and they pass taps through.
+private struct HangingFilterList: View {
+    let facet: FilterFacet
+    @Binding var active: ActiveFilters
+    let pill: CGRect
+    let barWidth: CGFloat
+    let shown: Bool
+
+    @State private var menuWidth: CGFloat = 0
+
+    var body: some View {
+        let lead = FilterPicker.menuLead(pillMinX: pill.minX, barWidth: barWidth, menuWidth: menuWidth)
+        HStack(alignment: .top, spacing: 0) {
+            Color.clear
+                .frame(width: lead, height: 1)
+                .allowsHitTesting(false)
+                .accessibilityHidden(true)
+            VStack(alignment: .leading, spacing: FilterPicker.menuGap) {
+                Color.clear
+                    .frame(width: 1, height: max(pill.maxY, 0))
+                    .allowsHitTesting(false)
+                    .accessibilityHidden(true)
+                if shown {
+                    FilterOptionList(facet: facet, active: $active)
+                        .fixedSize()
+                        .onGeometryChange(for: CGFloat.self) { $0.size.width } action: { menuWidth = $0 }
+                        .transition(.unfold)
+                }
             }
         }
     }

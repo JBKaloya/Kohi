@@ -80,6 +80,15 @@ struct ActiveFiltersTests {
         )
         #expect(!picker.contains("Animation.spring"))
         #expect(!picker.contains("\"checkmark"))
+        #expect(!picker.contains("alignmentGuide(.bottom)"))
+        #expect(picker.contains("pill.maxY"))
+    }
+
+    @Test func theListHangsBelowThePillAndStaysOnScreen() {
+        #expect(FilterPicker.menuLead(pillMinX: 12, barWidth: 340, menuWidth: 180) == 12)
+        #expect(FilterPicker.menuLead(pillMinX: 280, barWidth: 340, menuWidth: 180) == 160)
+        #expect(FilterPicker.menuLead(pillMinX: 20, barWidth: 0, menuWidth: 0) == 20)
+        #expect(FilterPicker.menuGap > 0)
     }
 }
 

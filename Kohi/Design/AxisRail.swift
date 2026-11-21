@@ -1,8 +1,8 @@
 import SwiftUI
 
 /// One taste axis, 0…10. The rail is a slosh slider: the handle is rigid,
-/// the fill has mass, and letting go snaps to a whole number. Tapping the
-/// current value clears it.
+/// the fill has mass, and letting go snaps to a whole number. Pulling past
+/// 0 clears the axis, and so does a tap on the current value.
 struct AxisRail: View {
     let axis: TasteAxis
     @Binding var value: Int?

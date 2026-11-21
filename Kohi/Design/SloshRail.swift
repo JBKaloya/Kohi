@@ -6,8 +6,9 @@ import SwiftUI
 /// in the direction of travel, so the lag reads as liquid rather than latency.
 ///
 /// Taste scores stay whole numbers. The score follows the finger in whole
-/// steps, so the number and the radar move with the drag; a tap on the
-/// current score clears it.
+/// steps, so the number and the radar move with the drag. Pulling past the
+/// leading edge clears it — 0 is still a score, the space before the bar is
+/// not — and a tap on the current score does the same.
 struct SloshRail: View {
     var label: String
     @Binding var value: Int?
@@ -23,7 +24,7 @@ struct SloshRail: View {
     @State private var startValue: Int?
 
     var body: some View {
-        HStack(alignment: .center, spacing: 16) {
+        HStack(alignment: .center, spacing: SloshSim.clearPast) {
             Text(label)
                 .scalingCatalogueLabel()
                 .frame(width: 74, alignment: .leading)
@@ -115,7 +116,7 @@ struct SloshRail: View {
             .fill(Palette.ink)
             .frame(width: 3, height: 28)
             .offset(x: width * CGFloat(sim.value / 100) - 1.5)
-            .opacity(value == nil && !sim.held ? 0 : 1)
+            .opacity(value == nil ? 0 : 1)
     }
 
     private func drag(width: CGFloat) -> some Gesture {
@@ -127,27 +128,39 @@ struct SloshRail: View {
                     sim.velocity = 0
                     startValue = value
                 }
-                let percent = min(100, max(0, gesture.location.x / width * 100))
-                sim.velocity = percent - sim.value
-                sim.value = percent
-                set(SloshSim.snap(percent))
+                follow(gesture.location.x, width: width)
                 wake()
             }
             .onEnded { gesture in
                 guard enabled else { return }
                 sim.held = false
-                let percent = min(100, max(0, gesture.location.x / width * 100))
                 let tapped = abs(gesture.translation.width) < 8 && abs(gesture.translation.height) < 8
                 if tapped {
+                    let percent = min(100, max(0, gesture.location.x / width * 100))
                     let snapped = SloshSim.snap(percent)
                     set(startValue == snapped ? nil : snapped)
                     sim.velocity = 0
                 } else {
-                    sim.velocity = reduceMotion ? 0 : min(6, max(-6, sim.velocity))
-                    set(SloshSim.snap(sim.value))
+                    let next = SloshSim.score(x: gesture.location.x, width: width)
+                    sim.velocity = reduceMotion || next == nil ? 0 : min(6, max(-6, sim.velocity))
+                    set(next)
                 }
                 wake()
             }
+    }
+
+    /// The handle tracks the finger. Past the leading edge the score leaves.
+    private func follow(_ x: CGFloat, width: CGFloat) {
+        let next = SloshSim.score(x: x, width: width)
+        if next != nil {
+            let percent = min(100, max(0, x / width * 100))
+            sim.velocity = percent - sim.value
+            sim.value = percent
+        } else {
+            sim.velocity = 0
+            sim.value = 0
+        }
+        set(next)
     }
 
     private func park(at score: Int?) {

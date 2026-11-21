@@ -480,7 +480,7 @@ Quand un brew, une recette *Mine* ou un sync a eu lieu. Jour même → `just now
 
 ### `AxisRail`
 
-Rail hairline 1 pt, 11 ticks, dot 8 pt, rangée 34 pt, slop ±10. Tap la valeur courante → `nil`. Accessibilité : `accessibilityAdjustableAction` 0–10.
+Rail hairline 1 pt, 11 ticks, dot 8 pt, rangée 34 pt, slop ±10. Tap la valeur courante → `nil`. Un glissé au-delà du bord gauche (après 0) retire aussi la note : l’axe redevient absent, la donnée part. Accessibilité : `accessibilityAdjustableAction` 0–10, décrémenter sous 0 efface.
 
 ### `GrindRail`
 
@@ -626,7 +626,7 @@ Les labels de champs sont le vocabulaire du café (Roaster, Producer, Process…
 Un seul composant pour filtrer une liste : `FilterBar`, `FilterPicker` et `FilterOptionList` (`Kohi/Design/FilterPicker.swift`). Le modèle est pur, dans `Kohi/Process/` : `FilterFacet` (un critère et ses valeurs, une ou plusieurs), `ActiveFilters` (ce qui filtre, dans l’ordre des choix), puis la logique de chaque écran (`TastingFilters`, `RecipeFilters`). Traduit du picker Bencho, sans dépendance.
 
 - **La pastille est le résultat.** Vide, elle porte le nom du critère (« Roaster ») ; remplie, les valeurs choisies (« Glitch, Onibus »), coupées sur un mot (`FilterPicker.truncated`). Pas de compteur, pas d’ombre, pas de filet : fond `well`. Le chevron pivote de 180° à l’ouverture et prend l’`ink` à l’appui ou ouvert.
-- **La liste se déplie depuis le coin haut-gauche** de la pastille : échelle 0.86 × 0.72 vers 1, opacité, décalage de −10 pt, sur `Motion.unfold`. Les lignes arrivent en cascade, 40 ms d’écart (`Motion.Unfold.rowStagger`). Reduce Motion : pas de ressort, pas de cascade.
+- **La liste s’ouvre sous la pastille**, alignée sur son bord gauche (ou calée au bord droit du rail si elle dépasserait), et se déplie depuis son coin haut-gauche : échelle 0.86 × 0.72 vers 1, opacité, décalage de −10 pt, sur `Motion.unfold`. Les lignes arrivent en cascade, 40 ms d’écart (`Motion.Unfold.rowStagger`). Reduce Motion : pas de ressort, pas de cascade.
 - **Sélection** : inversion ink par `CatalogueMark`, jamais de checkmark. Carte `paper`, rayon 14, filet hairline ; une ligne a le rayon concentrique (14 − 6 de marge). Au-delà de 7 valeurs, la liste défile.
 - **Fermeture** au tap à l’extérieur.
 - **Les onglets cèdent la place.** Le bouton « Filter » est à droite du `TabRail`. Dès qu’une valeur est choisie, le `TabRail` est remplacé par les filtres actifs en chips à retirer (×) ; au retrait du dernier, les onglets reviennent (`Motion.quick`), sur l’onglet d’avant. Aucun filtre n’est caché derrière un onglet, et les filtres ne sont pas gardés d’une ouverture à l’autre.

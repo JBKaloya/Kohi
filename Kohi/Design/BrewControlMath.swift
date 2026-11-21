@@ -201,10 +201,24 @@ struct SloshSim: Equatable, Sendable {
         !held && abs(velocity) < 0.01 && abs(fillVelocity) < 0.01 && abs(value - fill) < 0.02
     }
 
+    /// Width of the gap before a taste rail, and how far past the leading
+    /// edge a drag must go before the score drops. The end of the track is
+    /// still 0; crossing the gap (onto the label) empties it.
+    static let clearPast: CGFloat = 16
+
     /// `percent` is 0…100. Taste scores are whole numbers, so the release snaps.
     static func snap(_ percent: Double, steps: Int = 10) -> Int {
         let raw = Int((percent / 100 * Double(steps)).rounded())
         return min(steps, max(0, raw))
+    }
+
+    /// `x` is the finger along the track. At or past `clearPast` before the
+    /// leading edge there is no score; otherwise a whole number, 0…`steps`.
+    static func score(x: CGFloat, width: CGFloat, steps: Int = 10) -> Int? {
+        if x <= -clearPast { return nil }
+        let span = max(width, 1)
+        let percent = min(100, max(0, Double(x / span) * 100))
+        return snap(percent, steps: steps)
     }
 
     /// Lean of the leading edge, in points. Upright at rest.

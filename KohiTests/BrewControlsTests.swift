@@ -52,6 +52,17 @@ struct BrewControlsTests {
         #expect(SloshSim.snap(100) == 10)
     }
 
+    @Test func pullingPastZeroClearsTheScore() {
+        let width: CGFloat = 200
+        #expect(SloshSim.score(x: -SloshSim.clearPast - 4, width: width) == nil)
+        #expect(SloshSim.score(x: -SloshSim.clearPast, width: width) == nil)
+        #expect(SloshSim.score(x: -SloshSim.clearPast + 1, width: width) == 0)
+        #expect(SloshSim.score(x: 0, width: width) == 0)
+        #expect(SloshSim.score(x: width / 2, width: width) == 5)
+        #expect(SloshSim.score(x: width, width: width) == 10)
+        #expect(SloshSim.score(x: width + 30, width: width) == 10)
+    }
+
     @Test func sloshComesToRest() {
         var sim = SloshSim(value: 20)
         sim.fill = 80
