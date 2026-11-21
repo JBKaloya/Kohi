@@ -32,6 +32,8 @@ enum Haptic: Sendable {
     case armed
     /// A checklist row was ticked.
     case check
+    /// A pick past the limit was refused: a fourth tile to compare.
+    case refused
 
     var feedback: SensoryFeedback {
         switch self {
@@ -48,6 +50,7 @@ enum Haptic: Sendable {
         case .step: .selection
         case .armed: .impact(weight: .medium)
         case .check: .impact(flexibility: .soft)
+        case .refused: .warning
         }
     }
 }

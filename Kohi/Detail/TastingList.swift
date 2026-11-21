@@ -38,6 +38,7 @@ struct TastingList: View {
                         }
                         TastingLine(tasting: tasting, showsCoffee: showsCoffee, showsPlace: showsPlace)
                     }
+                    .opacity(CompareSelection.isMuted(tasting.id, in: picking) ? 0.4 : 1)
                 }
                 .buttonStyle(.plain)
                 .simultaneousGesture(

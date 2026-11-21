@@ -87,6 +87,6 @@ struct BatchDeleteTests {
     @Test func theConfirmationSaysTheBrewsGoToo() {
         #expect(Copy.deleteCoffees(3) == "Delete 3 coffees? Their brews go too.")
         #expect(Copy.deleteCoffees(1) == "Delete 1 coffee? Its brews go too.")
-        #expect(Copy.compareUpToThree == "Compare up to 3")
+        #expect(Copy.compare == "Compare")
     }
 }

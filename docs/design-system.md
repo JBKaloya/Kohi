@@ -233,6 +233,7 @@ Vocabulaire fermé. Chaque cas veut dire la même chose partout. Warmup au launc
 | `step` | selection | Un cran d’une valeur : compteur, note, intensité d’une saveur, saveur cochée ou décochée |
 | `armed` | impact medium | Le geste *swipe to brew* a passé le point de non-retour |
 | `check` | impact soft | Une ligne de checklist est cochée |
+| `refused` | warning | Un choix au-delà de la limite est refusé : une 4ᵉ tuile à comparer (le `PickBar` rebondit) |
 
 Ne pas ajouter un impact « pour le plaisir ». Si le moment n’est pas dans cette liste, soit il n’a pas de haptic, soit on étend l’enum avec un nom qui décrit le *pourquoi*.
 

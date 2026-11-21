@@ -42,13 +42,26 @@ struct CompareTests {
 
     @Test func compareTakesTwoToThree() {
         var picked: [Int] = []
-        for id in 1...4 { picked = CompareSelection.toggling(id, in: picked) }
-        #expect(picked == [1, 2, 3, 4])
-        #expect(!CompareSelection.canCompare(picked.count))
+        for id in 1...3 { picked = CompareSelection.toggling(id, in: picked) }
+        #expect(picked == [1, 2, 3])
+        #expect(CompareSelection.canCompare(picked.count))
         picked = CompareSelection.toggling(2, in: picked)
-        #expect(picked == [1, 3, 4])
+        #expect(picked == [1, 3])
         #expect(CompareSelection.canCompare(picked.count))
         #expect(!CompareSelection.canCompare(1))
+    }
+
+    @Test func aFourthPickIsRefusedAndOneCanAlwaysComeOut() {
+        let full = [1, 2, 3]
+        #expect(CompareSelection.toggling(4, in: full) == full)
+        #expect(CompareSelection.refuses(4, in: full))
+        #expect(!CompareSelection.refuses(2, in: full))
+        #expect(CompareSelection.toggling(3, in: full) == [1, 2])
+        #expect(CompareSelection.isMuted(4, in: full))
+        #expect(!CompareSelection.isMuted(1, in: full))
+        #expect(!CompareSelection.isMuted(4, in: [1, 2]))
+        #expect(!CompareSelection.isMuted(4, in: nil))
+        #expect(Haptic.refused.feedback == .warning)
     }
 
     @Test func aCoffeeIsItsMedian() {

@@ -66,15 +66,28 @@ nonisolated struct CompareSeries: Identifiable, Equatable {
 }
 
 /// A selection in pick order: the order numbers the badges and the series.
-/// It may grow past the limit for Delete; Compare only takes two to three.
+/// It stops at the limit, Delete included: a pick past it is refused and the
+/// selection comes back unchanged. Taking one out always works.
 nonisolated enum CompareSelection {
-    static func toggling<ID: Equatable>(_ id: ID, in picked: [ID]) -> [ID] {
+    static func toggling<ID: Equatable>(_ id: ID, in picked: [ID], limit: Int = CompareSeries.limit) -> [ID] {
         if let index = picked.firstIndex(of: id) {
             var next = picked
             next.remove(at: index)
             return next
         }
+        guard picked.count < limit else { return picked }
         return picked + [id]
+    }
+
+    /// True when adding `id` would go past the limit.
+    static func refuses<ID: Equatable>(_ id: ID, in picked: [ID], limit: Int = CompareSeries.limit) -> Bool {
+        !picked.contains(id) && picked.count >= limit
+    }
+
+    /// The tiles that can no longer be picked: everything else once the limit is reached.
+    static func isMuted<ID: Equatable>(_ id: ID, in picked: [ID]?, limit: Int = CompareSeries.limit) -> Bool {
+        guard let picked else { return false }
+        return refuses(id, in: picked, limit: limit)
     }
 
     static func canCompare(_ count: Int, limit: Int = CompareSeries.limit) -> Bool {

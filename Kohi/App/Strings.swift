@@ -136,7 +136,6 @@ nonisolated enum Copy {
     /// Someone else's recipe, copied into Mine first.
     static let editACopy = "Edit a copy"
     static let brewOnce = "Brew once"
-    static let compareUpToThree = "Compare up to 3"
     static let delete = "Delete"
 
     static func deleteCoffees(_ count: Int) -> String {

@@ -64,6 +64,8 @@ struct GridScreen: View {
     @State private var picking: [UUID]?
     /// The press that opened the mode ends as a tap; that tap is not a pick.
     @State private var pickingSince = Date.distantPast
+    /// Picks refused past the compare limit; the bar nudges on each.
+    @State private var pickRefusals = 0
     @State private var confirmsPickDelete = false
     @State private var comparePick: ComparePick?
     @State private var undoText: String?
@@ -171,6 +173,7 @@ struct GridScreen: View {
                         PickBar(
                             count: picking.count,
                             showsCompare: lotFlags.isOn(.brewCompare),
+                            refusals: pickRefusals,
                             onCompare: { comparePick = ComparePick(series: compareSeries(picking)) },
                             onDelete: { confirmsPickDelete = true }
                         )
@@ -598,6 +601,7 @@ struct GridScreen: View {
                                     PickMark(number: picking.firstIndex(of: card.id).map { $0 + 1 })
                                 }
                             }
+                            .opacity(CompareSelection.isMuted(card.id, in: picking) ? 0.4 : 1)
                             .simultaneousGesture(
                                 LongPressGesture(minimumDuration: Self.pickPress).onEnded { _ in startPicking(card.id) },
                                 including: picking == nil ? .all : .subviews
@@ -662,7 +666,11 @@ struct GridScreen: View {
 
     private func pick(_ id: UUID) {
         guard let current = picking, Date.now.timeIntervalSince(pickingSince) > 0.6 else { return }
-        picking = CompareSelection.toggling(id, in: current)
+        if CompareSelection.refuses(id, in: current) {
+            pickRefusals += 1
+            return
+        }
+        withAnimation(Motion.quick) { picking = CompareSelection.toggling(id, in: current) }
     }
 
     /// A coffee compares as its median; a tasting as itself.

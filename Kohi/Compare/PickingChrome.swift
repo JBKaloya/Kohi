@@ -30,13 +30,16 @@ struct PickMark: View {
 struct PickBar: View {
     let count: Int
     var showsCompare = true
+    /// Counts the picks refused past the limit: each one nudges the bar.
+    var refusals = 0
     let onCompare: () -> Void
     let onDelete: () -> Void
+    @State private var nudged = false
 
     var body: some View {
         HStack(spacing: 28) {
             if showsCompare {
-                Button(count > CompareSeries.limit ? Copy.compareUpToThree : Copy.compare, action: onCompare)
+                Button(Copy.compare, action: onCompare)
                     .disabled(!CompareSelection.canCompare(count))
             }
             Button(Copy.delete, role: .destructive, action: onDelete)
@@ -49,6 +52,13 @@ struct PickBar: View {
         .padding(.horizontal, 26)
         .padding(.vertical, 16)
         .modifier(GlassCapsule())
+        .scaleEffect(nudged ? 1.06 : 1)
+        .haptic(.refused, trigger: refusals)
+        .onChange(of: refusals) {
+            withAnimation(Motion.quick) { nudged = true } completion: {
+                withAnimation(Motion.land) { nudged = false }
+            }
+        }
     }
 }
 
