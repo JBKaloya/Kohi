@@ -137,6 +137,7 @@ Tous les springs et tous les nombres de mouvement vivent dans `Motion`. Les vues
 | `gentle` | 0.55 | 0.90 | Grandes surfaces : empty state, scroll vers une carte qui atterrit |
 | `land` | 0.70 | 0.62 | **Réservé** à l’atterrissage d’une carte dans la grille. Overshoot volontaire |
 | `tracking` | 0.28 | 0.86 | Doigt en vol (`interactiveSpring`) |
+| `unfold` | 0.38 | 0.63 | Une liste de filtre qui se déplie depuis le coin de sa pastille (`Motion.Unfold`) |
 
 Stagger : `Motion.stagger(index, step: 0.035, cap: 0.28)` — délai d’apparition d’une série, plafonné pour que les listes longues ne traînent pas.
 
@@ -619,3 +620,14 @@ Les labels de champs sont le vocabulaire du café (Roaster, Producer, Process…
 **Nouveau composant d’archive** — partir de la grammaire : label catalogue, valeur SF, filet hairline, fond paper, tint ink. Un champ passe par `FormField` / `FieldChrome`, jamais une rangée privée. Si ça a besoin d’une card UIKit, d’un divider système ou d’un accent color, ce n’est probablement pas une surface Kohi.
 
 **Nouveau haptic** — un cas dans `Haptic` avec un nom d’événement, pas un `sensoryFeedback` anonyme dans la vue. Un réglage par crans reprend le contrôle du §6 (`StepHit`, haptic `step` sur la valeur) au lieu d’un glissé local.
+
+### Filtres
+
+Un seul composant pour filtrer une liste : `FilterBar`, `FilterPicker` et `FilterOptionList` (`Kohi/Design/FilterPicker.swift`). Le modèle est pur, dans `Kohi/Process/` : `FilterFacet` (un critère et ses valeurs, une ou plusieurs), `ActiveFilters` (ce qui filtre, dans l’ordre des choix), puis la logique de chaque écran (`TastingFilters`, `RecipeFilters`). Traduit du picker Bencho, sans dépendance.
+
+- **La pastille est le résultat.** Vide, elle porte le nom du critère (« Roaster ») ; remplie, les valeurs choisies (« Glitch, Onibus »), coupées sur un mot (`FilterPicker.truncated`). Pas de compteur, pas d’ombre, pas de filet : fond `well`. Le chevron pivote de 180° à l’ouverture et prend l’`ink` à l’appui ou ouvert.
+- **La liste se déplie depuis le coin haut-gauche** de la pastille : échelle 0.86 × 0.72 vers 1, opacité, décalage de −10 pt, sur `Motion.unfold`. Les lignes arrivent en cascade, 40 ms d’écart (`Motion.Unfold.rowStagger`). Reduce Motion : pas de ressort, pas de cascade.
+- **Sélection** : inversion ink par `CatalogueMark`, jamais de checkmark. Carte `paper`, rayon 14, filet hairline ; une ligne a le rayon concentrique (14 − 6 de marge). Au-delà de 7 valeurs, la liste défile.
+- **Fermeture** au tap à l’extérieur.
+- **Les onglets cèdent la place.** Le bouton « Filter » est à droite du `TabRail`. Dès qu’une valeur est choisie, le `TabRail` est remplacé par les filtres actifs en chips à retirer (×) ; au retrait du dernier, les onglets reviennent (`Motion.quick`), sur l’onglet d’avant. Aucun filtre n’est caché derrière un onglet, et les filtres ne sont pas gardés d’une ouverture à l’autre.
+- **Tastings** : période, torréfacteur, lieu, note (4★ et plus, 5★), sur toutes les dégustations. **Brews** : filtre actif, Mine et From the pros forment une seule liste ; l’ancien onglet devient la facette Source, à côté de Dripper, Cup, Roast, Grinder et Profile (l’ancienne feuille Filters a disparu).

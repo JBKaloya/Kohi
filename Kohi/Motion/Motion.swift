@@ -67,6 +67,18 @@ enum Motion {
     /// A pill opening. The same spring as `roll`: width overshoots, then settles.
     static let open = roll
 
+    /// A filter list unfolding from the corner of its pill. Damping 0.63:
+    /// a small overshoot that reads as paper opening, then still.
+    static let unfold = Animation.spring(response: 0.38, dampingFraction: 0.63)
+
+    /// The unfold, in numbers: where the list starts, and the run of its rows.
+    enum Unfold {
+        static let scaleX: CGFloat = 0.86
+        static let scaleY: CGFloat = 0.72
+        static let lift: CGFloat = -10
+        static let rowStagger: Double = 0.04
+    }
+
     /// A value with mass. The handle is rigid; the fill is a softer spring
     /// behind it. Tuned so a fast drag throws the fill into the end stop.
     enum Slosh {

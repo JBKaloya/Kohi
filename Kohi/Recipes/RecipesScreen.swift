@@ -36,11 +36,12 @@ struct RecipesScreen: View {
     @State private var isAsking = false
     @State private var isShowingProfile = false
     @State private var tab: RecipeTab = .all
-    @State private var filters: [RecipeTab: RecipeFilterState] = [:]
+    /// Not kept: the tab is, the filters are not, so the screen never reopens
+    /// narrowed without saying why.
+    @State private var filters = ActiveFilters()
     @State private var showingMore = false
     @State private var opened: OpenedRecipe?
     @State private var didRestoreTab = false
-    @State private var showFilters = false
     @State private var isNewRecipe = false
     @State private var editingRecipe: Recipe?
     /// A brew with no coffee yet, open on Add the coffee.
@@ -64,39 +65,26 @@ struct RecipesScreen: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            RecipeTabs(
-                selection: $tab,
-                showsAsk: flags.isOn(.ask),
-                onAsk: { isAsking = true }
-            )
+            FilterBar(facets: RecipeFilters.facets(grinders: authorGrinders), active: $filters) {
+                RecipeTabs(
+                    selection: $tab,
+                    showsAsk: flags.isOn(.ask),
+                    onAsk: { isAsking = true }
+                )
+            }
             .padding(.horizontal, 26)
             .padding(.top, 10)
 
-            if tab != .all {
-                HStack {
-                    Button(Copy.filters) { showFilters = true }
-                        .catalogueLabel()
-                        .touchTarget()
-                    Spacer()
-                }
-                .padding(.horizontal, 26)
-                .padding(.top, 12)
-            }
-
-            if tab != .all, !currentFilter.summary.isEmpty {
-                Text(currentFilter.summary)
-                    .font(Typography.tag)
-                    .foregroundStyle(Palette.inkMuted)
-                    .padding(.horizontal, 26)
-                    .padding(.top, 6)
-            }
-
             ScrollView {
                 VStack(alignment: .leading, spacing: 0) {
-                    switch tab {
-                    case .all: allContent
-                    case .reference: referenceContent
-                    case .mine: mineContent
+                    if currentFilter.isActive {
+                        filteredContent
+                    } else {
+                        switch tab {
+                        case .all: allContent
+                        case .reference: referenceContent
+                        case .mine: mineContent
+                        }
                     }
                 }
                 .padding(.horizontal, 26)
@@ -129,10 +117,6 @@ struct RecipesScreen: View {
                 onDelete: opened.isMine ? { recipes.delete(opened.recipe) } : nil
             )
             .appEnvironment(appEnvironment)
-        }
-        .sheet(isPresented: $showFilters) {
-            RecipeFilterSheet(state: filterBinding, grinders: authorGrinders)
-                .appEnvironment(appEnvironment)
         }
         .sheet(isPresented: $isNewRecipe) {
             StepBuilderSheet.creation(draft: RecipeCreation.blank(), asksMethod: true) { recipe in
@@ -182,19 +166,15 @@ struct RecipesScreen: View {
         BrewArchive.recent(in: store.cards, loose: looseBrews.brews)
     }
 
-    /// The per-coffee block. On All the recipe filters are hidden, so they
-    /// do not narrow it. On Mine they do.
+    /// The per-coffee block. Filters never narrow it: with a filter on, the
+    /// screen is the filtered recipes instead.
     private var suggestionItems: [(card: CoffeeCard, suggestion: RecipeSuggestion)] {
-        var list = RecipeSuggestions.items(
+        RecipeSuggestions.items(
             from: store.cards,
-            method: tab == .all ? nil : currentFilter.method,
+            method: nil,
             mine: recipes.recipes,
             neighbours: store.cards
         )
-        if tab != .all, let roast = currentFilter.roast {
-            list = list.filter { roast.matches($0.card.roastLevel) }
-        }
-        return list
     }
 
     private var suggestionHome: RecipeSuggestions.BlockHome {
@@ -272,41 +252,13 @@ struct RecipesScreen: View {
     // MARK: - Reference
 
     private var filteredReferences: [Recipe] {
-        var list = ReferenceBase.recipes
-        if let method = currentFilter.method {
-            list = list.filter { $0.method == method }
-        }
-        if let roast = currentFilter.roast {
-            list = list.filter { recipe in
-                recipe.notes.localizedCaseInsensitiveContains(roast.label)
-                    || recipe.name.localizedCaseInsensitiveContains(roast.label)
-            }
-        }
-        if let profile = currentFilter.profile {
-            list = list.filter { $0.profileTags.contains(profile.rawValue) }
-        }
-        if let grinder = currentFilter.authorGrinder {
-            list = list.filter { $0.authorGrinder == grinder }
-        }
-        return list
+        ReferenceBase.recipes.filter { currentFilter.matches($0, origin: .reference) }
     }
 
     @ViewBuilder
     private var referenceContent: some View {
         ForEach(filteredReferences) { recipe in
-            let scaled = RecipeScaling.scaled(recipe, to: currentFilter.size)
-                RecipeRowView(
-                    recipe: scaled.recipe,
-                    provenance: RecipeRowView.provenance(of: recipe, under: RecipeTab.reference.label),
-                    attribution: recipe.attribution,
-                    scaledFrom: scaled.scaledFromLabel ?? ""
-                ) {
-                opened = OpenedRecipe(
-                    recipe: recipe,
-                    scaled: scaled,
-                    provenance: .reference(recipe.attribution)
-                )
-            }
+            referenceRow(recipe)
         }
 
         Button("Edit kit") { isShowingProfile = true }
@@ -314,17 +266,51 @@ struct RecipesScreen: View {
             .padding(.top, 22)
     }
 
+    private func referenceRow(_ recipe: Recipe) -> some View {
+        let scaled = RecipeScaling.scaled(recipe, to: currentFilter.size)
+        return RecipeRowView(
+            recipe: scaled.recipe,
+            provenance: RecipeRowView.provenance(of: recipe, under: RecipeTab.reference.label),
+            attribution: recipe.attribution,
+            scaledFrom: scaled.scaledFromLabel ?? ""
+        ) {
+            opened = OpenedRecipe(
+                recipe: recipe,
+                scaled: scaled,
+                provenance: .reference(recipe.attribution)
+            )
+        }
+    }
+
+    // MARK: - Filtered
+
+    /// Mine and From the pros as one list, narrowed by every filter on.
+    @ViewBuilder
+    private var filteredContent: some View {
+        let matches = RecipeFilters.recipes(
+            mine: recipes.recipes,
+            references: ReferenceBase.recipes,
+            state: currentFilter
+        )
+        if matches.isEmpty {
+            Text("No recipe matches these filters")
+                .font(Typography.tag)
+                .foregroundStyle(Palette.inkMuted)
+                .padding(.top, 8)
+        } else {
+            ForEach(matches) { match in
+                switch match.origin {
+                case .mine: mineRow(match.recipe)
+                case .reference: referenceRow(match.recipe)
+                }
+            }
+        }
+    }
+
     // MARK: - Mine
 
     private var filteredMine: [Recipe] {
-        var list = recipes.recipes
-        if let method = currentFilter.method {
-            list = list.filter { $0.method == method }
-        }
-        if let source = currentFilter.source {
-            list = list.filter { source.matches($0) }
-        }
-        return list
+        recipes.recipes.filter { currentFilter.matches($0, origin: .mine) }
     }
 
     @ViewBuilder
@@ -341,41 +327,45 @@ struct RecipesScreen: View {
                 .padding(.top, 8)
         } else {
             ForEach(filteredMine) { recipe in
-                let scaled = RecipeScaling.scaled(recipe, to: currentFilter.size)
-                RecipeRowView(
-                    recipe: scaled.recipe,
-                    provenance: RecipeRowView.provenance(of: recipe, under: RecipeTab.mine.label),
-                    attribution: recipe.attribution.isEmpty
-                        ? CatalogueDate.happened(recipe.createdAt)
-                        : recipe.attribution,
-                    scaledFrom: scaled.scaledFromLabel ?? ""
-                ) {
-                    opened = OpenedRecipe(
-                        recipe: recipe,
-                        scaled: scaled,
-                        card: recipe.cardID.flatMap { store.card(id: $0) },
-                        provenance: .mine(recipe.name),
-                        isMine: true
-                    )
-                }
-                // Edit and Delete via swipe — discoverable without opening the detail.
-                .swipeActions(edge: .trailing, allowsFullSwipe: false) {
-                    Button(role: .destructive) {
-                        recipes.delete(recipe)
-                    } label: {
-                        Label("Delete", systemImage: "trash")
-                    }
-                    Button {
-                        editingRecipe = recipe
-                    } label: {
-                        Label("Edit", systemImage: "pencil")
-                    }
-                    .tint(Palette.ink)
-                }
+                mineRow(recipe)
             }
         }
 
         insightsSection
+    }
+
+    private func mineRow(_ recipe: Recipe) -> some View {
+        let scaled = RecipeScaling.scaled(recipe, to: currentFilter.size)
+        return RecipeRowView(
+            recipe: scaled.recipe,
+            provenance: RecipeRowView.provenance(of: recipe, under: RecipeTab.mine.label),
+            attribution: recipe.attribution.isEmpty
+                ? CatalogueDate.happened(recipe.createdAt)
+                : recipe.attribution,
+            scaledFrom: scaled.scaledFromLabel ?? ""
+        ) {
+            opened = OpenedRecipe(
+                recipe: recipe,
+                scaled: scaled,
+                card: recipe.cardID.flatMap { store.card(id: $0) },
+                provenance: .mine(recipe.name),
+                isMine: true
+            )
+        }
+        // Edit and Delete via swipe — discoverable without opening the detail.
+        .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+            Button(role: .destructive) {
+                recipes.delete(recipe)
+            } label: {
+                Label("Delete", systemImage: "trash")
+            }
+            Button {
+                editingRecipe = recipe
+            } label: {
+                Label("Edit", systemImage: "pencil")
+            }
+            .tint(Palette.ink)
+        }
     }
 
     @ViewBuilder
@@ -404,24 +394,11 @@ struct RecipesScreen: View {
     // MARK: - Filters & restore
 
     private var currentFilter: RecipeFilterState {
-        filters[tab] ?? seededFilter
-    }
-
-    private var seededFilter: RecipeFilterState {
-        var state = RecipeFilterState()
-        state.dripper = DripperChip.allCases.first { $0.method == setup.preferredRecipeMethod }
-        return state
+        RecipeFilterState(filters)
     }
 
     private var authorGrinders: [String] {
         Array(Set(ReferenceBase.recipes.compactMap(\.authorGrinder))).sorted()
-    }
-
-    private var filterBinding: Binding<RecipeFilterState> {
-        Binding(
-            get: { currentFilter },
-            set: { filters[tab] = $0 }
-        )
     }
 
     private var kitMethods: [BrewMethod] {
@@ -449,8 +426,6 @@ struct RecipesScreen: View {
                 tab = .all
             }
         }
-        if filters[.reference] == nil { filters[.reference] = seededFilter }
-        if filters[.mine] == nil { filters[.mine] = seededFilter }
     }
 
     private func grindState(_ recipe: Recipe, shift: Int = 0) -> ForYourGrinder {

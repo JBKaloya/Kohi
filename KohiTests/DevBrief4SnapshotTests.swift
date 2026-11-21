@@ -38,13 +38,18 @@ struct DevBrief4SnapshotTests {
         )
     }
 
-    @Test func filtersSheetIsVertical() {
+    /// The Filters sheet gave way to the filter bar: its criteria are pills
+    /// whose values unfold as a list.
+    @Test func filtersUnfoldAsAList() {
+        let facet = RecipeFilters.facets(grinders: ["Comandante C40"])
+            .first { $0.id == RecipeFilters.dripper }!
+        var active = ActiveFilters()
+        active.toggle(DripperChip.v60.rawValue, in: facet)
         SnapshotSupport.image(
-            of: RecipeFilterSheet(
-                state: .constant(RecipeFilterState()),
-                grinders: ["Comandante C40"]
-            ),
-            height: 720,
+            of: FilterOptionList(facet: facet, active: .constant(active), cascades: false)
+                .fixedSize()
+                .padding(26),
+            height: 320,
             named: "filters"
         )
     }

@@ -113,7 +113,7 @@ nonisolated enum Copy {
     static let brewAgain = "Brew again"
     static let done = "Done"
     static let compare = "Compare"
-    static let filters = "Filters"
+    static let filter = "Filter"
     static let newRecipe = "New recipe"
     static let totalBrewTime = "Total brew time"
     static let dictationUnavailable = "Dictation unavailable"

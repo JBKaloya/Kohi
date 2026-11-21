@@ -5,6 +5,8 @@
 Feedback of 21 November. Code changed, Figma frames not patched yet; no node ids touched.
 
 - **Flavours** (How was it?, It's done, tasting edit): All opens flat. Under each family, each group then its flavours, no chevron per group. Frames: the tasting and after-brew frames that show the flavour picker.
+- **Filters** (Tastings, Brews): a Filter button right of the tab rail opens pills (Period, Roaster, Place, Rating; Source, Dripper, Cup, Roast, Grinder, Profile). With a filter on, the tab rail gives way to removable chips. Brews: the Filters sheet is gone, and so is its summary line. Frames: the Tastings and Recipes screens, and the Filters sheet frame (to remove).
+- **Compare** (home grid, Tastings): a fourth pick is refused; the bar says Compare.
 
 ## 2026-11-11 · `3894307` · sync 3
 

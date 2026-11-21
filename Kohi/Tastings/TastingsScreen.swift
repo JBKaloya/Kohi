@@ -13,6 +13,8 @@ struct TastingsScreen: View {
 
     @Environment(TastingStore.self) private var tastings
     @State private var rail: Rail = .coffees
+    /// Not kept: a list reopened filtered would hide tastings without saying why.
+    @State private var filters = ActiveFilters()
 
     enum Rail: String, CaseIterable, Identifiable {
         case coffees
@@ -33,16 +35,37 @@ struct TastingsScreen: View {
             empty
         } else {
             VStack(spacing: 0) {
-                TabRail(tabs: Rail.allCases, selection: $rail, underline: .active, title: \.label)
-                    .padding(.horizontal, 22)
+                FilterBar(facets: TastingFilters.facets(for: tastings.tastings), active: $filters) {
+                    TabRail(tabs: Rail.allCases, selection: $rail, underline: .active, title: \.label)
+                }
+                .padding(.horizontal, 22)
                 ScrollView {
-                    switch rail {
-                    case .coffees: coffees
-                    case .places: placesList
+                    if !filters.isEmpty {
+                        filtered
+                    } else {
+                        switch rail {
+                        case .coffees: coffees(tastings.tastings)
+                        case .places: placesList
+                        }
                     }
                 }
                 .scrollIndicators(.hidden)
             }
+        }
+    }
+
+    @ViewBuilder
+    private var filtered: some View {
+        let matches = TastingFilters.apply(tastings.tastings, filters)
+        if matches.isEmpty {
+            Text("No tasting matches these filters")
+                .font(Typography.tag)
+                .foregroundStyle(Palette.inkMuted)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.horizontal, 28)
+                .padding(.top, 18)
+        } else {
+            coffees(matches)
         }
     }
 
@@ -62,8 +85,8 @@ struct TastingsScreen: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
-    private var months: [(title: String, tastings: [Tasting])] {
-        let sorted = tastings.tastings.sorted { $0.date > $1.date }
+    private func months(_ list: [Tasting]) -> [(title: String, tastings: [Tasting])] {
+        let sorted = list.sorted { $0.date > $1.date }
         var out: [(String, [Tasting])] = []
         for tasting in sorted {
             let title = CatalogueDate.month(tasting.date)
@@ -76,9 +99,9 @@ struct TastingsScreen: View {
         return out.map { (title: $0.0, tastings: $0.1) }
     }
 
-    private var coffees: some View {
+    private func coffees(_ list: [Tasting]) -> some View {
         LazyVStack(alignment: .leading, spacing: 26) {
-            ForEach(months, id: \.title) { month in
+            ForEach(months(list), id: \.title) { month in
                 VStack(alignment: .leading, spacing: 4) {
                     Text(month.title).catalogueLabel()
                     TastingList(
