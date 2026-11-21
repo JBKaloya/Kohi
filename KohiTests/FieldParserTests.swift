@@ -446,7 +446,32 @@ struct FieldParserTests {
 
         #expect(local.name == "Local Name")
         #expect(local.country == "Kenya")
-        #expect(local.tastingNotes == ["Yuzu"])
+        #expect(local.tastingNotes == ["Yuzu", "Grape"])
         #expect(local.recipe?.dose == 15)
+    }
+
+    @Test func visionCompletesTheNotesWithoutRepeatingOne() {
+        var local = ParsedFields()
+        local.tastingNotes = ["Peach", "Jasmine"]
+        var vision = ParsedFields()
+        vision.tastingNotes = ["pêche", "Jasmine", "sun muscat", "Overall Sweet"]
+        local.fillMissing(from: vision)
+        #expect(local.tastingNotes == ["Peach", "Jasmine", "sun muscat", "Overall Sweet"])
+    }
+
+    @Test func notesCutAtTheLimitAskForVision() {
+        var parsed = FieldParser.parse(lines([
+            "Region : Geera, Jimma",
+            "Altitude : 2048 Masl",
+            "Variety : Heirloom",
+            "Process : Washed",
+            "TASTING NOTES",
+            "Peach, Jasmine, Lemon",
+            "Honey, Raisin, Cocoa",
+            "Passion fruit, Overall Sweet",
+        ]))
+        parsed.linesRead = 8
+        #expect(parsed.tastingNotes.count == FieldParser.noteLimit)
+        #expect(parsed.wantsVisionAssist)
     }
 }

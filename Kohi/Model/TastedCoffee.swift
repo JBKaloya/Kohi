@@ -76,6 +76,12 @@ nonisolated struct TastedCoffee: Codable, Hashable, Sendable {
         FlavorMatcher.match(tastingNotes).tags.filter { !$0.isCustom }
     }
 
+    /// Every note the pack printed, as chips: the wheel's, then the rest
+    /// ("sun muscat", "Overall Sweet") as custom flavours.
+    var packFlavors: [FlavorTag] {
+        FlavorMatcher.match(tastingNotes).tags
+    }
+
     /// Anything beyond the name and the roaster.
     var hasMore: Bool {
         [country, region, farm, variety, process].contains { !$0.trimmingCharacters(in: .whitespaces).isEmpty }

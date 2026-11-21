@@ -74,6 +74,8 @@ nonisolated struct ParsedFields: Equatable, Sendable {
         // Which fields are empty matters more than how many filled.
         // Three weak fields with no name and no notes used to look "enough".
         if name == nil, tastingNotes.isEmpty { return true }
+        // A list cut at the limit probably goes on: the model reads the rest.
+        if tastingNotes.count >= FieldParser.noteLimit { return true }
         if sourceLanguage != nil { return filledCount < 5 }
         if linesRead < 4 { return true }
         return filledCount < 3
@@ -93,7 +95,8 @@ nonisolated struct ParsedFields: Equatable, Sendable {
     }
 
     /// Fills empty fields from another parse (the vision fallback). Never
-    /// replaces something the local read or the user already produced.
+    /// replaces something the local read or the user already produced; the
+    /// notes are the exception that adds, since a local read stops early.
     mutating func fillMissing(from other: ParsedFields) {
         name = name ?? other.name
         roaster = roaster ?? other.roaster
@@ -103,7 +106,7 @@ nonisolated struct ParsedFields: Equatable, Sendable {
         altitude = altitude ?? other.altitude
         variety = variety ?? other.variety
         process = process ?? other.process
-        if tastingNotes.isEmpty { tastingNotes = other.tastingNotes }
+        tastingNotes = PackNotes.merging(tastingNotes, with: other.tastingNotes)
         recipe = recipe ?? other.recipe
         sourceLanguage = sourceLanguage ?? other.sourceLanguage
         originalFields.merge(other.originalFields) { current, _ in current }
@@ -657,7 +660,7 @@ nonisolated enum FieldParser {
     /// The most notes a single card prints. More than this and the photo is a
     /// menu listing several coffees, where the notes belong to whichever entry
     /// came first.
-    private static let noteLimit = 6
+    static let noteLimit = 6
 
     private static func cleanNotes(_ notes: [String]) -> [String] {
         var seen = Set<String>()

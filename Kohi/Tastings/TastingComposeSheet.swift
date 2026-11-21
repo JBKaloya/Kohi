@@ -90,7 +90,7 @@ struct TastingComposeSheet: View {
                                 flavors: $draft.flavors,
                                 previousTaste: previousTaste,
                                 previousCaption: Copy.previousCupIsLighter,
-                                declared: draft.coffee.declaredFlavors,
+                                declared: draft.coffee.packFlavors,
                                 recent: recentFlavors
                             )
                             VStack(alignment: .leading, spacing: 10) {
@@ -669,7 +669,8 @@ struct TastingDraft: Equatable {
         if coffee.trimmedName.isEmpty || coffee.name == "Untitled lot" { coffee.name = typed }
     }
 
-    /// A bag read fills what is still empty and never overwrites.
+    /// A bag read fills what is still empty and never overwrites. The notes
+    /// add what the read found after those already there.
     mutating func fill(from parsed: ParsedFields) {
         func fill(_ keyPath: WritableKeyPath<TastedCoffee, String>, _ value: String?) {
             guard let value = value?.trimmingCharacters(in: .whitespaces), !value.isEmpty,
@@ -683,7 +684,7 @@ struct TastingDraft: Equatable {
         fill(\.farm, parsed.producer)
         fill(\.variety, parsed.variety)
         fill(\.process, parsed.process)
-        if coffee.tastingNotes.isEmpty { coffee.tastingNotes = parsed.tastingNotes }
+        coffee.tastingNotes = PackNotes.merging(coffee.tastingNotes, with: parsed.tastingNotes)
     }
 
     /// What a menu line adds to a card read: same rule as `fill`, only what is

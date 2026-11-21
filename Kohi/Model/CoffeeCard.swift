@@ -47,6 +47,10 @@ nonisolated struct CoffeeCard: Identifiable, Codable, Hashable, Sendable {
     var declaredFlavors: [FlavorTag] {
         FlavorMatcher.match(tastingNotes).tags.filter { !$0.isCustom }
     }
+    /// Every printed note as chips, the ones off the wheel as custom flavours.
+    var packFlavors: [FlavorTag] {
+        FlavorMatcher.match(tastingNotes).tags
+    }
     var brewMethod: BrewMethod?
     var personalNotes: String
 

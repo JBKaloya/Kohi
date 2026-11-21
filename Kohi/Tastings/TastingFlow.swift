@@ -383,7 +383,7 @@ struct TastingFlow: View {
                 RatingPicker(halves: $draft.ratingHalves)
                 FlavorsBlock(
                     selection: $draft.flavors,
-                    declared: draft.coffee.declaredFlavors,
+                    declared: draft.coffee.packFlavors,
                     recent: SensoryScored.recent(tastings.tastings.filter { $0.id != draft.id }.map(\.flavors))
                 )
             }

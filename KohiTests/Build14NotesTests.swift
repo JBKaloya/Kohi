@@ -104,7 +104,7 @@ struct NotesCoherenceTests {
         #expect(draft.coffee.tastingNotes == ["Passion fruit", "Lemon candy"])
     }
 
-    @Test func aScanFillsNotesOnlyWhenEmpty() {
+    @Test func aScanCompletesTheNotesAndNeverOverwritesWhatWasTyped() {
         var parsed = ParsedFields()
         parsed.tastingNotes = ["Passion fruit", "White wine"]
 
@@ -114,8 +114,31 @@ struct NotesCoherenceTests {
 
         var typed = TastingDraft()
         typed.addNote("Peach")
+        typed.addNote("white wine")
         typed.fill(from: parsed)
-        #expect(typed.coffee.tastingNotes == ["Peach"])
+        #expect(typed.coffee.tastingNotes == ["Peach", "white wine", "Passion fruit"])
+    }
+
+    @Test func notesOffTheWheelStayOnThePack() {
+        var draft = TastingDraft()
+        draft.notesEntry = "Peach, Passion fruit"
+        draft.commitNotesEntry()
+        let pack = draft.coffee.packFlavors
+        #expect(pack.first?.id == "fruity-other-fruit-peach")
+        #expect(pack.filter(\.isCustom).map(\.displayName) == ["Passion fruit"])
+        #expect(draft.coffee.declaredFlavors.allSatisfy { !$0.isCustom })
+
+        var card = CoffeeCard(name: "Bulga")
+        card.tastingNotes = ["Passion fruit"]
+        #expect(card.packFlavors.map(\.displayName) == ["Passion fruit"])
+    }
+
+    @Test func theOnThePackRowsShowEveryPrintedNote() throws {
+        for path in ["Tastings/TastingComposeSheet.swift", "Tastings/TastingFlow.swift", "Recipes/AfterBrewSheet.swift"] {
+            let source = try String(contentsOf: DevBrief10.kohiRoot.appending(path: path), encoding: .utf8)
+            #expect(source.contains("packFlavors"), "\(path)")
+            #expect(!source.contains("declared: draft.coffee.declaredFlavors"), "\(path)")
+        }
     }
 
     @Test func aMenuLineStillWritesTheNotes() {

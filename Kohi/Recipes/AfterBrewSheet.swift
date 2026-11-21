@@ -492,7 +492,7 @@ struct AfterBrewSheet: View {
             flavors: $session.brew.flavors,
             previousTaste: previousTaste,
             previousCaption: Copy.previousBrewIsLighter,
-            declared: card.declaredFlavors,
+            declared: card.packFlavors,
             recent: recentFlavors,
             enabled: !isLocked
         ) { tapCount += 1 }
