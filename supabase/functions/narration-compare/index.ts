@@ -8,6 +8,7 @@
 
 import { type Context } from "../_shared/narration-interpret.ts";
 import { isPipeline, PIPELINES, run } from "../_shared/narration-pipelines.ts";
+import { requireUser } from "../_shared/auth.ts";
 
 const TIMEOUT_MS = 30_000;
 
@@ -24,6 +25,9 @@ function bytes(base64: string): Uint8Array {
 
 Deno.serve(async (req) => {
   if (req.method !== "POST") return json({ error: "POST only" }, 405);
+
+  const auth = await requireUser(req);
+  if (!auth.ok) return auth.response;
 
   let body: { audio?: string; mime?: string; context?: Context; pipelines?: string[] };
   try {

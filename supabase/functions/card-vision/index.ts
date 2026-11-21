@@ -6,6 +6,7 @@
 // Optional: GEMINI_MODEL, GEMINI_MODEL_FALLBACK (see _shared/gemini.ts)
 
 import { generate } from "../_shared/gemini.ts";
+import { requireUser } from "../_shared/auth.ts";
 
 const PROMPT = `You are reading a photo of a specialty coffee bag label or a coffee info card.
 Extract the metadata printed on it and return JSON matching the response schema.
@@ -119,6 +120,9 @@ Deno.serve(async (req) => {
   if (req.method !== "POST") {
     return json({ error: "POST only" }, 405);
   }
+
+  const auth = await requireUser(req);
+  if (!auth.ok) return auth.response;
 
   const apiKey = Deno.env.get("GEMINI_API_KEY");
   if (!apiKey) {

@@ -9,6 +9,7 @@
 // Optional: GEMINI_MODEL, GEMINI_MODEL_FALLBACK (see _shared/gemini.ts)
 
 import { generate } from "../_shared/gemini.ts";
+import { requireUser } from "../_shared/auth.ts";
 
 const PROMPT = `\
 You compare two or three coffees for Kohi, a coffee journal.
@@ -50,6 +51,9 @@ function json(body: unknown, status = 200): Response {
 
 Deno.serve(async (req) => {
   if (req.method !== "POST") return json({ error: "POST only" }, 405);
+
+  const auth = await requireUser(req);
+  if (!auth.ok) return auth.response;
 
   const apiKey = Deno.env.get("GEMINI_API_KEY");
   if (!apiKey) return json({ error: "function is not configured" }, 500);

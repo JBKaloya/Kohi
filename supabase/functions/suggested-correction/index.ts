@@ -2,6 +2,7 @@
 // computed. The model ranks and explains; it cannot invent a variable.
 
 import { generate } from "../_shared/gemini.ts";
+import { requireUser } from "../_shared/auth.ts";
 
 const PROMPT = `\
 You rank three brew corrections. You are given the only moves you may use \
@@ -56,6 +57,9 @@ function json(body: unknown, status = 200): Response {
 
 Deno.serve(async (req) => {
   if (req.method !== "POST") return json({ error: "POST only" }, 405);
+
+  const auth = await requireUser(req);
+  if (!auth.ok) return auth.response;
 
   const apiKey = Deno.env.get("GEMINI_API_KEY");
   if (!apiKey) return json({ error: "GEMINI_API_KEY is not configured" }, 500);

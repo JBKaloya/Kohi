@@ -15,6 +15,7 @@
 
 import { type Context } from "../_shared/narration-interpret.ts";
 import { defaultPipeline, isPipeline, run } from "../_shared/narration-pipelines.ts";
+import { requireUser } from "../_shared/auth.ts";
 
 function json(body: unknown, status = 200): Response {
   return new Response(JSON.stringify(body), {
@@ -29,6 +30,9 @@ function bytes(base64: string): Uint8Array {
 
 Deno.serve(async (req) => {
   if (req.method !== "POST") return json({ error: "POST only" }, 405);
+
+  const auth = await requireUser(req);
+  if (!auth.ok) return auth.response;
 
   let body: { audio?: string; mime?: string; context?: Context; pipeline?: string };
   try {

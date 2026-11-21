@@ -12,6 +12,7 @@
 
 import { createClient } from "jsr:@supabase/supabase-js@2";
 import { generate } from "../_shared/gemini.ts";
+import { requireUser } from "../_shared/auth.ts";
 
 const PROMPT = `\
 You answer coffee questions for Kohi.
@@ -55,6 +56,9 @@ function json(body: unknown, status = 200): Response {
 
 Deno.serve(async (req) => {
   if (req.method !== "POST") return json({ error: "POST only" }, 405);
+
+  const auth = await requireUser(req);
+  if (!auth.ok) return auth.response;
 
   const apiKey = Deno.env.get("GEMINI_API_KEY");
   const supabaseUrl = Deno.env.get("SUPABASE_URL");
