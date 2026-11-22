@@ -40,7 +40,7 @@ Il complète deux documents :
 | `ask` : réponses | 10 / 12 et 7 / 12 (503) | 12 / 12 |
 | `ask` : réponses utiles | 5 / 12 (« the provided sources do not… ») | 12 / 12, 1 imprécision |
 
-**Rien n'est commité depuis `c717f26`.** Rien n'est poussé non plus : `main` local a 6 commits d'avance sur `origin/main`.
+**Commité le 22 nov.** sur `lot-6-followups`, en 6 commits (`29f6cea` → `7d37b35`), mais **pas fusionné dans `main` ni poussé**. `main` local a 6 commits d'avance sur `origin/main`.
 
 ---
 
@@ -113,7 +113,7 @@ supabase/functions/_shared/compare-summary.ts, compare-summary_test.ts
 - `compare-summary` et `ask` tournent avec du code qui n'existe que dans l'arbre de travail.
 - Les 8 fonctions déployées avec la garde d'auth correspondent à `c717f26`, qui n'est que dans des branches locales.
 
-Tant que rien n'est commité et poussé, un redéploiement depuis un autre poste ou par Cursor **écraserait la prod avec une version plus ancienne**. C'est la première chose à régler (voir §10).
+Le code déployé est commité sur `lot-6-followups` depuis le 22 nov., mais tant qu'il n'est ni fusionné dans `main` ni poussé, un redéploiement depuis `main`, un autre poste ou Cursor **écraserait la prod avec une version plus ancienne**. C'est la première chose à régler (voir §10).
 
 ---
 
@@ -421,7 +421,7 @@ Le comptage de Gemini exclut les tokens de réflexion (`thoughtsTokenCount`), so
 
 ### Technique et opérations
 
-- **Rien n'est commité ni poussé**, et la prod est en avance sur git (voir §2.3).
+- **Commité sur `lot-6-followups`, mais ni fusionné ni poussé** : la prod est en avance sur `main` (voir §2.3).
 - **Suite iOS complète pas relancée** depuis la fusion de `c717f26` et les derniers changements côté app. Seule la compilation a été vérifiée. Il y a 12 échecs de snapshots antérieurs, sans lien.
 - **Blueprint** : `inventory.yaml` n'est pas mis à jour, Figma n'est pas synchronisé.
 - **Bug du scan (lot 2) pas reproduit** sur une carte de plus de 6 notes.
@@ -458,7 +458,7 @@ Par ordre de rapport effort / gain.
 ## 10. Reste à faire
 
 **Bloquant, dans cet ordre :**
-- [ ] **Commits sur `lot-6-followups`**, dans le style du dépôt (phrases complètes en anglais), découpés par sujet :
+- [x] **Commits sur `lot-6-followups`** (22 nov. : `29f6cea` app, `c9dfea8` compare-summary, `a8aaf2e` ask, `b553e6b` scripts et SQL, `45c9cf5` docs, `7d37b35` build 18), dans le style du dépôt (phrases complètes en anglais), découpés par sujet :
   1. lot 6 côté app (délai, échelle d'utilité, `Copy`) ;
   2. `compare-summary` (faits calculés, OpenAI d'abord) et ses tests ;
   3. `ask` (OpenAI d'abord, prompt, `cited`) et ses tests ;
