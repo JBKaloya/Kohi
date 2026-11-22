@@ -44,6 +44,16 @@ gemini-3.8-flash n'a répondu à aucun appel. Les 6 s de latence de Gemini sont 
 
 **Pour la suite.** La vague 2 (`suggested-correction`, `recipe-adapt`) reste sur Gemini. La couche commune `llm.ts` n'est pas écrite : chaque fonction appelle encore `generate` et `generateJSON` elle-même.
 
+## Troisième résultat : la lecture des étiquettes, `card-vision` (22 nov. 2026)
+
+**Le test.** 22 cafés réels (35 photos), toutes les faces envoyées en un appel, avec `scripts/scan-bench.ts`.
+
+**Résultat.** Gemini lit 93 % des champs juste et OpenAI 94 %, mais Gemini a échoué sur 15 appels sur 33, et OpenAI sur aucun.
+
+**Décision de JB.** `card-vision` passe à OpenAI d'abord (15 s), puis flash-lite (15 s).
+
+Le détail est dans `docs/session-2026-11-21-22-lot-6-assistants.md`, §4 bis.
+
 ## Pourquoi
 
 Le 21 novembre au soir, sur 8 appels à `gemini-3.8-flash` relevés dans les logs de `compare-summary` (6) et `ask` (2), **aucun n'a répondu** :

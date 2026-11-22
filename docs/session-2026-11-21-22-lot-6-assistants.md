@@ -262,7 +262,7 @@ Toutes passent par `requireUser` (`c717f26`).
 | `ask` | **OpenAI d'abord**, flash-lite en secours | 22 nov., 2 fois |
 | `suggested-correction` | Gemini 3.8, puis flash-lite (25 s / 90 s) | 22 nov. (garde d'auth) |
 | `recipe-adapt` | Gemini 3.8, puis flash-lite | 22 nov. |
-| `card-vision` (scan) | Gemini 3.8, puis flash-lite | 22 nov. |
+| `card-vision` (scan) | **OpenAI d'abord**, flash-lite en secours, jusqu'à 4 photos par appel | 22 nov., 3 fois (§13) |
 | `field-extract` | Gemini 3.8, puis flash-lite | 22 nov. |
 | `brew-narration` | Pipelines de narration (Gemini, OpenAI selon le pipeline) | 22 nov. |
 | `narration-compare` | Pipelines de narration | 22 nov. |
@@ -330,6 +330,58 @@ deno check supabase/functions/*/index.ts scripts/*.ts
 
 ---
 
+## 4 bis. Le scan relit toutes les faces (22 nov., suite)
+
+**Point de départ.** Une carte du Congo scannée par JB donnait :
+- « SUPER » comme nom, pris sur le badge « Super tasty » du devant ;
+- « 175C » comme process ;
+- « NOTES » comme seule saveur.
+
+Ajouter l'étiquette en page ne corrigeait rien. Le détail est au §13.
+
+**Ce qui a changé :**
+- **`FieldParser`** (lecture sur l'appareil) :
+  - **titres en ligne** : un titre posé au-dessus de sa valeur la prend colonne par colonne (`parseHeaderRows`) ;
+  - **saveurs** : « Taste notes » est reconnu, un titre n'est jamais une saveur (« NOTES », « BALANCE », la grille de dégustation), et une ligne d'identité (« GESHA WASHED • ECUADOR ») n'est pas une liste de saveurs ;
+  - **valeurs refusées** : un nombre n'est pas un process, et « 175C » devient 1750 dans l'altitude (`repairedDigits`) ;
+  - **torréfacteur** : le titre « ORIGIN » ne devient plus le torréfacteur « Origin » ;
+  - **vision** : un titre dont la valeur est refusée déclenche le modèle de vision (`refusedValues`).
+- **`card-vision`** :
+  - jusqu'à 4 photos par appel, la carte d'abord ;
+  - prompt : plusieurs faces du même café, un titre n'est pas une valeur ;
+  - OpenAI d'abord, puis flash-lite (15 s chacun), `provider` pour forcer un modèle.
+  - Le champ `image` unique reste accepté pour les builds déjà installés.
+- **App** :
+  - `CardVision.read(cardID:pages:)` envoie la carte et ses pages ;
+  - **`PageReread`** calcule les propositions champ par champ.
+  - **Écran du café** : ajouter une page ou une face du sachet relit tout. « The pages say » montre ~~ancienne valeur~~ → nouvelle, avec **Use**, **Use all** et **Keep as is**, plus un bouton **Read with every page**. Rien ne s'écrit sans **Use**.
+- **Délai du résumé** : les tâches de `withDeadline` sont détachées, pour qu'un acteur principal occupé ne retienne pas le délai. Le test était instable avec toute la suite.
+
+**Mesures** sur 22 cafés réels (35 photos du bucket `cards`, valeurs vraies écrites à la main) :
+
+| Lecture | Juste | Faux | Manqué |
+|---|---|---|---|
+| Appareil, carte (avant / après les correctifs) | 40 % / 41 % | 8 % / 5 % | 51 % / 52 % |
+| Appareil, toutes les faces (avant / après) | 54 % / 58 % | 14 % / 10 % | 31 % / 31 % |
+| Gemini, carte | 76 % | 4 % | 19 %, et 9 appels échoués sur 22 |
+| Gemini, toutes les faces | 93 % | 5 % | 3 %, et 6 appels échoués sur 11 |
+| OpenAI, carte | 71 % | 8 % | 21 %, 0 échec |
+| OpenAI, toutes les faces | **94 %** | 6 % | **0 %**, 0 échec |
+
+**Limites :**
+- **Coquilles d'OpenAI** : « Rio Alta », « Guijio Trading », « G Coffee Roasters ».
+- **Les valeurs tapées ne sont pas protégées** : l'app ne sait pas ce qui vient du scan et ce qui a été tapé. Elles peuvent donc être proposées, mais rien ne change sans **Use**.
+- **La feuille d'édition ne bouge pas** : une page ajoutée là ne fait que remplir les champs vides.
+- **Les noms en gros caractères** restent faux sur l'appareil (« SUPER », « /BLACK POTION »). Le modèle de vision les corrige.
+- **Les photos des testeurs** sont dans `.private/scan-fixtures/` (git-ignoré). Prévenir Timour, et supprimer quand l'évaluation est finie.
+
+**Commandes :**
+```bash
+Tools/run-tests.sh 18 ScanBenchmarkTests      # appareil, écrit .private/scan-bench-device.md
+deno run --allow-net --allow-read --allow-write --allow-env scripts/scan-bench.ts [--provider=app|gemini|openai|both]
+npx --yes supabase@3.2.0 storage ls ss:///cards/ --experimental --remote   # la CLI 2.22.6 ne lit plus le stockage (anciennes clés désactivées)
+```
+
 ## 5. Déploiements en production
 
 Tous les déploiements ont été confirmés par JB juste avant, avec `supabase functions deploy <fn> --use-api` (pas de Docker sur ce poste).
@@ -344,6 +396,8 @@ Tous les déploiements ont été confirmés par JB juste avant, avec `supabase f
 | 22 nov. | `compare-summary` | **OpenAI d'abord**, 2 axes par trio, pas de titres |
 | 22 nov. | `ask` | **OpenAI d'abord** |
 | 22 nov. | `ask` | Prompt corrigé, `cited()` |
+| 22 nov. | `card-vision` | Plusieurs photos, option `provider`, 8 s pour Gemini 3.8 |
+| 22 nov. | `card-vision` | **OpenAI d'abord**, flash-lite en secours |
 
 **Écriture SQL en prod** : `repair.sql` seulement, sur l'historique des migrations.
 
@@ -588,3 +642,16 @@ d'évaluation relancé et ses résultats consignés dans docs/assistants-gemini-
 | `Kohi.xcodeproj/project.pbxproj` | Build 18 |
 | `.private/` (git-ignoré) | `tastings.json`, rapports `compare-real-*.md` et `ask-duel-*.md`, images `compare-screens/` |
 | `.env` (git-ignoré) | Compte de test des scripts |
+
+---
+
+## 13. Annexe : la carte du Congo
+
+La carte (Process Coffee, DR Congo Majirane) imprime une ligne de titres, « MASL · PRODUCER · PROCESS », avec leurs valeurs en dessous, dans une police à chasse fixe qui lit 1750 comme « 175C ». En dessous viennent « TASTE NOTES » et la liste des saveurs.
+
+**Ce que la lecture ligne à ligne en faisait :**
+- PROCESS prenait la ligne suivante, « 175C » ;
+- « TASTE » prenait « NOTES » comme saveur ;
+- le nom venait du badge « SUPER TASTY » de la face avant.
+
+Le benchmark reproduit exactement ces trois erreurs avec l'ancien parseur. Le nouveau lit 1750, Smallholder, Washed et les trois saveurs. OpenAI avec toutes les faces lit tout juste, nom compris.
