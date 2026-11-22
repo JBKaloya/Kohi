@@ -7,9 +7,9 @@ nonisolated enum TastingPeriod: String, CaseIterable, Sendable {
 
     var label: String {
         switch self {
-        case .thisMonth: "This month"
-        case .threeMonths: "Last 3 months"
-        case .thisYear: "This year"
+        case .thisMonth: Copy.periodThisMonth
+        case .threeMonths: Copy.periodThreeMonths
+        case .thisYear: Copy.periodThisYear
         }
     }
 
@@ -31,8 +31,8 @@ nonisolated enum TastingScoreFloor: String, CaseIterable, Sendable {
 
     var label: String {
         switch self {
-        case .fourAndUp: "4★ and up"
-        case .five: "5★"
+        case .fourAndUp: Copy.ratingFourAndUp
+        case .five: Copy.ratingFive
         }
     }
 
@@ -56,20 +56,20 @@ nonisolated enum TastingFilters {
     static func facets(for tastings: [Tasting]) -> [FilterFacet] {
         var facets = [FilterFacet(
             id: period,
-            label: "Period",
+            label: Copy.filterPeriod,
             options: TastingPeriod.allCases.map { FilterOption(id: $0.rawValue, label: $0.label) }
         )]
         let roasters = distinct(tastings.map(\.coffee.roaster))
         if !roasters.isEmpty {
-            facets.append(FilterFacet(id: roaster, label: "Roaster", options: roasters, allowsMany: true))
+            facets.append(FilterFacet(id: roaster, label: Copy.filterRoaster, options: roasters, allowsMany: true))
         }
         let places = distinct(tastings.compactMap { $0.place?.name })
         if !places.isEmpty {
-            facets.append(FilterFacet(id: place, label: "Place", options: places, allowsMany: true))
+            facets.append(FilterFacet(id: place, label: Copy.filterPlace, options: places, allowsMany: true))
         }
         facets.append(FilterFacet(
             id: score,
-            label: "Rating",
+            label: Copy.filterRating,
             options: TastingScoreFloor.allCases.map { FilterOption(id: $0.rawValue, label: $0.label) }
         ))
         return facets

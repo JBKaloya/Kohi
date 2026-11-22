@@ -293,7 +293,7 @@ struct RecipesScreen: View {
             state: currentFilter
         )
         if matches.isEmpty {
-            Text("No recipe matches these filters")
+            Text(Copy.noRecipeMatches)
                 .font(Typography.tag)
                 .foregroundStyle(Palette.inkMuted)
                 .padding(.top, 8)

@@ -78,6 +78,9 @@ struct CompareView: View {
                     .foregroundStyle(Palette.ink)
                     .fixedSize(horizontal: false, vertical: true)
                     .transition(.opacity)
+                if let env = appEnvironment, env.flags.isOn(.aiFeedback) {
+                    AIFeedbackScale(eventID: summary.eventID, feature: .compareSummary, store: env.feedback)
+                }
                 CoffeeIntelligenceButton(title: Copy.askAboutThisComparison, subtitle: nil) {
                     isAsking = true
                 }

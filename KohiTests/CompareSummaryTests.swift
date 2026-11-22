@@ -95,4 +95,37 @@ struct CompareSummaryTests {
         #expect(AIFeature.compareSummary.isExperimental)
         #expect(!AIFeature.ask.isTesterOnly)
     }
+
+    @Test func aSlowSummaryGivesUpAtTheDeadline() async {
+        let started = Date.now
+        do {
+            _ = try await CompareSummary.withDeadline(0.05) {
+                try await Task.sleep(for: .seconds(30))
+                return "too late"
+            }
+            Issue.record("a call past the deadline should not return")
+        } catch {
+            #expect(error is CompareSummary.DeadlineExceeded)
+        }
+        // Far under the call's 30 s, with room for a busy main actor when the
+        // whole suite runs at once.
+        let elapsed = Date.now.timeIntervalSince(started)
+        #expect(elapsed < 10, "gave up after \(elapsed) s")
+    }
+
+    @Test func aQuickSummaryArrivesBeforeTheDeadline() async throws {
+        let value = try await CompareSummary.withDeadline(5) { "No. 1 is brighter." }
+        #expect(value == "No. 1 is brighter.")
+    }
+
+    @Test func theRadarWaitsTwelveSecondsAtMost() {
+        #expect(CompareSummary.deadline == 12)
+    }
+
+    @Test func theSummaryCarriesAUsefulnessScale() throws {
+        let view = try String(contentsOf: URL(fileURLWithPath: #filePath)
+            .deletingLastPathComponent().deletingLastPathComponent()
+            .appending(path: "Kohi/Compare/CompareView.swift"), encoding: .utf8)
+        #expect(view.contains("AIFeedbackScale(eventID: summary.eventID, feature: .compareSummary"))
+    }
 }

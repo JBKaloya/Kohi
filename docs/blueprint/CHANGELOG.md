@@ -7,6 +7,8 @@ Feedback of 21 November. Code changed, Figma frames not patched yet; no node ids
 - **Flavours** (How was it?, It's done, tasting edit): All opens flat. Under each family, each group then its flavours, no chevron per group. Frames: the tasting and after-brew frames that show the flavour picker.
 - **Filters** (Tastings, Brews): a Filter button right of the tab rail opens pills (Period, Roaster, Place, Rating; Source, Dripper, Cup, Roast, Grinder, Profile). With a filter on, the tab rail gives way to removable chips. Brews: the Filters sheet is gone, and so is its summary line. Frames: the Tastings and Recipes screens, and the Filters sheet frame (to remove).
 - **Compare** (home grid, Tastings): a fourth pick is refused; the bar says Compare. Testers with Summarize comparisons on get a sentence or two under the legend, then Ask about this comparison, which opens Coffee Intelligence on the comparison. Frame: the Compare sheet.
+- **Compare**: under the summary, the usefulness scale when AI feedback is on. Frame: the Compare sheet.
+- **Inventory at next sync**: `recipe-filters` (6:534) points at `Kohi/Recipes/RecipeFilters.swift`, now deleted; the sheet is gone, its frame is to remove. Tastings and Compare have no entry yet.
 
 ## 2026-11-11 · `3894307` · sync 3
 

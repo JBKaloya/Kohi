@@ -58,7 +58,7 @@ struct TastingsScreen: View {
     private var filtered: some View {
         let matches = TastingFilters.apply(tastings.tastings, filters)
         if matches.isEmpty {
-            Text("No tasting matches these filters")
+            Text(Copy.noTastingMatches)
                 .font(Typography.tag)
                 .foregroundStyle(Palette.inkMuted)
                 .frame(maxWidth: .infinity, alignment: .leading)

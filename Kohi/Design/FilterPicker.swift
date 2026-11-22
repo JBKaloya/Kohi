@@ -296,7 +296,7 @@ struct FilterBar<Tabs: View>: View {
                 TagChip(text: chip.option.label, isSelected: true, showsRemove: true) {
                     withAnimation(Motion.quick) { active.remove(chip.option.id, from: chip.facetID) }
                 }
-                .accessibilityLabel("Remove \(chip.option.label)")
+                .accessibilityLabel(Copy.removeFilter(chip.option.label))
             }
         }
     }

@@ -127,20 +127,20 @@ nonisolated enum RecipeFilters {
 
     static func facets(grinders: [String]) -> [FilterFacet] {
         var facets = [
-            FilterFacet(id: source, label: "Source", options: options(RecipeOrigin.allCases, \.label)),
-            FilterFacet(id: dripper, label: "Dripper", options: options(DripperChip.allCases, \.label)),
+            FilterFacet(id: source, label: Copy.filterSource, options: options(RecipeOrigin.allCases, \.label)),
+            FilterFacet(id: dripper, label: Copy.filterDripper, options: options(DripperChip.allCases, \.label)),
             // One cup is what every recipe already reads as: not a filter.
-            FilterFacet(id: cup, label: "Cup", options: options(RecipeSize.allCases.filter { $0 != .cup }, \.label)),
-            FilterFacet(id: roast, label: "Roast", options: options(RoastBand.allCases, \.label)),
+            FilterFacet(id: cup, label: Copy.filterCup, options: options(RecipeSize.allCases.filter { $0 != .cup }, \.label)),
+            FilterFacet(id: roast, label: Copy.filterRoast, options: options(RoastBand.allCases, \.label)),
         ]
         if !grinders.isEmpty {
             facets.append(FilterFacet(
                 id: grinder,
-                label: "Grinder",
+                label: Copy.filterGrinder,
                 options: grinders.map { FilterOption(id: $0, label: $0) }
             ))
         }
-        facets.append(FilterFacet(id: profile, label: "Profile", options: options(RecipeProfileTag.allCases, \.label)))
+        facets.append(FilterFacet(id: profile, label: Copy.filterProfile, options: options(RecipeProfileTag.allCases, \.label)))
         return facets
     }
 
