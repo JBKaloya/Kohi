@@ -7,45 +7,32 @@
 // a confident sentence about extraction that nobody wrote is exactly the kind
 // of thing this app should not produce.
 //
-// Secrets:  GEMINI_API_KEY, SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY
-// Optional: GEMINI_MODEL, GEMINI_MODEL_FALLBACK (see _shared/gemini.ts)
+// OpenAI answers first, and Gemini's light model takes over when it fails or
+// is slow (_shared/provider.ts). A body can ask for `"provider": "openai"` or
+// `"gemini"` alone, for the beta's model comparisons.
+//
+// Secrets:  OPENAI_API_KEY, GEMINI_API_KEY, SUPABASE_URL,
+//           SUPABASE_SERVICE_ROLE_KEY
+// Optional: OPENAI_TEXT_MODEL, OPENAI_REASONING (see _shared/openai.ts),
+//           GEMINI_MODEL, GEMINI_MODEL_FALLBACK (see _shared/gemini.ts)
 
 import { createClient } from "jsr:@supabase/supabase-js@2";
-import { generate } from "../_shared/gemini.ts";
+import { generate, models } from "../_shared/gemini.ts";
+import { generateJSON } from "../_shared/openai.ts";
 import { requireUser } from "../_shared/auth.ts";
-
-const PROMPT = `\
-You answer coffee questions for Kohi.
-
-You are given a curated knowledge base (sources). Use it when it covers the \
-question, and cite those sources by id.
-
-Rules, in order of importance:
-1. If the sources cover the question, answer from them and set isCovered true. \
-   Cite every source you used by id.
-2. If the sources do not cover it, but the question is about coffee (brewing, \
-   grind, water, roast, taste, equipment, recipes), answer from general coffee \
-   knowledge. Set isCovered false and tag "general". Do not invent citations. \
-   Never say "the base does not cover this".
-3. If the question is not about coffee, refuse in one short sentence. Set \
-   isCovered false and tag "off-topic".
-4. When sources disagree, say they disagree and give both readings.
-5. Distinguish what is measured from what is common practice. Prefer confirming \
-   what actually happened (Save what you did) before changing grind or ratio.
-6. Plain English, no marketing adjectives, no exclamation marks. Two short \
-   paragraphs at most.`;
-
-const SCHEMA = {
-  type: "OBJECT",
-  properties: {
-    answer: { type: "STRING" },
-    isCovered: { type: "BOOLEAN" },
-    citations: { type: "ARRAY", items: { type: "STRING" } },
-    tag: { type: "STRING" },
-  },
-  required: ["answer", "isCovered"],
-  propertyOrdering: ["answer", "isCovered", "citations", "tag"],
-};
+import {
+  ATTEMPT_MS,
+  BACKUP_MS,
+  cited,
+  input,
+  OPENAI_FIRST_MS,
+  OPENAI_MS,
+  OPENAI_SCHEMA,
+  PROMPT,
+  provider,
+  readAnswer,
+  SCHEMA,
+} from "../_shared/ask.ts";
 
 function json(body: unknown, status = 200): Response {
   return new Response(JSON.stringify(body), {
@@ -60,14 +47,13 @@ Deno.serve(async (req) => {
   const auth = await requireUser(req);
   if (!auth.ok) return auth.response;
 
-  const apiKey = Deno.env.get("GEMINI_API_KEY");
   const supabaseUrl = Deno.env.get("SUPABASE_URL");
   const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
-  if (!apiKey || !supabaseUrl || !serviceKey) {
+  if (!supabaseUrl || !serviceKey) {
     return json({ error: "function is not configured" }, 500);
   }
 
-  let body: { question?: string; topic?: string; context?: string };
+  let body: { question?: string; topic?: string; context?: string; provider?: string };
   try {
     body = await req.json();
   } catch {
@@ -109,44 +95,97 @@ Deno.serve(async (req) => {
   // for the question, never a source to cite.
   const context = body.context?.trim().slice(0, 4000);
 
+  const parts = input(sources, context, question);
   const started = Date.now();
-  const result = await generate(apiKey, [
-    { text: PROMPT },
-    { text: `Sources:\n${JSON.stringify(sources)}` },
-    ...(context ? [{ text: `What they are looking at (not a source):\n${context}` }] : []),
-    { text: `Question: ${question}` },
-  ], {
+  let written: Written;
+  switch (provider(body)) {
+    case "openai":
+      written = await withOpenAI(parts, OPENAI_MS);
+      break;
+    case "gemini":
+      written = await withGemini(parts, { attemptMs: ATTEMPT_MS });
+      break;
+    default:
+      written = await withOpenAI(parts, OPENAI_FIRST_MS);
+      if (!written.ok) {
+        console.error(`ask: openai failed (status ${written.status}), gemini takes over`);
+        // Straight to the light model: the primary has been the slow one.
+        written = await withGemini(parts, { attemptMs: BACKUP_MS, models: [models().at(-1)!] });
+      }
+  }
+
+  if (!written.ok) {
+    return json(
+      { error: written.error, provider: written.provider, model: written.model },
+      written.status === 429 ? 429 : 502,
+    );
+  }
+  const { parsed } = written;
+  const found = cited(parsed, sources);
+  return json({
+    ...parsed,
+    citations: found.citations,
+    isCovered: found.isCovered,
+    // A covered answer that lost its citations reads as general knowledge.
+    tag: found.isCovered ? null : (parsed.tag ?? "general"),
+    // The titles, so the app can name the sources without a second query.
+    sources: found.sources.map((s) => ({ id: s.id, title: s.title, source: s.source })),
+    provider: written.provider,
+    model: written.model,
+    inputTokens: written.inputTokens,
+    outputTokens: written.outputTokens,
+    latencyMs: Date.now() - started,
+  });
+});
+
+type Written =
+  | {
+    ok: true;
+    parsed: Record<string, unknown>;
+    provider: string;
+    model: string;
+    inputTokens: number | null;
+    outputTokens: number | null;
+  }
+  | { ok: false; status: number; error: string; provider: string; model: string };
+
+async function withOpenAI(parts: string[], timeoutMs: number): Promise<Written> {
+  const result = await generateJSON(PROMPT, parts.join("\n\n"), "answer", OPENAI_SCHEMA, undefined, { timeoutMs });
+  if (!result.ok) {
+    return { ok: false, status: result.status, error: `model returned ${result.status}`, provider: "openai", model: result.model };
+  }
+  const parsed = readAnswer(result.text);
+  if (!parsed) return { ok: false, status: 502, error: "empty model response", provider: "openai", model: result.model };
+  return {
+    ok: true,
+    parsed,
+    provider: "openai",
+    model: result.model,
+    inputTokens: result.inputTokens,
+    outputTokens: result.outputTokens,
+  };
+}
+
+async function withGemini(parts: string[], options: { attemptMs: number[]; models?: string[] }): Promise<Written> {
+  const apiKey = Deno.env.get("GEMINI_API_KEY");
+  if (!apiKey) return { ok: false, status: 500, error: "function is not configured", provider: "gemini", model: "" };
+  const result = await generate(apiKey, [{ text: PROMPT }, ...parts.map((text) => ({ text }))], {
     temperature: 0.1,
     responseMimeType: "application/json",
     responseSchema: SCHEMA,
     thinkingConfig: { thinkingLevel: "low" },
-  });
-
+  }, options);
   if (!result.ok) {
-    return json(
-      { error: `model returned ${result.status}`, model: result.model },
-      result.status === 429 ? 429 : 502,
-    );
+    return { ok: false, status: result.status, error: `model returned ${result.status}`, provider: "gemini", model: result.model };
   }
-
-  const { text, usage, model } = result;
-  if (!text) return json({ error: "empty model response" }, 502);
-
-  const parsed = JSON.parse(text);
-  return json({
-    ...parsed,
-    // The titles, so the app can name the sources without a second query.
-    sources: (parsed.citations ?? [])
-      .map((id: string) => sources.find((s) => s.id === id))
-      .filter(Boolean)
-      .map((s: { id: string; title: string; source: string }) => ({
-        id: s.id,
-        title: s.title,
-        source: s.source,
-      })),
-    model,
-    inputTokens: usage.promptTokenCount ?? null,
-    outputTokens: usage.candidatesTokenCount ?? null,
-    latencyMs: Date.now() - started,
-  });
-});
+  const parsed = readAnswer(result.text);
+  if (!parsed) return { ok: false, status: 502, error: "empty model response", provider: "gemini", model: result.model };
+  return {
+    ok: true,
+    parsed,
+    provider: "gemini",
+    model: result.model,
+    inputTokens: result.usage.promptTokenCount ?? null,
+    outputTokens: result.usage.candidatesTokenCount ?? null,
+  };
+}
