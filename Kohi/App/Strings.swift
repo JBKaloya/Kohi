@@ -110,6 +110,33 @@ nonisolated enum Copy {
     static let scanRoasterRecipe = "Scan the roaster's recipe"
     static let addingPage = "Adding page"
     static let pagesAndDocuments = "Pages & documents"
+    // Reading a card again with its pages.
+    static let readWithEveryPage = "Read with every page"
+    static let readingEveryPage = "Reading every page"
+    static let thePagesSay = "The pages say"
+    static let use = "Use"
+    static let useAll = "Use all"
+    static let keepAsIs = "Keep as is"
+    static let pagesAgree = "The pages say the same as the card"
+    static let pagesUnread = "The pages could not be read"
+
+    /// A card field's name, as the card shows it.
+    static func cardField(_ key: String) -> String {
+        switch key {
+        case "name": "Coffee"
+        case "roaster": "Roaster"
+        case "country": "Country"
+        case "region": "Region"
+        case "producer": "Producer"
+        case "altitude": "Altitude"
+        case "variety": "Variety"
+        case "process": "Process"
+        case "notes": "Notes"
+        case "harvest": "Harvest"
+        case "lot": "Lot"
+        default: key.capitalized
+        }
+    }
     static let brewAgain = "Brew again"
     static let done = "Done"
     static let compare = "Compare"

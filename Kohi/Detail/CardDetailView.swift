@@ -33,6 +33,10 @@ struct CardDetailView: View {
     @State private var isScanningAttachment = false
     @State private var isIngestingAttachment = false
     @State private var selectedAttachment: CardAttachment?
+    @State private var reread: Reread?
+    @State private var isRereading = false
+    @State private var rereadNote: String?
+    @State private var takeTrigger = 0
     @State private var openedRecipe: Recipe?
     @State private var showOriginal = false
     @State private var brewToCompare: Brew?
@@ -677,6 +681,147 @@ struct CardDetailView: View {
                 onAdd: { isScanningAttachment = true },
                 onSelect: { selectedAttachment = $0 }
             )
+
+            if let reread {
+                rereadBlock(reread)
+                    .transition(.opacity)
+            } else if isRereading {
+                HStack(spacing: 8) {
+                    ProgressView().controlSize(.mini)
+                    Text(Copy.readingEveryPage)
+                        .catalogueLabel()
+                }
+            } else if canReread {
+                Button { Task { await readWithEveryPage() } } label: {
+                    Text(Copy.readWithEveryPage)
+                        .catalogueLabel()
+                        .foregroundStyle(Palette.ink)
+                }
+                .buttonStyle(.plain)
+                if let rereadNote {
+                    Text(rereadNote)
+                        .font(Typography.tag)
+                        .foregroundStyle(Palette.inkMuted)
+                }
+            }
+        }
+        .animation(Motion.gentle, value: reread)
+        .haptic(.saved, trigger: takeTrigger)
+    }
+
+    // MARK: - Reading again with every page
+
+    /// What the pages read, held while the person goes through it.
+    struct Reread: Equatable {
+        var proposals: [PageReread.Proposal]
+        let reading: ParsedFields
+        let eventID: UUID?
+        var taken = false
+    }
+
+    /// The vision model reads the card with its pages and bag sides together.
+    private var canReread: Bool {
+        flags.isOn(.cardVision) && CardVision.isAvailable && !PageReread.pages(of: live).isEmpty
+    }
+
+    private func readWithEveryPage() async {
+        guard canReread, !isRereading else { return }
+        let cardID = live.id
+        let pages = PageReread.pages(of: live)
+        withAnimation(Motion.snappy) {
+            isRereading = true
+            rereadNote = nil
+        }
+        let result = await Task.detached(priority: .userInitiated) {
+            await CardVision.read(cardID: cardID, pages: pages)
+        }.value
+        let eventID = result.map { appEnvironment?.aiEvents.record($0.event) } ?? nil
+        withAnimation(Motion.snappy) {
+            isRereading = false
+            guard let reading = result?.fields else {
+                rereadNote = Copy.pagesUnread
+                return
+            }
+            let proposals = PageReread.proposals(card: live, reading: reading)
+            if proposals.isEmpty {
+                rereadNote = Copy.pagesAgree
+                if let eventID { appEnvironment?.aiEvents.setAccepted(false, for: eventID) }
+            } else {
+                reread = Reread(proposals: proposals, reading: reading, eventID: eventID)
+            }
+        }
+    }
+
+    /// Writes what the person took. The reading counts as accepted once one
+    /// value of it is on the card.
+    private func take(_ proposals: [PageReread.Proposal]) {
+        guard var current = reread else { return }
+        store.update(PageReread.apply(proposals, from: current.reading, to: live))
+        takeTrigger += 1
+        let taken = Set(proposals.map(\.key))
+        current.proposals.removeAll { taken.contains($0.key) }
+        current.taken = true
+        if let eventID = current.eventID { appEnvironment?.aiEvents.setAccepted(true, for: eventID) }
+        withAnimation(Motion.snappy) {
+            reread = current.proposals.isEmpty ? nil : current
+        }
+    }
+
+    private func keepAsIs() {
+        if let current = reread, !current.taken, let eventID = current.eventID {
+            appEnvironment?.aiEvents.setAccepted(false, for: eventID)
+        }
+        withAnimation(Motion.snappy) { reread = nil }
+    }
+
+    private func rereadBlock(_ reread: Reread) -> some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text(Copy.thePagesSay)
+                .catalogueLabel()
+                .padding(.bottom, 6)
+            ForEach(reread.proposals) { proposal in
+                HStack(alignment: .firstTextBaseline, spacing: 20) {
+                    Text(Copy.cardField(proposal.key))
+                        .catalogueLabel()
+                        .frame(width: 78, alignment: .leading)
+                    VStack(alignment: .leading, spacing: 2) {
+                        if let current = proposal.current {
+                            Text(current)
+                                .font(Typography.tag)
+                                .foregroundStyle(Palette.inkMuted)
+                                .strikethrough(color: Palette.inkMuted)
+                        }
+                        Text(proposal.proposed)
+                            .font(Typography.value)
+                            .foregroundStyle(Palette.ink)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    Button { take([proposal]) } label: {
+                        Text(Copy.use)
+                            .font(Typography.tag)
+                            .foregroundStyle(Palette.ink)
+                    }
+                    .buttonStyle(.plain)
+                }
+                .padding(.vertical, 6)
+                .accessibilityElement(children: .combine)
+            }
+            HStack(spacing: 22) {
+                if reread.proposals.count > 1 {
+                    Button { take(reread.proposals) } label: {
+                        Text(Copy.useAll)
+                            .catalogueLabel()
+                            .foregroundStyle(Palette.ink)
+                    }
+                }
+                Button { keepAsIs() } label: {
+                    Text(Copy.keepAsIs)
+                        .catalogueLabel()
+                }
+            }
+            .buttonStyle(.plain)
+            .padding(.top, 8)
         }
     }
 
@@ -693,6 +838,10 @@ struct CardDetailView: View {
 
             withAnimation(Motion.snappy) {
                 isIngestingAttachment = false
+            }
+            // A new side of the coffee: read the card again with it.
+            if attachment.role == .page || attachment.role == .bag {
+                await readWithEveryPage()
             }
         } catch {
             isIngestingAttachment = false

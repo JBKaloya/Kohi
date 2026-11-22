@@ -23,7 +23,7 @@ export async function generateJSON(
   name: string,
   schema: Record<string, unknown>,
   model = textModel(),
-  options: { timeoutMs?: number } = {},
+  options: { timeoutMs?: number; images?: { data: string; mime: string }[] } = {},
 ): Promise<JSONResult> {
   const apiKey = Deno.env.get("OPENAI_API_KEY");
   if (!apiKey) return { ok: false, status: 500, model, detail: "OPENAI_API_KEY is not configured" };
@@ -41,7 +41,19 @@ export async function generateJSON(
         reasoning_effort: Deno.env.get("OPENAI_REASONING") ?? "low",
         messages: [
           { role: "system", content: system },
-          { role: "user", content: user },
+          {
+            role: "user",
+            // Photos go after the text, as data URLs.
+            content: options.images?.length
+              ? [
+                { type: "text", text: user },
+                ...options.images.map((image) => ({
+                  type: "image_url",
+                  image_url: { url: `data:${image.mime};base64,${image.data}` },
+                })),
+              ]
+              : user,
+          },
         ],
         response_format: {
           type: "json_schema",

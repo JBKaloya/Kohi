@@ -35,6 +35,24 @@ nonisolated enum CardVision {
         return await read(jpeg: jpeg)
     }
 
+    /// The card and its other sides, read together: the card's photo first,
+    /// then each page or bag photo, up to four in all. A heading on one side
+    /// and its value on another, or a value one photo prints blurred, come out
+    /// right only when the model sees them all.
+    static func read(cardID: UUID, pages: [UUID]) async -> Reading? {
+        let urls = [ImageStore.shared.url(for: cardID, kind: .flat)]
+            + pages.map { ImageStore.shared.url(for: cardID, kind: .attachment($0)) }
+        let jpegs = urls.prefix(mostPhotos).compactMap { url -> Data? in
+            guard let image = ImageCodec.downsample(url, maxPixel: uploadMaxPixel) else { return nil }
+            return ImageCodec.encodeJPEG(image, quality: 0.8)
+        }
+        guard !jpegs.isEmpty else { return nil }
+        return await read(jpegs: jpegs)
+    }
+
+    /// The most photos one call sends, as the edge function reads them.
+    static let mostPhotos = 4
+
     /// A photo still in memory. The tasting path, which files no card.
     static func read(image: CGImage) async -> Reading? {
         guard let full = ImageCodec.encodeJPEG(image, quality: 0.9),
@@ -46,20 +64,36 @@ nonisolated enum CardVision {
     }
 
     private static func read(jpeg: Data) async -> Reading? {
-        guard let client = SupabaseConfig.current else { return nil }
+        await read(jpegs: [jpeg])
+    }
 
-        struct Payload: Encodable {
-            let image: String
-            let mime: String
-        }
+    struct Photo: Encodable, Equatable {
+        let image: String
+        let mime: String
+    }
+
+    /// `images` for the function that reads several; `image`, the card's
+    /// photo, repeated for one deployed before it did, which then reads the
+    /// card alone instead of refusing the call.
+    struct Payload: Encodable, Equatable {
+        let image: String
+        let mime: String
+        let images: [Photo]
+    }
+
+    static func payload(_ jpegs: [Data]) -> Payload {
+        let photos = jpegs.map { Photo(image: $0.base64EncodedString(), mime: "image/jpeg") }
+        return Payload(image: photos.first?.image ?? "", mime: "image/jpeg", images: photos)
+    }
+
+    private static func read(jpegs: [Data]) async -> Reading? {
+        guard let client = SupabaseConfig.current else { return nil }
 
         let started = Date.now
         do {
             let extraction: Extraction = try await client.functions.invoke(
                 "card-vision",
-                options: FunctionInvokeOptions(
-                    body: Payload(image: jpeg.base64EncodedString(), mime: "image/jpeg")
-                )
+                options: FunctionInvokeOptions(body: payload(jpegs))
             )
             var event = AIEvent(
                 feature: .cardVision,
