@@ -36,13 +36,25 @@ function configFor(model: string, config: Record<string, unknown>) {
   return rest;
 }
 
+/// Each model with how long it gets. A caller that answers a person waiting
+/// on screen passes shorter times; the last time repeats for any model left.
+export function attempts(
+  names: string[],
+  attemptMs: number[] = ATTEMPT_MS,
+): { model: string; ms: number }[] {
+  const times = attemptMs.length ? attemptMs : ATTEMPT_MS;
+  return names.map((model, index) => ({ model, ms: times[index] ?? times.at(-1)! }));
+}
+
 export async function generate(
   apiKey: string,
   parts: unknown[],
   generationConfig: Record<string, unknown>,
+  options: { attemptMs?: number[]; models?: string[] } = {},
 ): Promise<Generated> {
-  let failure: Generated = { ok: false, status: 502, model: models()[0] };
-  for (const [attempt, model] of models().entries()) {
+  const names = options.models?.length ? options.models : models();
+  let failure: Generated = { ok: false, status: 502, model: names[0] };
+  for (const { model, ms } of attempts(names, options.attemptMs)) {
     let response: Response;
     try {
       response = await fetch(
@@ -57,7 +69,7 @@ export async function generate(
             contents: [{ parts }],
             generationConfig: configFor(model, generationConfig),
           }),
-          signal: AbortSignal.timeout(ATTEMPT_MS[attempt] ?? ATTEMPT_MS.at(-1)!),
+          signal: AbortSignal.timeout(ms),
         },
       );
     } catch (error) {

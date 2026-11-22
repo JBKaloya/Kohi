@@ -23,6 +23,7 @@ export async function generateJSON(
   name: string,
   schema: Record<string, unknown>,
   model = textModel(),
+  options: { timeoutMs?: number } = {},
 ): Promise<JSONResult> {
   const apiKey = Deno.env.get("OPENAI_API_KEY");
   if (!apiKey) return { ok: false, status: 500, model, detail: "OPENAI_API_KEY is not configured" };
@@ -47,7 +48,7 @@ export async function generateJSON(
           json_schema: { name, strict: true, schema },
         },
       }),
-      signal: AbortSignal.timeout(TIMEOUT_MS),
+      signal: AbortSignal.timeout(options.timeoutMs ?? TIMEOUT_MS),
     });
   } catch (error) {
     return { ok: false, status: 504, model, detail: `${error}` };
