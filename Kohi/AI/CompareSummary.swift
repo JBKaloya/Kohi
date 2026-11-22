@@ -154,10 +154,12 @@ nonisolated enum CompareSummary {
         return try await withTaskCancellationHandler {
             try await withCheckedThrowingContinuation { continuation in
                 gate.start(continuation)
-                let work = Task {
+                // Detached, so neither waits on the caller's actor: a busy
+                // main actor must not hold the deadline back.
+                let work = Task.detached {
                     do { gate.finish(.success(try await operation())) } catch { gate.finish(.failure(error)) }
                 }
-                let timer = Task {
+                let timer = Task.detached {
                     try? await Task.sleep(for: .seconds(seconds))
                     if gate.finish(.failure(DeadlineExceeded())) { work.cancel() }
                 }

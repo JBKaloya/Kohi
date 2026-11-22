@@ -100,17 +100,18 @@ struct CompareSummaryTests {
         let started = Date.now
         do {
             _ = try await CompareSummary.withDeadline(0.05) {
-                try await Task.sleep(for: .seconds(30))
+                try await Task.sleep(for: .seconds(300))
                 return "too late"
             }
             Issue.record("a call past the deadline should not return")
         } catch {
             #expect(error is CompareSummary.DeadlineExceeded)
         }
-        // Far under the call's 30 s, with room for a busy main actor when the
-        // whole suite runs at once.
+        // Far under the call's 300 s. The margin is wide on purpose: with the
+        // whole suite running, snapshot tests hold the main actor for about
+        // 17 s, and this test resumes on it.
         let elapsed = Date.now.timeIntervalSince(started)
-        #expect(elapsed < 10, "gave up after \(elapsed) s")
+        #expect(elapsed < 60, "gave up after \(elapsed) s")
     }
 
     @Test func aQuickSummaryArrivesBeforeTheDeadline() async throws {
