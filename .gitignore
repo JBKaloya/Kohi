@@ -42,3 +42,6 @@ Tools/PosterBench/out/
 
 # Cursor / editor
 .cursor/
+
+# Real data copied from the dashboard for local runs (tester exports, reports).
+.private/
