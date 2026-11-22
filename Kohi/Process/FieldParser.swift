@@ -44,6 +44,9 @@ nonisolated struct ParsedFields: Equatable, Sendable {
     /// What the vision model filled, when it ran. Carried to the edit sheet
     /// so the save can say whether those values were kept.
     var modelFill: ModelFill?
+    /// Headings the read found whose value did not hold up ("PROCESS" over
+    /// "175C"). The card says more than the read understood.
+    var refusedValues = 0
 
     var isEmpty: Bool {
         name == nil && roaster == nil && country == nil && region == nil
@@ -71,6 +74,9 @@ nonisolated struct ParsedFields: Equatable, Sendable {
     /// all land here.
     var wantsVisionAssist: Bool {
         guard linesRead > 0 else { return false }
+        // A heading whose value made no sense: the layout fooled the read, and
+        // what did land may be just as wrong.
+        if refusedValues > 0 { return true }
         // Which fields are empty matters more than how many filled.
         // Three weak fields with no name and no notes used to look "enough".
         if name == nil, tastingNotes.isEmpty { return true }
@@ -164,7 +170,8 @@ nonisolated enum FieldParser {
     ]}
 
     private static let noteLabels = [
-        "tasting notes", "flavour notes", "flavor notes", "cupping notes",
+        // "taste notes" first: "taste" alone left "NOTES" as the only note.
+        "tasting notes", "taste notes", "tasting note", "flavour notes", "flavor notes", "cupping notes",
         "notes de dégustation", "notes aromatiques", "notes", "note",
         "flavour", "flavor", "flavors", "flavours", "we taste", "taste",
         "reminds us of", "arômes", "aromas",
@@ -278,6 +285,7 @@ nonisolated enum FieldParser {
         fields.sourceLanguage = detectLanguage(texts)
 
         var consumed = parseTokenLayout(texts, into: &fields)
+        consumed.formUnion(parseHeaderRows(lines, texts: texts, skipping: consumed, into: &fields))
 
         var index = 0
         while index < texts.count {
@@ -293,6 +301,8 @@ nonisolated enum FieldParser {
                     if let value = sanitized(value, forField: name), fields[keyPath: field] == nil {
                         fields[keyPath: field] = value
                         consumed.insert(index)
+                    } else if value != nil, fields[keyPath: field] == nil {
+                        fields.refusedValues += 1
                     }
                     continue
                 }
@@ -317,7 +327,9 @@ nonisolated enum FieldParser {
 
         BagFieldParser.parse(texts, into: &fields)
         fields.recipe = RecipeParser.parse(texts)
-        if fields.roaster == nil, let seed = RoasterLineMatch.match(lines: texts) {
+        // A heading alone ("ORIGIN" over the origin column) is not the roaster
+        // Origin.
+        if fields.roaster == nil, let seed = RoasterLineMatch.match(lines: texts.filter { !isLabel($0) }) {
             fields.roaster = seed.name
         }
         inferTitle(from: lines, texts: texts, into: &fields)
@@ -521,6 +533,14 @@ nonisolated enum FieldParser {
         case "country":
             // Closed vocabulary, so anything unrecognised is a misread.
             guard knownCountry(trimmed) != nil else { return nil }
+        case "process":
+            // "175C" under PROCESS was the altitude of the next column. A
+            // process starts with a word, unless it names one ("72h anaerobic").
+            let lowered = trimmed.lowercased()
+            if first.isNumber, !processLexicon.contains(where: { lowered.contains($0) }) { return nil }
+            if isAltitude(trimmed) { return nil }
+        case "altitude":
+            return repairedDigits(trimmed)
         default:
             break
         }
@@ -564,6 +584,36 @@ nonisolated enum FieldParser {
 
     private static func isLabel(_ line: String) -> Bool {
         match(line, in: fieldLabels) != nil || matchNotes(line) != nil || resemblesLabel(line)
+            || isStopLabel(line)
+    }
+
+    /// What a cupping grid scores. Printed as a column of headings, never a
+    /// note.
+    private static let cuppingAttributes: Set<String> = [
+        "aroma", "fragrance", "sweetness", "flavor", "flavour", "mouthfeel", "acidity",
+        "balance", "aftertaste", "body", "bitterness", "clarity", "clean cup", "uniformity", "overall",
+    ]
+
+    /// Headings that follow the notes on a card and are not notes themselves:
+    /// a list collected under TASTE NOTES stops at them.
+    private static let stopLabels = [
+        "brew rating", "brew notes", "best brewed", "best before", "rating",
+        "roasted on", "roast date", "net wt", "net weight", "weight",
+    ]
+
+    private static func isStopLabel(_ line: String) -> Bool {
+        let lowered = line.lowercased().trimmingCharacters(in: .whitespaces)
+        return stopLabels.contains { lowered.hasPrefix($0) }
+    }
+
+    /// Digits a mono font turns into letters: "175C" and "1O50" are 1750 and
+    /// 1050. Only inside a run that is otherwise digits.
+    static func repairedDigits(_ value: String) -> String {
+        value.split(separator: " ", omittingEmptySubsequences: false).map { word -> String in
+            let digits = word.filter(\.isNumber).count
+            guard word.count >= 3, digits >= word.count - 1, digits >= 2 else { return String(word) }
+            return String(word.map { "OoCcDQ".contains($0) ? "0" : $0 })
+        }.joined(separator: " ")
     }
 
     /// OCR turns "ELEVATION" into "eievation" and "VARIETY" into "VARIET T".
@@ -665,7 +715,8 @@ nonisolated enum FieldParser {
     private static func cleanNotes(_ notes: [String]) -> [String] {
         var seen = Set<String>()
         var result: [String] = []
-        for note in notes where isPlausibleNote(note) {
+        // "NOTES" is a heading, never a note.
+        for note in notes where isPlausibleNote(note) && !isLabel(note) {
             let key = note.lowercased()
             guard seen.insert(key).inserted else { continue }
             result.append(note)
@@ -687,6 +738,9 @@ nonisolated enum FieldParser {
         let lowered = note.lowercased()
         let noise = ["coffee", "beans", "net wt", "www.", "http", "@", "organic"]
         guard !noise.contains(where: { lowered.contains($0) }) else { return false }
+        // The headings of a cupping grid ("AROMA … BALANCE … AFTERTASTE") name
+        // what was scored, not what it tasted of.
+        guard !cuppingAttributes.contains(lowered.trimmingCharacters(in: .whitespaces)) else { return false }
 
         // Tasting notes in Chinese or Japanese are two to four glyphs; a long
         // one is the roaster's story.
@@ -712,6 +766,52 @@ nonisolated enum FieldParser {
     /// ( 1600m ) ( Double Fermentation )", with tasting notes following a
     /// roast-level heading. No labels anywhere, so each token is classified
     /// by what it looks like.
+    /// A row of headings with their values printed underneath, one column
+    /// each ("MASL  PRODUCER  PROCESS" over "1750  SMALLHOLDER  WASHED"). Read
+    /// line by line, each heading took the next line, so PROCESS got the
+    /// altitude. Here each heading takes the closest line below it, column by
+    /// column. Needs the geometry OCR gives; lines built without it never
+    /// share a row and are left to the line-by-line pass.
+    private static func parseHeaderRows(
+        _ lines: [TextExtractor.Line],
+        texts: [String],
+        skipping consumed: Set<Int>,
+        into fields: inout ParsedFields
+    ) -> Set<Int> {
+        // Bare headings: a label with nothing after it.
+        let headings: [(index: Int, field: WritableKeyPath<ParsedFields, String?>, name: String)] =
+            texts.indices.compactMap { index in
+                guard !consumed.contains(index),
+                      let (field, name, inline) = match(texts[index], in: fieldLabels),
+                      inline == nil else { return nil }
+                return (index, field, name)
+            }
+        var taken: Set<Int> = []
+        for heading in headings {
+            let line = lines[heading.index]
+            let row = headings.filter { abs(lines[$0.index].y - line.y) < 0.015 }
+            guard row.count >= 2 else { continue }
+            let below = texts.indices.filter { index in
+                !consumed.contains(index) && !taken.contains(index) && !isLabel(texts[index])
+                    && lines[index].y > line.y && lines[index].y - line.y < 0.1
+                    && abs(lines[index].x - line.x) < 0.12
+            }
+            guard let value = below.min(by: {
+                (abs(lines[$0].x - line.x), lines[$0].y) < (abs(lines[$1].x - line.x), lines[$1].y)
+            }) else { continue }
+            taken.insert(heading.index)
+            taken.insert(value)
+            if fields[keyPath: heading.field] == nil {
+                if let clean = sanitized(texts[value], forField: heading.name) {
+                    fields[keyPath: heading.field] = clean
+                } else {
+                    fields.refusedValues += 1
+                }
+            }
+        }
+        return taken
+    }
+
     private static func parseTokenLayout(_ texts: [String], into fields: inout ParsedFields) -> Set<Int> {
         var tokensByLine: [(index: Int, tokens: [String])] = []
         for (index, line) in texts.enumerated() {
@@ -890,6 +990,13 @@ nonisolated enum FieldParser {
         guard line.rangeOfCharacter(from: .decimalDigits) == nil else { return nil }
         let parts = split(line)
         guard parts.count >= 2, parts.count <= 6 else { return nil }
+        // "GESHA WASHED • ECUADOR" is the coffee's identity, not its notes.
+        guard !parts.contains(where: { part in
+            let lowered = part.lowercased()
+            return knownCountry(part) != nil
+                || processLexicon.contains(where: { lowered.contains($0) })
+                || varietyLexicon.contains(where: { lowered.contains($0) })
+        }) else { return nil }
         guard parts.allSatisfy({ part in
             let words = part.split(separator: " ")
             return words.count <= 3 && part.count <= 24 && !part.contains(":") && isPlausibleNote(part)

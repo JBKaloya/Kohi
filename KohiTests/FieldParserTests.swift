@@ -474,4 +474,81 @@ struct FieldParserTests {
         #expect(parsed.tastingNotes.count == FieldParser.noteLimit)
         #expect(parsed.wantsVisionAssist)
     }
+
+    // MARK: - Headings over their values
+
+    /// The DR Congo Majirane card of 22 Nov 2026 (Process Coffee). A row of
+    /// headings with each value printed under it, in a mono font that reads
+    /// 1750 as "175C". Read line by line, PROCESS took "175C" and the notes
+    /// came back as "NOTES".
+    @Test func headingsOverValuesReadByColumn() {
+        func at(_ text: String, _ x: Double, _ y: Double) -> TextExtractor.Line {
+            TextExtractor.Line(text: text, y: y, x: x)
+        }
+        let parsed = FieldParser.parse([
+            at("PRO", 0.05, 0.05), at("DR CONGO", 0.25, 0.04), at("MAJIRANE", 0.25, 0.08),
+            at("MASL", 0.05, 0.20), at("PRODUCER", 0.30, 0.20), at("PROCESS", 0.70, 0.20),
+            at("175C", 0.05, 0.24), at("SMALLHOLDER", 0.30, 0.24), at("WASHED", 0.70, 0.24),
+            at("TASTE NOTES", 0.05, 0.36),
+            at("PLUM, MOLASSES, LIQUORICE", 0.05, 0.40),
+            at("BREW RATING", 0.05, 0.50), at("BREW NOTES", 0.30, 0.50),
+            at("BEST BREWED AFTER 21 DAYS", 0.30, 0.54),
+        ])
+
+        #expect(parsed.altitude == "1750")
+        #expect(parsed.producer == "SMALLHOLDER")
+        #expect(parsed.process == "WASHED")
+        #expect(parsed.tastingNotes == ["PLUM", "MOLASSES", "LIQUORICE"])
+    }
+
+    @Test func aHeadingIsNeverANote() {
+        let parsed = FieldParser.parse(lines(["TASTE NOTES", "Plum, Molasses", "BREW RATING", "BREW NOTES"]))
+        #expect(parsed.tastingNotes == ["Plum", "Molasses"])
+        let inline = FieldParser.parse(lines(["TASTE NOTES: Plum, Molasses"]))
+        #expect(inline.tastingNotes == ["Plum", "Molasses"])
+    }
+
+    @Test func aNumberIsNotAProcess() {
+        var parsed = FieldParser.parse(lines(["Process", "175C", "Altitude", "1O50 masl"]))
+        parsed.linesRead = 4
+        #expect(parsed.process == nil)
+        #expect(parsed.altitude == "1050 masl")
+        // A heading whose value was refused asks for a second opinion.
+        #expect(parsed.refusedValues == 1)
+        #expect(parsed.wantsVisionAssist)
+        #expect(FieldParser.parse(lines(["Process: 72h anaerobic"])).process == "72h anaerobic")
+    }
+
+    @Test func monoFontDigitsAreRepaired() {
+        #expect(FieldParser.repairedDigits("175C") == "1750")
+        #expect(FieldParser.repairedDigits("1O50-18OO m") == "1O50-18OO m")
+        #expect(FieldParser.repairedDigits("1O50 m") == "1050 m")
+        #expect(FieldParser.repairedDigits("Cauca") == "Cauca")
+        #expect(FieldParser.repairedDigits("CO2") == "CO2")
+    }
+
+    // MARK: - From the scan benchmark of 22 Nov 2026
+
+    /// Glitch Coffee's cards: a cupping grid of headings, then ORIGIN over the
+    /// coffee. "Origin" is also a roaster's name, and BALANCE was kept as a note.
+    @Test func aCuppingGridAndAnOriginHeadingStayHeadings() {
+        let parsed = FieldParser.parse(lines([
+            "TASTING NOTES", "WHITE FLOWER, MAYER LEMON, HONEY,", "SMOOTH, ELEGANT",
+            "AROMA", "SWEETNESS", "FLAVOR", "MOUTHFEEL", "ACIDITY", "BALANCE", "AFTERTASTE",
+            "ORIGIN", "LERIDA", "(LOT.5)", "PANAMA BOQUETE",
+        ]))
+        #expect(parsed.roaster != "Origin")
+        #expect(!parsed.tastingNotes.contains { $0.uppercased() == "BALANCE" })
+        #expect(parsed.tastingNotes.first == "WHITE FLOWER")
+    }
+
+    /// Black Potion's box: "GESHA WASHED • ECUADOR" under the name, the notes
+    /// on the next line.
+    @Test func theCoffeesIdentityLineIsNotItsNotes() {
+        let parsed = FieldParser.parse(lines([
+            "HACIENDA LA PAPAYA", "GESHA WASHED • ECUADOR",
+            "LIME • GRAPEFRUIT • DRIED MANGO • GOOSEBERRY • MINT • BROWN SUGAR",
+        ]))
+        #expect(parsed.tastingNotes == ["LIME", "GRAPEFRUIT", "DRIED MANGO", "GOOSEBERRY", "MINT", "BROWN SUGAR"])
+    }
 }
